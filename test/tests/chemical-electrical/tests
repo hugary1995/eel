@@ -1,0 +1,9 @@
+[Tests]
+  [charging]
+    type = Exodiff
+    input = 'diffusion_vs_migration.i'
+    exodiff = 'diffusion_vs_migration.e'
+    cli_args = 'Executioner/num_steps=3'
+    abs_zero = 1e-9
+  []
+[]

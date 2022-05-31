@@ -1,0 +1,8 @@
+[Tests]
+  [joule_heating]
+    type = Exodiff
+    input = 'jh.i'
+    exodiff = 'jh_out.e'
+    abs_zero = 1e-9
+  []
+[]

@@ -1,0 +1,16 @@
+[Tests]
+  [stress_free]
+    type = Exodiff
+    input = 'pressure.i'
+    exodiff = 'stress_free.e'
+    cli_args = 'Executioner/num_steps=2 BCs/traction/enable=false Constraints/y/enable=true Outputs/file_base=stress_free'
+    abs_zero = 1e-9
+  []
+  [pressure]
+    type = Exodiff
+    input = 'pressure.i'
+    exodiff = 'pressure.e'
+    cli_args = 'Executioner/num_steps=2 BCs/traction/enable=true Constraints/y/enable=false Outputs/file_base=pressure'
+    abs_zero = 1e-9
+  []
+[]

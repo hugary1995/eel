@@ -1,0 +1,15 @@
+[Tests]
+  [mms]
+    type = Exodiff
+    input = 'mms.i'
+    exodiff = 'mms_out.e'
+    abs_zero = 1e-9
+  []
+  [butler_volmer]
+    type = Exodiff
+    input = 'bv.i'
+    exodiff = 'bv_out.e'
+    cli_args = 'Executioner/num_steps=5'
+    abs_zero = 1e-9
+  []
+[]

@@ -1,0 +1,9 @@
+[Tests]
+  [thermal_effects]
+    type = Exodiff
+    input = 'thermal_effects.i'
+    exodiff = 'thermal_effects_out.e'
+    cli_args = 'Executioner/num_steps=5'
+    abs_zero = 1e-9
+  []
+[]

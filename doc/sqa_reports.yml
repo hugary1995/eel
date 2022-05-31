@@ -1,0 +1,8 @@
+Applications:
+    eel:
+        exe_directory: ${ROOT_DIR}
+        exe_name: eel
+        app_types:
+            - EelApp
+        content_directory: doc/content
+        log_stub_files: WARNING
