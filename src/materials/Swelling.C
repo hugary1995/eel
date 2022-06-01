@@ -4,7 +4,7 @@
 
 #include "Swelling.h"
 
-registerADMooseObject("stingrayApp", Swelling);
+registerADMooseObject("StingrayApp", Swelling);
 
 InputParameters
 Swelling::validParams()
@@ -34,7 +34,7 @@ Swelling::Swelling(const InputParameters & parameters)
   : Material(parameters),
     BaseNameInterface(parameters),
     _Fg(declareADProperty<RankTwoTensor>(
-        prependBaseName("swelling_eigen_deformation_gradient_name", true))),
+        prependBaseName("swelling_eigen_deformation_gradient", true))),
     _c(adCoupledValues("chemical_species_concentrations")),
     _c_ref(adCoupledValues("chemical_species_reference_concentrations")),
     _Omega_names(getParam<std::vector<MaterialPropertyName>>("molar_volumes")),

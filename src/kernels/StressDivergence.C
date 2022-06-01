@@ -1,6 +1,6 @@
 #include "StressDivergence.h"
 
-registerMooseObject("TensorMechanicsApp", StressDivergence);
+registerMooseObject("StingrayApp", StressDivergence);
 
 InputParameters
 StressDivergence::validParams()

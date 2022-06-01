@@ -4,7 +4,7 @@
 
 #include "FirstPiolaKirchhoffStress.h"
 
-registerADMooseObject("stingrayApp", FirstPiolaKirchhoffStress);
+registerADMooseObject("StingrayApp", FirstPiolaKirchhoffStress);
 
 InputParameters
 FirstPiolaKirchhoffStress::validParams()
@@ -24,7 +24,8 @@ FirstPiolaKirchhoffStress::FirstPiolaKirchhoffStress(const InputParameters & par
   : Material(parameters),
     BaseNameInterface(parameters),
     _PK1(declareADProperty<RankTwoTensor>(prependBaseName("first_piola_kirchhoff_stress"))),
-    _psi_names(getParam<std::vector<MaterialPropertyName>>("energy_densities"))
+    _psi_names(getParam<std::vector<MaterialPropertyName>>("energy_densities")),
+    _d_psi_d_F(_psi_names.size())
 {
   // Get thermodynamic forces
   for (auto i : make_range(_psi_names.size()))

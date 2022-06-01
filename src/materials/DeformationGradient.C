@@ -4,7 +4,7 @@
 
 #include "DeformationGradient.h"
 
-registerADMooseObject("stingrayApp", DeformationGradient);
+registerADMooseObject("StingrayApp", DeformationGradient);
 
 InputParameters
 DeformationGradient::validParams()

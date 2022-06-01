@@ -4,6 +4,8 @@
 
 #include "NeoHookeanElasticEnergyDensity.h"
 
+registerMooseObject("StingrayApp", NeoHookeanElasticEnergyDensity);
+
 InputParameters
 NeoHookeanElasticEnergyDensity::validParams()
 {
