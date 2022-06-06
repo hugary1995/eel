@@ -3,14 +3,13 @@
 #include "Material.h"
 #include "BaseNameInterface.h"
 #include "ADRankTwoTensorForward.h"
-#include "DerivativeMaterialPropertyNameInterface.h"
+#include "DerivativeMaterialInterface.h"
 
 /**
  * This class computes the first Piola-Kirchhoff stress associated with given energy densities.
  */
-class FirstPiolaKirchhoffStress : public Material,
-                                  public BaseNameInterface,
-                                  public DerivativeMaterialPropertyNameInterface
+class FirstPiolaKirchhoffStress : public DerivativeMaterialInterface<Material>,
+                                  public BaseNameInterface
 {
 public:
   static InputParameters validParams();

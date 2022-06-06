@@ -5,20 +5,20 @@
 #include "ADRankTwoTensorForward.h"
 
 /**
- * This class implements the weak form for the divergence of the first Piola-Kirchhoff stress
+ * This class implements the weak form for the divergence of a second order tensor
  */
-class StressDivergence : public ADKernel, public BaseNameInterface
+class RankTwoDivergence : public ADKernel, public BaseNameInterface
 {
 public:
   static InputParameters validParams();
 
-  StressDivergence(const InputParameters & parameters);
+  RankTwoDivergence(const InputParameters & parameters);
 
 protected:
   ADReal computeQpResidual() override;
 
-  /// The first Piola-Kirchhoff stress
-  const ADMaterialProperty<RankTwoTensor> & _PK1;
+  /// The second order tensor
+  const ADMaterialProperty<RankTwoTensor> & _tensor;
 
   /// An integer corresponding to the direction this kernel acts in
   const unsigned int _component;

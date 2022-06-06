@@ -37,12 +37,12 @@ protected:
   /// Name of the elastic energy density
   const MaterialPropertyName _psi_name;
 
-  /// Derivative of the elastic energy density w.r.t. the mechanical deformation gradient
+  /// The elastic energy density
   ADMaterialProperty<Real> & _psi;
 
-  /// Derivative of the elastic energy density w.r.t. the mechanical deformation gradient
+  /// Derivative of the elastic energy density w.r.t. the deformation gradient
   ADMaterialProperty<RankTwoTensor> & _d_psi_d_F;
 
-  /// Derivative of the elastic energy density w.r.t. the deformation gradient
+  /// Derivative of the elastic energy density w.r.t. the mechanical deformation gradient
   ADMaterialProperty<RankTwoTensor> & _d_psi_d_Fm;
 };

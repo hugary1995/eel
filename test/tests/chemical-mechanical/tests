@@ -1,0 +1,8 @@
+[Tests]
+  [mixing_and_swelling]
+    type = Exodiff
+    input = 'mixing_and_swelling.i'
+    exodiff = 'mixing_and_swelling_out.e'
+    abs_zero = 1e-9
+  []
+[]

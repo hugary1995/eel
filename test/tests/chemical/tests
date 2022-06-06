@@ -1,0 +1,8 @@
+[Tests]
+  [mixing]
+    type = Exodiff
+    input = 'mixing.i'
+    exodiff = 'mixing_out.e'
+    abs_zero = 1e-9
+  []
+[]

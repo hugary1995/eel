@@ -21,18 +21,21 @@
 
 [Kernels]
   [sdx]
-    type = StressDivergence
+    type = RankTwoDivergence
     variable = disp_x
+    tensor = first_piola_kirchhoff_stress
     component = 0
   []
   [sdy]
-    type = StressDivergence
+    type = RankTwoDivergence
     variable = disp_y
+    tensor = first_piola_kirchhoff_stress
     component = 1
   []
   [sdz]
-    type = StressDivergence
+    type = RankTwoDivergence
     variable = disp_z
+    tensor = first_piola_kirchhoff_stress
     component = 2
   []
 []

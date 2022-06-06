@@ -1,12 +1,12 @@
 [Tests]
   [pull]
-    type = 'Exodiff'
+    type = Exodiff
     input = 'pull.i'
     exodiff = 'pull_out.e'
     abs_zero = 1e-9
   []
   [swelling]
-    type = 'Exodiff'
+    type = Exodiff
     input = 'swelling.i'
     exodiff = 'swelling_out.e'
     abs_zero = 1e-9

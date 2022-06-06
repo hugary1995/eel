@@ -12,6 +12,18 @@
 []
 
 [Variables]
+  [c+]
+    [InitialCondition]
+      type = FunctionIC
+      function = 'x'
+    []
+  []
+  [c-]
+    [InitialCondition]
+      type = FunctionIC
+      function = '1-x'
+    []
+  []
   [disp_x]
   []
   [disp_y]
@@ -21,18 +33,6 @@
 []
 
 [AuxVariables]
-  [c+]
-    [AuxKernel]
-      type = FunctionAux
-      function = 'x*y*z*10*t'
-    []
-  []
-  [c-]
-    [AuxKernel]
-      type = FunctionAux
-      function = '1-x*y*z*10*t'
-    []
-  []
   [c+0]
   []
   [c-0]
@@ -40,6 +40,28 @@
 []
 
 [Kernels]
+  ### Chemical
+  [td+]
+    type = CoefTimeDerivative
+    variable = c+
+    Coefficient = 1
+  []
+  [td-]
+    type = CoefTimeDerivative
+    variable = c-
+    Coefficient = 1
+  []
+  [diffusion+]
+    type = RankOneDivergence
+    variable = c+
+    vector = J+
+  []
+  [diffusion-]
+    type = RankOneDivergence
+    variable = c-
+    vector = J-
+  []
+  ### Mechanical
   [sdx]
     type = RankTwoDivergence
     variable = disp_x
@@ -82,6 +104,25 @@
 []
 
 [Materials]
+  ### Chemical
+  [diffusivity]
+    type = ADGenericConstantRankTwoTensor
+    tensor_name = 'D'
+    tensor_values = '1 0 0 0 1 0 0 0 1'
+  []
+  [fick+]
+    type = FicksFirstLaw
+    chemical_energy_density = psi_c+
+    diffusivity = D
+    concentration = c+
+  []
+  [fick-]
+    type = FicksFirstLaw
+    chemical_energy_density = psi_c-
+    diffusivity = D
+    concentration = c-
+  []
+  ### Mechanical
   [parameters]
     type = ADGenericConstantMaterial
     prop_names = 'lambda G beta Omega_c+ Omega_c-'
@@ -106,9 +147,22 @@
     lambda = lambda
     shear_modulus = G
   []
+  ### Thermodynamic forces
+  [mass_flux+]
+    type = MassFlux
+    mass_flux = J+
+    concentration = c+
+    energy_densities = 'psi_e psi_c+ psi_c-'
+  []
+  [mass_flux-]
+    type = MassFlux
+    mass_flux = J-
+    concentration = c-
+    energy_densities = 'psi_e psi_c+ psi_c-'
+  []
   [pk1_stress]
     type = FirstPiolaKirchhoffStress
-    energy_densities = 'psi_e'
+    energy_densities = 'psi_e psi_c+ psi_c-'
   []
 []
 
