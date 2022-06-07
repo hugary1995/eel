@@ -50,9 +50,9 @@ protected:
   /// Derivative of the chemical energy density w.r.t. the concentration
   ADMaterialProperty<Real> & _d_psi_d_c;
 
-  /// Derivative of the elastic energy density w.r.t. the concentration gradient
+  /// Derivative of the chemical energy density w.r.t. the concentration gradient
   ADMaterialProperty<RealVectorValue> & _d_psi_d_grad_c;
 
-  /// Derivative of the elastic energy density w.r.t. the deformation gradient
+  /// Derivative of the chemical energy density w.r.t. the deformation gradient
   ADMaterialProperty<RankTwoTensor> & _d_psi_d_F;
 };
