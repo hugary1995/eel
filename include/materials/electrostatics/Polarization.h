@@ -18,9 +18,6 @@ protected:
   computeQpDElectricalEnergyDensityDElectricalPotentialGradient() override;
   virtual ADRankTwoTensor computeQpDElectricalEnergyDensityDDeformationGradient() override;
 
-  /// The deformation gradient
-  const ADMaterialProperty<RankTwoTensor> & _F;
-
   /// The vacuum permittivity
   const ADMaterialProperty<Real> & _eps_0;
 

@@ -33,6 +33,9 @@ protected:
   /// The gradient of the electrical potential
   const ADVariableGradient & _grad_Phi;
 
+  /// The deformation gradient
+  const ADMaterialProperty<RankTwoTensor> * _F;
+
   /// The name of the electrical potential variable
   const VariableName _Phi_name;
 
@@ -46,5 +49,5 @@ protected:
   ADMaterialProperty<RealVectorValue> & _d_psi_d_grad_Phi;
 
   /// Derivative of the electrical energy density w.r.t. the deformation gradient
-  ADMaterialProperty<RankTwoTensor> & _d_psi_d_F;
+  ADMaterialProperty<RankTwoTensor> * _d_psi_d_F;
 };
