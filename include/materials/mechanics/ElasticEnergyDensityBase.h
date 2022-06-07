@@ -3,16 +3,15 @@
 #include "Material.h"
 #include "BaseNameInterface.h"
 #include "ADRankTwoTensorForward.h"
-#include "DerivativeMaterialPropertyNameInterface.h"
+#include "DerivativeMaterialInterface.h"
 
 /**
  * This class computes the elastic energy density and the corresponding thermodynamic forces. In
  * this app, we assume the elastic energy density depends on at least the deformation gradient and
  * the concentrations.
  */
-class ElasticEnergyDensityBase : public Material,
-                                 public BaseNameInterface,
-                                 public DerivativeMaterialPropertyNameInterface
+class ElasticEnergyDensityBase : public DerivativeMaterialInterface<Material>,
+                                 public BaseNameInterface
 {
 public:
   static InputParameters validParams();
@@ -25,14 +24,23 @@ protected:
   /// Compute the elastic energy density
   virtual ADReal computeQpElasticEnergyDensity() const = 0;
 
-  /// Compute the \frac{\partial \psi^e}{\partial F_m}
+  /// Compute \frac{\partial \psi^e}{\partial F_m}
   virtual ADRankTwoTensor computeQpDElasticEnergyDensityDMechanicalDeformationGradient() = 0;
-
-  /// Inverse of the total eigen deformation gradient
-  const ADMaterialProperty<RankTwoTensor> & _Fg_inv;
 
   /// Mechanical deformation gradient
   const ADMaterialProperty<RankTwoTensor> & _Fm;
+
+  /// Names of the concentration variables
+  std::vector<VariableName> _c_names;
+
+  /// Derivative of Fm w.r.t. F
+  const ADMaterialProperty<RankFourTensor> & _d_Fm_d_F;
+
+  /// Derivative of Fm w.r.t. Fs
+  const ADMaterialProperty<RankFourTensor> & _d_Fm_d_Fs;
+
+  /// Derivatives of Fs w.r.t. concentrations
+  std::vector<const ADMaterialProperty<RankTwoTensor> *> _d_Fs_d_c;
 
   /// Name of the elastic energy density
   const MaterialPropertyName _psi_name;
@@ -45,4 +53,7 @@ protected:
 
   /// Derivative of the elastic energy density w.r.t. the mechanical deformation gradient
   ADMaterialProperty<RankTwoTensor> & _d_psi_d_Fm;
+
+  /// Derivative of the elastic energy density w.r.t. the concentrations
+  std::vector<ADMaterialProperty<Real> *> _d_psi_d_c;
 };

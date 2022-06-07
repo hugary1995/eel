@@ -3,11 +3,14 @@
 #include "Material.h"
 #include "BaseNameInterface.h"
 #include "ADRankTwoTensorForward.h"
+#include "DerivativeMaterialPropertyNameInterface.h"
 
 /**
  * This class computes the eigen deformation gradient induced by swelling
  */
-class Swelling : public Material, public BaseNameInterface
+class Swelling : public Material,
+                 public BaseNameInterface,
+                 public DerivativeMaterialPropertyNameInterface
 {
 public:
   static InputParameters validParams();
@@ -20,7 +23,10 @@ protected:
   virtual void initQpStatefulProperties() override;
 
   /// The eigen deformation gradient
-  ADMaterialProperty<RankTwoTensor> & _Fg;
+  ADMaterialProperty<RankTwoTensor> & _Fs;
+
+  /// Names of the concentration variables
+  std::vector<VariableName> _c_names;
 
   /// Concentration of each species
   std::vector<const ADVariableValue *> _c;
@@ -35,4 +41,7 @@ protected:
 
   /// Swelling coefficient
   const ADMaterialProperty<Real> & _beta;
+
+  // Derivative of the eigen deformation gradient w.r.t. each concentration variable
+  std::vector<ADMaterialProperty<RankTwoTensor> *> _d_Fs_d_c;
 };

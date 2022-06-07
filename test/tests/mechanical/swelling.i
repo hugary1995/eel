@@ -89,26 +89,24 @@
   []
   [swelling]
     type = Swelling
-    chemical_species_concentrations = 'c+ c-'
-    chemical_species_reference_concentrations = 'c+0 c-0'
+    concentrations = 'c+ c-'
+    reference_concentrations = 'c+0 c-0'
     molar_volumes = 'Omega_c+ Omega_c-'
     swelling_coefficient = beta
-    swelling_eigen_deformation_gradient = Fs
   []
   [def_grad]
     type = DeformationGradient
     displacements = 'disp_x disp_y disp_z'
-    eigen_deformation_gradient_names = 'Fs'
   []
-  [psi_e]
+  [psi_m]
     type = NeoHookeanElasticEnergyDensity
-    elastic_energy_density = psi_e
+    elastic_energy_density = psi_m
     lambda = lambda
     shear_modulus = G
   []
   [pk1_stress]
     type = FirstPiolaKirchhoffStress
-    energy_densities = 'psi_e'
+    energy_densities = 'psi_m'
   []
 []
 

@@ -77,15 +77,15 @@
     type = DeformationGradient
     displacements = 'disp_x disp_y disp_z'
   []
-  [psi_e]
+  [psi_m]
     type = NeoHookeanElasticEnergyDensity
-    elastic_energy_density = psi_e
+    elastic_energy_density = psi_m
     lambda = lambda
     shear_modulus = G
   []
   [pk1_stress]
     type = FirstPiolaKirchhoffStress
-    energy_densities = 'psi_e'
+    energy_densities = 'psi_m'
   []
 []
 

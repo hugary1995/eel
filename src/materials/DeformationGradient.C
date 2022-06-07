@@ -21,10 +21,8 @@ DeformationGradient::validParams()
       "The displacements appropriate for the simulation geometry and coordinate system");
   params.addParam<bool>(
       "volumetric_locking_correction", false, "Flag to correct volumetric locking");
-  params.addParam<std::vector<MaterialPropertyName>>(
-      "eigen_deformation_gradient_names", "List of eigen deformation gradients to be applied");
-
   params.suppressParameter<bool>("use_displaced_mesh");
+
   return params;
 }
 
@@ -38,23 +36,25 @@ DeformationGradient::DeformationGradient(const InputParameters & parameters)
     _current_elem_volume(_assembly.elemVolume()),
     _F(declareADProperty<RankTwoTensor>(prependBaseName("deformation_gradient"))),
     _Fm(declareADProperty<RankTwoTensor>(prependBaseName("mechanical_deformation_gradient"))),
-    _Fg_names(getParam<std::vector<MaterialPropertyName>>("eigen_deformation_gradient_names")),
-    _Fgs(_Fg_names.size()),
-    _Fg(declareADProperty<RankTwoTensor>(prependBaseName("total_eigen_deformation_gradient"))),
-    _Fg_inv(declareADProperty<RankTwoTensor>(
-        prependBaseName("inverse_total_eigen_deformation_gradient")))
+    _Fs(hasADMaterialProperty<RankTwoTensor>(prependBaseName("swelling_deformation_gradient"))
+            ? &getADMaterialPropertyByName<RankTwoTensor>(
+                  prependBaseName("swelling_deformation_gradient"))
+            : nullptr),
+    _d_Fm_d_F(declareADProperty<RankFourTensor>(
+        derivativePropertyName(prependBaseName("mechanical_deformation_gradient"),
+                               {prependBaseName("deformation_gradient")}))),
+    _d_Fm_d_Fs(_Fs ? &declareADProperty<RankFourTensor>(
+                         derivativePropertyName(prependBaseName("mechanical_deformation_gradient"),
+                                                {prependBaseName("swelling_deformation_gradient")}))
+                   : nullptr)
 {
-  // Set unused components to zero
-  _disp.resize(3, &_ad_zero);
-  _grad_disp.resize(3, &_ad_grad_zero);
-
-  // Get eigen deformation gradients
-  for (unsigned int i = 0; i < _Fgs.size(); ++i)
-    _Fgs[i] = &getADMaterialPropertyByName<RankTwoTensor>(prependBaseName(_Fg_names[i]));
-
   if (getParam<bool>("use_displaced_mesh"))
     paramError("use_displaced_mesh",
                "Deformation gradient needs to be calculated on the undisplaced mesh.");
+
+  // Set unused components to zero
+  _disp.resize(3, &_ad_zero);
+  _grad_disp.resize(3, &_ad_grad_zero);
 }
 
 void
@@ -87,11 +87,15 @@ DeformationGradient::computeProperties()
     if (_volumetric_locking_correction)
       _F[_qp] *= std::cbrt(ave_F_det / _F[_qp].det());
 
-    // Remove the eigen deformation gradient
-    _Fg[_qp].setToIdentity();
-    for (auto Fgi : _Fgs)
-      _Fg[_qp] *= (*Fgi)[_qp];
-    _Fg_inv[_qp] = _Fg[_qp].inverse();
-    _Fm[_qp] = _F[_qp] * _Fg_inv[_qp];
+    // Remove the eigen deformation gradients
+    _Fm[_qp] = _F[_qp];
+    ADRankTwoTensor I(ADRankTwoTensor::initIdentity);
+    _d_Fm_d_F[_qp] = I.mixedProductIkJl(I);
+    if (_Fs)
+    {
+      _Fm[_qp] *= (*_Fs)[_qp].inverse();
+      _d_Fm_d_F[_qp] = I.mixedProductIkJl((*_Fs)[_qp].inverse().transpose());
+      (*_d_Fm_d_Fs)[_qp] = -_Fm[_qp].mixedProductIkJl((*_Fs)[_qp].transpose());
+    }
   }
 }

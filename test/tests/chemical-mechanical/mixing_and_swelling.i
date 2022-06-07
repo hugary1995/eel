@@ -1,5 +1,5 @@
 # There is no external forces in this test. The deformation comes from swelling induced by concentration changes.
-# For this test, nothing is driving the chemical concentration for simplicity. They are prescribed.
+# For this test, nothing is driving the chemical concentration for simplicity.
 
 [Mesh]
   [gmg]
@@ -50,6 +50,16 @@
     type = CoefTimeDerivative
     variable = c-
     Coefficient = 1
+  []
+  [source+]
+    type = MaterialSource
+    variable = c+
+    prop = mu+
+  []
+  [source-]
+    type = MaterialSource
+    variable = c+
+    prop = mu-
   []
   [diffusion+]
     type = RankOneDivergence
@@ -130,39 +140,50 @@
   []
   [swelling]
     type = Swelling
-    chemical_species_concentrations = 'c+ c-'
-    chemical_species_reference_concentrations = 'c+0 c-0'
+    concentrations = 'c+ c-'
+    reference_concentrations = 'c+0 c-0'
     molar_volumes = 'Omega_c+ Omega_c-'
     swelling_coefficient = beta
-    swelling_eigen_deformation_gradient = Fs
   []
   [def_grad]
     type = DeformationGradient
     displacements = 'disp_x disp_y disp_z'
-    eigen_deformation_gradient_names = 'Fs'
   []
-  [psi_e]
+  [psi_m]
     type = NeoHookeanElasticEnergyDensity
-    elastic_energy_density = psi_e
+    elastic_energy_density = psi_m
     lambda = lambda
     shear_modulus = G
+    concentrations = 'c+ c-'
   []
   ### Thermodynamic forces
+  [mass_source+]
+    type = MassSource
+    mass_source = mu+
+    concentration = c+
+    energy_densities = 'psi_m psi_c+ psi_c-'
+  []
+  [mass_source-]
+    type = MassSource
+    mass_source = mu-
+    concentration = c-
+    energy_densities = 'psi_m psi_c+ psi_c-'
+  []
   [mass_flux+]
     type = MassFlux
     mass_flux = J+
     concentration = c+
-    energy_densities = 'psi_e psi_c+ psi_c-'
+    energy_densities = 'psi_m psi_c+ psi_c-'
   []
   [mass_flux-]
     type = MassFlux
     mass_flux = J-
     concentration = c-
-    energy_densities = 'psi_e psi_c+ psi_c-'
+    energy_densities = 'psi_m psi_c+ psi_c-'
   []
   [pk1_stress]
     type = FirstPiolaKirchhoffStress
-    energy_densities = 'psi_e psi_c+ psi_c-'
+    energy_densities = 'psi_m psi_c+ psi_c-'
   []
 []
 
