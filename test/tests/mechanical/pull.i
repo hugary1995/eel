@@ -23,19 +23,19 @@
   [sdx]
     type = RankTwoDivergence
     variable = disp_x
-    tensor = first_piola_kirchhoff_stress
+    tensor = PK1
     component = 0
   []
   [sdy]
     type = RankTwoDivergence
     variable = disp_y
-    tensor = first_piola_kirchhoff_stress
+    tensor = PK1
     component = 1
   []
   [sdz]
     type = RankTwoDivergence
     variable = disp_z
-    tensor = first_piola_kirchhoff_stress
+    tensor = PK1
     component = 2
   []
 []
@@ -85,6 +85,7 @@
   []
   [pk1_stress]
     type = FirstPiolaKirchhoffStress
+    first_piola_kirchhoff_stress = PK1
     energy_densities = 'psi_m'
   []
 []

@@ -19,6 +19,9 @@ protected:
   /// The first Piola-Kirchhoff stress
   ADMaterialProperty<RankTwoTensor> & _PK1;
 
-  /// Energy densities
+  /// Equilibrium forces
   std::vector<const ADMaterialProperty<RankTwoTensor> *> _d_psi_d_F;
+
+  /// Viscous forces
+  std::vector<const ADMaterialProperty<RankTwoTensor> *> _d_psi_dis_d_F_dot;
 };

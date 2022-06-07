@@ -15,5 +15,9 @@ public:
   ThermodynamicForce(const InputParameters & parameters);
 
 protected:
+  /// Energy densities
   std::vector<MaterialPropertyName> _psi_names;
+
+  /// Dissipation densities
+  std::vector<MaterialPropertyName> _psi_dis_names;
 };

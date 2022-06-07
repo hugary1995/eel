@@ -55,11 +55,6 @@
 
 [Kernels]
   ### Chemical
-  [td]
-    type = CoefTimeDerivative
-    variable = c
-    Coefficient = 1
-  []
   [source]
     type = MaterialSource
     variable = c
@@ -74,19 +69,19 @@
   [sdx]
     type = RankTwoDivergence
     variable = disp_x
-    tensor = first_piola_kirchhoff_stress
+    tensor = PK1
     component = 0
   []
   [sdy]
     type = RankTwoDivergence
     variable = disp_y
-    tensor = first_piola_kirchhoff_stress
+    tensor = PK1
     component = 1
   []
   [sdz]
     type = RankTwoDivergence
     variable = disp_z
-    tensor = first_piola_kirchhoff_stress
+    tensor = PK1
     component = 2
   []
 []
@@ -138,6 +133,17 @@
     tensor_name = 'D'
     tensor_values = '100 0 0 0 100 0 0 0 100'
   []
+  [properties]
+    type = ADGenericConstantMaterial
+    prop_names = 'eta'
+    prop_values = '1'
+  []
+  [viscosity]
+    type = ViscousMassTransport
+    chemical_dissipation_density = psi_c*
+    viscosity = eta
+    concentration = c
+  []
   [fick]
     type = FicksFirstLaw
     chemical_energy_density = psi_c
@@ -172,16 +178,20 @@
     mass_source = mu
     concentration = c
     energy_densities = 'psi_m psi_c'
+    dissipation_densities = 'psi_c*'
   []
   [mass_flux]
     type = MassFlux
     mass_flux = J
     concentration = c
     energy_densities = 'psi_m psi_c'
+    dissipation_densities = 'psi_c*'
   []
   [pk1_stress]
     type = FirstPiolaKirchhoffStress
+    first_piola_kirchhoff_stress = PK1
     energy_densities = 'psi_m psi_c'
+    dissipation_densities = 'psi_c*'
   []
 []
 

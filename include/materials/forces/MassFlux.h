@@ -21,6 +21,9 @@ protected:
   /// Name of the concentration variable
   const VariableName _c_name;
 
-  /// Energy densities
+  /// Equilibrium forces
   std::vector<const ADMaterialProperty<RealVectorValue> *> _d_psi_d_grad_c;
+
+  /// Viscous forces
+  std::vector<const ADMaterialProperty<RealVectorValue> *> _d_psi_dis_d_grad_c_dot;
 };

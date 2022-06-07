@@ -18,7 +18,7 @@ ChemicalEnergyDensity::validParams()
       "concentration",
       "Concentration of the species associated with this chemical energy density.");
   params.addRequiredParam<MaterialPropertyName>("chemical_energy_density",
-                                                "Name of the elastic energy density");
+                                                "Name of the chemical energy density");
   return params;
 }
 

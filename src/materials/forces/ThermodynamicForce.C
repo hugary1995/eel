@@ -11,18 +11,30 @@ ThermodynamicForce::validParams()
   params += BaseNameInterface::validParams();
   params.addRequiredParam<std::vector<MaterialPropertyName>>("energy_densities",
                                                              "Vector of energy densities");
+  params.addParam<std::vector<MaterialPropertyName>>("dissipation_densities",
+                                                     "Vector of dissipation densities");
   return params;
 }
 
 ThermodynamicForce::ThermodynamicForce(const InputParameters & parameters)
   : DerivativeMaterialInterface<Material>(parameters),
     BaseNameInterface(parameters),
-    _psi_names(prependBaseName(getParam<std::vector<MaterialPropertyName>>("energy_densities")))
+    _psi_names(prependBaseName(getParam<std::vector<MaterialPropertyName>>("energy_densities"))),
+    _psi_dis_names(
+        prependBaseName(getParam<std::vector<MaterialPropertyName>>("dissipation_densities")))
 {
   for (const auto & psi_name : _psi_names)
     if (!hasADMaterialProperty<Real>(psi_name))
       mooseWarning("The energy density '",
                    psi_name,
+                   "' does not exist. The material '",
+                   name(),
+                   "' only needs its derivatives, but this may indicate a typo in the input file.");
+
+  for (const auto & psi_dis_name : _psi_dis_names)
+    if (!hasADMaterialProperty<Real>(psi_dis_name))
+      mooseWarning("The dissipation density '",
+                   psi_dis_name,
                    "' does not exist. The material '",
                    name(),
                    "' only needs its derivatives, but this may indicate a typo in the input file.");

@@ -26,15 +26,15 @@
 []
 
 [Kernels]
-  [td+]
-    type = CoefTimeDerivative
+  [source+]
+    type = MaterialSource
     variable = c+
-    Coefficient = 1
+    prop = mu+
   []
-  [td-]
-    type = CoefTimeDerivative
+  [source-]
+    type = MaterialSource
     variable = c-
-    Coefficient = 1
+    prop = mu-
   []
   [diffusion+]
     type = RankOneDivergence
@@ -54,6 +54,23 @@
     tensor_name = 'D'
     tensor_values = '1 0 0 0 1 0 0 0 1'
   []
+  [properties]
+    type = ADGenericConstantMaterial
+    prop_names = 'eta'
+    prop_values = '1'
+  []
+  [viscosity+]
+    type = ViscousMassTransport
+    chemical_dissipation_density = psi_c+*
+    viscosity = eta
+    concentration = c+
+  []
+  [viscosity-]
+    type = ViscousMassTransport
+    chemical_dissipation_density = psi_c-*
+    viscosity = eta
+    concentration = c-
+  []
   [fick+]
     type = FicksFirstLaw
     chemical_energy_density = psi_c+
@@ -66,17 +83,33 @@
     diffusivity = D
     concentration = c-
   []
+  [mass_source+]
+    type = MassSource
+    mass_source = mu+
+    concentration = c+
+    energy_densities = 'psi_c+ psi_c-'
+    dissipation_densities = 'psi_c+* psi_c-*'
+  []
+  [mass_source-]
+    type = MassSource
+    mass_source = mu-
+    concentration = c-
+    energy_densities = 'psi_c+ psi_c-'
+    dissipation_densities = 'psi_c+* psi_c-*'
+  []
   [mass_flux+]
     type = MassFlux
     mass_flux = J+
     concentration = c+
     energy_densities = 'psi_c+ psi_c-'
+    dissipation_densities = 'psi_c+* psi_c-*'
   []
   [mass_flux-]
     type = MassFlux
     mass_flux = J-
     concentration = c-
     energy_densities = 'psi_c+ psi_c-'
+    dissipation_densities = 'psi_c+* psi_c-*'
   []
 []
 
