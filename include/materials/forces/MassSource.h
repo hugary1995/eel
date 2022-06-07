@@ -1,13 +1,11 @@
 #pragma once
 
-#include "Material.h"
-#include "BaseNameInterface.h"
-#include "DerivativeMaterialInterface.h"
+#include "ThermodynamicForce.h"
 
 /**
  * This class computes the mass source associated with given energy densities for a given species.
  */
-class MassSource : public DerivativeMaterialInterface<Material>, public BaseNameInterface
+class MassSource : public ThermodynamicForce
 {
 public:
   static InputParameters validParams();
@@ -23,8 +21,6 @@ protected:
   /// Name of the concentration variable
   const VariableName _c_name;
 
-  /// @{ Energy densities
-  std::vector<MaterialPropertyName> _psi_names;
+  /// Energy densities
   std::vector<const ADMaterialProperty<Real> *> _d_psi_d_c;
-  /// @}
 };

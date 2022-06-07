@@ -9,28 +9,21 @@ registerADMooseObject("StingrayApp", FirstPiolaKirchhoffStress);
 InputParameters
 FirstPiolaKirchhoffStress::validParams()
 {
-  InputParameters params = DerivativeMaterialInterface<Material>::validParams();
-  params += BaseNameInterface::validParams();
+  InputParameters params = ThermodynamicForce::validParams();
   params.addClassDescription("This class computes the first Piola-Kirchhoff stress associated with "
                              "given energy densities.");
-
-  params.addRequiredParam<std::vector<MaterialPropertyName>>("energy_densities",
-                                                             "Vector of energy densities");
-
   return params;
 }
 
 FirstPiolaKirchhoffStress::FirstPiolaKirchhoffStress(const InputParameters & parameters)
-  : DerivativeMaterialInterface<Material>(parameters),
-    BaseNameInterface(parameters),
+  : ThermodynamicForce(parameters),
     _PK1(declareADProperty<RankTwoTensor>(prependBaseName("first_piola_kirchhoff_stress"))),
-    _psi_names(getParam<std::vector<MaterialPropertyName>>("energy_densities")),
     _d_psi_d_F(_psi_names.size())
 {
   // Get thermodynamic forces
   for (auto i : make_range(_psi_names.size()))
-    _d_psi_d_F[i] = &getDefaultMaterialPropertyByName<RankTwoTensor, true>(derivativePropertyName(
-        prependBaseName(_psi_names[i]), {prependBaseName("deformation_gradient")}));
+    _d_psi_d_F[i] = &getDefaultMaterialPropertyByName<RankTwoTensor, true>(
+        derivativePropertyName(_psi_names[i], {prependBaseName("deformation_gradient")}));
 }
 
 void
