@@ -1,11 +1,11 @@
 #pragma once
 
-#include "ElasticEnergyDensityBase.h"
+#include "ElasticEnergyDensity.h"
 
 /**
  * This class defines the Neo-Hookean elastic energy density
  */
-class NeoHookeanElasticEnergyDensity : public ElasticEnergyDensityBase
+class NeoHookeanElasticEnergyDensity : public ElasticEnergyDensity
 {
 public:
   static InputParameters validParams();

@@ -2,12 +2,12 @@
 //* being developed at Dolbow lab at Duke University
 //* http://dolbow.pratt.duke.edu
 
-#include "ChemicalEnergyDensityBase.h"
+#include "ChemicalEnergyDensity.h"
 
 InputParameters
-ChemicalEnergyDensityBase::validParams()
+ChemicalEnergyDensity::validParams()
 {
-  InputParameters params = Material::validParams();
+  InputParameters params = DerivativeMaterialInterface<Material>::validParams();
   params += BaseNameInterface::validParams();
   params.addClassDescription(
       "This class computes the chemical energy density and its corresponding "
@@ -22,8 +22,8 @@ ChemicalEnergyDensityBase::validParams()
   return params;
 }
 
-ChemicalEnergyDensityBase::ChemicalEnergyDensityBase(const InputParameters & parameters)
-  : Material(parameters),
+ChemicalEnergyDensity::ChemicalEnergyDensity(const InputParameters & parameters)
+  : DerivativeMaterialInterface<Material>(parameters),
     BaseNameInterface(parameters),
     _c(adCoupledValue("concentration")),
     _grad_c(adCoupledGradient("concentration")),
@@ -40,7 +40,7 @@ ChemicalEnergyDensityBase::ChemicalEnergyDensityBase(const InputParameters & par
 }
 
 void
-ChemicalEnergyDensityBase::computeQpProperties()
+ChemicalEnergyDensity::computeQpProperties()
 {
   _d_psi_d_c[_qp] = computeQpDChemicalEnergyDensityDConcentration();
   _d_psi_d_grad_c[_qp] = computeQpDChemicalEnergyDensityDConcentrationGradient();

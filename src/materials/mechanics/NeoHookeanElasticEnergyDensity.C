@@ -9,7 +9,7 @@ registerMooseObject("StingrayApp", NeoHookeanElasticEnergyDensity);
 InputParameters
 NeoHookeanElasticEnergyDensity::validParams()
 {
-  InputParameters params = ElasticEnergyDensityBase::validParams();
+  InputParameters params = ElasticEnergyDensity::validParams();
   params.addClassDescription(params.getClassDescription() +
                              " This class defines the Neo-Hookean elastic energy density.");
 
@@ -20,7 +20,7 @@ NeoHookeanElasticEnergyDensity::validParams()
 }
 
 NeoHookeanElasticEnergyDensity::NeoHookeanElasticEnergyDensity(const InputParameters & parameters)
-  : ElasticEnergyDensityBase(parameters),
+  : ElasticEnergyDensity(parameters),
     _lambda(getADMaterialPropertyByName<Real>(prependBaseName("lambda", true))),
     _G(getADMaterialPropertyByName<Real>(prependBaseName("shear_modulus", true)))
 {

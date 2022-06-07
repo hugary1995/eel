@@ -1,11 +1,11 @@
 #pragma once
 
-#include "ChemicalEnergyDensityBase.h"
+#include "ChemicalEnergyDensity.h"
 
 /**
  * This class defines the Fick's first law
  */
-class FicksFirstLaw : public ChemicalEnergyDensityBase
+class FicksFirstLaw : public ChemicalEnergyDensity
 {
 public:
   static InputParameters validParams();

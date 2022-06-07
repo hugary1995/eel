@@ -9,7 +9,7 @@ registerMooseObject("StingrayApp", FicksFirstLaw);
 InputParameters
 FicksFirstLaw::validParams()
 {
-  InputParameters params = ChemicalEnergyDensityBase::validParams();
+  InputParameters params = ChemicalEnergyDensity::validParams();
   params.addClassDescription(params.getClassDescription() +
                              " This class defines the Fick's first law.");
   params.addRequiredParam<MaterialPropertyName>("diffusivity", "The diffusion coefficient tensor");
@@ -17,7 +17,7 @@ FicksFirstLaw::validParams()
 }
 
 FicksFirstLaw::FicksFirstLaw(const InputParameters & parameters)
-  : ChemicalEnergyDensityBase(parameters),
+  : ChemicalEnergyDensity(parameters),
     _D(getADMaterialPropertyByName<RankTwoTensor>(prependBaseName("diffusivity", true)))
 {
 }

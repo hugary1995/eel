@@ -3,21 +3,19 @@
 #include "Material.h"
 #include "BaseNameInterface.h"
 #include "ADRankTwoTensorForward.h"
-#include "DerivativeMaterialPropertyNameInterface.h"
+#include "DerivativeMaterialInterface.h"
 
 /**
  * This class computes the chemical energy density and the corresponding thermodynamic forces. In
  * this app, we assume the chemical energy density depends on at least the deformation gradient,
  * the concentrations, and the gradients of concentrations.
  */
-class ChemicalEnergyDensityBase : public Material,
-                                  public BaseNameInterface,
-                                  public DerivativeMaterialPropertyNameInterface
+class ChemicalEnergyDensity : public DerivativeMaterialInterface<Material>, public BaseNameInterface
 {
 public:
   static InputParameters validParams();
 
-  ChemicalEnergyDensityBase(const InputParameters & parameters);
+  ChemicalEnergyDensity(const InputParameters & parameters);
 
   virtual void computeQpProperties() override;
 

@@ -2,10 +2,10 @@
 //* being developed at Dolbow lab at Duke University
 //* http://dolbow.pratt.duke.edu
 
-#include "ElasticEnergyDensityBase.h"
+#include "ElasticEnergyDensity.h"
 
 InputParameters
-ElasticEnergyDensityBase::validParams()
+ElasticEnergyDensity::validParams()
 {
   InputParameters params = DerivativeMaterialInterface<Material>::validParams();
   params += BaseNameInterface::validParams();
@@ -22,7 +22,7 @@ ElasticEnergyDensityBase::validParams()
   return params;
 }
 
-ElasticEnergyDensityBase::ElasticEnergyDensityBase(const InputParameters & parameters)
+ElasticEnergyDensity::ElasticEnergyDensity(const InputParameters & parameters)
   : DerivativeMaterialInterface<Material>(parameters),
     BaseNameInterface(parameters),
     // Inputs
@@ -55,7 +55,7 @@ ElasticEnergyDensityBase::ElasticEnergyDensityBase(const InputParameters & param
 }
 
 void
-ElasticEnergyDensityBase::computeQpProperties()
+ElasticEnergyDensity::computeQpProperties()
 {
   _d_psi_d_Fm[_qp] = computeQpDElasticEnergyDensityDMechanicalDeformationGradient();
   _d_psi_d_F[_qp] = _d_psi_d_Fm[_qp].initialContraction(_d_Fm_d_F[_qp]);

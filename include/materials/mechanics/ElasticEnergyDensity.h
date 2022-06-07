@@ -10,13 +10,12 @@
  * this app, we assume the elastic energy density depends on at least the deformation gradient and
  * the concentrations.
  */
-class ElasticEnergyDensityBase : public DerivativeMaterialInterface<Material>,
-                                 public BaseNameInterface
+class ElasticEnergyDensity : public DerivativeMaterialInterface<Material>, public BaseNameInterface
 {
 public:
   static InputParameters validParams();
 
-  ElasticEnergyDensityBase(const InputParameters & parameters);
+  ElasticEnergyDensity(const InputParameters & parameters);
 
   virtual void computeQpProperties() override;
 
