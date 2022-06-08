@@ -25,7 +25,7 @@ FicksFirstLaw::FicksFirstLaw(const InputParameters & parameters)
 ADReal
 FicksFirstLaw::computeQpChemicalEnergyDensity() const
 {
-  return (_D[_qp] * _grad_c[_qp]) * _grad_c[_qp];
+  return 0.5 * (_D[_qp] * _grad_c[_qp]) * _grad_c[_qp];
 }
 
 ADReal

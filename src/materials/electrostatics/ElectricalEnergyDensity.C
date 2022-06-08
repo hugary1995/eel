@@ -13,7 +13,7 @@ ElectricalEnergyDensity::validParams()
       "This class computes the electrical energy density and its corresponding "
       "thermodynamic forces. We assume the electrical energy density depends "
       "on at least the deformation gradient and the gradient of electrical potential");
-  params.addRequiredCoupledVar("electrical_potential", "The electrical potential");
+  params.addRequiredCoupledVar("electric_potential", "The electrical potential");
   params.addRequiredParam<MaterialPropertyName>("electrical_energy_density",
                                                 "Name of the electrical energy density");
   return params;
@@ -22,11 +22,11 @@ ElectricalEnergyDensity::validParams()
 ElectricalEnergyDensity::ElectricalEnergyDensity(const InputParameters & parameters)
   : DerivativeMaterialInterface<Material>(parameters),
     BaseNameInterface(parameters),
-    _grad_Phi(adCoupledGradient("electrical_potential")),
+    _grad_Phi(adCoupledGradient("electric_potential")),
     _F(hasADMaterialProperty<RankTwoTensor>(prependBaseName("deformation_gradient"))
            ? &getADMaterialPropertyByName<RankTwoTensor>(prependBaseName("deformation_gradient"))
            : nullptr),
-    _Phi_name(getVar("electrical_potential", 0)->name()),
+    _Phi_name(getVar("electric_potential", 0)->name()),
     _psi_name(getParam<MaterialPropertyName>("electrical_energy_density")),
     _psi(declareADProperty<Real>(prependBaseName(_psi_name))),
     _d_psi_d_grad_Phi(declareADProperty<RealVectorValue>(
