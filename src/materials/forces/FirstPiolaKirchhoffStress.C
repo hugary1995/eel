@@ -18,7 +18,12 @@ FirstPiolaKirchhoffStress::validParams()
 }
 
 FirstPiolaKirchhoffStress::FirstPiolaKirchhoffStress(const InputParameters & parameters)
-  : ThermodynamicForce<RankTwoTensor>(parameters)
+  : ThermodynamicForce<RankTwoTensor>(parameters),
+    _F(_heat ? &getADMaterialPropertyByName<RankTwoTensor>(prependBaseName("deformation_gradient"))
+             : nullptr),
+    _F_old(_heat ? &getMaterialPropertyOldByName<RankTwoTensor>(
+                       prependBaseName("deformation_gradient"))
+                 : nullptr)
 {
   // Get equilibrium forces
   getThermodynamicForces(_d_psi_d_s, _psi_names, prependBaseName("deformation_gradient"));

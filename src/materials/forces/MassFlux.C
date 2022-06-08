@@ -18,7 +18,9 @@ MassFlux::validParams()
 }
 
 MassFlux::MassFlux(const InputParameters & parameters)
-  : ThermodynamicForce<RealVectorValue>(parameters), _c_name(getVar("concentration", 0)->name())
+  : ThermodynamicForce<RealVectorValue>(parameters),
+    _c_name(getVar("concentration", 0)->name()),
+    _grad_c_dot(_heat ? &adCoupledGradientDot("concentration") : nullptr)
 {
   // Get equilibrium forces
   getThermodynamicForces(_d_psi_d_s, _psi_names, "grad_" + _c_name);

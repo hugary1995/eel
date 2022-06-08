@@ -1,0 +1,8 @@
+[Tests]
+  [uniform_sphere_charge]
+    type = Exodiff
+    input = 'uniform_sphere_charge.i'
+    exodiff = 'uniform_sphere_charge_out.e'
+    abs_zero = 1e-9
+  []
+[]

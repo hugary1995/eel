@@ -13,6 +13,11 @@ public:
   MassFlux(const InputParameters & parameters);
 
 protected:
+  virtual ADRealVectorValue rate() const override { return (*_grad_c_dot)[_qp]; }
+
   /// Name of the concentration variable
   const VariableName _c_name;
+
+  /// Rate of concentration gradient
+  const ADVariableGradient * _grad_c_dot;
 };

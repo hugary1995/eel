@@ -14,4 +14,6 @@ protected:
   virtual ADReal precomputeQpResidual() override;
 
   const ADMaterialProperty<Real> & _prop;
+
+  const Real _coef;
 };

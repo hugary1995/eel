@@ -20,7 +20,8 @@ ElectricDisplacement::validParams()
 
 ElectricDisplacement::ElectricDisplacement(const InputParameters & parameters)
   : ThermodynamicForce<RealVectorValue>(parameters),
-    _Phi_name(getVar("electric_potential", 0)->name())
+    _Phi_name(getVar("electric_potential", 0)->name()),
+    _grad_Phi_dot(_heat ? &adCoupledGradientDot("electric_potential") : nullptr)
 {
   // Get equilibrium forces
   getThermodynamicForces(_d_psi_d_s, _psi_names, "grad_" + _Phi_name);

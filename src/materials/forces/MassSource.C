@@ -18,7 +18,9 @@ MassSource::validParams()
 }
 
 MassSource::MassSource(const InputParameters & parameters)
-  : ThermodynamicForce<Real>(parameters), _c_name(getVar("concentration", 0)->name())
+  : ThermodynamicForce<Real>(parameters),
+    _c_name(getVar("concentration", 0)->name()),
+    _c_dot(_heat ? &adCoupledDot("concentration") : nullptr)
 {
   // Get equilibrium forces
   getThermodynamicForces(_d_psi_d_s, _psi_names, _c_name);

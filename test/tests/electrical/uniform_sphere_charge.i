@@ -97,7 +97,7 @@ k = '${fparse 1/4/pi}'
 []
 
 [Executioner]
-  type = Steady
+  type = Transient
   solve_type = NEWTON
 
   petsc_options_iname = '-pc_type'
@@ -105,6 +105,8 @@ k = '${fparse 1/4/pi}'
 
   nl_rel_tol = 1e-10
   nl_abs_tol = 1e-12
+
+  num_steps = 1
 []
 
 [Outputs]

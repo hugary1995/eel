@@ -26,6 +26,8 @@ protected:
   virtual typename Moose::ADType<T>::type
   computeQpThermodynamicForce(const std::vector<const ADMaterialProperty<T> *> forces) const;
 
+  virtual typename Moose::ADType<T>::type rate() const = 0;
+
   /// The thermodynamic force
   ADMaterialProperty<T> * _force;
 

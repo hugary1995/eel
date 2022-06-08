@@ -63,6 +63,15 @@ ThermodynamicForce<T>::computeQpProperties()
 
   // Viscous forces
   (*_force)[_qp] += computeQpThermodynamicForce(_d_psi_dis_d_v);
+
+  // Heat generation/loss
+  if (_heat)
+  {
+    (*_heat)[_qp] = 0;
+    // Heat due to viscous dissipation
+    for (const auto & viscous_force : _d_psi_dis_d_v)
+      (*_heat)[_qp] += MathUtils::inner((*viscous_force)[_qp], rate());
+  }
 }
 
 template <typename T>
