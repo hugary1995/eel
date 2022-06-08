@@ -9,7 +9,7 @@ registerADMooseObject("StingrayApp", ElectricDisplacement);
 InputParameters
 ElectricDisplacement::validParams()
 {
-  InputParameters params = ThermodynamicForce::validParams();
+  InputParameters params = ThermodynamicForce<RealVectorValue>::validParams();
   params.addClassDescription("This class computes the electric displacement associated with "
                              "given energy densities.");
   params.addRequiredParam<MaterialPropertyName>("electric_displacement",
@@ -19,27 +19,15 @@ ElectricDisplacement::validParams()
 }
 
 ElectricDisplacement::ElectricDisplacement(const InputParameters & parameters)
-  : ThermodynamicForce(parameters),
-    _D(declareADProperty<RealVectorValue>(prependBaseName("electric_displacement", true))),
-    _Phi_name(getVar("electric_potential", 0)->name()),
-    _d_psi_d_grad_Phi(_psi_names.size()),
-    _d_psi_dis_d_grad_Phi_dot(_psi_dis_names.size())
+  : ThermodynamicForce<RealVectorValue>(parameters),
+    _Phi_name(getVar("electric_potential", 0)->name())
 {
-  // Get thermodynamic forces
-  for (auto i : make_range(_psi_names.size()))
-    _d_psi_d_grad_Phi[i] = &getDefaultMaterialPropertyByName<RealVectorValue, true>(
-        derivativePropertyName(_psi_names[i], {"grad_" + _Phi_name}));
-  for (auto i : make_range(_psi_dis_names.size()))
-    _d_psi_dis_d_grad_Phi_dot[i] = &getDefaultMaterialPropertyByName<RealVectorValue, true>(
-        derivativePropertyName(_psi_dis_names[i], {"grad_" + _Phi_name + "_dot"}));
-}
+  // Get equilibrium forces
+  getThermodynamicForces(_d_psi_d_s, _psi_names, "grad_" + _Phi_name);
 
-void
-ElectricDisplacement::computeQpProperties()
-{
-  _D[_qp].zero();
-  for (const auto & d_psi_d_grad_Phi : _d_psi_d_grad_Phi)
-    _D[_qp] += (*d_psi_d_grad_Phi)[_qp];
-  for (const auto & d_psi_dis_d_grad_Phi_dot : _d_psi_dis_d_grad_Phi_dot)
-    _D[_qp] += (*d_psi_dis_d_grad_Phi_dot)[_qp];
+  // Get viscous forces
+  getThermodynamicForces(_d_psi_dis_d_v, _psi_dis_names, "grad_" + _Phi_name + "_dot");
+
+  // Declare the (total) thermodynamic force
+  _force = &declareADProperty<RealVectorValue>(prependBaseName("electric_displacement", true));
 }

@@ -9,7 +9,7 @@ registerADMooseObject("StingrayApp", MassFlux);
 InputParameters
 MassFlux::validParams()
 {
-  InputParameters params = ThermodynamicForce::validParams();
+  InputParameters params = ThermodynamicForce<RealVectorValue>::validParams();
   params.addClassDescription("This class computes the mass flux associated with "
                              "given energy densities for a given species.");
   params.addRequiredParam<MaterialPropertyName>("mass_flux", "Name of the mass flux");
@@ -18,27 +18,14 @@ MassFlux::validParams()
 }
 
 MassFlux::MassFlux(const InputParameters & parameters)
-  : ThermodynamicForce(parameters),
-    _J(declareADProperty<RealVectorValue>(prependBaseName("mass_flux", true))),
-    _c_name(getVar("concentration", 0)->name()),
-    _d_psi_d_grad_c(_psi_names.size()),
-    _d_psi_dis_d_grad_c_dot(_psi_dis_names.size())
+  : ThermodynamicForce<RealVectorValue>(parameters), _c_name(getVar("concentration", 0)->name())
 {
-  // Get thermodynamic forces
-  for (auto i : make_range(_psi_names.size()))
-    _d_psi_d_grad_c[i] = &getDefaultMaterialPropertyByName<RealVectorValue, true>(
-        derivativePropertyName(_psi_names[i], {"grad_" + _c_name}));
-  for (auto i : make_range(_psi_dis_names.size()))
-    _d_psi_dis_d_grad_c_dot[i] = &getDefaultMaterialPropertyByName<RealVectorValue, true>(
-        derivativePropertyName(_psi_dis_names[i], {"grad_" + _c_name + "_dot"}));
-}
+  // Get equilibrium forces
+  getThermodynamicForces(_d_psi_d_s, _psi_names, "grad_" + _c_name);
 
-void
-MassFlux::computeQpProperties()
-{
-  _J[_qp].zero();
-  for (const auto & d_psi_d_grad_c : _d_psi_d_grad_c)
-    _J[_qp] += (*d_psi_d_grad_c)[_qp];
-  for (const auto & d_psi_dis_d_grad_c_dot : _d_psi_dis_d_grad_c_dot)
-    _J[_qp] += (*d_psi_dis_d_grad_c_dot)[_qp];
+  // Get viscous forces
+  getThermodynamicForces(_d_psi_dis_d_v, _psi_dis_names, "grad_" + _c_name + "_dot");
+
+  // Declare the (total) thermodynamic force
+  _force = &declareADProperty<RealVectorValue>(prependBaseName("mass_flux", true));
 }
