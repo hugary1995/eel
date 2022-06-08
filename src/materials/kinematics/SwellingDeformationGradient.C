@@ -1,13 +1,9 @@
-//* This file is part of the RACCOON application
-//* being developed at Dolbow lab at Duke University
-//* http://dolbow.pratt.duke.edu
+#include "SwellingDeformationGradient.h"
 
-#include "Swelling.h"
-
-registerADMooseObject("StingrayApp", Swelling);
+registerADMooseObject("StingrayApp", SwellingDeformationGradient);
 
 InputParameters
-Swelling::validParams()
+SwellingDeformationGradient::validParams()
 {
   InputParameters params = Material::validParams();
   params += BaseNameInterface::validParams();
@@ -17,9 +13,9 @@ Swelling::validParams()
       "concentrations",
       "Vector of concentrations of chemical species, each contributing to a portion of the "
       "swelling eigen deformation gradient");
-  params.addRequiredCoupledVar(
-      "reference_concentrations",
-      "Vector of reference concentrations of chemical species, at which no swelling occurs");
+  params.addRequiredCoupledVar("reference_concentrations",
+                               "Vector of reference concentrations of chemical species, at which "
+                               "no swelling occurs");
   params.addRequiredParam<std::vector<MaterialPropertyName>>(
       "molar_volumes", "Vector of molar volumes for the species.");
   params.addRequiredParam<MaterialPropertyName>("swelling_coefficient", "The swelling coefficient");
@@ -27,7 +23,7 @@ Swelling::validParams()
   return params;
 }
 
-Swelling::Swelling(const InputParameters & parameters)
+SwellingDeformationGradient::SwellingDeformationGradient(const InputParameters & parameters)
   : Material(parameters),
     BaseNameInterface(parameters),
     _Fs(declareADProperty<RankTwoTensor>(prependBaseName("swelling_deformation_gradient"))),
@@ -54,13 +50,13 @@ Swelling::Swelling(const InputParameters & parameters)
 }
 
 void
-Swelling::initQpStatefulProperties()
+SwellingDeformationGradient::initQpStatefulProperties()
 {
   computeQpProperties();
 }
 
 void
-Swelling::computeQpProperties()
+SwellingDeformationGradient::computeQpProperties()
 {
   ADReal Js = 1;
 

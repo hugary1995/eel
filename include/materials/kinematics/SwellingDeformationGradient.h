@@ -8,14 +8,14 @@
 /**
  * This class computes the eigen deformation gradient induced by swelling
  */
-class Swelling : public Material,
-                 public BaseNameInterface,
-                 public DerivativeMaterialPropertyNameInterface
+class SwellingDeformationGradient : public Material,
+                                    public BaseNameInterface,
+                                    public DerivativeMaterialPropertyNameInterface
 {
 public:
   static InputParameters validParams();
 
-  Swelling(const InputParameters & parameters);
+  SwellingDeformationGradient(const InputParameters & parameters);
 
 protected:
   virtual void computeQpProperties() override;
@@ -39,7 +39,7 @@ protected:
   std::vector<const ADMaterialProperty<Real> *> _Omega;
   /// @}
 
-  /// Swelling coefficient
+  /// swelling coefficient
   const ADMaterialProperty<Real> & _beta;
 
   // Derivative of the eigen deformation gradient w.r.t. each concentration variable

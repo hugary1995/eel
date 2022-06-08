@@ -1,7 +1,3 @@
-//* This file is part of the RACCOON application
-//* being developed at Dolbow lab at Duke University
-//* http://dolbow.pratt.duke.edu
-
 #include "FicksFirstLaw.h"
 
 registerMooseObject("StingrayApp", FicksFirstLaw);

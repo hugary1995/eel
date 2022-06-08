@@ -146,7 +146,7 @@
     prop_values = '1 1 1 1e-1 1e-3'
   []
   [swelling]
-    type = Swelling
+    type = SwellingDeformationGradient
     concentrations = 'c+ c-'
     reference_concentrations = 'c+0 c-0'
     molar_volumes = 'Omega_c+ Omega_c-'
