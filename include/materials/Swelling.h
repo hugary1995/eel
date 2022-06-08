@@ -17,9 +17,9 @@ public:
 
   Swelling(const InputParameters & parameters);
 
+protected:
   virtual void computeQpProperties() override;
 
-protected:
   virtual void initQpStatefulProperties() override;
 
   /// The eigen deformation gradient
