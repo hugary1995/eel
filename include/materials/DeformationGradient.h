@@ -44,6 +44,9 @@ protected:
   // The swelling deformation gradients
   const ADMaterialProperty<RankTwoTensor> * _Fs;
 
+  // The thermal deformation gradients
+  const ADMaterialProperty<RankTwoTensor> * _Ft;
+
   // Derivative of Fm w.r.t. F
   ADMaterialProperty<RankFourTensor> & _d_Fm_d_F;
 

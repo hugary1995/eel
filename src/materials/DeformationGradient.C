@@ -40,6 +40,10 @@ DeformationGradient::DeformationGradient(const InputParameters & parameters)
             ? &getADMaterialPropertyByName<RankTwoTensor>(
                   prependBaseName("swelling_deformation_gradient"))
             : nullptr),
+    _Ft(hasADMaterialProperty<RankTwoTensor>(prependBaseName("thermal_deformation_gradient"))
+            ? &getADMaterialPropertyByName<RankTwoTensor>(
+                  prependBaseName("thermal_deformation_gradient"))
+            : nullptr),
     _d_Fm_d_F(declareADProperty<RankFourTensor>(
         derivativePropertyName(prependBaseName("mechanical_deformation_gradient"),
                                {prependBaseName("deformation_gradient")}))),
@@ -89,13 +93,18 @@ DeformationGradient::computeProperties()
 
     // Remove the eigen deformation gradients
     _Fm[_qp] = _F[_qp];
-    ADRankTwoTensor I(ADRankTwoTensor::initIdentity);
-    _d_Fm_d_F[_qp] = I.mixedProductIkJl(I);
+    ADRankTwoTensor Fg(ADRankTwoTensor::initIdentity);
     if (_Fs)
-    {
-      _Fm[_qp] *= (*_Fs)[_qp].inverse();
-      _d_Fm_d_F[_qp] = I.mixedProductIkJl((*_Fs)[_qp].inverse().transpose());
+      Fg *= (*_Fs)[_qp];
+    if (_Ft)
+      Fg *= (*_Ft)[_qp];
+    _Fm[_qp] *= Fg.inverse();
+
+    // Derivatives
+    ADRankTwoTensor I(ADRankTwoTensor::initIdentity);
+
+    _d_Fm_d_F[_qp] = I.mixedProductIkJl(Fg.inverse().transpose());
+    if (_Fs)
       (*_d_Fm_d_Fs)[_qp] = -_Fm[_qp].mixedProductIkJl((*_Fs)[_qp].transpose());
-    }
   }
 }
