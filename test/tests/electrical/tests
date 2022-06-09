@@ -5,4 +5,10 @@
     exodiff = 'uniform_sphere_charge_out.e'
     abs_zero = 1e-9
   []
+  [redox]
+    type = Exodiff
+    input = 'redox.i'
+    exodiff = 'redox_out.e'
+    abs_zero = 1e-9
+  []
 []

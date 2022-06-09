@@ -12,7 +12,7 @@ public:
 protected:
   virtual ADReal computeQpResidual(Moose::DGResidualType type) override;
 
-  const RealVectorValue _i0;
+  const Real _i0;
 
   const Real _alpha_a;
   const Real _alpha_c;
@@ -23,12 +23,6 @@ protected:
 
   const ADVariableValue & _T;
   const ADVariableValue & _T_neighbor;
-
-  const ADVariableValue & _Phi;
-  const ADVariableValue & _Phi_neighbor;
-
-  const ADVariableGradient & _grad_Phi;
-  const ADVariableGradient & _grad_Phi_neighbor;
 
   const Real _penalty;
 
