@@ -1,0 +1,33 @@
+[Tests]
+  [charge_galvanostatic]
+    type = Exodiff
+    input = 'base.i charge_galvanostatic.i'
+    cli_args = 'Executioner/num_steps=10'
+    exodiff = 'charge_galvanostatic.e'
+    abs_zero = 1e-9
+  []
+  [charge_potentiostatic]
+    type = Exodiff
+    input = 'base.i charge_potentiostatic.i'
+    cli_args = 'Executioner/num_steps=10'
+    exodiff = 'charge_potentiostatic.e'
+    abs_zero = 1e-9
+    prereq = 'charge_galvanostatic'
+  []
+  [discharge_galvanostatic]
+    type = Exodiff
+    input = 'base.i discharge_galvanostatic.i'
+    cli_args = 'Executioner/num_steps=10'
+    exodiff = 'discharge_galvanostatic.e'
+    abs_zero = 1e-9
+    prereq = 'charge_potentiostatic'
+  []
+  [discharge_potentiostatic]
+    type = Exodiff
+    input = 'base.i discharge_potentiostatic.i'
+    cli_args = 'Executioner/num_steps=10'
+    exodiff = 'discharge_potentiostatic.e'
+    abs_zero = 1e-9
+    prereq = 'discharge_galvanostatic'
+  []
+[]

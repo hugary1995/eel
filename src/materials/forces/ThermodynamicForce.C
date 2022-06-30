@@ -40,16 +40,8 @@ ThermodynamicForce<T>::getThermodynamicForces(std::vector<const ADMaterialProper
                                               const std::string var)
 {
   for (auto i : make_range(densities.size()))
-  {
-    if (!hasADMaterialProperty<Real>(densities[i]))
-      mooseWarning("The energy/dissipation density '",
-                   densities[i],
-                   "' does not exist. The material '",
-                   name(),
-                   "' only needs its derivatives, but this may indicate a typo in the input file.");
     forces[i] =
         &getDefaultMaterialPropertyByName<T, true>(derivativePropertyName(densities[i], {var}));
-  }
 }
 
 template <typename T>
