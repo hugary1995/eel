@@ -43,8 +43,8 @@ c_m = 7.5e-5
     diffusivity = D
     concentration = c
   []
-  [joule_heating]
-    type = JouleHeating
+  [charging]
+    type = Charging
     chemical_dissipation_density = delta_c_jh
     concentration = c
     electric_potential = Phi

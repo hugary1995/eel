@@ -1,9 +1,9 @@
-#include "JouleHeating.h"
+#include "Charging.h"
 
-registerMooseObject("StingrayApp", JouleHeating);
+registerMooseObject("StingrayApp", Charging);
 
 InputParameters
-JouleHeating::validParams()
+Charging::validParams()
 {
   InputParameters params = ChemicalDissipationDensity::validParams();
   params.addClassDescription(
@@ -16,7 +16,7 @@ JouleHeating::validParams()
   return params;
 }
 
-JouleHeating::JouleHeating(const InputParameters & parameters)
+Charging::Charging(const InputParameters & parameters)
   : ChemicalDissipationDensity(parameters),
     _grad_Phi(adCoupledGradient("electric_potential")),
     _sigma(getADMaterialPropertyByName<Real>(prependBaseName("electric_conductivity", true))),
@@ -25,19 +25,19 @@ JouleHeating::JouleHeating(const InputParameters & parameters)
 }
 
 ADReal
-JouleHeating::computeQpChemicalDissipationDensity() const
+Charging::computeQpChemicalDissipationDensity() const
 {
   return _sigma[_qp] / _F * _grad_Phi[_qp] * _grad_c_dot[_qp];
 }
 
 ADReal
-JouleHeating::computeQpDChemicalDissipationDensityDConcentrationRate()
+Charging::computeQpDChemicalDissipationDensityDConcentrationRate()
 {
   return 0;
 }
 
 ADRealVectorValue
-JouleHeating::computeQpDChemicalDissipationDensityDConcentrationRateGradient()
+Charging::computeQpDChemicalDissipationDensityDConcentrationRateGradient()
 {
   return _sigma[_qp] / _F * _grad_Phi[_qp];
 }

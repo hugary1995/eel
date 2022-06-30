@@ -17,44 +17,22 @@ c_m = 7.5e-5
     variable = Phi
     vector = De
   []
-  [div_stress_x]
-    type = RankTwoDivergence
-    variable = disp_x
-    tensor = PK1
-    component = 0
+  [heat_td]
+    type = ADHeatConductionTimeDerivative
+    variable = T
+    specific_heat = cv
+    density_name = rho
   []
-  [div_stress_y]
-    type = RankTwoDivergence
-    variable = disp_y
-    tensor = PK1
-    component = 1
+  [heat_cond]
+    type = ADHeatConduction
+    variable = T
+    thermal_conductivity = kappa
   []
-[]
-
-[BCs]
-  [x_left]
-    type = DirichletBC
-    variable = disp_x
-    boundary = 'left'
-    value = 0
-  []
-  [y_left]
-    type = DirichletBC
-    variable = disp_y
-    boundary = 'left'
-    value = 0
-  []
-  [x_right]
-    type = DirichletBC
-    variable = disp_x
-    boundary = 'right'
-    value = 0
-  []
-  [y_right]
-    type = DirichletBC
-    variable = disp_y
-    boundary = 'right'
-    value = 0
+  [joule_heating]
+    type = MaterialSource
+    variable = T
+    prop = q
+    coefficient = -1
   []
 []
 
@@ -66,8 +44,8 @@ c_m = 7.5e-5
   []
   [properties]
     type = ADGenericConstantMaterial
-    prop_names = 'eta eps_0 eps_r sigma'
-    prop_values = '1 5e-7 1 6.5'
+    prop_names = 'eta eps_0 eps_r sigma rho cv kappa'
+    prop_values = '1 5e-7 1 6.5e-3 3.2e-9 1.13e9 0.2'
   []
   # Chemical
   [viscosity]
@@ -113,32 +91,11 @@ c_m = 7.5e-5
     electric_displacement = De
     electric_potential = Phi
   []
-  # Mechanical
-  [parameters]
-    type = ADGenericConstantMaterial
-    prop_names = 'lambda G beta Omega'
-    prop_values = '9.8e4 6.5e4 0.05 1.3e4'
-  []
-  [swelling]
-    type = SwellingDeformationGradient
-    concentrations = 'c'
-    reference_concentrations = '0'
-    molar_volumes = 'Omega'
-    swelling_coefficient = beta
-  []
-  [def_grad]
-    type = DeformationGradient
-    displacements = 'disp_x disp_y'
-  []
-  [psi_m]
-    type = NeoHookeanElasticEnergyDensity
-    elastic_energy_density = psi_m
-    lambda = lambda
-    shear_modulus = G
-  []
-  [pk1_stress]
-    type = FirstPiolaKirchhoffStress
-    first_piola_kirchhoff_stress = PK1
+  [joule_heating]
+    type = JouleHeating
+    joule_heating = q
+    electric_conductivity = sigma
+    electric_potential = Phi
   []
 []
 

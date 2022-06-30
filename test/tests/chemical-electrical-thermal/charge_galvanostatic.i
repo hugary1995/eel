@@ -19,6 +19,9 @@
   []
   [Phi]
   []
+  [T]
+    initial_condition = 300
+  []
 []
 
 [BCs]
@@ -32,7 +35,7 @@
     type = DirichletBC
     variable = Phi
     boundary = 'right'
-    value = 0.032
+    value = 32
   []
   [c_right]
     type = DirichletBC

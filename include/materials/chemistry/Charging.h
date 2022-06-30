@@ -5,12 +5,12 @@
 /**
  * Joule heating due to concentration change of charged species
  */
-class JouleHeating : public ChemicalDissipationDensity
+class Charging : public ChemicalDissipationDensity
 {
 public:
   static InputParameters validParams();
 
-  JouleHeating(const InputParameters & parameters);
+  Charging(const InputParameters & parameters);
 
 protected:
   virtual ADReal computeQpChemicalDissipationDensity() const override;

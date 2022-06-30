@@ -62,6 +62,9 @@
   solve_type = NEWTON
   petsc_options_iname = '-pc_type'
   petsc_options_value = 'lu'
+  automatic_scaling = true
+  nl_rel_tol = 1e-08
+  nl_abs_tol = 1e-10
   dt = 1
   end_time = 1000
 []
