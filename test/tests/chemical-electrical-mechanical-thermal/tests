@@ -1,0 +1,9 @@
+[Tests]
+  [charge_galvanostatic]
+    type = Exodiff
+    input = 'base.i charge_galvanostatic.i'
+    cli_args = 'Executioner/num_steps=10'
+    exodiff = 'charge_galvanostatic.e'
+    abs_zero = 1e-9
+  []
+[]
