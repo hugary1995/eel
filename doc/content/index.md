@@ -2,4 +2,6 @@
 
 # HOME style=visibility:hidden;
 
+# Stingray class=center
+
 !include README.md

@@ -1,5 +1,3 @@
-# Stingray class=center
-
 ## Stingray focuses on modeling battery-related physics, i.e.
 
 - Mass transport of charged species,
