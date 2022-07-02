@@ -1,0 +1,7 @@
+Applications:
+    stingray:
+        exe_directory:     ${ROOT_DIR}
+        exe_name:          stingray
+        app_types:
+            - StingrayApp
+        content_directory: doc/content
