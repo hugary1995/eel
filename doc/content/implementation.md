@@ -47,7 +47,7 @@ In Stingray, the forces are automaticall calculated using the above definitions 
 
 - [`FirstPiolaKirchhoffStress`](FirstPiolaKirchhoffStress.md) computes the first Piola-Kirchhoff stress $\bfP$.
 - [`MassSource`](MassSource.md) computes the chemical source $\mu_\alpha$.
-- [`MassFlux](MassFlux.md) computes the chemical flux $\bfJ_\alpha$.
+- [`MassFlux`](MassFlux.md) computes the chemical flux $\bfJ_\alpha$.
 - [`ElectricDisplacement`](ElectricDisplacement.md) computes the electric displacement $\bfD$.
 
 ## Balance laws
