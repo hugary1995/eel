@@ -5,21 +5,23 @@ Content:
   - ${MOOSE_DIR}/modules/ray_tracing/doc/content
 
 Renderer:
-    type: MooseDocs.base.MaterializeRenderer
+  type: MooseDocs.base.MaterializeRenderer
 
 Extensions:
-    MooseDocs.extensions.navigation:
-        name: Stingray
-        repo: https://github.com/hugary1995/stingray
-        menu: !include ${ROOT_DIR}/doc/menu.yml
-    MooseDocs.extensions.appsyntax:
-        executable: ${ROOT_DIR}
-        remove: !include ${MOOSE_DIR}/framework/doc/remove.yml
-        includes:
-            - include
-    MooseDocs.extensions.sqa:
-      active: False
-    MooseDocs.extensions.common:
-      shortcuts:                     !include ${MOOSE_DIR}/framework/doc/globals.yml
-    MooseDocs.extensions.acronym:
-      acronyms:                      !include ${MOOSE_DIR}/framework/doc/acronyms.yml
+  MooseDocs.extensions.navigation:
+    name: Stingray
+    repo: https://github.com/hugary1995/stingray
+    menu: !include ${ROOT_DIR}/doc/menu.yml
+  MooseDocs.extensions.katex:
+    macros: !include ${ROOT_DIR}/doc/katex.macros.yml
+  MooseDocs.extensions.appsyntax:
+    executable: ${ROOT_DIR}
+    remove: !include ${MOOSE_DIR}/framework/doc/remove.yml
+    includes:
+      - include
+  MooseDocs.extensions.sqa:
+    active: False
+  MooseDocs.extensions.common:
+    shortcuts: !include ${MOOSE_DIR}/framework/doc/globals.yml
+  MooseDocs.extensions.acronym:
+    acronyms: !include ${MOOSE_DIR}/framework/doc/acronyms.yml
