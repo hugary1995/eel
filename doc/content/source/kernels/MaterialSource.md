@@ -1,20 +1,20 @@
 # MaterialSource
 
-!alert construction title=Undocumented Class
-The MaterialSource has not been documented. The content listed below should be used as a starting point for
-documenting the class, which includes the typical automatic documentation associated with a
-MooseObject; however, what is contained is ultimately determined by what is necessary to make the
-documentation clear for users.
-
 !syntax description /Kernels/MaterialSource
 
 ## Overview
 
-!! Replace these lines with information regarding the MaterialSource object.
+This kernel implements the following weak form.
+
+\begin{equation}
+  \left( \psi, s \right)_\Omega
+\end{equation}
+where $\psi$ is the test function, and $s$ the source defined by a material property.
 
 ## Example Input File Syntax
 
-!! Describe and include an example of how to use the MaterialSource object.
+!listing tests/chemical/mixing.i
+         block=Kernels/source+
 
 !syntax parameters /Kernels/MaterialSource
 

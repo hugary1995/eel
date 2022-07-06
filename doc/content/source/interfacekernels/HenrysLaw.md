@@ -1,20 +1,22 @@
 # HenrysLaw
 
-!alert construction title=Undocumented Class
-The HenrysLaw has not been documented. The content listed below should be used as a starting point for
-documenting the class, which includes the typical automatic documentation associated with a
-MooseObject; however, what is contained is ultimately determined by what is necessary to make the
-documentation clear for users.
-
 !syntax description /InterfaceKernels/HenrysLaw
 
 ## Overview
 
-!! Replace these lines with information regarding the HenrysLaw object.
+The Henry's law states that the the amount of a dissolved species in a media is proportional to the amount of the species in the other media across the interface. That is
+
+\begin{equation}
+    c_a = H c_b,
+\end{equation}
+where $H$ is the Henry's law constant.
+
+This interface condition is enforced using a penalty approach.
 
 ## Example Input File Syntax
 
-!! Describe and include an example of how to use the HenrysLaw object.
+!listing tests/chemical/interface_mass_transport.i
+         block=InterfaceKernels
 
 !syntax parameters /InterfaceKernels/HenrysLaw
 
