@@ -24,6 +24,20 @@ The animation of the result:
 
 [The complete input file](tests/chemical/mixing.i)
 
+## Interface mass transport
+style=text-decoration:underline;
+
++Physics+: Chemical reactions
+
+In this example problem, mass is deposit through the left boundary, and mass transports across an interface at the middle of the domain following the Henry's law defined by [`HenrysLaw`](HenrysLaw.md).
+
+The animation of the result:
+
+!media animations/interface_mass_transport.mp4
+       style=width:80%;margin:auto;
+
+[The complete input file](tests/chemical/interface_mass_transport.i)
+
 ## Electric potential of a uniformly charged sphere
 style=text-decoration:underline;
 
@@ -59,7 +73,7 @@ style=text-decoration:underline;
 
 +Physics+: electrostatics
 
-In this test, an electrode-electrolyte system is considered. The electrode $x \in [0, 0.5]$ and the electrolyte $x \in [0.5, 1]$ share an interface at $x = 0.5$. The Butler-Volmer condition is enforced at the interface to model redox using [`Redox`](Redox.md). The numerical solution of the electric potential matches the analytical solution.
+In this test, an electrode-electrolyte system is considered. The electrode $x \in [0, 0.5]$ and the electrolyte $x \in [0.5, 1]$ share an interface at $x = 0.5$. The Butler-Volmer condition is enforced at the interface to model redox using [`ButlerVolmerCondition`](ButlerVolmerCondition.md). The numerical solution of the electric potential matches the analytical solution.
 
 !media images/redox.png
        style=width:80%;display:block;margin:auto;
@@ -109,6 +123,7 @@ The animation of the result:
 
 ## Charging and Joule heating
 style=text-decoration:underline;
+id=joule_heating
 
 +Physics+: chemical reactions, electrostatics, thermal effects
 
@@ -145,3 +160,17 @@ This example demonstrates how a charged species can be deposit by the electric p
 [The complete input file, galvanostatic discharging](tests/chemical-electrical/discharge_galvanostatic.i)
 
 [The complete input file, potentiostatic discharging](tests/chemical-electrical/discharge_potentiostatic.i)
+
+## Deformation during charging
+style=text-decoration:underline
+
++Physics+: chemical reactions, electrostatics, mechanics, thermal effects
+
+This example is built upon the [#joule_heating] example. Since the charged species with a finite molar volume is deposit by the electric potential, the host material undergoes swelling-induced expansion. Meanwhile, since the temperature rises due to Joule heating, the host material also experiences thermal expansion defined by [`ThermalDeformationGradient`](ThermalDeformationGradient.md).
+
+!media animations/charging_deformation.mp4
+       style=width:100%;
+
+[The complete input file, part I](tests/chemical-electrical-mechanical-thermal/base.i)
+
+[The complete input file, part II](tests/chemical-electrical-mechanical-thermal/charge_galvanostatic.i)

@@ -5,4 +5,10 @@
     exodiff = 'mixing_out.e'
     abs_zero = 1e-9
   []
+  [interface_mass_transport]
+    type = Exodiff
+    input = 'interface_mass_transport.i'
+    exodiff = 'interface_mass_transport_out.e'
+    abs_zero = 1e-9
+  []
 []

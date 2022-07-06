@@ -2,12 +2,12 @@
 
 #include "ADInterfaceKernel.h"
 
-class Redox : public ADInterfaceKernel
+class ButlerVolmerCondition : public ADInterfaceKernel
 {
 public:
   static InputParameters validParams();
 
-  Redox(const InputParameters & parameters);
+  ButlerVolmerCondition(const InputParameters & parameters);
 
 protected:
   virtual ADReal computeQpResidual(Moose::DGResidualType type) override;

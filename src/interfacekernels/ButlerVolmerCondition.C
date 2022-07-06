@@ -1,9 +1,9 @@
-#include "Redox.h"
+#include "ButlerVolmerCondition.h"
 
-registerMooseObject("StingrayApp", Redox);
+registerMooseObject("StingrayApp", ButlerVolmerCondition);
 
 InputParameters
-Redox::validParams()
+ButlerVolmerCondition::validParams()
 {
   InputParameters params = ADInterfaceKernel::validParams();
   params.addClassDescription(
@@ -27,7 +27,7 @@ Redox::validParams()
   return params;
 }
 
-Redox::Redox(const InputParameters & parameters)
+ButlerVolmerCondition::ButlerVolmerCondition(const InputParameters & parameters)
   : ADInterfaceKernel(parameters),
     _i0(getParam<Real>("exchange_current_density")),
     _alpha_a(getParam<Real>("anodic_charge_transfer_coefficient")),
@@ -45,7 +45,7 @@ Redox::Redox(const InputParameters & parameters)
 }
 
 ADReal
-Redox::computeQpResidual(Moose::DGResidualType type)
+ButlerVolmerCondition::computeQpResidual(Moose::DGResidualType type)
 {
   // Surface overpotential
   ADReal eta = 0;

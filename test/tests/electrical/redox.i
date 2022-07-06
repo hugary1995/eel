@@ -71,7 +71,7 @@
 
 [InterfaceKernels]
   [redox]
-    type = Redox
+    type = ButlerVolmerCondition
     variable = Phi
     neighbor_var = Phi
     boundary = interface

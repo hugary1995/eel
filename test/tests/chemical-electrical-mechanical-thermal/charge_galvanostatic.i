@@ -56,6 +56,11 @@
     point = '0 0 0'
     outputs = none
   []
+  [T]
+    type = ElementAverageValue
+    variable = T
+    execute_on = 'INITIAL TIMESTEP_END'
+  []
 []
 
 [UserObjects]
@@ -71,8 +76,8 @@
   petsc_options_iname = '-pc_type'
   petsc_options_value = 'lu'
   automatic_scaling = true
-  nl_rel_tol = 1e-08
-  nl_abs_tol = 1e-10
+  nl_rel_tol = 1e-10
+  nl_abs_tol = 1e-12
   dt = 1
   end_time = 1000
 []
