@@ -41,7 +41,7 @@ k = '${fparse 1/4/pi}'
   []
   [rho_q]
     type = ParsedFunction
-    value = 'if(x<${R}, ${k}${Q}/${R}^3, -2*${k}*${Q}/x^3)'
+    value = 'if(x<${R}, ${k}*${Q}/${R}^3, -2*${k}*${Q}/x^3)'
   []
 []
 

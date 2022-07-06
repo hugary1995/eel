@@ -52,6 +52,13 @@
       value = 1
     []
   []
+  [analytical_solution]
+    [AuxKernel]
+      type = ParsedAux
+      function = 'if(x<0.5, -1.8141*x+1, -1.8141*x+1.8141)'
+      use_xyzt = true
+    []
+  []
 []
 
 [Kernels]

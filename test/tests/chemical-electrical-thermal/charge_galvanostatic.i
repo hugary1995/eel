@@ -32,10 +32,10 @@
     value = 0
   []
   [Phi_right]
-    type = DirichletBC
+    type = FunctionDirichletBC
     variable = Phi
     boundary = 'right'
-    value = 32
+    function = 'if(t<500, 32/500*t, 32)'
   []
   [c_right]
     type = DirichletBC
@@ -51,6 +51,11 @@
     variable = c
     point = '0 0 0'
     outputs = none
+  []
+  [T]
+    type = ElementAverageValue
+    variable = T
+    execute_on = 'INITIAL TIMESTEP_END'
   []
 []
 
