@@ -12,7 +12,7 @@ where $\eta_\alpha$ is the mass transport viscosity, $\Omega_\alpha$ is the mola
 
 Relevant derivatives:
 \begin{equation}
-  {\psi^c_{\alpha}}^*_{,\grad \dot{c}_\alpha} = \Xi_\alpha \dfrac{\sigma}{F} \grad \Phi.
+  {\psi^c_{\alpha}}^*_{,\grad \dot{c}_\alpha} = \Xi_\alpha \bfD \grad \Phi.
 \end{equation}
 
 ## Example Input File Syntax
