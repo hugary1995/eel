@@ -26,7 +26,7 @@ protected:
   ADMaterialProperty<RankTwoTensor> & _Fs;
 
   /// Names of the concentration variables
-  std::vector<VariableName> _c_names;
+  const std::vector<VariableName> _c_names;
 
   /// Concentration of each species
   std::vector<const ADVariableValue *> _c;
@@ -34,10 +34,8 @@ protected:
   /// Reference concentration of each species
   std::vector<const ADVariableValue *> _c_ref;
 
-  /// @{ Molar volume of each species
-  std::vector<MaterialPropertyName> _Omega_names;
-  std::vector<const ADMaterialProperty<Real> *> _Omega;
-  /// @}
+  /// Molar volume of each species
+  const std::vector<Real> _Omega;
 
   /// swelling coefficient
   const ADMaterialProperty<Real> & _beta;

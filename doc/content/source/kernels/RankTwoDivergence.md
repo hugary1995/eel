@@ -4,18 +4,18 @@
 
 ## Overview
 
-Given a strong form $-\divergence \bfA$, the corresponding weak form is
+Given a strong form $-\divergence \left( \bfA^T \bfe_i \right)$, the corresponding weak form is
 
 \begin{equation}
-  \left( \grad \psi, \bfv \right)_\Omega
+  \left( \grad \psi, \bfA^T \bfe_i \right)_\Omega
 \end{equation}
 
-where $\psi$ is the test function, and $\bfv$ is a material property of type `RealVectorValue`.
+where $\psi$ is the test function, $\bfA$ is a material property of type `RankTwoTensor`, and $i$ is the row number of the second order tensor.
 
 ## Example Input File Syntax
 
-!listing tests/chemical/mixing.i
-         block=Kernels/diffusion+
+!listing tests/mechanical/pull.i
+         block=Kernels
 
 !syntax parameters /Kernels/RankTwoDivergence
 

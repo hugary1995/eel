@@ -1,5 +1,12 @@
 F = 96485
-c_m = 7.5e-5
+c_m = 3e-5
+Omega = 1.3e4
+
+[AuxVariables]
+  [T]
+    initial_condition = 300
+  []
+[]
 
 [Kernels]
   [source]
@@ -67,28 +74,39 @@ c_m = 7.5e-5
   [properties]
     type = ADGenericConstantMaterial
     prop_names = 'eta eps_0 eps_r sigma'
-    prop_values = '1 5e-7 1 6.5'
+    prop_values = '1e-6 5e-6 1 3.8'
   []
   # Chemical
   [viscosity]
     type = ViscousMassTransport
     chemical_dissipation_density = delta_c_vis
-    viscosity = eta
     concentration = c
+    viscosity = eta
+    ideal_gas_constant = 8.3145
+    temperature = T
+    molar_volume = ${Omega}
   []
   [fick]
     type = FicksFirstLaw
     chemical_energy_density = psi_c
-    diffusivity = D
     concentration = c
+    diffusivity = D
+    viscosity = eta
+    ideal_gas_constant = 8.3145
+    temperature = T
+    molar_volume = ${Omega}
   []
   [charging]
     type = Charging
-    chemical_dissipation_density = delta_c_jh
+    chemical_energy_density = psi_charging
     concentration = c
     electric_potential = Phi
     electric_conductivity = sigma
     faraday_constant = ${F}
+    viscosity = eta
+    ideal_gas_constant = 8.3145
+    temperature = T
+    molar_volume = ${Omega}
   []
   [mass_source]
     type = MassSource
@@ -116,14 +134,14 @@ c_m = 7.5e-5
   # Mechanical
   [parameters]
     type = ADGenericConstantMaterial
-    prop_names = 'lambda G beta Omega'
-    prop_values = '9.8e4 6.5e4 0.05 1.3e4'
+    prop_names = 'lambda G beta'
+    prop_values = '9.8e4 6.5e4 0.1'
   []
   [swelling]
     type = SwellingDeformationGradient
     concentrations = 'c'
     reference_concentrations = '0'
-    molar_volumes = 'Omega'
+    molar_volumes = '${Omega}'
     swelling_coefficient = beta
   []
   [def_grad]

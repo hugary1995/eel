@@ -1,6 +1,11 @@
 # This test demonstrates the simple mixing of two species. The temperature rises
 # due to viscous dissipation.
 
+[GlobalParams]
+  energy_densities = 'psi_c+ psi_c-'
+  dissipation_densities = 'psi_c+* psi_c-*'
+[]
+
 [Mesh]
   [gmg]
     type = GeneratedMeshGenerator
@@ -94,60 +99,62 @@
   [viscosity+]
     type = ViscousMassTransport
     chemical_dissipation_density = psi_c+*
-    viscosity = eta+
     concentration = c+
+    viscosity = eta+
+    ideal_gas_constant = 8.3145
+    temperature = T
+    molar_volume = 1e-4
   []
   [viscosity-]
     type = ViscousMassTransport
     chemical_dissipation_density = psi_c-*
-    viscosity = eta-
     concentration = c-
+    viscosity = eta-
+    ideal_gas_constant = 8.3145
+    temperature = T
+    molar_volume = 1e-3
   []
   [fick+]
     type = FicksFirstLaw
     chemical_energy_density = psi_c+
-    diffusivity = D
     concentration = c+
+    diffusivity = D
+    viscosity = eta+
+    ideal_gas_constant = 8.3145
+    temperature = T
+    molar_volume = 1e-4
   []
   [fick-]
     type = FicksFirstLaw
     chemical_energy_density = psi_c-
-    diffusivity = D
     concentration = c-
+    diffusivity = D
+    viscosity = eta-
+    ideal_gas_constant = 8.3145
+    temperature = T
+    molar_volume = 1e-3
   []
   [mass_source+]
     type = MassSource
     mass_source = mu+
     concentration = c+
     heat = q+
-    energy_densities = 'psi_c+ psi_c-'
-    dissipation_densities = 'psi_c+* psi_c-*'
-    output_properties = 'q+'
-    outputs = exodus
   []
   [mass_source-]
     type = MassSource
     mass_source = mu-
     concentration = c-
     heat = q-
-    energy_densities = 'psi_c+ psi_c-'
-    dissipation_densities = 'psi_c+* psi_c-*'
-    output_properties = 'q-'
-    outputs = exodus
   []
   [mass_flux+]
     type = MassFlux
     mass_flux = J+
     concentration = c+
-    energy_densities = 'psi_c+ psi_c-'
-    dissipation_densities = 'psi_c+* psi_c-*'
   []
   [mass_flux-]
     type = MassFlux
     mass_flux = J-
     concentration = c-
-    energy_densities = 'psi_c+ psi_c-'
-    dissipation_densities = 'psi_c+* psi_c-*'
   []
 []
 

@@ -84,14 +84,14 @@
 [Materials]
   [parameters]
     type = ADGenericConstantMaterial
-    prop_names = 'lambda G beta Omega_c+ Omega_c-'
-    prop_values = '1 1 1 1e-1 1e-3'
+    prop_names = 'lambda G beta'
+    prop_values = '1 1 1'
   []
   [swelling]
     type = SwellingDeformationGradient
     concentrations = 'c+ c-'
     reference_concentrations = 'c+0 c-0'
-    molar_volumes = 'Omega_c+ Omega_c-'
+    molar_volumes = '1e-1 1e-3'
     swelling_coefficient = beta
   []
   [def_grad]

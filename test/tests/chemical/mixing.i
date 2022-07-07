@@ -25,6 +25,12 @@
   []
 []
 
+[AuxVariables]
+  [T]
+    initial_condition = 1
+  []
+[]
+
 [Kernels]
   [source+]
     type = MaterialSource
@@ -62,26 +68,40 @@
   [viscosity+]
     type = ViscousMassTransport
     chemical_dissipation_density = psi_c+*
-    viscosity = eta
     concentration = c+
+    viscosity = eta
+    ideal_gas_constant = 1
+    temperature = T
+    molar_volume = 1
   []
   [viscosity-]
     type = ViscousMassTransport
     chemical_dissipation_density = psi_c-*
-    viscosity = eta
     concentration = c-
+    viscosity = eta
+    ideal_gas_constant = 1
+    temperature = T
+    molar_volume = 1
   []
   [fick+]
     type = FicksFirstLaw
     chemical_energy_density = psi_c+
-    diffusivity = D
     concentration = c+
+    diffusivity = D
+    viscosity = eta
+    ideal_gas_constant = 1
+    temperature = T
+    molar_volume = 1
   []
   [fick-]
     type = FicksFirstLaw
     chemical_energy_density = psi_c-
-    diffusivity = D
     concentration = c-
+    diffusivity = D
+    viscosity = eta
+    ideal_gas_constant = 1
+    temperature = T
+    molar_volume = 1
   []
   [mass_source+]
     type = MassSource

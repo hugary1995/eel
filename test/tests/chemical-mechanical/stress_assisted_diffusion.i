@@ -1,5 +1,7 @@
 # Pumping a species from left to right via stress assisted diffusion
 
+Omega = 1e-4
+
 [Mesh]
   [pipe]
     type = GeneratedMeshGenerator
@@ -46,10 +48,10 @@
 
 [AuxVariables]
   [c0]
-    [InitialCondition]
-      type = ConstantIC
-      value = 0.5
-    []
+    initial_condition = 0.005
+  []
+  [T]
+    initial_condition = 300
   []
 []
 
@@ -136,19 +138,26 @@
   [properties]
     type = ADGenericConstantMaterial
     prop_names = 'eta'
-    prop_values = '1'
+    prop_values = '1e-6'
   []
   [viscosity]
     type = ViscousMassTransport
     chemical_dissipation_density = psi_c*
-    viscosity = eta
     concentration = c
+    viscosity = eta
+    ideal_gas_constant = 8.3145
+    temperature = T
+    molar_volume = ${Omega}
   []
   [fick]
     type = FicksFirstLaw
     chemical_energy_density = psi_c
     diffusivity = D
     concentration = c
+    viscosity = eta
+    ideal_gas_constant = 1
+    temperature = T
+    molar_volume = ${Omega}
   []
   [mechanical_parameters]
     type = ADGenericConstantMaterial
@@ -159,7 +168,7 @@
     type = SwellingDeformationGradient
     concentrations = 'c'
     reference_concentrations = 'c0'
-    molar_volumes = 'omega'
+    molar_volumes = '${Omega}'
     swelling_coefficient = beta
   []
   [def_grad]
@@ -201,12 +210,13 @@
 
   petsc_options_iname = '-pc_type'
   petsc_options_value = 'lu'
+  automatic_scaling = true
 
   dt = 0.01
   end_time = 0.1
 
-  nl_rel_tol = 1e-6
-  nl_abs_tol = 1e-8
+  nl_rel_tol = 1e-08
+  nl_abs_tol = 1e-10
 []
 
 [Outputs]

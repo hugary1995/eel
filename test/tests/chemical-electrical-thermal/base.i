@@ -1,5 +1,6 @@
 F = 96485
-c_m = 7.5e-5
+c_m = 3e-5
+Omega = 1.3e4
 
 [Kernels]
   [source]
@@ -45,28 +46,39 @@ c_m = 7.5e-5
   [properties]
     type = ADGenericConstantMaterial
     prop_names = 'eta eps_0 eps_r sigma rho cv kappa'
-    prop_values = '1 5e-7 1 6.5e-3 3.2e-9 1.13e9 0.2'
+    prop_values = '1e-6 5e-6 1 3.8 3.2e-9 1.13e6 0.2'
   []
   # Chemical
   [viscosity]
     type = ViscousMassTransport
     chemical_dissipation_density = delta_c_vis
-    viscosity = eta
     concentration = c
+    viscosity = eta
+    ideal_gas_constant = 8.3145
+    temperature = T
+    molar_volume = ${Omega}
   []
   [fick]
     type = FicksFirstLaw
     chemical_energy_density = psi_c
-    diffusivity = D
     concentration = c
+    diffusivity = D
+    viscosity = eta
+    ideal_gas_constant = 8.3145
+    temperature = T
+    molar_volume = ${Omega}
   []
   [charging]
     type = Charging
-    chemical_dissipation_density = delta_c_jh
+    chemical_energy_density = psi_charging
     concentration = c
     electric_potential = Phi
     electric_conductivity = sigma
     faraday_constant = ${F}
+    viscosity = eta
+    ideal_gas_constant = 8.3145
+    temperature = T
+    molar_volume = ${Omega}
   []
   [mass_source]
     type = MassSource
@@ -94,8 +106,8 @@ c_m = 7.5e-5
   [joule_heating]
     type = JouleHeating
     joule_heating = q
-    electric_conductivity = sigma
     electric_potential = Phi
+    electric_conductivity = sigma
   []
 []
 

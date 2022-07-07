@@ -1,6 +1,11 @@
 # There is no external forces in this test. The deformation comes from swelling induced by concentration changes.
 # For this test, nothing is driving the chemical concentration for simplicity.
 
+[GlobalParams]
+  energy_densities = 'psi_m psi_c+ psi_c-'
+  dissipation_densities = 'psi_c+* psi_c-*'
+[]
+
 [Mesh]
   [gmg]
     type = GeneratedMeshGenerator
@@ -36,6 +41,9 @@
   [c+0]
   []
   [c-0]
+  []
+  [T]
+    initial_condition = 1
   []
 []
 
@@ -118,38 +126,52 @@
   [viscosity+]
     type = ViscousMassTransport
     chemical_dissipation_density = psi_c+*
-    viscosity = eta
     concentration = c+
+    viscosity = eta
+    ideal_gas_constant = 1
+    temperature = T
+    molar_volume = 1e-1
   []
   [viscosity-]
     type = ViscousMassTransport
     chemical_dissipation_density = psi_c-*
-    viscosity = eta
     concentration = c-
+    viscosity = eta
+    ideal_gas_constant = 1
+    temperature = T
+    molar_volume = 1e-3
   []
   [fick+]
     type = FicksFirstLaw
     chemical_energy_density = psi_c+
-    diffusivity = D
     concentration = c+
+    diffusivity = D
+    viscosity = eta
+    ideal_gas_constant = 1
+    temperature = T
+    molar_volume = 1e-1
   []
   [fick-]
     type = FicksFirstLaw
     chemical_energy_density = psi_c-
-    diffusivity = D
     concentration = c-
+    diffusivity = D
+    viscosity = eta
+    ideal_gas_constant = 1
+    temperature = T
+    molar_volume = 1e-3
   []
   ### Mechanical
   [parameters]
     type = ADGenericConstantMaterial
-    prop_names = 'lambda G beta Omega_c+ Omega_c-'
-    prop_values = '1 1 1 1e-1 1e-3'
+    prop_names = 'lambda G beta'
+    prop_values = '1 1 1'
   []
   [swelling]
     type = SwellingDeformationGradient
     concentrations = 'c+ c-'
     reference_concentrations = 'c+0 c-0'
-    molar_volumes = 'Omega_c+ Omega_c-'
+    molar_volumes = '1e-1 1e-3'
     swelling_coefficient = beta
   []
   [def_grad]
@@ -168,35 +190,25 @@
     type = MassSource
     mass_source = mu+
     concentration = c+
-    energy_densities = 'psi_m psi_c+ psi_c-'
-    dissipation_densities = 'psi_c+* psi_c-*'
   []
   [mass_source-]
     type = MassSource
     mass_source = mu-
     concentration = c-
-    energy_densities = 'psi_m psi_c+ psi_c-'
-    dissipation_densities = 'psi_c+* psi_c-*'
   []
   [mass_flux+]
     type = MassFlux
     mass_flux = J+
     concentration = c+
-    energy_densities = 'psi_m psi_c+ psi_c-'
-    dissipation_densities = 'psi_c+* psi_c-*'
   []
   [mass_flux-]
     type = MassFlux
     mass_flux = J-
     concentration = c-
-    energy_densities = 'psi_m psi_c+ psi_c-'
-    dissipation_densities = 'psi_c+* psi_c-*'
   []
   [pk1_stress]
     type = FirstPiolaKirchhoffStress
     first_piola_kirchhoff_stress = PK1
-    energy_densities = 'psi_m psi_c+ psi_c-'
-    dissipation_densities = 'psi_c+* psi_c-*'
   []
 []
 
@@ -206,6 +218,7 @@
 
   petsc_options_iname = '-pc_type'
   petsc_options_value = 'lu'
+  automatic_scaling = true
 
   dt = 0.01
   end_time = 0.1

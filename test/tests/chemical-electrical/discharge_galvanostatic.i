@@ -1,6 +1,6 @@
 [GlobalParams]
-  energy_densities = 'psi_c psi_e'
-  dissipation_densities = 'delta_c_vis delta_c_jh'
+  energy_densities = 'psi_c psi_e psi_charging'
+  dissipation_densities = 'delta_c_vis'
 []
 
 [Mesh]
