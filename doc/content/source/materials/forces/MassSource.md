@@ -1,20 +1,19 @@
 # MassSource
 
-!alert construction title=Undocumented Class
-The MassSource has not been documented. The content listed below should be used as a starting point for
-documenting the class, which includes the typical automatic documentation associated with a
-MooseObject; however, what is contained is ultimately determined by what is necessary to make the
-documentation clear for users.
-
 !syntax description /Materials/MassSource
 
 ## Overview
 
-!! Replace these lines with information regarding the MassSource object.
+The mass source is defined as
+\begin{equation}
+  \mu_\alpha = \mu_\alpha^\text{eq} + \mu_\alpha^\text{vis} = \psi_{, c} + \Delta^*_{, \dot{c}},
+\end{equation}
+where $c$ is the reference concentration density, $\psi$ is the total internal energy density, and $\Delta^*$ is the total dissipation density.
 
 ## Example Input File Syntax
 
-!! Describe and include an example of how to use the MassSource object.
+!listing tests/chemical/mixing.i
+         block=Materials/mass_source+
 
 !syntax parameters /Materials/MassSource
 

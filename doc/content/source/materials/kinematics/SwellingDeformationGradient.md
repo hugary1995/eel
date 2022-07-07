@@ -1,20 +1,24 @@
 # SwellingDeformationGradient
 
-!alert construction title=Undocumented Class
-The SwellingDeformationGradient has not been documented. The content listed below should be used as a starting point for
-documenting the class, which includes the typical automatic documentation associated with a
-MooseObject; however, what is contained is ultimately determined by what is necessary to make the
-documentation clear for users.
-
 !syntax description /Materials/SwellingDeformationGradient
 
 ## Overview
 
-!! Replace these lines with information regarding the SwellingDeformationGradient object.
+Isotropic swelling due to concentration change can be written as:
+\begin{equation}
+  \bfF^s = (J^s)^{\frac{1}{3}}\bfI, \quad J^s = 1+\beta^s\sum_\alpha \Omega_\alpha(c_\alpha - c_\alpha^0),
+\end{equation}
+where $\beta^s$ is the swelling coefficient, $\Omega_\alpha$ is the molar volume of the species $\alpha$, $c_alpha$ is the concentration, and $c_\alpha^0$ is the reference concentration associated with zero swelling deformation.
+
+Relevant derivatives
+\begin{equation}
+  \bfF^s_{,c_\alpha} = \dfrac{1}{3}(J^s)^{-\frac{2}{3}}\beta^s \Omega_\alpha \bfI.
+\end{equation}
 
 ## Example Input File Syntax
 
-!! Describe and include an example of how to use the SwellingDeformationGradient object.
+!listing tests/mechanical/swelling.i
+        block=Materials/swelling
 
 !syntax parameters /Materials/SwellingDeformationGradient
 

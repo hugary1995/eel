@@ -1,20 +1,19 @@
 # FirstPiolaKirchhoffStress
 
-!alert construction title=Undocumented Class
-The FirstPiolaKirchhoffStress has not been documented. The content listed below should be used as a starting point for
-documenting the class, which includes the typical automatic documentation associated with a
-MooseObject; however, what is contained is ultimately determined by what is necessary to make the
-documentation clear for users.
-
 !syntax description /Materials/FirstPiolaKirchhoffStress
 
 ## Overview
 
-!! Replace these lines with information regarding the FirstPiolaKirchhoffStress object.
+The first Piola-Kirchhoff stress is defined as
+\begin{equation}
+  \bfP = \bfP^\text{eq} + \bfP^\text{vis} = \psi_{, \bfF} + \Delta^*_{, \dot{\bfF}},
+\end{equation}
+where $\bfF$ is the deformation gradient, $\psi$ is the total internal energy density, and $\Delta^*$ is the total dissipation density.
 
 ## Example Input File Syntax
 
-!! Describe and include an example of how to use the FirstPiolaKirchhoffStress object.
+!listing tests/mechanical/swelling.i
+         block=Materials/pk1_stress
 
 !syntax parameters /Materials/FirstPiolaKirchhoffStress
 

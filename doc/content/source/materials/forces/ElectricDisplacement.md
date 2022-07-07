@@ -1,20 +1,19 @@
 # ElectricDisplacement
 
-!alert construction title=Undocumented Class
-The ElectricDisplacement has not been documented. The content listed below should be used as a starting point for
-documenting the class, which includes the typical automatic documentation associated with a
-MooseObject; however, what is contained is ultimately determined by what is necessary to make the
-documentation clear for users.
-
 !syntax description /Materials/ElectricDisplacement
 
 ## Overview
 
-!! Replace these lines with information regarding the ElectricDisplacement object.
+The electric displacement is defined as
+\begin{equation}
+  \bfD = \bfD^\text{eq} + \bfD^\text{vis} = \psi_{, \grad \Phi} + \Delta^*_{, \grad \dot{\Phi}},
+\end{equation}
+where $\Phi$ is the electric potential, $\psi$ is the total internal energy density, and $\Delta^*$ is the total dissipation density.
 
 ## Example Input File Syntax
 
-!! Describe and include an example of how to use the ElectricDisplacement object.
+!listing tests/electrical/uniform_sphere_charge.i
+         block=Materials/electric_displacement
 
 !syntax parameters /Materials/ElectricDisplacement
 

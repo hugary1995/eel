@@ -1,20 +1,24 @@
 # ViscousMassTransport
 
-!alert construction title=Undocumented Class
-The ViscousMassTransport has not been documented. The content listed below should be used as a starting point for
-documenting the class, which includes the typical automatic documentation associated with a
-MooseObject; however, what is contained is ultimately determined by what is necessary to make the
-documentation clear for users.
-
 !syntax description /Materials/ViscousMassTransport
 
 ## Overview
 
-!! Replace these lines with information regarding the ViscousMassTransport object.
+The viscous dissipation during mass transport has the following form
+\begin{equation}
+  {\psi^c_\alpha}^* = \dfrac{1}{2} \Xi_\alpha \dot{c}_\alpha^2, \quad \Xi_\alpha = \eta_\alpha \Omega_\alpha R T,
+\end{equation}
+where $\eta_\alpha$ is the viscosity, $\Omega_\alpha$ is the molar volume of the species, $R$ is the ideal gas constant, and $T$ is the temperature.
+
+Relevant derivatives:
+\begin{equation}
+  {\psi^c_{\alpha}}^*_{,\dot{c}_\alpha} = \Xi_\alpha \dot{c}_\alpha.
+\end{equation}
 
 ## Example Input File Syntax
 
-!! Describe and include an example of how to use the ViscousMassTransport object.
+!listing tests/chemical/mixing.i
+         block=Materials/viscosity+
 
 !syntax parameters /Materials/ViscousMassTransport
 

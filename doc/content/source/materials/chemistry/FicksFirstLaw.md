@@ -1,20 +1,24 @@
 # FicksFirstLaw
 
-!alert construction title=Undocumented Class
-The FicksFirstLaw has not been documented. The content listed below should be used as a starting point for
-documenting the class, which includes the typical automatic documentation associated with a
-MooseObject; however, what is contained is ultimately determined by what is necessary to make the
-documentation clear for users.
-
 !syntax description /Materials/FicksFirstLaw
 
 ## Overview
 
-!! Replace these lines with information regarding the FicksFirstLaw object.
+The Fick's first law is defined by the following chemical energy density:
+\begin{equation}
+  \psi^c_\alpha = \dfrac{1}{2} \Xi_\alpha D_\alpha \grad c_\alpha \cdot \grad c_\alpha, \quad \Xi_\alpha = \eta_\alpha \Omega_\alpha R T,
+\end{equation}
+where $\eta_\alpha$ is the mass transport viscosity, $\Omega_\alpha$ is the molar volume of this chemical species, $R$ is the ideal gas constant, $T$ is the temperature, $\bfD_\alpha$ is the diffusion coefficient, and $c_\alpha$ is the reference concentration density.
+
+Relevant derivatives:
+\begin{equation}
+  {\psi^c_{\alpha}}^*_{,\grad \dot{c}_\alpha} = \Xi_\alpha \dfrac{\sigma}{F} \grad \Phi.
+\end{equation}
 
 ## Example Input File Syntax
 
-!! Describe and include an example of how to use the FicksFirstLaw object.
+!listing tests/chemical/mixing.i
+         block=Materials/fick+
 
 !syntax parameters /Materials/FicksFirstLaw
 

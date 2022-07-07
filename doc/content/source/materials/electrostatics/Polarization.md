@@ -1,20 +1,27 @@
 # Polarization
 
-!alert construction title=Undocumented Class
-The Polarization has not been documented. The content listed below should be used as a starting point for
-documenting the class, which includes the typical automatic documentation associated with a
-MooseObject; however, what is contained is ultimately determined by what is necessary to make the
-documentation clear for users.
-
 !syntax description /Materials/Polarization
 
 ## Overview
 
-!! Replace these lines with information regarding the Polarization object.
+This material defines the following electrical energy density
+\begin{equation}
+  \psi^e = \dfrac{1}{2} J \varepsilon_0 \varepsilon_r \bfe \cdot \bfe, \quad \bfe = \bfF^{-T} \grad \Phi,
+\end{equation}
+where $J$ is the Jacobian of the deformation gradient, $\varepsilon_0$ is the vacuum permittivity, $\varepsilon_r$ is the relative permittivity, and $\bfe$ is the spatial electric field.
+
+Relevant derivatives:
+\begin{equation}
+  \begin{aligned}
+    \psi^e_{,\grad \Phi} &= J \varepsilon_0 \varepsilon_r \bfC^{-1} \grad \Phi, \\
+    \psi^e_{,\bfF} &= J \varepsilon_0 \varepsilon_r \left[ \dfrac{1}{2} (\bfe \cdot \bfe) \bfF^{-T} - \bfe \otimes \bfe \right].
+  \end{aligned}
+\end{equation}
 
 ## Example Input File Syntax
 
-!! Describe and include an example of how to use the Polarization object.
+!listing tests/electrical/uniform_sphere_charge.i
+         block=Materials/polarization
 
 !syntax parameters /Materials/Polarization
 

@@ -1,20 +1,19 @@
 # ThermalDeformationGradient
 
-!alert construction title=Undocumented Class
-The ThermalDeformationGradient has not been documented. The content listed below should be used as a starting point for
-documenting the class, which includes the typical automatic documentation associated with a
-MooseObject; however, what is contained is ultimately determined by what is necessary to make the
-documentation clear for users.
-
 !syntax description /Materials/ThermalDeformationGradient
 
 ## Overview
 
-!! Replace these lines with information regarding the ThermalDeformationGradient object.
+The thermal deformation gradient is defined in terms of the instantaneous coefficient of thermal expansion:
+\begin{equation}
+  \dot{\bfF}^t = (1+\alpha)\dot{T} \bfI,
+\end{equation}
+where $\alpha$ is the instantaneous coefficient of thermal expansion. The above equation is numerically integrated in time using the mid point rule.
 
 ## Example Input File Syntax
 
-!! Describe and include an example of how to use the ThermalDeformationGradient object.
+!listing tests/chemical-electrical-mechanical-thermal/base.i
+         block=Materials/thermal_expansion
 
 !syntax parameters /Materials/ThermalDeformationGradient
 
