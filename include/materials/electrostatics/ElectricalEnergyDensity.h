@@ -18,9 +18,11 @@ public:
 
   ElectricalEnergyDensity(const InputParameters & parameters);
 
+protected:
   virtual void computeQpProperties() override;
 
-protected:
+  virtual void precomputeQpProperties() {}
+
   /// Compute the electrical energy density
   virtual ADReal computeQpElectricalEnergyDensity() const = 0;
 

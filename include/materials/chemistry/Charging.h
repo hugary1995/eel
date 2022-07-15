@@ -40,6 +40,12 @@ protected:
   /// The molar volume of this species;
   const Real _Omega;
 
+  /// The charge number of this charged species
+  const Real _z;
+
   /// Derivative of the chemical energy density w.r.t. the electric potential gradient
   ADMaterialProperty<RealVectorValue> & _d_psi_d_grad_Phi;
+
+private:
+  ADReal _Xi;
 };

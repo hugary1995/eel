@@ -13,14 +13,17 @@ public:
   Polarization(const InputParameters & parameters);
 
 protected:
+  virtual void precomputeQpProperties() override;
   virtual ADReal computeQpElectricalEnergyDensity() const override;
   virtual ADRealVectorValue
   computeQpDElectricalEnergyDensityDElectricalPotentialGradient() override;
   virtual ADRankTwoTensor computeQpDElectricalEnergyDensityDDeformationGradient() override;
 
-  /// The vacuum permittivity
-  const ADMaterialProperty<Real> & _eps_0;
+  /// The electric conductivity
+  const ADMaterialProperty<Real> & _sigma;
 
-  /// The spatial relative permittivity
-  const ADMaterialProperty<Real> & _eps_r;
+private:
+  ADReal _J;
+  ADRankTwoTensor _F_inv;
+  ADRankTwoTensor _sigma_0;
 };

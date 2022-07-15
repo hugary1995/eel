@@ -36,6 +36,7 @@ ElectricalEnergyDensity::ElectricalEnergyDensity(const InputParameters & paramet
 void
 ElectricalEnergyDensity::computeQpProperties()
 {
+  precomputeQpProperties();
   _d_psi_d_grad_Phi[_qp] = computeQpDElectricalEnergyDensityDElectricalPotentialGradient();
   if (_F)
     (*_d_psi_d_F)[_qp] = computeQpDElectricalEnergyDensityDDeformationGradient();

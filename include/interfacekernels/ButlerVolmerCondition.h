@@ -24,8 +24,8 @@ protected:
   const ADVariableValue & _T;
   const ADVariableValue & _T_neighbor;
 
-  const Real _penalty;
-
   const SubdomainID _electrode_subdomain_id;
   const SubdomainID _electrolyte_subdomain_id;
+
+  const Real _U;
 };

@@ -30,24 +30,33 @@ ADReal
 HenrysLaw::computeQpResidual(Moose::DGResidualType type)
 {
   // Concentration difference
-  ADReal diff = 0;
-  if (_current_elem->subdomain_id() == _from_subdomain_id &&
-      _neighbor_elem->subdomain_id() == _to_subdomain_id)
-    diff = _u[_qp] - _H * _neighbor_value[_qp];
-  else if (_current_elem->subdomain_id() == _to_subdomain_id &&
-           _neighbor_elem->subdomain_id() == _from_subdomain_id)
-    diff = _H * _neighbor_value[_qp] - _u[_qp];
-  else
-    mooseError("Internal error");
+  // ADReal diff = 0;
+  // if (_current_elem->subdomain_id() == _from_subdomain_id &&
+  //     _neighbor_elem->subdomain_id() == _to_subdomain_id)
+  //   diff = _u[_qp] - _H * _neighbor_value[_qp];
+  // else if (_current_elem->subdomain_id() == _to_subdomain_id &&
+  //          _neighbor_elem->subdomain_id() == _from_subdomain_id)
+  //   diff = _H * _neighbor_value[_qp] - _u[_qp];
+  // else
+  //   mooseError("Internal error");
+
+  // switch (type)
+  // {
+  //   case Moose::Element:
+  //     return _test[_i][_qp] * _penalty * diff;
+
+  //   case Moose::Neighbor:
+  //     return _test_neighbor[_i][_qp] * _penalty * diff;
+  // }
+
+  // return 0;
 
   switch (type)
   {
     case Moose::Element:
-      return _test[_i][_qp] * _penalty * diff;
+      return _test[_i][_qp] * _penalty * (_u[_qp] - _neighbor_value[_qp]);
 
     case Moose::Neighbor:
-      return _test_neighbor[_i][_qp] * _penalty * diff;
+      return -_test_neighbor[_i][_qp] * _penalty * (_u[_qp] - _neighbor_value[_qp]);
   }
-
-  return 0;
 }
