@@ -18,6 +18,7 @@ ElectricalEnergyDensity::validParams()
 ElectricalEnergyDensity::ElectricalEnergyDensity(const InputParameters & parameters)
   : DerivativeMaterialInterface<Material>(parameters),
     BaseNameInterface(parameters),
+    _Phi(adCoupledValue("electric_potential")),
     _grad_Phi(adCoupledGradient("electric_potential")),
     _F(hasADMaterialProperty<RankTwoTensor>(prependBaseName("deformation_gradient"))
            ? &getADMaterialPropertyByName<RankTwoTensor>(prependBaseName("deformation_gradient"))
@@ -25,6 +26,8 @@ ElectricalEnergyDensity::ElectricalEnergyDensity(const InputParameters & paramet
     _Phi_name(getVar("electric_potential", 0)->name()),
     _psi_name(getParam<MaterialPropertyName>("electrical_energy_density")),
     _psi(declareADProperty<Real>(prependBaseName(_psi_name))),
+    _d_psi_d_Phi(
+        declareADProperty<Real>(derivativePropertyName(prependBaseName(_psi_name), {_Phi_name}))),
     _d_psi_d_grad_Phi(declareADProperty<RealVectorValue>(
         derivativePropertyName(prependBaseName(_psi_name), {"grad_" + _Phi_name}))),
     _d_psi_d_F(_F ? &declareADProperty<RankTwoTensor>(derivativePropertyName(
@@ -37,6 +40,7 @@ void
 ElectricalEnergyDensity::computeQpProperties()
 {
   precomputeQpProperties();
+  _d_psi_d_Phi[_qp] = computeQpDElectricalEnergyDensityDElectricalPotential();
   _d_psi_d_grad_Phi[_qp] = computeQpDElectricalEnergyDensityDElectricalPotentialGradient();
   if (_F)
     (*_d_psi_d_F)[_qp] = computeQpDElectricalEnergyDensityDDeformationGradient();

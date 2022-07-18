@@ -24,6 +24,9 @@ ButlerVolmerCondition::validParams()
   params.addRequiredParam<SubdomainName>("electrolyte_subdomain",
                                          "The subdomain name of the electrolyte");
   params.addRequiredParam<Real>("open_circuit_potential", "The open-circuite potential");
+  params.addRequiredCoupledVar("concentration", "Concentration of the charged species");
+  params.addRequiredParam<Real>("maximum_concentration",
+                                "Maximum concentration of the charged species");
   return params;
 }
 
@@ -40,7 +43,9 @@ ButlerVolmerCondition::ButlerVolmerCondition(const InputParameters & parameters)
     _electrode_subdomain_id(_mesh.getSubdomainID(getParam<SubdomainName>("electrode_subdomain"))),
     _electrolyte_subdomain_id(
         _mesh.getSubdomainID(getParam<SubdomainName>("electrolyte_subdomain"))),
-    _U(getParam<Real>("open_circuit_potential"))
+    _U(getParam<Real>("open_circuit_potential")),
+    _c(adCoupledValue("concentration")),
+    _c_max(getParam<Real>("maximum_concentration"))
 {
 }
 
@@ -53,8 +58,11 @@ ButlerVolmerCondition::computeQpResidual(Moose::DGResidualType type)
   mooseAssert(_current_elem->subdomain_id() == _electrode_subdomain_id,
               "We should be on the electrode here.");
 
+  // Concentration dependent open-circuit potential
+  ADReal OCP = -_U * std::log(_c[_qp] / _c_max);
+
   // Surface overpotential
-  ADReal eta = _u[_qp] - _neighbor_value[_qp] - _U;
+  ADReal eta = _u[_qp] - _neighbor_value[_qp] - OCP;
 
   // Current density
   ADReal T = (_T[_qp] + _T_neighbor[_qp]) / 2;
@@ -67,7 +75,7 @@ ButlerVolmerCondition::computeQpResidual(Moose::DGResidualType type)
       return _test[_i][_qp] * i;
 
     case Moose::Neighbor:
-      return -_test_neighbor[_i][_qp] * i;
+      return 0;
   }
 
   return 0;

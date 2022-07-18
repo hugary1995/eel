@@ -28,4 +28,7 @@ protected:
   const SubdomainID _electrolyte_subdomain_id;
 
   const Real _U;
+
+  const ADVariableValue & _c;
+  const Real _c_max;
 };

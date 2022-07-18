@@ -26,11 +26,17 @@ protected:
   /// Compute the electrical energy density
   virtual ADReal computeQpElectricalEnergyDensity() const = 0;
 
+  /// Compute \frac{\partial \psi^e}{\partial \Phi}
+  virtual ADReal computeQpDElectricalEnergyDensityDElectricalPotential() = 0;
+
   /// Compute \frac{\partial \psi^e}{\partial \nabla \Phi}
   virtual ADRealVectorValue computeQpDElectricalEnergyDensityDElectricalPotentialGradient() = 0;
 
   /// Compute \frac{\partial \psi^e}{\partial F}
   virtual ADRankTwoTensor computeQpDElectricalEnergyDensityDDeformationGradient() = 0;
+
+  /// The electrical potential
+  const ADVariableValue & _Phi;
 
   /// The gradient of the electrical potential
   const ADVariableGradient & _grad_Phi;
@@ -46,6 +52,9 @@ protected:
 
   /// The electrical energy density
   ADMaterialProperty<Real> & _psi;
+
+  /// Derivative of the electrical energy density w.r.t. the electrical potential
+  ADMaterialProperty<Real> & _d_psi_d_Phi;
 
   /// Derivative of the electrical energy density w.r.t. the electrical potential gradient
   ADMaterialProperty<RealVectorValue> & _d_psi_d_grad_Phi;

@@ -15,6 +15,7 @@ public:
 protected:
   virtual void precomputeQpProperties() override;
   virtual ADReal computeQpElectricalEnergyDensity() const override;
+  virtual ADReal computeQpDElectricalEnergyDensityDElectricalPotential() override { return 0; }
   virtual ADRealVectorValue
   computeQpDElectricalEnergyDensityDElectricalPotentialGradient() override;
   virtual ADRankTwoTensor computeQpDElectricalEnergyDensityDDeformationGradient() override;
