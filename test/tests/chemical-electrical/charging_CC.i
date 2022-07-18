@@ -6,7 +6,8 @@ length = 75 #mm
 
 in = '${fparse I/width}'
 
-c0 = 1e-3 #mmol/mm^3
+c0 = 1e-4 #mmol/mm^3
+cm = 1e-3
 D = 1.4e-3 #mm^2/s
 
 eta = 100
@@ -81,9 +82,7 @@ F = 96485 #mC/mmol
 []
 
 [AuxVariables]
-  [q1]
-  []
-  [q2]
+  [q]
   []
   [T]
     initial_condition = ${T0}
@@ -91,17 +90,11 @@ F = 96485 #mC/mmol
 []
 
 [Kernels]
-  [charge_balance_1]
+  [charge_balance]
     type = RankOneDivergence
     variable = Phi
-    vector = i1
-    save_in = q1
-  []
-  [charge_balance_2]
-    type = RankOneDivergence
-    variable = Phi
-    vector = i2
-    save_in = q2
+    vector = i
+    save_in = q
   []
   [mass_balance_1]
     type = MaterialSource
@@ -130,9 +123,9 @@ F = 96485 #mC/mmol
     faraday_constant = ${F}
     ideal_gas_constant = ${R}
     temperature = T
-    open_circuit_potential = 0
+    open_circuit_potential = 0.4
     concentration = c
-    maximum_concentration = '${fparse c0*2}'
+    maximum_concentration = ${cm}
   []
   [electrolyte_cathode]
     type = ButlerVolmerCondition
@@ -148,9 +141,9 @@ F = 96485 #mC/mmol
     faraday_constant = ${F}
     ideal_gas_constant = ${R}
     temperature = T
-    open_circuit_potential = 0
+    open_circuit_potential = 0.3
     concentration = c
-    maximum_concentration = '${fparse c0*2}'
+    maximum_concentration = ${cm}
   []
   [c_continuity_anode_eletrolyte]
     type = HenrysLaw
@@ -174,18 +167,35 @@ F = 96485 #mC/mmol
   []
 []
 
+[Functions]
+  [left_cc_concentration]
+    type = ParsedFunction
+    value = 'min(${c0}+1.7e-8*t, ${cm})'
+  []
+  [right_cc_concentration]
+    type = ParsedFunction
+    value = 'max(${c0}-1.7e-8*t, 0)'
+  []
+[]
+
 [BCs]
   [left]
-    type = NeumannBC
-    variable = c
+    type = CurrentBC
+    variable = Phi
+    concentration = c
+    env_concentration = left_cc_concentration
+    max_concentration = ${cm}
+    current = ${in}
     boundary = left
-    value = '${fparse eta*Omega*R*T0*in/F}'
   []
   [right]
-    type = NeumannBC
-    variable = c
+    type = CurrentBC
+    variable = Phi
+    concentration = c
+    env_concentration = right_cc_concentration
+    max_concentration = ${cm}
+    current = ${in}
     boundary = right
-    value = '${fparse -eta*Omega*R*T0*in/F}'
   []
   # [left]
   #   type = NeumannBC
@@ -219,17 +229,11 @@ F = 96485 #mC/mmol
     electric_potential = Phi
     electric_conductivity = sigma
   []
-  [electric_displacement_1]
+  [electric_displacement]
     type = ElectricDisplacement
-    electric_displacement = i1
+    electric_displacement = i
     electric_potential = Phi
-    energy_densities = 'psi_e'
-  []
-  [electric_displacement_2]
-    type = ElectricDisplacement
-    electric_displacement = i2
-    electric_potential = Phi
-    energy_densities = 'psi_charge'
+    energy_densities = 'psi_e psi_charge'
   []
   [chemical_constants]
     type = ADGenericConstantMaterial
@@ -323,12 +327,14 @@ F = 96485 #mC/mmol
     type = SideAverageValue
     variable = Phi
     boundary = left
+    outputs = none
     execute_on = 'INITIAL TIMESTEP_END'
   []
   [voltage_right]
     type = SideAverageValue
     variable = Phi
     boundary = right
+    outputs = none
     execute_on = 'INITIAL TIMESTEP_END'
   []
   [voltage]
@@ -346,6 +352,30 @@ F = 96485 #mC/mmol
     type = ElementExtremeValue
     variable = c
     value_type = min
+    execute_on = 'INITIAL TIMESTEP_END'
+  []
+  [C_rate]
+    type = NodalSum
+    variable = q
+    boundary = 'left right'
+    outputs = none
+    execute_on = 'INITIAL TIMESTEP_END'
+  []
+  [dt]
+    type = TimestepSize
+    outputs = none
+    execute_on = 'INITIAL TIMESTEP_END'
+  []
+  [delta_C]
+    type = ParsedPostprocessor
+    function = 'C_rate*dt'
+    pp_names = 'C_rate dt'
+    outputs = none
+    execute_on = 'INITIAL TIMESTEP_END'
+  []
+  [capacity]
+    type = CumulativeValuePostprocessor
+    postprocessor = delta_C
     execute_on = 'INITIAL TIMESTEP_END'
   []
 []
@@ -369,7 +399,7 @@ F = 96485 #mC/mmol
   nl_rel_tol = 1e-6
   nl_abs_tol = 1e-8
 
-  end_time = 3600
+  end_time = 36000
   dt = 100
 []
 
