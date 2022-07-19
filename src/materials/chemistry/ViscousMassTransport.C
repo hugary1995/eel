@@ -11,31 +11,30 @@ ViscousMassTransport::validParams()
   params.addRequiredParam<MaterialPropertyName>("viscosity", "The mass transport viscosity");
   params.addRequiredParam<Real>("ideal_gas_constant", "The ideal gas constant");
   params.addRequiredCoupledVar("temperature", "The temperature");
-  params.addRequiredParam<Real>("molar_volume", "The molar volume for this species");
   return params;
 }
 
 ViscousMassTransport::ViscousMassTransport(const InputParameters & parameters)
   : ChemicalDissipationDensity(parameters),
+    _c(adCoupledValue("concentration")),
     _eta(getADMaterialPropertyByName<Real>(prependBaseName("viscosity", true))),
     _R(getParam<Real>("ideal_gas_constant")),
-    _T(adCoupledValue("temperature")),
-    _Omega(getParam<Real>("molar_volume"))
+    _T(adCoupledValue("temperature"))
 {
 }
 
 ADReal
 ViscousMassTransport::computeQpChemicalDissipationDensity() const
 {
-  ADReal Xi = _eta[_qp] * _R * _T[_qp] * _Omega;
-  return 0.5 * Xi * _c_dot[_qp] * _c_dot[_qp];
+  ADReal Xi = _R * _T[_qp];
+  return 0.5 * _eta[_qp] * Xi * _c_dot[_qp] * _c_dot[_qp] / _c[_qp];
 }
 
 ADReal
 ViscousMassTransport::computeQpDChemicalDissipationDensityDConcentrationRate()
 {
-  ADReal Xi = _eta[_qp] * _R * _T[_qp] * _Omega;
-  return Xi * _c_dot[_qp];
+  ADReal Xi = _R * _T[_qp];
+  return _eta[_qp] * Xi * _c_dot[_qp];
 }
 
 ADRealVectorValue

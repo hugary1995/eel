@@ -59,4 +59,6 @@ HenrysLaw::computeQpResidual(Moose::DGResidualType type)
     case Moose::Neighbor:
       return -_test_neighbor[_i][_qp] * _penalty * (_u[_qp] - _neighbor_value[_qp]);
   }
+
+  return 0;
 }

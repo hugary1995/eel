@@ -28,17 +28,11 @@ protected:
   /// Faraday's constant
   const Real _F;
 
-  /// The mass transport viscosity
-  const ADMaterialProperty<Real> & _eta;
-
   /// Ideal gas constant
   const Real _R;
 
   /// Temperature
   const ADVariableValue & _T;
-
-  /// The molar volume of this species;
-  const Real _Omega;
 
   /// The charge number of this charged species
   const Real _z;

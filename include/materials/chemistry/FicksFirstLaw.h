@@ -21,15 +21,9 @@ protected:
   /// The diffusion coefficient
   const ADMaterialProperty<RankTwoTensor> & _D;
 
-  /// The mass transport viscosity
-  const ADMaterialProperty<Real> & _eta;
-
   /// Ideal gas constant
   const Real _R;
 
   /// Temperature
   const ADVariableValue & _T;
-
-  /// The molar volume of this species;
-  const Real _Omega;
 };

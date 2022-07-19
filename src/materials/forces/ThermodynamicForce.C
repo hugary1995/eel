@@ -6,8 +6,8 @@ ThermodynamicForce<T>::validParams()
 {
   InputParameters params = DerivativeMaterialInterface<Material>::validParams();
   params += BaseNameInterface::validParams();
-  params.addRequiredParam<std::vector<MaterialPropertyName>>("energy_densities",
-                                                             "Vector of energy densities");
+  params.addParam<std::vector<MaterialPropertyName>>("energy_densities",
+                                                     "Vector of energy densities");
   params.addParam<std::vector<MaterialPropertyName>>("dissipation_densities",
                                                      "Vector of dissipation densities");
   params.addParam<MaterialPropertyName>(

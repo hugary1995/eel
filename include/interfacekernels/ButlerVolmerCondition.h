@@ -24,11 +24,10 @@ protected:
   const ADVariableValue & _T;
   const ADVariableValue & _T_neighbor;
 
-  const SubdomainID _electrode_subdomain_id;
-  const SubdomainID _electrolyte_subdomain_id;
-
   const Real _U;
 
-  const ADVariableValue & _c;
+  const ADVariableValue & _c_s;
+  const ADVariableValue & _c_e;
   const Real _c_max;
+  const Real _n;
 };

@@ -18,6 +18,9 @@ protected:
   virtual ADRealVectorValue
   computeQpDChemicalDissipationDensityDConcentrationRateGradient() override;
 
+  /// The concetration
+  const ADVariableValue & _c;
+
   /// The mass transport viscosity
   const ADMaterialProperty<Real> & _eta;
 
@@ -26,7 +29,4 @@ protected:
 
   /// Temperature
   const ADVariableValue & _T;
-
-  /// The molar volume of this species;
-  const Real _Omega;
 };

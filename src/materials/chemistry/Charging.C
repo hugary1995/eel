@@ -13,10 +13,8 @@ Charging::validParams()
   params.addRequiredParam<MaterialPropertyName>("electric_conductivity",
                                                 "The electric conductivity");
   params.addRequiredParam<Real>("faraday_constant", "The Faraday's constant");
-  params.addRequiredParam<MaterialPropertyName>("viscosity", "The mass transport viscosity");
   params.addRequiredParam<Real>("ideal_gas_constant", "The ideal gas constant");
   params.addRequiredCoupledVar("temperature", "The temperature");
-  params.addRequiredParam<Real>("molar_volume", "The molar volume for this species");
   params.addRequiredParam<Real>("charge_number", "The charge number of the charged species");
   return params;
 }
@@ -26,10 +24,8 @@ Charging::Charging(const InputParameters & parameters)
     _grad_Phi(adCoupledGradient("electric_potential")),
     _sigma(getADMaterialPropertyByName<Real>(prependBaseName("electric_conductivity", true))),
     _F(getParam<Real>("faraday_constant")),
-    _eta(getADMaterialPropertyByName<Real>(prependBaseName("viscosity", true))),
     _R(getParam<Real>("ideal_gas_constant")),
     _T(adCoupledValue("temperature")),
-    _Omega(getParam<Real>("molar_volume")),
     _z(getParam<Real>("charge_number")),
     _d_psi_d_grad_Phi(declareADProperty<RealVectorValue>(derivativePropertyName(
         prependBaseName(_psi_name), {"grad_" + getVar("electric_potential", 0)->name()})))
@@ -39,17 +35,17 @@ Charging::Charging(const InputParameters & parameters)
 void
 Charging::computeQpProperties()
 {
-  _Xi = _eta[_qp] * _Omega * _R * _T[_qp];
+  _Xi = _R * _T[_qp];
 
   ChemicalEnergyDensity::computeQpProperties();
 
-  _d_psi_d_grad_Phi[_qp] = _sigma[_qp] / _F * _Xi * _z * _grad_c[_qp];
+  _d_psi_d_grad_Phi[_qp] = _sigma[_qp] / _F * _Xi * _z * _grad_c[_qp] / _c[_qp];
 }
 
 ADReal
 Charging::computeQpChemicalEnergyDensity() const
 {
-  return (_sigma[_qp] / _F * _grad_Phi[_qp]) * (_Xi * _grad_c[_qp]);
+  return (_sigma[_qp] / _F * _grad_Phi[_qp]) * (_Xi * _z * _grad_c[_qp] / _c[_qp]);
 }
 
 ADReal
