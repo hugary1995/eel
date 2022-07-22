@@ -21,9 +21,6 @@ protected:
   /// The concetration
   const ADVariableValue & _c;
 
-  /// The mass transport viscosity
-  const ADMaterialProperty<Real> & _eta;
-
   /// Ideal gas constant
   const Real _R;
 

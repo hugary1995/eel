@@ -25,8 +25,7 @@ FicksFirstLaw::FicksFirstLaw(const InputParameters & parameters)
 ADReal
 FicksFirstLaw::computeQpChemicalEnergyDensity() const
 {
-  ADReal Xi = _R * _T[_qp];
-  return 0.5 * (Xi * _D[_qp] * _grad_c[_qp] / _c[_qp]) * _grad_c[_qp] / _c[_qp];
+  return 0.5 * _R * _T[_qp] * _D[_qp] * _grad_c[_qp] * _grad_c[_qp] / _c[_qp];
 }
 
 ADReal
@@ -38,8 +37,7 @@ FicksFirstLaw::computeQpDChemicalEnergyDensityDConcentration()
 ADRealVectorValue
 FicksFirstLaw::computeQpDChemicalEnergyDensityDConcentrationGradient()
 {
-  ADReal Xi = _R * _T[_qp];
-  return Xi * _D[_qp] * _grad_c[_qp];
+  return _R * _T[_qp] * _D[_qp] * _grad_c[_qp];
 }
 
 ADRankTwoTensor

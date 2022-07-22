@@ -1,0 +1,18 @@
+#pragma once
+
+#include "ADInterfaceKernel.h"
+
+class MaterialInterfaceNeumannBC : public ADInterfaceKernel
+{
+public:
+  static InputParameters validParams();
+
+  MaterialInterfaceNeumannBC(const InputParameters & parameters);
+
+protected:
+  virtual ADReal computeQpResidual(Moose::DGResidualType type) override;
+
+  const ADMaterialProperty<Real> & _mat_prop;
+
+  const Real _factor;
+};
