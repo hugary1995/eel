@@ -39,7 +39,7 @@ SwellingDeformationGradient::SwellingDeformationGradient(const InputParameters &
                "volumes must be the same");
 
   // Declare d_Fg_d_c
-  for (auto i : make_range(_c.size()))
+  for (auto i : index_range(_c))
     _d_Fs_d_c[i] = &declareADProperty<RankTwoTensor>(
         derivativePropertyName(prependBaseName("swelling_deformation_gradient"), {_c_names[i]}));
 }
@@ -55,12 +55,12 @@ SwellingDeformationGradient::computeQpProperties()
 {
   ADReal Js = 1;
 
-  for (auto i : make_range(_c.size()))
+  for (auto i : index_range(_c))
     Js += _beta[_qp] * _Omega[i] * ((*_c[i])[_qp] - (*_c_ref[i])[_qp]);
 
   _Fs[_qp] = std::cbrt(Js) * ADRankTwoTensor::Identity();
 
-  for (auto i : make_range(_c.size()))
+  for (auto i : index_range(_c))
     (*_d_Fs_d_c[i])[_qp] =
         std::pow(Js, -2. / 3.) / 3 * _beta[_qp] * _Omega[i] * ADRankTwoTensor::Identity();
 }

@@ -24,9 +24,13 @@ U_e = 0
 U_c = 0.01
 n = 5000
 
+rho = 2.5e-9 #Mg/mm^3
+cv = 2.7e9 #mJ/Mg/K
+kappa = 0.2 #mJ/mm/K/s
+
 tr = 1000
 tf = 10000
-dt = 100
+dt = 10
 
 [Mesh]
   [battery]
@@ -85,12 +89,12 @@ dt = 100
   [c]
     initial_condition = ${c0}
   []
-[]
-
-[AuxVariables]
   [T]
     initial_condition = ${T0}
   []
+[]
+
+[AuxVariables]
   [q]
   []
 []
@@ -110,6 +114,23 @@ dt = 100
     type = RankOneDivergence
     variable = c
     vector = J
+  []
+  [energy_balance_1]
+    type = ADHeatConductionTimeDerivative
+    variable = T
+    density_name = rho
+    specific_heat = cv
+  []
+  [energy_balance_2]
+    type = ADHeatConduction
+    variable = T
+    thermal_conductivity = kappa
+  []
+  [heat_source]
+    type = MaterialSource
+    variable = T
+    prop = q_jh
+    coefficient = -1
   []
 []
 
@@ -135,6 +156,13 @@ dt = 100
     prop = Je
     factor = -1
     boundary = 'cathode_elyte'
+  []
+  [continuity_T]
+    type = InterfaceContinuity
+    variable = T
+    neighbor_var = T
+    penalty = 1
+    boundary = 'anode_elyte cathode_elyte'
   []
 []
 
@@ -162,6 +190,13 @@ dt = 100
 []
 
 [Materials]
+  # Thermal
+  [thermal_constants]
+    type = ADGenericConstantMaterial
+    prop_names = 'rho cv kappa'
+    prop_values = '${rho} ${cv} ${kappa}'
+  []
+
   # Electrodynamics
   [electric_constants]
     type = ADGenericConstantMaterial
@@ -179,6 +214,12 @@ dt = 100
     electric_displacement = i
     electric_potential = Phi
     energy_densities = 'psi_e'
+  []
+  [joule_heating]
+    type = JouleHeating
+    electric_potential = Phi
+    electric_conductivity = sigma
+    joule_heating = q_jh
   []
 
   # Chemical reactions
@@ -318,6 +359,11 @@ dt = 100
   [c_max]
     type = NodalExtremeValue
     variable = c
+    execute_on = 'INITIAL TIMESTEP_END'
+  []
+  [T_max]
+    type = NodalExtremeValue
+    variable = T
     execute_on = 'INITIAL TIMESTEP_END'
   []
 []

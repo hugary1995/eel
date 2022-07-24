@@ -15,7 +15,6 @@ Charging::validParams()
   params.addRequiredParam<Real>("faraday_constant", "The Faraday's constant");
   params.addRequiredParam<Real>("ideal_gas_constant", "The ideal gas constant");
   params.addRequiredCoupledVar("temperature", "The temperature");
-  params.addRequiredParam<Real>("charge_number", "The charge number of the charged species");
   return params;
 }
 
@@ -25,27 +24,14 @@ Charging::Charging(const InputParameters & parameters)
     _sigma(getADMaterialPropertyByName<Real>(prependBaseName("electric_conductivity", true))),
     _F(getParam<Real>("faraday_constant")),
     _R(getParam<Real>("ideal_gas_constant")),
-    _T(adCoupledValue("temperature")),
-    _z(getParam<Real>("charge_number")),
-    _d_psi_d_grad_Phi(declareADProperty<RealVectorValue>(derivativePropertyName(
-        prependBaseName(_psi_name), {"grad_" + getVar("electric_potential", 0)->name()})))
+    _T(adCoupledValue("temperature"))
 {
-}
-
-void
-Charging::computeQpProperties()
-{
-  _Xi = _R * _T[_qp];
-
-  ChemicalEnergyDensity::computeQpProperties();
-
-  _d_psi_d_grad_Phi[_qp] = _sigma[_qp] / _F * _Xi * _z * _grad_c[_qp] / _c[_qp];
 }
 
 ADReal
 Charging::computeQpChemicalEnergyDensity() const
 {
-  return (_sigma[_qp] / _F * _grad_Phi[_qp]) * (_Xi * _z * _grad_c[_qp] / _c[_qp]);
+  return (_sigma[_qp] * _grad_Phi[_qp]) * (_R * _T[_qp] / _F * _grad_c[_qp] / _c[_qp]);
 }
 
 ADReal
@@ -57,7 +43,7 @@ Charging::computeQpDChemicalEnergyDensityDConcentration()
 ADRealVectorValue
 Charging::computeQpDChemicalEnergyDensityDConcentrationGradient()
 {
-  return _sigma[_qp] / _F * _Xi * _z * _grad_Phi[_qp];
+  return _sigma[_qp] * _R * _T[_qp] / _F * _grad_Phi[_qp];
 }
 
 ADRankTwoTensor

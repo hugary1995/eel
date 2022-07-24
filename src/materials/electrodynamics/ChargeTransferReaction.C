@@ -50,11 +50,8 @@ ChargeTransferReaction::ChargeTransferReaction(const InputParameters & parameter
 void
 ChargeTransferReaction::computeQpProperties()
 {
-  if (_current_elem->subdomain_id() != _electrode_subdomain)
-    return;
-
   // Surface overpotential
-  ADReal eta = _Phi_s[_qp] - _Phi_e[_qp] - _U[_qp];
+  ADReal eta = _Phi_e[_qp] - _Phi_s[_qp] - _U[_qp];
 
   // Current density
   ADReal T = (_T[_qp] + _T_neighbor[_qp]) / 2;

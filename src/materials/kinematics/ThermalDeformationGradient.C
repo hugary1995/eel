@@ -10,8 +10,6 @@ ThermalDeformationGradient::validParams()
   params.addClassDescription(
       "This class computes the thermal deformation gradient based on the instantaneous CTE.");
 
-  params.addRequiredParam<MaterialPropertyName>("thermal_deformation_gradient",
-                                                "The name of the thermal deformation gradient");
   params.addRequiredParam<FunctionName>(
       "CTE", "Function describing the thermal expansion coefficient $\alpha$");
   params.addRequiredCoupledVar("temperature", "The current temperature");
@@ -25,9 +23,9 @@ ThermalDeformationGradient::validParams()
 ThermalDeformationGradient::ThermalDeformationGradient(const InputParameters & parameters)
   : Material(parameters),
     BaseNameInterface(parameters),
-    _Ft(declareADProperty<RankTwoTensor>(prependBaseName("thermal_deformation_gradient", true))),
+    _Ft(declareADProperty<RankTwoTensor>(prependBaseName("thermal_deformation_gradient"))),
     _Ft_old(getMaterialPropertyOldByName<RankTwoTensor>(
-        prependBaseName("thermal_deformation_gradient", true))),
+        prependBaseName("thermal_deformation_gradient"))),
     _alpha(getFunction("CTE")),
     _T(adCoupledValue("temperature")),
     _T_old(coupledValueOld("temperature")),

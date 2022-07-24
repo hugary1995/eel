@@ -24,9 +24,19 @@ U_e = 0
 U_c = 0.01
 n = 5000
 
+rho = 2.5e-9 #Mg/mm^3
+cv = 2.7e9 #mJ/Mg/K
+kappa = 0.2 #mJ/mm/K/s
+
+lambda = 9.8e4 #MPa
+G = 6.5e4 #MPa
+Omega = 65 #mm^3/mol
+beta = 0.8
+cte = 1e-6
+
 tr = 1000
 tf = 10000
-dt = 100
+dt = 10
 
 [Mesh]
   [battery]
@@ -37,7 +47,7 @@ dt = 100
     ymin = 0
     ymax = ${width}
     nx = 60
-    ny = 3
+    ny = 15
   []
   [anode]
     type = SubdomainBoundingBoxGenerator
@@ -85,11 +95,31 @@ dt = 100
   [c]
     initial_condition = ${c0}
   []
+  [T]
+    initial_condition = ${T0}
+  []
+  [disp_x]
+  []
+  [disp_y]
+  []
 []
 
 [AuxVariables]
-  [T]
+  [c0]
+    initial_condition = ${c0}
+  []
+  [T0]
     initial_condition = ${T0}
+  []
+  [stress]
+    order = CONSTANT
+    family = MONOMIAL
+    [AuxKernel]
+      type = ADRankTwoScalarAux
+      rank_two_tensor = P
+      scalar_type = VonMisesStress
+      execute_on = 'INITIAL TIMESTEP_END'
+    []
   []
   [q]
   []
@@ -110,6 +140,35 @@ dt = 100
     type = RankOneDivergence
     variable = c
     vector = J
+  []
+  [momentum_balance_x]
+    type = RankTwoDivergence
+    variable = disp_x
+    tensor = P
+    component = 0
+  []
+  [momentum_balance_y]
+    type = RankTwoDivergence
+    variable = disp_y
+    tensor = P
+    component = 1
+  []
+  [energy_balance_1]
+    type = ADHeatConductionTimeDerivative
+    variable = T
+    density_name = rho
+    specific_heat = cv
+  []
+  [energy_balance_2]
+    type = ADHeatConduction
+    variable = T
+    thermal_conductivity = kappa
+  []
+  [heat_source]
+    type = MaterialSource
+    variable = T
+    prop = q_jh
+    coefficient = -1
   []
 []
 
@@ -136,6 +195,27 @@ dt = 100
     factor = -1
     boundary = 'cathode_elyte'
   []
+  [continuity_T]
+    type = InterfaceContinuity
+    variable = T
+    neighbor_var = T
+    penalty = 1
+    boundary = 'anode_elyte cathode_elyte'
+  []
+  [continuity_disp_x]
+    type = InterfaceContinuity
+    variable = disp_x
+    neighbor_var = disp_x
+    penalty = 1e6
+    boundary = 'anode_elyte cathode_elyte'
+  []
+  [continuity_disp_y]
+    type = InterfaceContinuity
+    variable = disp_y
+    neighbor_var = disp_y
+    penalty = 1e6
+    boundary = 'anode_elyte cathode_elyte'
+  []
 []
 
 [Functions]
@@ -159,9 +239,40 @@ dt = 100
     boundary = right
     value = 0
   []
+  [fix_left_x]
+    type = DirichletBC
+    variable = disp_x
+    boundary = left
+    value = 0
+  []
+  [fix_left_y]
+    type = DirichletBC
+    variable = disp_y
+    boundary = left
+    value = 0
+  []
+  [fix_right_x]
+    type = DirichletBC
+    variable = disp_x
+    boundary = right
+    value = 0
+  []
+  [fix_right_y]
+    type = DirichletBC
+    variable = disp_y
+    boundary = right
+    value = 0
+  []
 []
 
 [Materials]
+  # Thermal
+  [thermal_constants]
+    type = ADGenericConstantMaterial
+    prop_names = 'rho cv kappa'
+    prop_values = '${rho} ${cv} ${kappa}'
+  []
+
   # Electrodynamics
   [electric_constants]
     type = ADGenericConstantMaterial
@@ -179,6 +290,12 @@ dt = 100
     electric_displacement = i
     electric_potential = Phi
     energy_densities = 'psi_e'
+  []
+  [joule_heating]
+    type = JouleHeating
+    electric_potential = Phi
+    electric_conductivity = sigma
+    joule_heating = q_jh
   []
 
   # Chemical reactions
@@ -205,6 +322,7 @@ dt = 100
   [mass_source]
     type = MassSource
     mass_source = mu
+    energy_densities = 'psi_m'
     dissipation_densities = 'delta_c'
     concentration = c
   []
@@ -268,6 +386,41 @@ dt = 100
     boundary = 'cathode_elyte elyte_cathode'
     outputs = exodus
   []
+
+  # Mechanical
+  [mechanical_constants]
+    type = ADGenericConstantMaterial
+    prop_names = 'lambda G beta'
+    prop_values = '${lambda} ${G} ${beta}'
+  []
+  [swelling]
+    type = SwellingDeformationGradient
+    concentrations = 'c'
+    reference_concentrations = 'c0'
+    molar_volumes = '${Omega}'
+    swelling_coefficient = beta
+  []
+  # [thermal_expansion]
+  #   type = ThermalDeformationGradient
+  #   CTE = ${cte}
+  #   temperature = T
+  #   reference_temperature = T0
+  # []
+  [defgrad]
+    type = DeformationGradient
+    displacements = 'disp_x disp_y'
+  []
+  [neohookean]
+    type = NeoHookeanElasticEnergyDensity
+    elastic_energy_density = psi_m
+    lambda = lambda
+    shear_modulus = G
+  []
+  [stress]
+    type = FirstPiolaKirchhoffStress
+    first_piola_kirchhoff_stress = P
+    energy_densities = 'psi_m psi_e'
+  []
 []
 
 [Postprocessors]
@@ -320,6 +473,35 @@ dt = 100
     variable = c
     execute_on = 'INITIAL TIMESTEP_END'
   []
+  [T_max]
+    type = NodalExtremeValue
+    variable = T
+    execute_on = 'INITIAL TIMESTEP_END'
+  []
+  [Psi_e]
+    type = ADElementIntegralMaterialProperty
+    mat_prop = psi_e
+    block = cathode
+    execute_on = 'INITIAL TIMESTEP_END'
+  []
+  [Psi_c_dot]
+    type = ADElementIntegralMaterialProperty
+    mat_prop = psi_c
+    block = cathode
+    outputs = none
+    execute_on = 'INITIAL TIMESTEP_END'
+  []
+  [Psi_c]
+    type = CumulativeValuePostprocessor
+    postprocessor = Psi_c_dot
+    execute_on = 'INITIAL TIMESTEP_END'
+  []
+  [Psi_m]
+    type = ADElementIntegralMaterialProperty
+    mat_prop = psi_m
+    block = cathode
+    execute_on = 'INITIAL TIMESTEP_END'
+  []
 []
 
 [Executioner]
@@ -352,4 +534,5 @@ dt = 100
 
 [Outputs]
   exodus = true
+  csv = true
 []

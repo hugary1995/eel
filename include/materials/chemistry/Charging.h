@@ -13,7 +13,6 @@ public:
   Charging(const InputParameters & parameters);
 
 protected:
-  virtual void computeQpProperties() override;
   virtual ADReal computeQpChemicalEnergyDensity() const override;
   virtual ADReal computeQpDChemicalEnergyDensityDConcentration() override;
   virtual ADRealVectorValue computeQpDChemicalEnergyDensityDConcentrationGradient() override;
@@ -33,13 +32,4 @@ protected:
 
   /// Temperature
   const ADVariableValue & _T;
-
-  /// The charge number of this charged species
-  const Real _z;
-
-  /// Derivative of the chemical energy density w.r.t. the electric potential gradient
-  ADMaterialProperty<RealVectorValue> & _d_psi_d_grad_Phi;
-
-private:
-  ADReal _Xi;
 };
