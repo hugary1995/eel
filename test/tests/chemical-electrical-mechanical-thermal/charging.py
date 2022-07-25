@@ -70,7 +70,7 @@ graph_Psi.setOptions("yaxis", lim=[0, 1],
                      title="Normalized energy", font_size=15)
 
 # Logo
-ANL = chigger.annotations.ImageAnnotation(filename="anl.png", position=[0.99, 0.975], opacity=1,
+ANL = chigger.annotations.ImageAnnotation(filename="animation/anl.png", position=[0.99, 0.975],
                                           horizontal_alignment="right", vertical_alignment="top")
 
 # choose codec according to format needed
