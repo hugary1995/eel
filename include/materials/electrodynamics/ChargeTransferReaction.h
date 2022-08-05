@@ -14,7 +14,7 @@ protected:
   ADMaterialProperty<Real> & _i;
   ADMaterialProperty<Real> & _j;
 
-  const SubdomainID _electrode_subdomain;
+  const bool _electrode;
 
   const Real _i0;
 

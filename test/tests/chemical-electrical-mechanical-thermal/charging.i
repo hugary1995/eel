@@ -1,24 +1,24 @@
 I = 2.4 #mA
-sigma = 9.6 #mS/mm
+sigma = 0.01 #mS/mm
 
-width = 15 #mm
+width = 3 #mm
 l0 = 0
-l1 = 15
-l2 = 45
-l3 = 60
+l1 = 4
+l2 = 7
+l3 = 12
 
 in = '${fparse -I/width}'
 
-D = 1e-1
+D = 5e-6 #mm^2/s
 
-c0 = 1e-3
-cm = 4e-3
+c0 = 1e-3 #mmol/mm^3
+cm = 4e-3 #mmol/mm^3
 
 R = 8.3145 #mJ/mmol/K
 T0 = 300 #K
 F = 96485 #mC/mmol
 
-i0 = 4e-8
+i0 = 4e-8 #mA/mm^2
 U_a = 0
 U_e = 0
 U_c = 0.01

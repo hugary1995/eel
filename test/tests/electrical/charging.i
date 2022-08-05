@@ -1,30 +1,37 @@
-I = 0.12 #mA
-sigma = 2.4e-1 #mS/mm
+I = 5e-9 #mA
+sigma_a = 1e-5 #mS/mm
+sigma_e = 1e-6 #mS/mm
+sigma_c = 1e-7 #mS/mm
 
-width = 15 #mm
+width = 0.03 #mm
 l0 = 0
-l1 = 15
-l2 = 45
-l3 = 60
+l1 = 0.04
+l2 = 0.07
+l3 = 0.12
 
-in = '${fparse I/width}'
+in = '${fparse -I/width}'
 
-cm = 1e-3
+c0 = 1e-3 #mmol/mm^3
 
-R = 8.4315 #mJ/mmol/K
+R = 8.3145 #mJ/mmol/K
 T0 = 300 #K
 F = 96485 #mC/mmol
+
+i0_a = 1e-3 #mA/mm^2
+i0_c = 1e-6 #mA/mm^2
+U_a = -0.15 #V
+U_c = 6 #V
 
 [Mesh]
   [battery]
     type = GeneratedMeshGenerator
     dim = 2
-    xmin = 0
+    xmin = ${l0}
     xmax = ${l3}
     ymin = 0
     ymax = ${width}
     nx = 60
-    ny = 3
+    ny = 15
   []
   [anode]
     type = SubdomainBoundingBoxGenerator
@@ -57,179 +64,181 @@ F = 96485 #mC/mmol
     add_interface_on_two_sides = true
     split_interface = true
   []
-  [elyte_cathode]
+  [cathode_elyte]
     type = BreakMeshByBlockGenerator
     input = anode_elyte
     block_pairs = '2 3'
     add_interface_on_two_sides = true
     split_interface = true
   []
-  [pin]
-    type = ExtraNodesetGenerator
-    input = elyte_cathode
-    new_boundary = 'pin'
-    coord = '${fparse l3/2} 0 0'
-  []
 []
 
 [Variables]
-  [Phi_a]
-    block = anode
-  []
-  [Phi_e]
-    block = elyte
-  []
-  [Phi_c]
-    block = cathode
+  [Phi]
   []
 []
 
 [AuxVariables]
-  [c_a]
-    initial_condition = 2e-4
-    block = anode
-  []
-  [c_e]
-    initial_condition = 5e-4
-    block = elyte
-  []
-  [c_c]
-    initial_condition = 8e-4
-    block = cathode
-  []
   [T]
+    initial_condition = ${T0}
+  []
+  [c]
+    initial_condition = ${c0}
+  []
+  [T0]
     initial_condition = ${T0}
   []
 []
 
 [Kernels]
-  [charge_balance_a]
+  [charge_balance]
     type = RankOneDivergence
-    variable = Phi_a
+    variable = Phi
     vector = i
-    block = anode
-  []
-  [charge_balance_e]
-    type = RankOneDivergence
-    variable = Phi_e
-    vector = i
-    block = elyte
-  []
-  [charge_balance_c]
-    type = RankOneDivergence
-    variable = Phi_c
-    vector = i
-    block = cathode
   []
 []
 
 [InterfaceKernels]
-  [anode_elyte]
-    type = ButlerVolmerCondition
-    variable = Phi_a
-    neighbor_var = Phi_e
-    boundary = anode_elyte
-    anodic_charge_transfer_coefficient = 0.5
-    cathodic_charge_transfer_coefficient = 0.5
-    electric_conductivity = ${sigma}
-    exchange_current_density = 1e-9
-    faraday_constant = ${F}
-    ideal_gas_constant = ${R}
-    temperature = T
-    open_circuit_potential = 0
-    electrode_concentration = c_a
-    electrolyte_concentration = c_e
-    maximum_concentration = ${cm}
-    charge_transfer_rate = 0
+  [negative_current]
+    type = MaterialInterfaceNeumannBC
+    variable = Phi
+    neighbor_var = Phi
+    prop = ie
+    factor = -1
+    boundary = 'elyte_anode cathode_elyte'
   []
-  [elyte_cathode]
-    type = ButlerVolmerCondition
-    variable = Phi_c
-    neighbor_var = Phi_e
-    boundary = cathode_elyte
-    anodic_charge_transfer_coefficient = 0.5
-    cathodic_charge_transfer_coefficient = 0.5
-    electric_conductivity = ${sigma}
-    exchange_current_density = 1e-9
-    faraday_constant = ${F}
-    ideal_gas_constant = ${R}
-    temperature = T
-    open_circuit_potential = 0
-    electrode_concentration = c_c
-    electrolyte_concentration = c_e
-    maximum_concentration = ${cm}
-    charge_transfer_rate = 0
+  [positive_current]
+    type = MaterialInterfaceNeumannBC
+    variable = Phi
+    neighbor_var = Phi
+    prop = ie
+    boundary = 'anode_elyte elyte_cathode'
   []
 []
 
 [BCs]
   [left]
-    type = NeumannBC
-    variable = Phi_a
+    type = FunctionNeumannBC
+    variable = Phi
     boundary = left
-    value = ${in}
+    function = '${in}'
   []
   [right]
-    type = NeumannBC
-    variable = Phi_c
-    boundary = right
-    value = -${in}
-  []
-  [pin]
     type = DirichletBC
-    variable = Phi_e
-    boundary = pin
+    variable = Phi
+    boundary = right
     value = 0
   []
 []
 
 [Materials]
-  [electric_constants]
+  # Electrodynamics
+  [electric_constants_anode]
     type = ADGenericConstantMaterial
     prop_names = 'sigma'
-    prop_values = '${sigma}'
-  []
-  [polarization_a]
-    type = Polarization
-    electrical_energy_density = psi_e
-    electric_potential = Phi_a
-    electric_conductivity = sigma
+    prop_values = '${sigma_a}'
     block = anode
   []
-  [electric_displacement_a]
-    type = ElectricDisplacement
-    electric_displacement = i
-    electric_potential = Phi_a
-    energy_densities = 'psi_e'
-    block = anode
-  []
-  [polarization_e]
-    type = Polarization
-    electrical_energy_density = psi_e
-    electric_potential = Phi_e
-    electric_conductivity = sigma
+  [electric_constants_elyte]
+    type = ADGenericConstantMaterial
+    prop_names = 'sigma'
+    prop_values = '${sigma_e}'
     block = elyte
   []
-  [electric_displacement_e]
-    type = ElectricDisplacement
-    electric_displacement = i
-    electric_potential = Phi_e
-    energy_densities = 'psi_e'
-    block = elyte
+  [electric_constants_cathode]
+    type = ADGenericConstantMaterial
+    prop_names = 'sigma'
+    prop_values = '${sigma_c}'
+    block = cathode
   []
-  [polarization_c]
+  [polarization]
     type = Polarization
     electrical_energy_density = psi_e
-    electric_potential = Phi_c
+    electric_potential = Phi
     electric_conductivity = sigma
-    block = cathode
   []
-  [electric_displacement_c]
+  [electric_displacement]
     type = ElectricDisplacement
     electric_displacement = i
-    electric_potential = Phi_c
+    electric_potential = Phi
     energy_densities = 'psi_e'
-    block = cathode
+  []
+
+  # Redox
+  [ramp]
+    type = ADGenericFunctionMaterial
+    prop_names = 'ramp'
+    prop_values = 't'
+  []
+  [OCP_anode]
+    type = ADParsedMaterial
+    f_name = U
+    function = '${U_a}*ramp'
+    material_property_names = 'ramp'
+    block = 'anode'
+  []
+  [OCP_cathode]
+    type = ADParsedMaterial
+    f_name = U
+    function = '${U_c}*ramp'
+    material_property_names = 'ramp'
+    block = 'cathode'
+  []
+  [charge_transfer_anode_elyte]
+    type = ChargeTransferReaction
+    electrode = true
+    charge_transfer_current_density = ie
+    charge_transfer_mass_flux = Je
+    electric_potential = Phi
+    charge_transfer_coefficient = 0.5
+    exchange_current_density = ${i0_a}
+    faraday_constant = ${F}
+    ideal_gas_constant = ${R}
+    temperature = T
+    open_circuit_potential = U
+    boundary = 'anode_elyte'
+  []
+  [charge_transfer_elyte_anode]
+    type = ChargeTransferReaction
+    electrode = false
+    charge_transfer_current_density = ie
+    charge_transfer_mass_flux = Je
+    electric_potential = Phi
+    charge_transfer_coefficient = 0.5
+    exchange_current_density = ${i0_a}
+    faraday_constant = ${F}
+    ideal_gas_constant = ${R}
+    temperature = T
+    open_circuit_potential = U
+    boundary = 'elyte_anode'
+  []
+  [charge_transfer_cathode_elyte]
+    type = ChargeTransferReaction
+    electrode = true
+    charge_transfer_current_density = ie
+    charge_transfer_mass_flux = Je
+    electric_potential = Phi
+    charge_transfer_coefficient = 0.5
+    exchange_current_density = ${i0_c}
+    faraday_constant = ${F}
+    ideal_gas_constant = ${R}
+    temperature = T
+    open_circuit_potential = U
+    boundary = 'cathode_elyte'
+  []
+  [charge_transfer_elyte_cathode]
+    type = ChargeTransferReaction
+    electrode = false
+    charge_transfer_current_density = ie
+    charge_transfer_mass_flux = Je
+    electric_potential = Phi
+    charge_transfer_coefficient = 0.5
+    exchange_current_density = ${i0_c}
+    faraday_constant = ${F}
+    ideal_gas_constant = ${R}
+    temperature = T
+    open_circuit_potential = U
+    boundary = 'elyte_cathode'
   []
 []
 
@@ -243,8 +252,10 @@ F = 96485 #mC/mmol
 
   nl_rel_tol = 1e-6
   nl_abs_tol = 1e-8
+  nl_max_its = 20
 
-  num_steps = 1
+  dt = 0.01
+  end_time = 1
 []
 
 [Outputs]
