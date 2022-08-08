@@ -21,6 +21,7 @@ ChargeTransferReaction::validParams()
   params.addRequiredParam<Real>("ideal_gas_constant", "The ideal gas constant");
   params.addRequiredCoupledVar("temperature", "The temperature");
   params.addRequiredCoupledVar("electric_potential", "Electric potential");
+  params.addRequiredCoupledVar("neighbor_electric_potential", "Neighbor electric potential");
   params.addRequiredParam<MaterialPropertyName>("open_circuit_potential",
                                                 "The open-circuit potential");
   params.addRequiredParam<bool>("electrode", "Am I electrode? Set to false for electrolyte.");
@@ -39,8 +40,8 @@ ChargeTransferReaction::ChargeTransferReaction(const InputParameters & parameter
     _T(adCoupledValue("temperature")),
     _T_neighbor(adCoupledNeighborValue("temperature")),
     _Phi_s(_electrode ? adCoupledValue("electric_potential")
-                      : adCoupledNeighborValue("electric_potential")),
-    _Phi_e(_electrode ? adCoupledNeighborValue("electric_potential")
+                      : adCoupledNeighborValue("neighbor_electric_potential")),
+    _Phi_e(_electrode ? adCoupledNeighborValue("neighbor_electric_potential")
                       : adCoupledValue("electric_potential")),
     _U(_electrode ? getADMaterialProperty<Real>("open_circuit_potential")
                   : getNeighborADMaterialProperty<Real>("open_circuit_potential"))
