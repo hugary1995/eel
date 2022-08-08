@@ -1,21 +1,17 @@
 I = 5e-6 #mA
 sigma_a = 1e-2 #mS/mm
 sigma_e = 1e-3 #mS/mm
-sigma_c = 1e-4 #mS/mm
+sigma_cp = 1e-4 #mS/mm
+sigma_cm = 1e-4 #mS/mm
+sigma_ce = 1e-4 #mS/mm
 
 width = 0.03 #mm
-l0 = 0
-l1 = 0.04
-l2 = 0.07
-l3 = 0.12
-
 in = '${fparse -I/width}'
 
 cmin = 1e-4 #mmol/mm^3
 cmax = 1e-3 #mmol/mm^3
-D_a = 1e-6 #mm^2/s
-D_e = 1e-6 #mm^2/s
-D_c = 5e-7 #mm^2/s
+D_cp = 5e-7 #mm^2/s
+D_ce = 5e-7 #mm^2/s
 
 R = 8.3145 #mJ/mmol/K
 T0 = 300 #K
@@ -26,59 +22,35 @@ i0_c = 1e-12 #mA/mm^2
 
 [Mesh]
   [battery]
-    type = GeneratedMeshGenerator
-    dim = 2
-    xmin = ${l0}
-    xmax = ${l3}
-    ymin = 0
-    ymax = ${width}
-    nx = 60
-    ny = 15
+    type = FileMeshGenerator
+    file = 'gold/ssb.msh'
   []
-  [anode]
-    type = SubdomainBoundingBoxGenerator
+  [interfaces]
+    type = BreakMeshByBlockGenerator
     input = battery
-    block_id = 1
-    block_name = anode
-    bottom_left = '${l0} 0 0'
-    top_right = '${l1} ${width} 0'
-  []
-  [elyte]
-    type = SubdomainBoundingBoxGenerator
-    input = anode
-    block_id = 2
-    block_name = elyte
-    bottom_left = '${l1} 0 0'
-    top_right = '${l2} ${width} 0'
-  []
-  [cathode]
-    type = SubdomainBoundingBoxGenerator
-    input = elyte
-    block_id = 3
-    block_name = cathode
-    bottom_left = '${l2} 0 0'
-    top_right = '${l3} ${width} 0'
-  []
-  [anode_elyte]
-    type = BreakMeshByBlockGenerator
-    input = cathode
-    block_pairs = '1 2'
-    add_interface_on_two_sides = true
-    split_interface = true
-  []
-  [cathode_elyte]
-    type = BreakMeshByBlockGenerator
-    input = anode_elyte
-    block_pairs = '2 3'
     add_interface_on_two_sides = true
     split_interface = true
   []
 []
 
 [Variables]
-  [Phi]
+  [Phi_cp]
+    block = cp
+  []
+  [Phi_cm]
+    block = cm
+  []
+  [Phi_ce]
+    block = cm
+  []
+  [Phi_e]
+    block = e
+  []
+  [Phi_a]
+    block = a
   []
   [c]
+    block = 'cp cm'
   []
 []
 
@@ -87,13 +59,13 @@ i0_c = 1e-12 #mA/mm^2
     type = ConstantIC
     variable = c
     value = ${cmin}
-    block = 'anode elyte'
+    block = 'cm'
   []
   [c_c]
     type = ConstantIC
     variable = c
     value = ${cmax}
-    block = 'cathode'
+    block = 'cp'
   []
 []
 
@@ -101,74 +73,129 @@ i0_c = 1e-12 #mA/mm^2
   [T]
     initial_condition = ${T0}
   []
-  [q]
-  []
 []
 
 [Kernels]
-  [charge_balance]
+  [charge_balance_cp]
     type = RankOneDivergence
-    variable = Phi
-    vector = i
-    save_in = q
+    variable = Phi_cp
+    vector = i_cp
+    block = 'cp'
+  []
+  [charge_balance_cm]
+    type = RankOneDivergence
+    variable = Phi_cm
+    vector = i_cm
+    block = 'cm'
+  []
+  [charge_balance_ce]
+    type = RankOneDivergence
+    variable = Phi_ce
+    vector = i_ce
+    block = 'cm'
+  []
+  [charge_balance_e]
+    type = RankOneDivergence
+    variable = Phi_e
+    vector = i_e
+    block = 'e'
+  []
+  [charge_balance_a]
+    type = RankOneDivergence
+    variable = Phi_a
+    vector = i_a
+    block = 'a'
   []
   [mass_balance_1]
     type = MaterialSource
     variable = c
     prop = mu
+    block = 'cp cm'
   []
   [mass_balance_2]
     type = RankOneDivergence
     variable = c
     vector = J
+    block = 'cp cm'
   []
 []
 
 [InterfaceKernels]
-  [negative_current]
+  [current_a_e]
     type = MaterialInterfaceNeumannBC
-    variable = Phi
-    neighbor_var = Phi
-    prop = ie
-    factor = -1
-    boundary = 'elyte_anode cathode_elyte'
-  []
-  [positive_current]
-    type = MaterialInterfaceNeumannBC
-    variable = Phi
-    neighbor_var = Phi
-    prop = ie
-    boundary = 'anode_elyte elyte_cathode'
-  []
-  [negative_mass]
-    type = MaterialInterfaceNeumannBC
-    variable = c
-    neighbor_var = c
-    prop = Je
-    factor = -1
-    boundary = 'elyte_anode cathode_elyte'
-  []
-  [positive_mass]
-    type = MaterialInterfaceNeumannBC
-    variable = c
-    neighbor_var = c
-    prop = Je
+    variable = Phi_a
+    neighbor_var = Phi_e
+    prop = ibv_a_e
     factor = 1
-    boundary = 'anode_elyte elyte_cathode'
+    boundary = 'a_e'
+  []
+  [current_e_a]
+    type = MaterialInterfaceNeumannBC
+    variable = Phi_e
+    neighbor_var = Phi_a
+    prop = ibv_a_e
+    factor = -1
+    boundary = 'e_a'
+  []
+  [current_ce_cp]
+    type = MaterialInterfaceNeumannBC
+    variable = Phi_ce
+    neighbor_var = Phi_cp
+    prop = ibv_ce_cp
+    factor = 1
+    boundary = 'ce_cp'
+  []
+  [current_cp_ce]
+    type = MaterialInterfaceNeumannBC
+    variable = Phi_cp
+    neighbor_var = Phi_ce
+    prop = ibv_ce_cp
+    factor = -1
+    boundary = 'cp_ce'
+  []
+  [mass_flux_ce_cp]
+    type = MaterialInterfaceNeumannBC
+    variable = c
+    neighbor_var = c
+    prop = jbv_ce_cp
+    factor = 1
+    boundary = 'ce_cp'
+  []
+  [mass_flux_cp_ce]
+    type = MaterialInterfaceNeumannBC
+    variable = c
+    neighbor_var = c
+    prop = jbv_cp_ce
+    factor = -1
+    boundary = 'cp_ce'
+  []
+  [continuity_cm_cp]
+    type = InterfaceContinuity
+    variable = Phi_cm
+    neighbor_var = Phi_cp
+    penalty = 1e-3
+    boundary = 'cm_cp'
+  []
+  [continuity_ce_e]
+    type = InterfaceContinuity
+    variable = Phi_ce
+    neighbor_var = Phi_e
+    penalty = 1e-3
+    boundary = 'ce_e'
   []
 []
 
 [BCs]
-  [left]
+  [right]
     type = FunctionNeumannBC
-    variable = Phi
-    boundary = left
+    variable = Phi_a
+    boundary = right
     function = '${in}'
   []
-  [right]
+  [left]
     type = DirichletBC
-    variable = Phi
-    boundary = right
+    variable = Phi_cm
+    boundary = left
     value = 0
   []
 []
