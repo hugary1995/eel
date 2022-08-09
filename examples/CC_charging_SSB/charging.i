@@ -305,7 +305,7 @@ T_penalty = 1e-2
     type = FunctionNeumannBC
     variable = Phi_a
     boundary = right
-    function = '${in}'
+    function = '${in}*if(t<1,t,1)'
   []
   [potential_left]
     type = DirichletBC
