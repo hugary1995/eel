@@ -24,32 +24,15 @@ ThermalDeformationGradient::ThermalDeformationGradient(const InputParameters & p
   : Material(parameters),
     BaseNameInterface(parameters),
     _Ft(declareADProperty<RankTwoTensor>(prependBaseName("thermal_deformation_gradient"))),
-    _Ft_old(getMaterialPropertyOldByName<RankTwoTensor>(
-        prependBaseName("thermal_deformation_gradient"))),
     _alpha(getFunction("CTE")),
     _T(adCoupledValue("temperature")),
-    _T_old(coupledValueOld("temperature")),
-    _T_ref(coupledValue("reference_temperature")),
-    _step_one(declareRestartableData<bool>("step_one", true))
+    _T_ref(coupledValue("reference_temperature"))
 {
-}
-
-void
-ThermalDeformationGradient::initQpStatefulProperties()
-{
-  _Ft[_qp].setToIdentity();
 }
 
 void
 ThermalDeformationGradient::computeQpProperties()
 {
-  if (_t_step > 1)
-    _step_one = false;
-
-  const Real old_temp = _step_one ? _T_ref[_qp] : _T_old[_qp];
-
-  const auto alpha = _alpha.value(_T[_qp]);
-  const auto alpha_old = _alpha.value(old_temp);
-
-  _Ft[_qp] = (1 + (alpha + alpha_old) / 2 * (_T[_qp] - old_temp)) * _Ft_old[_qp];
+  _Ft[_qp].setToIdentity();
+  _Ft[_qp].addIa(_alpha.value(_T[_qp]) * (_T[_qp] - _T_ref[_qp]));
 }

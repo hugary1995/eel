@@ -45,12 +45,6 @@ SwellingDeformationGradient::SwellingDeformationGradient(const InputParameters &
 }
 
 void
-SwellingDeformationGradient::initQpStatefulProperties()
-{
-  computeQpProperties();
-}
-
-void
 SwellingDeformationGradient::computeQpProperties()
 {
   ADReal Js = 1;

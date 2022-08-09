@@ -20,8 +20,6 @@ public:
 protected:
   virtual void computeQpProperties() override;
 
-  virtual void initQpStatefulProperties() override;
-
   /// The eigen deformation gradient
   ADMaterialProperty<RankTwoTensor> & _Fs;
 
