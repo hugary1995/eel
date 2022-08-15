@@ -757,8 +757,15 @@ T_penalty = 1e-2
   nl_max_its = 20
 
   [TimeStepper]
-    type = FunctionDT
-    function = 'if(t<1, 0.05, 0.01)'
+    # type = FunctionDT
+    # function = 'if(t<1, 0.05, 0.01)'
+    type = IterationAdaptiveDT
+    dt = 0.0125
+    optimal_iterations = 6
+    iteration_window = 2
+    cutback_factor = 0.5
+    cutback_factor_at_failure = 0.1
+    growth_factor = 1.2
   []
   end_time = 100
 

@@ -1,28 +1,48 @@
-I = 5e-6 #mA
-sigma_a = 1e-2 #mS/mm
-sigma_e = 1e-3 #mS/mm
-sigma_c = 1e-4 #mS/mm
-
+I = 1e-4 #mA
 width = 0.03 #mm
+in = '${fparse -I/width}'
+
+sigma_a = 1e0 #mS/mm
+sigma_e = 1e-1 #mS/mm
+sigma_c = 1e-2 #mS/mm
+
 l0 = 0
 l1 = 0.04
 l2 = 0.07
 l3 = 0.12
 
-in = '${fparse -I/width}'
-
 cmin = 1e-4 #mmol/mm^3
 cmax = 1e-3 #mmol/mm^3
-D_a = 1e-6 #mm^2/s
-D_e = 1e-6 #mm^2/s
-D_c = 5e-7 #mm^2/s
+D_a = 1e-4 #mm^2/s
+D_e = 1e-4 #mm^2/s
+D_c = 5e-5 #mm^2/s
 
 R = 8.3145 #mJ/mmol/K
 T0 = 300 #K
 F = 96485 #mC/mmol
 
-i0_a = 1e-15 #mA/mm^2
-i0_c = 1e-12 #mA/mm^2
+i0_a = 1e-4 #mA/mm^2
+i0_c = 1e-1 #mA/mm^2
+
+E_c = 1e5
+E_e = 1e4
+E_a = 2e5
+nu_c = 0.3
+nu_e = 0.25
+nu_a = 0.3
+
+Omega = 60
+beta = 1
+
+CTE = 1e-5
+
+u_penalty = 1e8
+
+rho = 2.5e-9 #Mg/mm^3
+cv = 2.7e6 #mJ/Mg/K
+kappa = 2e-2 #mJ/mm/K/s
+
+T_penalty = 2
 
 [Mesh]
   [battery]
@@ -80,6 +100,14 @@ i0_c = 1e-12 #mA/mm^2
   []
   [c]
   []
+
+  [disp_x]
+  []
+  [disp_y]
+  []
+  [T]
+    initial_condition = ${T0}
+  []
 []
 
 [ICs]
@@ -98,10 +126,23 @@ i0_c = 1e-12 #mA/mm^2
 []
 
 [AuxVariables]
-  [T]
+  [q]
+  []
+  [c_ref]
+    initial_condition = ${cmin}
+  []
+  [T_ref]
     initial_condition = ${T0}
   []
-  [q]
+  [stress]
+    order = CONSTANT
+    family = MONOMIAL
+    [AuxKernel]
+      type = ADRankTwoScalarAux
+      rank_two_tensor = pk1
+      scalar_type = VonMisesStress
+      execute_on = 'INITIAL TIMESTEP_END'
+    []
   []
 []
 
@@ -121,6 +162,35 @@ i0_c = 1e-12 #mA/mm^2
     type = RankOneDivergence
     variable = c
     vector = J
+  []
+  [momentum_balance_x]
+    type = RankTwoDivergence
+    variable = disp_x
+    component = 0
+    tensor = pk1
+  []
+  [momentum_balance_y]
+    type = RankTwoDivergence
+    variable = disp_y
+    component = 1
+    tensor = pk1
+  []
+  [energy_balance_1]
+    type = ADHeatConductionTimeDerivative
+    variable = T
+    density_name = rho
+    specific_heat = cv
+  []
+  [energy_balance_2]
+    type = ADHeatConduction
+    variable = T
+    thermal_conductivity = kappa
+  []
+  [heat_source_cp]
+    type = MaterialSource
+    variable = T
+    prop = jh
+    coefficient = -1
   []
 []
 
@@ -156,6 +226,27 @@ i0_c = 1e-12 #mA/mm^2
     factor = 1
     boundary = 'anode_elyte elyte_cathode'
   []
+  [continuity_disp_x]
+    type = InterfaceContinuity
+    variable = disp_x
+    neighbor_var = disp_x
+    penalty = ${u_penalty}
+    boundary = 'anode_elyte elyte_cathode'
+  []
+  [continuity_disp_y]
+    type = InterfaceContinuity
+    variable = disp_y
+    neighbor_var = disp_y
+    penalty = ${u_penalty}
+    boundary = 'anode_elyte elyte_cathode'
+  []
+  [continuity_T]
+    type = InterfaceContinuity
+    variable = T
+    neighbor_var = T
+    penalty = ${T_penalty}
+    boundary = 'anode_elyte elyte_cathode'
+  []
 []
 
 [BCs]
@@ -170,6 +261,18 @@ i0_c = 1e-12 #mA/mm^2
     variable = Phi
     boundary = right
     value = 0
+  []
+  [fix_x]
+    type = DirichletBC
+    variable = disp_x
+    value = 0
+    boundary = 'left right'
+  []
+  [fix_y]
+    type = DirichletBC
+    variable = disp_y
+    value = 0
+    boundary = 'left right'
   []
 []
 
@@ -282,6 +385,7 @@ i0_c = 1e-12 #mA/mm^2
     charge_transfer_current_density = ie
     charge_transfer_mass_flux = Je
     electric_potential = Phi
+    neighbor_electric_potential = Phi
     charge_transfer_coefficient = 0.5
     exchange_current_density = ${i0_a}
     faraday_constant = ${F}
@@ -296,6 +400,7 @@ i0_c = 1e-12 #mA/mm^2
     charge_transfer_current_density = ie
     charge_transfer_mass_flux = Je
     electric_potential = Phi
+    neighbor_electric_potential = Phi
     charge_transfer_coefficient = 0.5
     exchange_current_density = ${i0_a}
     faraday_constant = ${F}
@@ -310,6 +415,7 @@ i0_c = 1e-12 #mA/mm^2
     charge_transfer_current_density = ie
     charge_transfer_mass_flux = Je
     electric_potential = Phi
+    neighbor_electric_potential = Phi
     charge_transfer_coefficient = 0.5
     exchange_current_density = ${i0_c}
     faraday_constant = ${F}
@@ -324,6 +430,7 @@ i0_c = 1e-12 #mA/mm^2
     charge_transfer_current_density = ie
     charge_transfer_mass_flux = Je
     electric_potential = Phi
+    neighbor_electric_potential = Phi
     charge_transfer_coefficient = 0.5
     exchange_current_density = ${i0_c}
     faraday_constant = ${F}
@@ -331,6 +438,72 @@ i0_c = 1e-12 #mA/mm^2
     temperature = T
     open_circuit_potential = U
     boundary = 'elyte_cathode'
+  []
+
+  # Thermal
+  [thermal_properties]
+    type = ADGenericConstantMaterial
+    prop_names = 'rho cv kappa'
+    prop_values = '${rho} ${cv} ${kappa}'
+  []
+  [joule_heating]
+    type = JouleHeating
+    electric_potential = Phi
+    electric_conductivity = sigma
+    joule_heating = jh
+  []
+
+  # Mechanical
+  [stiffness_c]
+    type = ADGenericConstantMaterial
+    prop_names = 'lambda G'
+    prop_values = '${fparse E_c*nu_c/(1+nu_c)/(1-2*nu_c)} ${fparse E_c/2/(1+nu_c)}'
+    block = cathode
+  []
+  [stiffness_e]
+    type = ADGenericConstantMaterial
+    prop_names = 'lambda G'
+    prop_values = '${fparse E_e*nu_e/(1+nu_e)/(1-2*nu_e)} ${fparse E_e/2/(1+nu_e)}'
+    block = elyte
+  []
+  [stiffness_a]
+    type = ADGenericConstantMaterial
+    prop_names = 'lambda G'
+    prop_values = '${fparse E_a*nu_a/(1+nu_a)/(1-2*nu_a)} ${fparse E_a/2/(1+nu_a)}'
+    block = anode
+  []
+  [bulk]
+    type = ADGenericConstantMaterial
+    prop_names = 'beta'
+    prop_values = '${beta}'
+  []
+  [swelling]
+    type = SwellingDeformationGradient
+    concentrations = c
+    reference_concentrations = c_ref
+    molar_volumes = ${Omega}
+    swelling_coefficient = beta
+  []
+  [thermal_expansion]
+    type = ThermalDeformationGradient
+    temperature = T
+    reference_temperature = T_ref
+    CTE = ${CTE}
+  []
+  [defgrad]
+    type = DeformationGradient
+    displacements = 'disp_x disp_y'
+  []
+  [neohookean]
+    type = NeoHookeanElasticEnergyDensity
+    elastic_energy_density = psi_m
+    lambda = lambda
+    shear_modulus = G
+  []
+  [pk1]
+    type = FirstPiolaKirchhoffStress
+    first_piola_kirchhoff_stress = pk1
+    energy_densities = 'psi_m psi_e'
   []
 []
 
@@ -433,14 +606,14 @@ i0_c = 1e-12 #mA/mm^2
   automatic_scaling = true
 
   nl_rel_tol = 1e-6
-  nl_abs_tol = 1e-8
+  nl_abs_tol = 1e-10
   nl_max_its = 20
 
   [TimeStepper]
     type = IterationAdaptiveDT
     dt = 0.01
-    optimal_iterations = 7
-    iteration_window = 1
+    optimal_iterations = 6
+    iteration_window = 2
     growth_factor = 1.2
     cutback_factor = 0.5
     cutback_factor_at_failure = 0.2
