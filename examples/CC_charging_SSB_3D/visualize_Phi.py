@@ -1,5 +1,6 @@
 from paraview.simple import *
 import numpy as np
+from pathlib import Path
 
 # Parameters
 filename = '3D_demo.e'
@@ -11,9 +12,12 @@ disp_magnitude = 10
 variable_min = -5.4
 variable_max = 0
 matrix_opacity = 0.75
+backface_opacity = 0.75
 frames = 40
 W = 720
 H = 360
+cbar_location = [0.8, 0.25]
+cbar_length = 0.5
 
 paraview.simple._DisableFirstRenderCameraReset()
 
@@ -27,7 +31,7 @@ renderView1.UseLight = 0
 renderView1.Update()
 
 layout1 = GetLayout()
-layout1.SetSize(W, H)
+layout1.SetSize((W, H))
 
 #######################################################
 # Particle
@@ -78,7 +82,7 @@ temporalInterpolator2Display = Show(
     temporalInterpolator2, renderView1, 'UnstructuredGridRepresentation')
 temporalInterpolator2Display.Representation = 'Surface'
 temporalInterpolator2Display.BackfaceRepresentation = 'Surface'
-temporalInterpolator2Display.BackfaceOpacity = 0.0
+temporalInterpolator2Display.BackfaceOpacity = backface_opacity
 temporalInterpolator2Display.Opacity = matrix_opacity
 temporalInterpolator2Display.SetScalarBarVisibility(renderView1, True)
 ColorBy(temporalInterpolator2Display, ('POINTS', variable))
@@ -93,8 +97,8 @@ tLUT.RescaleTransferFunction(variable_min, variable_max)
 tLUT.ApplyPreset(colorbar, True)
 tLUTColorBar = GetScalarBar(tLUT, renderView1)
 tLUTColorBar.WindowLocation = 'AnyLocation'
-tLUTColorBar.Position = [0.85, 0.25]
-tLUTColorBar.ScalarBarLength = 0.5
+tLUTColorBar.Position = cbar_location
+tLUTColorBar.ScalarBarLength = cbar_length
 tLUTColorBar.AddRangeLabels = 0
 tLUTColorBar.Title = variable_name
 
@@ -102,6 +106,7 @@ tLUTColorBar.Title = variable_name
 #######################################################
 # Animation
 #######################################################
+Path(outdir).mkdir(parents=True, exist_ok=True)
 times = np.linspace(0, particle.TimestepValues[-1], frames)
 for step in range(frames):
     print('Saving time step {}'.format(step))

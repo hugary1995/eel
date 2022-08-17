@@ -1,6 +1,6 @@
 I = 3e-4 #mA
 width = 0.03 #mm
-in = '${fparse -I/width}'
+in = '${fparse I/width}'
 
 sigma_a = 1e0 #mS/mm
 sigma_e = 1e-1 #mS/mm
@@ -250,10 +250,10 @@ T_penalty = 2
 
 [BCs]
   [left]
-    type = FunctionNeumannBC
+    type = PostprocessorNeumannBC
     variable = Phi
     boundary = left
-    function = '${in}*if(t<1,t,1)'
+    postprocessor = 'iext'
   []
   [right]
     type = DirichletBC
@@ -556,12 +556,32 @@ T_penalty = 2
     variable = c
     value_type = max
     block = anode
+    outputs = none
+    execute_on = 'INITIAL TIMESTEP_END'
+  []
+  [cmax_c]
+    type = NodalExtremeValue
+    variable = c
+    value_type = max
+    block = cathode
+    outputs = none
+    execute_on = 'INITIAL TIMESTEP_END'
+  []
+  [cmin_a]
+    type = NodalExtremeValue
+    variable = c
+    value_type = min
+    block = anode
+    outputs = none
+    execute_on = 'INITIAL TIMESTEP_END'
   []
   [cmin_c]
     type = NodalExtremeValue
     variable = c
     value_type = min
     block = cathode
+    outputs = none
+    execute_on = 'INITIAL TIMESTEP_END'
   []
   [mass_a]
     type = ElementIntegralVariablePostprocessor
@@ -581,18 +601,24 @@ T_penalty = 2
     block = cathode
     execute_on = 'INITIAL TIMESTEP_END'
   []
+  [discharging]
+    type = ParsedPostprocessor
+    function = 'if(discharging > 0, 1, if(cmax_a <= ${cmax} & cmin_c >= ${cmin}, 0, 1))'
+    pp_names = 'discharging cmax_a cmin_c'
+    outputs = none
+  []
+  [iext]
+    type = ParsedPostprocessor
+    function = 'if(discharging > 0, ${in}, -${in})'
+    pp_names = 'discharging'
+    execute_on = 'INITIAL TIMESTEP_END'
+  []
 []
 
 [UserObjects]
-  [kill_a]
+  [kill]
     type = Terminator
-    expression = 'cmax_a >= ${cmax}'
-    message = 'Concentration in anode exceeds the maximum allowable value.'
-  []
-  [kill_c]
-    type = Terminator
-    expression = 'cmin_c <= ${cmin}'
-    message = 'Concentration in cathode is below the minimum allowable value.'
+    expression = 'discharging > 0 & V < 1e-3'
   []
 []
 

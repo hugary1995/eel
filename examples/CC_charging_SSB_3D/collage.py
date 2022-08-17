@@ -4,6 +4,9 @@ import cv2
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
 from matplotlib.figure import Figure
+from pathlib import Path
+
+Path("animation").mkdir(parents=True, exist_ok=True)
 
 # Postprocessor values
 frames = 40
@@ -12,9 +15,9 @@ C = data["C"].tolist()
 V = data["V"].tolist()
 dC = max(C) / frames
 
-logo = cv2.imread('anl.png')
-logo = cv2.resize(logo, (480, 168))
-logo = cv2.copyMakeBorder(logo, 240-168, 0, 0, 0, cv2.BORDER_REPLICATE)
+logo = cv2.imread('gold/anl.png')
+logo = cv2.resize(logo, (480, 180))
+logo = cv2.copyMakeBorder(logo, 240-180, 0, 0, 0, cv2.BORDER_REPLICATE)
 
 for step in range(1, frames):
     print("writing step {}".format(step))
@@ -40,7 +43,6 @@ for step in range(1, frames):
     ax.set_ylim(0)
     ax.set_xlabel('Capacity [mA s]')
     ax.set_ylabel('Voltage [V]')
-    fig.tight_layout(pad=0)
     canvas.draw()
     CV = np.frombuffer(canvas.tostring_rgb(), dtype=np.uint8)
     CV = CV.reshape(fig.canvas.get_width_height()[::-1] + (3,))
