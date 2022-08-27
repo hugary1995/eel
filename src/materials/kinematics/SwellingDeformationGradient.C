@@ -6,55 +6,37 @@ InputParameters
 SwellingDeformationGradient::validParams()
 {
   InputParameters params = Material::validParams();
-  params += BaseNameInterface::validParams();
   params.addClassDescription("This class computes the eigen deformation gradient due to swelling.");
-
-  params.addRequiredCoupledVar(
-      "concentrations",
-      "Vector of concentrations of chemical species, each contributing to a portion of the "
-      "swelling eigen deformation gradient");
-  params.addRequiredCoupledVar("reference_concentrations",
-                               "Vector of reference concentrations of chemical species, at which "
-                               "no swelling occurs");
-  params.addRequiredParam<std::vector<Real>>("molar_volumes",
-                                             "Vector of molar volumes for the species.");
+  params.addRequiredParam<MaterialPropertyName>("swelling_deformation_gradient",
+                                                "Name of the swelling deformation gradient");
+  params.addRequiredCoupledVar("concentration",
+                               "The chemical concentration contributing to swelling");
+  params.addRequiredCoupledVar("reference_concentration",
+                               "The reference concentration at which no swelling occurs");
+  params.addRequiredParam<Real>("molar_volume", "The molar volume of the chemical species");
   params.addRequiredParam<MaterialPropertyName>("swelling_coefficient", "The swelling coefficient");
 
   return params;
 }
 
 SwellingDeformationGradient::SwellingDeformationGradient(const InputParameters & parameters)
-  : Material(parameters),
-    BaseNameInterface(parameters),
-    _Fs(declareADProperty<RankTwoTensor>(prependBaseName("swelling_deformation_gradient"))),
-    _c_names(coupledNames("concentrations")),
-    _c(adCoupledValues("concentrations")),
-    _c_ref(adCoupledValues("reference_concentrations")),
-    _Omega(getParam<std::vector<Real>>("molar_volumes")),
-    _beta(getADMaterialPropertyByName<Real>(prependBaseName("swelling_coefficient", true))),
-    _d_Fs_d_c(coupledComponents("concentrations"))
+  : DerivativeMaterialInterface<Material>(parameters),
+    _Fs_name(getParam<MaterialPropertyName>("swelling_deformation_gradient")),
+    _Fs(declareADPropertyByName<RankTwoTensor>(_Fs_name)),
+    _c_name(getVar("concentration", 0)->name()),
+    _c(adCoupledValue("concentration")),
+    _c_ref(adCoupledValue("reference_concentration")),
+    _Omega(getParam<Real>("molar_volume")),
+    _alpha_s(getADMaterialProperty<Real>("swelling_coefficient")),
+    _d_Fs_d_lnc(declarePropertyDerivative<RankTwoTensor, true>(_Fs_name, "ln(" + _c_name + ")"))
 {
-  if (_c.size() != _c_ref.size() || _c.size() != _Omega.size())
-    mooseError("Number of chemical species concentrations, reference concentrations, and molar "
-               "volumes must be the same");
-
-  // Declare d_Fg_d_c
-  for (auto i : index_range(_c))
-    _d_Fs_d_c[i] = &declareADProperty<RankTwoTensor>(
-        derivativePropertyName(prependBaseName("swelling_deformation_gradient"), {_c_names[i]}));
 }
 
 void
 SwellingDeformationGradient::computeQpProperties()
 {
-  ADReal Js = 1;
-
-  for (auto i : index_range(_c))
-    Js += _beta[_qp] * _Omega[i] * ((*_c[i])[_qp] - (*_c_ref[i])[_qp]);
-
+  ADReal Js = 1 + _alpha_s[_qp] * _Omega * (_c[_qp] - _c_ref[_qp]);
   _Fs[_qp] = std::cbrt(Js) * ADRankTwoTensor::Identity();
-
-  for (auto i : index_range(_c))
-    (*_d_Fs_d_c[i])[_qp] =
-        std::pow(Js, -2. / 3.) / 3 * _beta[_qp] * _Omega[i] * ADRankTwoTensor::Identity();
+  _d_Fs_d_lnc[_qp] =
+      _c[_qp] * std::pow(Js, -2. / 3.) / 3 * _alpha_s[_qp] * _Omega * ADRankTwoTensor::Identity();
 }

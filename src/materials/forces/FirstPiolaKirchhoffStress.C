@@ -10,24 +10,19 @@ FirstPiolaKirchhoffStress::validParams()
                              "given energy densities.");
   params.addRequiredParam<MaterialPropertyName>("first_piola_kirchhoff_stress",
                                                 "Name of the first Piola-Kirchhoff stress");
+  params.addRequiredParam<MaterialPropertyName>("deformation_gradient", "The deformation gradient");
   return params;
 }
 
 FirstPiolaKirchhoffStress::FirstPiolaKirchhoffStress(const InputParameters & parameters)
-  : ThermodynamicForce<RankTwoTensor>(parameters),
-    _F(_heat ? &getADMaterialPropertyByName<RankTwoTensor>(prependBaseName("deformation_gradient"))
-             : nullptr),
-    _F_old(_heat ? &getMaterialPropertyOldByName<RankTwoTensor>(
-                       prependBaseName("deformation_gradient"))
-                 : nullptr)
+  : ThermodynamicForce<RankTwoTensor>(parameters)
 {
-  // Get equilibrium forces
-  getThermodynamicForces(_d_psi_d_s, _psi_names, prependBaseName("deformation_gradient"));
+  const MaterialPropertyName F_dot_name =
+      "dot(" + getParam<MaterialPropertyName>("deformation_gradient") + ")";
 
-  // Get viscous forces
-  getThermodynamicForces(
-      _d_psi_dis_d_v, _psi_dis_names, prependBaseName("deformation_gradient") + "_dot");
+  // Get forces
+  getThermodynamicForces(_d_psi_d_s, _psi_names, F_dot_name);
 
   // Declare the (total) thermodynamic force
-  _force = &declareADProperty<RankTwoTensor>(prependBaseName("first_piola_kirchhoff_stress", true));
+  _force = &declareADProperty<RankTwoTensor>("first_piola_kirchhoff_stress");
 }

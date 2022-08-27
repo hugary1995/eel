@@ -1,26 +1,22 @@
 #pragma once
 
 #include "Material.h"
-#include "BaseNameInterface.h"
 #include "ADRankTwoTensorForward.h"
-#include "DerivativeMaterialPropertyNameInterface.h"
+#include "DerivativeMaterialInterface.h"
 
-/**
- * This class computes the deformation gradient
- */
-class DeformationGradient : public Material,
-                            public BaseNameInterface,
-                            public DerivativeMaterialPropertyNameInterface
+class DeformationGradient : public DerivativeMaterialInterface<Material>
 {
 public:
   static InputParameters validParams();
 
   DeformationGradient(const InputParameters & parameters);
 
-  virtual void computeProperties() override;
+  void computeProperties() override;
 
 protected:
-  virtual void initQpStatefulProperties() override;
+  void initQpStatefulProperties() override;
+
+  void computeQpProperties() override;
 
   /// Displacement variables
   std::vector<const ADVariableValue *> _disp;
@@ -34,22 +30,18 @@ protected:
   /// The current element volume
   const Real & _current_elem_volume;
 
+  /// Deformation gradient name
+  const MaterialPropertyName _F_name;
+
   /// The total deformation gradient
   ADMaterialProperty<RankTwoTensor> & _F;
 
-  // The mechanical deformation gradient (after excluding eigen deformation gradients from the total
-  // deformation gradient)
-  ADMaterialProperty<RankTwoTensor> & _Fm;
+  /// The deformation gradient from the previous time step
+  const MaterialProperty<RankTwoTensor> & _F_old;
 
-  // The swelling deformation gradients
-  const ADMaterialProperty<RankTwoTensor> * _Fs;
+  /// The deformation gradient rate
+  ADMaterialProperty<RankTwoTensor> & _F_dot;
 
-  // The thermal deformation gradients
-  const ADMaterialProperty<RankTwoTensor> * _Ft;
-
-  // Derivative of Fm w.r.t. F
-  ADMaterialProperty<RankFourTensor> & _d_Fm_d_F;
-
-  // Derivative of Fm w.r.t. Fs
-  ADMaterialProperty<RankFourTensor> * _d_Fm_d_Fs;
+private:
+  ADReal _J_avg;
 };

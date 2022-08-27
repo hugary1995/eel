@@ -1,13 +1,9 @@
 #pragma once
 
 #include "ADKernel.h"
-#include "BaseNameInterface.h"
 #include "ADRankTwoTensorForward.h"
 
-/**
- * This class implements the weak form for the divergence of a second order tensor
- */
-class RankTwoDivergence : public ADKernel, public BaseNameInterface
+class RankTwoDivergence : public ADKernel
 {
 public:
   static InputParameters validParams();

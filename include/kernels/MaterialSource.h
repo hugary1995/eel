@@ -1,9 +1,8 @@
 #pragma once
 
 #include "ADKernelValue.h"
-#include "BaseNameInterface.h"
 
-class MaterialSource : public ADKernelValue, public BaseNameInterface
+class MaterialSource : public ADKernelValue
 {
 public:
   static InputParameters validParams();

@@ -6,47 +6,29 @@ InputParameters
 DeformationGradient::validParams()
 {
   InputParameters params = Material::validParams();
-  params += BaseNameInterface::validParams();
-  params.addClassDescription(
-      "This class computes the deformation gradient. Eigen deformation gradients are extracted "
-      "from the total deformation gradient. The F-bar approach can optionally be used to correct "
-      "volumetric locking.");
-
+  params.addClassDescription("This class computes the deformation gradient. The F-bar approach can "
+                             "optionally be used to correct volumetric locking.");
+  params.addRequiredParam<MaterialPropertyName>("deformation_gradient",
+                                                "Name of the deformation gradient");
   params.addRequiredCoupledVar(
       "displacements",
       "The displacements appropriate for the simulation geometry and coordinate system");
   params.addParam<bool>(
       "volumetric_locking_correction", false, "Flag to correct volumetric locking");
   params.suppressParameter<bool>("use_displaced_mesh");
-
   return params;
 }
 
 DeformationGradient::DeformationGradient(const InputParameters & parameters)
-  : Material(parameters),
-    BaseNameInterface(parameters),
+  : DerivativeMaterialInterface<Material>(parameters),
     _disp(adCoupledValues("displacements")),
     _grad_disp(adCoupledGradients("displacements")),
-    _volumetric_locking_correction(getParam<bool>("volumetric_locking_correction") &&
-                                   !this->isBoundaryMaterial()),
+    _volumetric_locking_correction(getParam<bool>("volumetric_locking_correction")),
     _current_elem_volume(_assembly.elemVolume()),
-    _F(declareADProperty<RankTwoTensor>(prependBaseName("deformation_gradient"))),
-    _Fm(declareADProperty<RankTwoTensor>(prependBaseName("mechanical_deformation_gradient"))),
-    _Fs(hasADMaterialProperty<RankTwoTensor>(prependBaseName("swelling_deformation_gradient"))
-            ? &getADMaterialPropertyByName<RankTwoTensor>(
-                  prependBaseName("swelling_deformation_gradient"))
-            : nullptr),
-    _Ft(hasADMaterialProperty<RankTwoTensor>(prependBaseName("thermal_deformation_gradient"))
-            ? &getADMaterialPropertyByName<RankTwoTensor>(
-                  prependBaseName("thermal_deformation_gradient"))
-            : nullptr),
-    _d_Fm_d_F(declareADProperty<RankFourTensor>(
-        derivativePropertyName(prependBaseName("mechanical_deformation_gradient"),
-                               {prependBaseName("deformation_gradient")}))),
-    _d_Fm_d_Fs(_Fs ? &declareADProperty<RankFourTensor>(
-                         derivativePropertyName(prependBaseName("mechanical_deformation_gradient"),
-                                                {prependBaseName("swelling_deformation_gradient")}))
-                   : nullptr)
+    _F_name(getParam<MaterialPropertyName>("deformation_gradient")),
+    _F(declareADPropertyByName<RankTwoTensor>(_F_name)),
+    _F_old(getMaterialPropertyOldByName<RankTwoTensor>(_F_name)),
+    _F_dot(declareADPropertyByName<RankTwoTensor>("dot(" + _F_name + ")"))
 {
   if (getParam<bool>("use_displaced_mesh"))
     paramError("use_displaced_mesh",
@@ -61,47 +43,35 @@ void
 DeformationGradient::initQpStatefulProperties()
 {
   _F[_qp].setToIdentity();
-  _Fm[_qp].setToIdentity();
 }
 
 void
 DeformationGradient::computeProperties()
 {
-  ADReal ave_F_det = 0;
+  const auto I = ADRankTwoTensor::Identity();
+  _J_avg = 0;
 
   for (_qp = 0; _qp < _qrule->n_points(); ++_qp)
   {
-    _F[_qp] = ADRankTwoTensor::initializeFromRows(
-        (*_grad_disp[0])[_qp], (*_grad_disp[1])[_qp], (*_grad_disp[2])[_qp]);
-    _F[_qp].addIa(1.0);
+    _F[_qp] = I + ADRankTwoTensor::initializeFromRows(
+                      (*_grad_disp[0])[_qp], (*_grad_disp[1])[_qp], (*_grad_disp[2])[_qp]);
 
     if (_volumetric_locking_correction)
-      ave_F_det += _F[_qp].det() * _JxW[_qp] * _coord[_qp];
+      _J_avg += _F[_qp].det() * _JxW[_qp] * _coord[_qp];
   }
 
   if (_volumetric_locking_correction)
-    ave_F_det /= _current_elem_volume;
+    _J_avg /= _current_elem_volume;
 
   for (_qp = 0; _qp < _qrule->n_points(); ++_qp)
-  {
-    if (_volumetric_locking_correction)
-      _F[_qp] *= std::cbrt(ave_F_det / _F[_qp].det());
+    computeQpProperties();
+}
 
-    // Remove the eigen deformation gradients
-    _Fm[_qp] = _F[_qp];
-    ADRankTwoTensor Fg(ADRankTwoTensor::initIdentity);
-    if (_Fs)
-      Fg *= (*_Fs)[_qp];
-    if (_Ft)
-      Fg *= (*_Ft)[_qp];
-    _Fm[_qp] *= Fg.inverse();
+void
+DeformationGradient::computeQpProperties()
+{
+  if (_volumetric_locking_correction)
+    _F[_qp] *= std::cbrt(_J_avg / _F[_qp].det());
 
-    // Derivatives
-    ADRankTwoTensor I(ADRankTwoTensor::initIdentity);
-
-    usingTensorIndices(i, j, k, l);
-    _d_Fm_d_F[_qp] = I.times<i, k, l, j>(Fg.inverse());
-    if (_Fs)
-      (*_d_Fm_d_Fs)[_qp] = -_Fm[_qp].times<i, k, l, j>((*_Fs)[_qp].inverse());
-  }
+  _F_dot[_qp] = (_F[_qp] - _F_old[_qp]) / _dt;
 }

@@ -6,7 +6,6 @@ InputParameters
 MaterialSource::validParams()
 {
   InputParameters params = ADKernelValue::validParams();
-  params += BaseNameInterface::validParams();
   params.addClassDescription("Source term defined by the material property");
   params.addRequiredParam<MaterialPropertyName>(
       "prop", "Name of the material property to provide the multiplier");
@@ -16,8 +15,7 @@ MaterialSource::validParams()
 
 MaterialSource::MaterialSource(const InputParameters & parameters)
   : ADKernelValue(parameters),
-    BaseNameInterface(parameters),
-    _prop(getADMaterialPropertyByName<Real>(prependBaseName("prop", true))),
+    _prop(getADMaterialPropertyByName<Real>("prop")),
     _coef(getParam<Real>("coefficient"))
 {
 }

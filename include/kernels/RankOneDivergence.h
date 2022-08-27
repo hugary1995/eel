@@ -1,12 +1,8 @@
 #pragma once
 
 #include "ADKernel.h"
-#include "BaseNameInterface.h"
 
-/**
- * This class implements the weak form for the divergence of a vector
- */
-class RankOneDivergence : public ADKernel, public BaseNameInterface
+class RankOneDivergence : public ADKernel
 {
 public:
   static InputParameters validParams();

@@ -2,10 +2,10 @@
 
 #include "ThermodynamicForce.h"
 
-class MassSource : public ThermodynamicForce<Real>
+class HeatSource : public ThermodynamicForce<Real>
 {
 public:
   static InputParameters validParams();
 
-  MassSource(const InputParameters & parameters);
+  HeatSource(const InputParameters & parameters);
 };

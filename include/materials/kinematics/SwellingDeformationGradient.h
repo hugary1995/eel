@@ -1,16 +1,10 @@
 #pragma once
 
 #include "Material.h"
-#include "BaseNameInterface.h"
 #include "ADRankTwoTensorForward.h"
-#include "DerivativeMaterialPropertyNameInterface.h"
+#include "DerivativeMaterialInterface.h"
 
-/**
- * This class computes the eigen deformation gradient induced by swelling
- */
-class SwellingDeformationGradient : public Material,
-                                    public BaseNameInterface,
-                                    public DerivativeMaterialPropertyNameInterface
+class SwellingDeformationGradient : public DerivativeMaterialInterface<Material>
 {
 public:
   static InputParameters validParams();
@@ -20,24 +14,27 @@ public:
 protected:
   virtual void computeQpProperties() override;
 
-  /// The eigen deformation gradient
+  /// Name of the swelling deformation gradient
+  const MaterialPropertyName _Fs_name;
+
+  /// The swelling deformation gradient
   ADMaterialProperty<RankTwoTensor> & _Fs;
 
-  /// Names of the concentration variables
-  const std::vector<VariableName> _c_names;
+  /// Names of the concentration variable
+  const VariableName _c_name;
 
-  /// Concentration of each species
-  std::vector<const ADVariableValue *> _c;
+  /// Concentration
+  const ADVariableValue & _c;
 
-  /// Reference concentration of each species
-  std::vector<const ADVariableValue *> _c_ref;
+  /// Reference concentration
+  const ADVariableValue & _c_ref;
 
-  /// Molar volume of each species
-  const std::vector<Real> _Omega;
+  /// Molar volume
+  const Real _Omega;
 
-  /// swelling coefficient
-  const ADMaterialProperty<Real> & _beta;
+  /// The swelling coefficient
+  const ADMaterialProperty<Real> & _alpha_s;
 
-  // Derivative of the eigen deformation gradient w.r.t. each concentration variable
-  std::vector<ADMaterialProperty<RankTwoTensor> *> _d_Fs_d_c;
+  // Derivative of the swelling deformation gradient w.r.t. the log concentration
+  ADMaterialProperty<RankTwoTensor> & _d_Fs_d_lnc;
 };

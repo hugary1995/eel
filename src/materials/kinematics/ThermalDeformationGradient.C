@@ -6,33 +6,35 @@ InputParameters
 ThermalDeformationGradient::validParams()
 {
   InputParameters params = Material::validParams();
-  params += BaseNameInterface::validParams();
-  params.addClassDescription(
-      "This class computes the thermal deformation gradient based on the instantaneous CTE.");
-
-  params.addRequiredParam<FunctionName>(
-      "CTE", "Function describing the thermal expansion coefficient $\alpha$");
-  params.addRequiredCoupledVar("temperature", "The current temperature");
+  params.addClassDescription("This class computes the thermal deformation gradient.");
+  params.addRequiredParam<MaterialPropertyName>("thermal_deformation_gradient",
+                                                "Name of the thermal deformation gradient");
+  params.addRequiredParam<MaterialPropertyName>("CTE", "The thermal expansion coefficient");
+  params.addRequiredCoupledVar("temperature", "The temperature");
   params.addRequiredCoupledVar("reference_temperature",
                                "The reference temperature corresponding to zero thermal expansion");
-
   params.suppressParameter<bool>("use_displaced_mesh");
   return params;
 }
 
 ThermalDeformationGradient::ThermalDeformationGradient(const InputParameters & parameters)
-  : Material(parameters),
-    BaseNameInterface(parameters),
-    _Ft(declareADProperty<RankTwoTensor>(prependBaseName("thermal_deformation_gradient"))),
-    _alpha(getFunction("CTE")),
+  : DerivativeMaterialInterface<Material>(parameters),
+    _Ft_name(getParam<MaterialPropertyName>("thermal_deformation_gradient")),
+    _Ft(declareADProperty<RankTwoTensor>(_Ft_name)),
+    _T_name(getVar("temperature", 0)->name()),
     _T(adCoupledValue("temperature")),
-    _T_ref(coupledValue("reference_temperature"))
+    _T_ref(coupledValue("reference_temperature")),
+    _alpha_t(getADMaterialProperty<Real>("CTE")),
+    _d_Ft_d_lnT(declarePropertyDerivative<RankTwoTensor, true>(_Ft_name, "ln(" + _T_name + ")"))
+
 {
 }
 
 void
 ThermalDeformationGradient::computeQpProperties()
 {
-  _Ft[_qp].setToIdentity();
-  _Ft[_qp].addIa(_alpha.value(_T[_qp]) * (_T[_qp] - _T_ref[_qp]));
+  ADReal Jt = 1 + _alpha_t[_qp] * (_T[_qp] - _T_ref[_qp]);
+  _Ft[_qp] = std::cbrt(Jt) * ADRankTwoTensor::Identity();
+  _d_Ft_d_lnT[_qp] =
+      _T[_qp] * std::pow(Jt, -2. / 3.) / 3 * _alpha_t[_qp] * ADRankTwoTensor::Identity();
 }

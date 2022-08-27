@@ -6,7 +6,6 @@ InputParameters
 RankTwoDivergence::validParams()
 {
   InputParameters params = ADKernel::validParams();
-  params += BaseNameInterface::validParams();
   params.addClassDescription(
       "This class implements the weak form for the divergence of a second order tensor");
   params.addRequiredParam<MaterialPropertyName>("tensor", "The second order tensor");
@@ -19,8 +18,7 @@ RankTwoDivergence::validParams()
 
 RankTwoDivergence::RankTwoDivergence(const InputParameters & params)
   : ADKernel(params),
-    BaseNameInterface(params),
-    _tensor(getADMaterialProperty<RankTwoTensor>(prependBaseName("tensor", true))),
+    _tensor(getADMaterialProperty<RankTwoTensor>("tensor")),
     _component(getParam<unsigned int>("component"))
 {
 }

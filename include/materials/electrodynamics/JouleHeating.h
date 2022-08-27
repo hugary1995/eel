@@ -1,12 +1,8 @@
 #pragma once
 
 #include "Material.h"
-#include "BaseNameInterface.h"
 
-/**
- * Joule heating due to electric displacement
- */
-class JouleHeating : public Material, public BaseNameInterface
+class JouleHeating : public Material
 {
 public:
   static InputParameters validParams();
@@ -23,5 +19,5 @@ protected:
   const ADVariableGradient & _grad_Phi;
 
   /// The electrical conductivity
-  const ADMaterialProperty<Real> & _sigma;
+  const ADMaterialProperty<RankTwoTensor> & _sigma;
 };

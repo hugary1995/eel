@@ -6,23 +6,20 @@ InputParameters
 JouleHeating::validParams()
 {
   InputParameters params = Material::validParams();
-  params += BaseNameInterface::validParams();
   params.addClassDescription("This class computes volumetric heat source due to Joule heating from "
                              "electric displacement.");
   params.addRequiredCoupledVar("electric_potential", "The electrical potential");
   params.addRequiredParam<MaterialPropertyName>("electric_conductivity",
                                                 "Name of the electric conductivity");
-  params.addRequiredParam<MaterialPropertyName>("joule_heating",
-                                                "Give Joule heating a name (symbol)");
+  params.addRequiredParam<MaterialPropertyName>("heat_source", "Name of the heat source");
   return params;
 }
 
 JouleHeating::JouleHeating(const InputParameters & parameters)
   : Material(parameters),
-    BaseNameInterface(parameters),
-    _q(declareADProperty<Real>(prependBaseName("joule_heating", true))),
+    _q(declareADProperty<Real>("heat_source")),
     _grad_Phi(adCoupledGradient("electric_potential")),
-    _sigma(getADMaterialPropertyByName<Real>(prependBaseName("electric_conductivity", true)))
+    _sigma(getADMaterialProperty<RankTwoTensor>("electric_conductivity"))
 {
 }
 

@@ -1,17 +1,10 @@
 #pragma once
 
 #include "Material.h"
-#include "BaseNameInterface.h"
 #include "ADRankTwoTensorForward.h"
 #include "DerivativeMaterialInterface.h"
 
-/**
- * This class computes the electrical energy density and the corresponding thermodynamic forces. In
- * this app, we assume the electrical energy density depends on at least the deformation gradient
- * and the gradient of electrical potential.
- */
-class ElectricalEnergyDensity : public DerivativeMaterialInterface<Material>,
-                                public BaseNameInterface
+class ElectricalEnergyDensity : public DerivativeMaterialInterface<Material>
 {
 public:
   static InputParameters validParams();
@@ -19,24 +12,11 @@ public:
   ElectricalEnergyDensity(const InputParameters & parameters);
 
 protected:
-  virtual void computeQpProperties() override;
+  /// Name of the electrical energy density
+  const MaterialPropertyName _energy_name;
 
-  virtual void precomputeQpProperties() {}
-
-  /// Compute the electrical energy density
-  virtual ADReal computeQpElectricalEnergyDensity() const = 0;
-
-  /// Compute \frac{\partial \psi^e}{\partial \Phi}
-  virtual ADReal computeQpDElectricalEnergyDensityDElectricalPotential() = 0;
-
-  /// Compute \frac{\partial \psi^e}{\partial \nabla \Phi}
-  virtual ADRealVectorValue computeQpDElectricalEnergyDensityDElectricalPotentialGradient() = 0;
-
-  /// Compute \frac{\partial \psi^e}{\partial F}
-  virtual ADRankTwoTensor computeQpDElectricalEnergyDensityDDeformationGradient() = 0;
-
-  /// The electrical potential
-  const ADVariableValue & _Phi;
+  /// The electrical potential variable
+  const MooseVariable * _Phi_var;
 
   /// The gradient of the electrical potential
   const ADVariableGradient & _grad_Phi;
@@ -44,21 +24,9 @@ protected:
   /// The deformation gradient
   const ADMaterialProperty<RankTwoTensor> * _F;
 
-  /// The name of the electrical potential variable
-  const VariableName _Phi_name;
-
-  /// Name of the electrical energy density
-  const MaterialPropertyName _psi_name;
-
   /// The electrical energy density
-  ADMaterialProperty<Real> & _psi;
-
-  /// Derivative of the electrical energy density w.r.t. the electrical potential
-  ADMaterialProperty<Real> & _d_psi_d_Phi;
+  ADMaterialProperty<Real> & _E;
 
   /// Derivative of the electrical energy density w.r.t. the electrical potential gradient
-  ADMaterialProperty<RealVectorValue> & _d_psi_d_grad_Phi;
-
-  /// Derivative of the electrical energy density w.r.t. the deformation gradient
-  ADMaterialProperty<RankTwoTensor> * _d_psi_d_F;
+  ADMaterialProperty<RealVectorValue> & _d_E_d_grad_Phi;
 };
