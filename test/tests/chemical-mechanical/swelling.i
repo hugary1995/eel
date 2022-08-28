@@ -21,41 +21,33 @@
 []
 
 [AuxVariables]
-  [c+]
+  [c]
     [AuxKernel]
       type = FunctionAux
       function = 'x*y*z*10*t'
     []
   []
-  [c-]
-    [AuxKernel]
-      type = FunctionAux
-      function = '1-x*y*z*10*t'
-    []
-  []
-  [c+0]
-  []
-  [c-0]
+  [c0]
   []
 []
 
 [Kernels]
-  [sdx]
+  [momentum_balance_x]
     type = RankTwoDivergence
     variable = disp_x
-    tensor = PK1
+    tensor = P
     component = 0
   []
-  [sdy]
+  [momentum_balance_y]
     type = RankTwoDivergence
     variable = disp_y
-    tensor = PK1
+    tensor = P
     component = 1
   []
-  [sdz]
+  [momentum_balance_z]
     type = RankTwoDivergence
     variable = disp_z
-    tensor = PK1
+    tensor = P
     component = 2
   []
 []
@@ -89,25 +81,32 @@
   []
   [swelling]
     type = SwellingDeformationGradient
-    concentrations = 'c+ c-'
-    reference_concentrations = 'c+0 c-0'
-    molar_volumes = '1e-1 1e-3'
+    swelling_deformation_gradient = Fs
+    concentration = c
+    reference_concentration = c0
+    molar_volume = 0.1
     swelling_coefficient = beta
   []
   [def_grad]
-    type = DeformationGradient
+    type = MechanicalDeformationGradient
+    deformation_gradient = F
+    mechanical_deformation_gradient = Fm
+    swelling_deformation_gradient = Fs
     displacements = 'disp_x disp_y disp_z'
   []
-  [psi_m]
-    type = NeoHookeanElasticEnergyDensity
-    elastic_energy_density = psi_m
+  [neohookean]
+    type = NeoHookeanSolid
+    elastic_energy_density = psi
     lambda = lambda
     shear_modulus = G
+    deformation_gradient = F
+    mechanical_deformation_gradient = Fm
   []
   [pk1_stress]
     type = FirstPiolaKirchhoffStress
-    first_piola_kirchhoff_stress = PK1
-    energy_densities = 'psi_m'
+    first_piola_kirchhoff_stress = P
+    energy_densities = 'dot(psi)'
+    deformation_gradient_rate = dot(F)
   []
 []
 

@@ -68,6 +68,6 @@ MechanicalDeformationGradient::computeQpProperties()
   _d_Fm_d_F[_qp] = I.times<i, k, l, j>(Fg.inverse());
   if (_Fs)
     (*_d_Fm_d_Fs)[_qp] = -_Fm[_qp].times<i, k, l, j>((*_Fs)[_qp].inverse());
-  if (_Fs)
+  if (_Ft)
     (*_d_Fm_d_Ft)[_qp] = -_Fm[_qp].times<i, k, l, j>((*_Ft)[_qp].inverse());
 }

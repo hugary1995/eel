@@ -1,6 +1,8 @@
 # Pumping a species from left to right via stress assisted diffusion
 
-Omega = 1e-4
+[GlobalParams]
+  energy_densities = 'dot(psi) G'
+[]
 
 [Mesh]
   [pipe]
@@ -10,24 +12,6 @@ Omega = 1e-4
     ny = 2
     nz = 20
     zmax = 10
-  []
-  [right]
-    type = SideSetsFromBoundingBoxGenerator
-    input = pipe
-    bottom_left = '-0.10 -0.10 -0.10'
-    top_right = '1.1 1.1 5.0'
-    boundary_id_old = 'right'
-    boundary_id_new = 11
-    block_id = 0
-  []
-  [top]
-    type = SideSetsFromBoundingBoxGenerator
-    input = right
-    bottom_left = '-0.10 -0.10 -0.10'
-    top_right = '1.1 1.1 5.0'
-    boundary_id_old = 'top'
-    boundary_id_new = 12
-    block_id = 0
   []
 []
 
@@ -57,33 +41,39 @@ Omega = 1e-4
 
 [Kernels]
   ### Chemical
-  [source]
-    type = MaterialSource
+  [mass_balance_time]
+    type = MassBalanceTimeDerivative
     variable = c
-    prop = mu
+    ideal_gas_constant = 8.3145
+    temperature = T
   []
-  [diffusion]
+  [mass_balance_1]
     type = RankOneDivergence
     variable = c
-    vector = J
+    vector = j
+  []
+  [mass_balance_2]
+    type = MaterialSource
+    variable = c
+    prop = m
   []
   ### Mechanical
-  [sdx]
+  [momentum_balance_x]
     type = RankTwoDivergence
     variable = disp_x
-    tensor = PK1
+    tensor = P
     component = 0
   []
-  [sdy]
+  [momentum_balance_y]
     type = RankTwoDivergence
     variable = disp_y
-    tensor = PK1
+    tensor = P
     component = 1
   []
-  [sdz]
+  [momentum_balance_z]
     type = RankTwoDivergence
     variable = disp_z
-    tensor = PK1
+    tensor = P
     component = 2
   []
 []
@@ -92,31 +82,25 @@ Omega = 1e-4
   [x_fix]
     type = DirichletBC
     variable = disp_x
-    boundary = 4
+    boundary = 'left front'
     value = 0.0
   []
   [y_fix]
     type = DirichletBC
     variable = disp_y
-    boundary = 1
+    boundary = 'bottom front'
     value = 0.0
   []
   [z_fix]
     type = DirichletBC
     variable = disp_z
-    boundary = 0
+    boundary = back
     value = 0.0
   []
-  [push_x]
+  [push_z]
     type = FunctionNeumannBC
-    variable = disp_x
-    boundary = 11
-    function = ramp
-  []
-  [push_y]
-    type = FunctionNeumannBC
-    variable = disp_y
-    boundary = 12
+    variable = disp_z
+    boundary = front
     function = ramp
   []
 []
@@ -125,7 +109,7 @@ Omega = 1e-4
   [ramp]
     type = PiecewiseLinear
     x = '0 0.05'
-    y = '0 1'
+    y = '0 -1'
   []
 []
 
@@ -133,74 +117,60 @@ Omega = 1e-4
   [diffusivity]
     type = ADGenericConstantRankTwoTensor
     tensor_name = 'D'
-    tensor_values = '100 0 0 0 100 0 0 0 100'
+    tensor_values = '100 100 100'
   []
-  [properties]
-    type = ADGenericConstantMaterial
-    prop_names = 'eta'
-    prop_values = '1e-6'
-  []
-  [viscosity]
-    type = ViscousMassTransport
-    chemical_dissipation_density = psi_c*
-    concentration = c
-    viscosity = eta
-    ideal_gas_constant = 8.3145
-    temperature = T
-    molar_volume = ${Omega}
-  []
-  [fick]
-    type = FicksFirstLaw
-    chemical_energy_density = psi_c
+  [mass_diffusion]
+    type = MassDiffusion
+    chemical_energy_density = G
     diffusivity = D
     concentration = c
-    viscosity = eta
-    ideal_gas_constant = 1
+    ideal_gas_constant = 8.3145
     temperature = T
-    molar_volume = ${Omega}
   []
   [mechanical_parameters]
     type = ADGenericConstantMaterial
-    prop_names = 'lambda G beta omega'
-    prop_values = '1 1 1 1e-1'
+    prop_names = 'lambda mu beta'
+    prop_values = '1 1 1'
   []
   [swelling]
     type = SwellingDeformationGradient
-    concentrations = 'c'
-    reference_concentrations = 'c0'
-    molar_volumes = '${Omega}'
+    swelling_deformation_gradient = Fs
+    concentration = c
+    reference_concentration = c0
+    molar_volume = 0.1
     swelling_coefficient = beta
   []
   [def_grad]
-    type = DeformationGradient
+    type = MechanicalDeformationGradient
+    deformation_gradient = F
+    mechanical_deformation_gradient = Fm
+    swelling_deformation_gradient = Fs
     displacements = 'disp_x disp_y disp_z'
   []
-  [neo_hookean]
-    type = NeoHookeanElasticEnergyDensity
-    elastic_energy_density = psi_m
+  [neohookean]
+    type = NeoHookeanSolid
+    elastic_energy_density = psi
     lambda = lambda
-    shear_modulus = G
-    concentrations = 'c'
-  []
-  [mass_source]
-    type = MassSource
-    mass_source = mu
+    shear_modulus = mu
+    deformation_gradient = F
+    mechanical_deformation_gradient = Fm
+    swelling_deformation_gradient = Fs
     concentration = c
-    energy_densities = 'psi_m psi_c'
-    dissipation_densities = 'psi_c*'
-  []
-  [mass_flux]
-    type = MassFlux
-    mass_flux = J
-    concentration = c
-    energy_densities = 'psi_m psi_c'
-    dissipation_densities = 'psi_c*'
   []
   [pk1_stress]
     type = FirstPiolaKirchhoffStress
-    first_piola_kirchhoff_stress = PK1
-    energy_densities = 'psi_m psi_c'
-    dissipation_densities = 'psi_c*'
+    first_piola_kirchhoff_stress = P
+    deformation_gradient_rate = dot(F)
+  []
+  [mass_source]
+    type = MassSource
+    mass_source = m
+    concentration = c
+  []
+  [mass_flux]
+    type = MassFlux
+    mass_flux = j
+    concentration = c
   []
 []
 
@@ -221,4 +191,8 @@ Omega = 1e-4
 
 [Outputs]
   exodus = true
+[]
+
+[Debug]
+  show_material_props = true
 []
