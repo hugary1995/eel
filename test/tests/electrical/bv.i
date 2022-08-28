@@ -128,23 +128,22 @@ U = 0.1
 
 [Materials]
   [electric_constants]
-    type = ADGenericConstantMaterial
-    prop_names = 'sigma'
-    prop_values = '${sigma}'
+    type = ADGenericConstantRankTwoTensor
+    tensor_name = 'sigma'
+    tensor_values = '${sigma} ${sigma} ${sigma}'
   []
-  [polarization]
-    type = Polarization
+  [charge_trasport]
+    type = BulkChargeTransport
     electrical_energy_density = E
     electric_potential = Phi
     electric_conductivity = sigma
   []
-  [electric_displacement]
-    type = ElectricDisplacement
-    electric_displacement = i
-    electric_potential = Phi
+  [current]
+    type = CurrentDensity
+    current_density = i
     energy_densities = 'E'
+    electric_potential = Phi
   []
-
   [OCP_anode]
     type = ADParsedMaterial
     f_name = U

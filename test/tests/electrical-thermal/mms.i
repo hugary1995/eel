@@ -1,3 +1,9 @@
+n = 32
+
+[GlobalParams]
+  energy_densities = 'E H'
+[]
+
 [Mesh]
   [battery]
     type = GeneratedMeshGenerator
@@ -45,15 +51,15 @@
     variable = Phi
     function = q
   []
-  [hcond]
-    type = ADHeatConduction
+  [energy_balance_1]
+    type = RankOneDivergence
     variable = T
-    thermal_conductivity = kappa
+    vector = h
   []
-  [hsource]
-    type = ADMatHeatSource
+  [energy_balance_2]
+    type = MaterialSource
     variable = T
-    material_property = r
+    prop = r
   []
 []
 
@@ -65,42 +71,61 @@
     function = Phi
   []
   [hconv]
-    type = ADConvectiveHeatFluxBC
+    type = ADMatNeumannBC
     variable = T
-    boundary = 'right'
-    heat_transfer_coefficient = 135
-    T_infinity = 300
+    boundary = right
+    value = 1
+    boundary_material = qconv
   []
 []
 
 [Materials]
   [electric_constants]
-    type = ADGenericFunctionMaterial
-    prop_names = 'sigma'
-    prop_values = 'sigma'
+    type = ADGenericFunctionRankTwoTensor
+    tensor_name = 'sigma'
+    tensor_functions = 'sigma sigma sigma'
   []
-  [polarization]
-    type = Polarization
+  [charge_trasport]
+    type = BulkChargeTransport
     electrical_energy_density = E
     electric_potential = Phi
     electric_conductivity = sigma
+    temperature = T
   []
-  [electric_displacement]
-    type = ElectricDisplacement
-    electric_displacement = i
+  [current]
+    type = CurrentDensity
+    current_density = i
     electric_potential = Phi
-    energy_densities = 'E'
   []
   [thermal_constants]
-    type = ADGenericFunctionMaterial
-    prop_names = 'kappa'
-    prop_values = 'kappa'
+    type = ADGenericFunctionRankTwoTensor
+    tensor_name = 'kappa'
+    tensor_functions = 'kappa kappa kappa'
   []
-  [jh]
-    type = JouleHeating
-    joule_heating = r
-    electric_conductivity = sigma
-    electric_potential = Phi
+  [heat_conduction]
+    type = HeatConduction
+    thermal_energy_density = H
+    thermal_conductivity = kappa
+    temperature = T
+  []
+  [heat_flux]
+    type = HeatFlux
+    heat_flux = h
+    temperature = T
+  []
+  [heat_source]
+    type = HeatSource
+    heat_source = r
+    temperature = T
+  []
+  [qconv]
+    type = ADParsedMaterial
+    f_name = qconv
+    function = 'htc*(T-T_inf)'
+    args = 'T'
+    constant_names = 'htc T_inf'
+    constant_expressions = '135 300'
+    boundary = right
   []
 []
 
@@ -135,6 +160,10 @@
 []
 
 [Outputs]
-  csv = true
+  [csv]
+    type = CSV
+    file_base = mms
+    execute_vector_postprocessors_on = FINAL
+  []
   exodus = true
 []

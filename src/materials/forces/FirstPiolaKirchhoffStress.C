@@ -10,7 +10,8 @@ FirstPiolaKirchhoffStress::validParams()
                              "given energy densities.");
   params.addRequiredParam<MaterialPropertyName>("first_piola_kirchhoff_stress",
                                                 "Name of the first Piola-Kirchhoff stress");
-  params.addRequiredParam<MaterialPropertyName>("deformation_gradient", "The deformation gradient");
+  params.addRequiredParam<MaterialPropertyName>("deformation_gradient_rate",
+                                                "The deformation gradient rate");
   return params;
 }
 
@@ -18,7 +19,7 @@ FirstPiolaKirchhoffStress::FirstPiolaKirchhoffStress(const InputParameters & par
   : ThermodynamicForce<RankTwoTensor>(parameters)
 {
   const MaterialPropertyName F_dot_name =
-      "dot(" + getParam<MaterialPropertyName>("deformation_gradient") + ")";
+      getParam<MaterialPropertyName>("deformation_gradient_rate");
 
   // Get forces
   getThermodynamicForces(_d_psi_d_s, _psi_names, F_dot_name);

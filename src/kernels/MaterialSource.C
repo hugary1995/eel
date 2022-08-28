@@ -15,7 +15,7 @@ MaterialSource::validParams()
 
 MaterialSource::MaterialSource(const InputParameters & parameters)
   : ADKernelValue(parameters),
-    _prop(getADMaterialPropertyByName<Real>("prop")),
+    _prop(getADMaterialProperty<Real>("prop")),
     _coef(getParam<Real>("coefficient"))
 {
 }

@@ -5,7 +5,7 @@ registerMooseObject("StingrayApp", NeoHookeanSolid);
 InputParameters
 NeoHookeanSolid::validParams()
 {
-  InputParameters params = ElasticEnergyDensity::validParams();
+  InputParameters params = MechanicalEnergyDensity::validParams();
   params.addClassDescription(params.getClassDescription() +
                              " This class defines the Neo-Hookean elastic energy density.");
   params.addRequiredParam<MaterialPropertyName>("lambda", "Lame's first parameter");

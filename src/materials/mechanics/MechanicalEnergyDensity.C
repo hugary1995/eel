@@ -23,8 +23,7 @@ MechanicalEnergyDensity::MechanicalEnergyDensity(const InputParameters & paramet
   : ElasticEnergyDensity(parameters),
     _Fm_name(getParam<MaterialPropertyName>("mechanical_deformation_gradient")),
     _Fm(getADMaterialPropertyByName<RankTwoTensor>(_Fm_name)),
-    _d_Fm_d_F(getMaterialPropertyDerivative<RankFourTensor, true>("mechanical_deformation_gradient",
-                                                                  "deformation_gradient")),
+    _d_Fm_d_F(getMaterialPropertyDerivative<RankFourTensor, true>(_Fm_name, _F_name)),
 
     // swelling
     _Fs(isParamValid("swelling_deformation_gradient")

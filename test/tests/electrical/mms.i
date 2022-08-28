@@ -1,3 +1,5 @@
+n = 32
+
 [Mesh]
   [battery]
     type = GeneratedMeshGenerator
@@ -52,21 +54,21 @@
 
 [Materials]
   [electric_constants]
-    type = ADGenericFunctionMaterial
-    prop_names = 'sigma'
-    prop_values = 'sigma'
+    type = ADGenericFunctionRankTwoTensor
+    tensor_name = 'sigma'
+    tensor_functions = 'sigma sigma sigma'
   []
-  [polarization]
-    type = Polarization
+  [charge_transport]
+    type = BulkChargeTransport
     electrical_energy_density = E
     electric_potential = Phi
     electric_conductivity = sigma
   []
-  [electric_displacement]
-    type = ElectricDisplacement
-    electric_displacement = i
-    electric_potential = Phi
+  [current]
+    type = CurrentDensity
+    current_density = i
     energy_densities = 'E'
+    electric_potential = Phi
   []
 []
 
@@ -87,25 +89,6 @@
   automatic_scaling = true
 
   num_steps = 1
-[]
-
-[VectorPostprocessors]
-  [Phi]
-    type = LineValueSampler
-    variable = Phi
-    start_point = '0 0 0'
-    end_point = '1 0 0'
-    num_points = 20
-    sort_by = x
-  []
-  [mms]
-    type = LineFunctionSampler
-    functions = Phi
-    start_point = '0 0 0'
-    end_point = '1 0 0'
-    num_points = 20
-    sort_by = x
-  []
 []
 
 [Outputs]

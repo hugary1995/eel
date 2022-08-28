@@ -11,15 +11,17 @@ BulkChargeTransport::validParams()
       " This class defines the electrical potential for charge transfer in the bulk");
   params.addRequiredParam<MaterialPropertyName>("electric_conductivity",
                                                 "The electric conductivity tensor");
-  params.addRequiredParam<VariableName>("temperature", "The temperature");
+  params.addParam<VariableName>("temperature", "The temperature");
   return params;
 }
 
 BulkChargeTransport::BulkChargeTransport(const InputParameters & parameters)
   : ElectricalEnergyDensity(parameters),
     _sigma(getADMaterialProperty<RankTwoTensor>("electric_conductivity")),
-    _d_E_d_lnT(declarePropertyDerivative<Real, true>(
-        _energy_name, "ln(" + getParam<VariableName>("temperature") + ")"))
+    _d_E_d_lnT(isParamValid("temperature")
+                   ? &declarePropertyDerivative<Real, true>(
+                         _energy_name, "ln(" + getParam<VariableName>("temperature") + ")")
+                   : nullptr)
 {
 }
 
@@ -32,5 +34,7 @@ BulkChargeTransport::computeQpProperties()
 
   _d_E_d_grad_Phi[_qp] = sigma_0 * _grad_Phi[_qp];
   _E[_qp] = 0.5 * _d_E_d_grad_Phi[_qp] * _grad_Phi[_qp];
-  _d_E_d_lnT[_qp] = _d_E_d_grad_Phi[_qp] * _grad_Phi[_qp];
+
+  if (_d_E_d_lnT)
+    (*_d_E_d_lnT)[_qp] = _d_E_d_grad_Phi[_qp] * _grad_Phi[_qp];
 }

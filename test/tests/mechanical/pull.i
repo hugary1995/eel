@@ -23,19 +23,19 @@
   [sdx]
     type = RankTwoDivergence
     variable = disp_x
-    tensor = PK1
+    tensor = P
     component = 0
   []
   [sdy]
     type = RankTwoDivergence
     variable = disp_y
-    tensor = PK1
+    tensor = P
     component = 1
   []
   [sdz]
     type = RankTwoDivergence
     variable = disp_z
-    tensor = PK1
+    tensor = P
     component = 2
   []
 []
@@ -74,19 +74,25 @@
     prop_values = '1 1'
   []
   [def_grad]
-    type = DeformationGradient
+    type = MechanicalDeformationGradient
+    deformation_gradient = F
+    mechanical_deformation_gradient = Fm
     displacements = 'disp_x disp_y disp_z'
   []
-  [psi_m]
-    type = NeoHookeanElasticEnergyDensity
-    elastic_energy_density = psi_m
+  [solid]
+    type = NeoHookeanSolid
+    elastic_energy_density = psi
+    deformation_gradient = F
+    mechanical_deformation_gradient = Fm
     lambda = lambda
     shear_modulus = G
+    output_properties = 'ddot(psi)/ddot(F)'
   []
   [pk1_stress]
     type = FirstPiolaKirchhoffStress
-    first_piola_kirchhoff_stress = PK1
-    energy_densities = 'psi_m'
+    first_piola_kirchhoff_stress = P
+    energy_densities = 'dot(psi)'
+    deformation_gradient_rate = dot(F)
   []
 []
 
