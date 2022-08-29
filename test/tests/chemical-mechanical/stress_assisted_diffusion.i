@@ -1,4 +1,4 @@
-# Pumping a species from left to right via stress assisted diffusion
+# Pumping a species from +z to -z via stress assisted diffusion
 
 [GlobalParams]
   energy_densities = 'dot(psi) G'
