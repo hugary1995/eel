@@ -24,12 +24,6 @@ protected:
   // deformation gradient)
   ADMaterialProperty<RankTwoTensor> & _Fm;
 
-  // Derivative of Fm w.r.t. F
-  ADMaterialProperty<RankFourTensor> & _d_Fm_d_F;
-
-  // Derivative of Fm w.r.t. Fs
-  ADMaterialProperty<RankFourTensor> * _d_Fm_d_Fs;
-
-  // Derivative of Fm w.r.t. Ft
-  ADMaterialProperty<RankFourTensor> * _d_Fm_d_Ft;
+  /// The eigen deformation gradient
+  ADMaterialProperty<RankTwoTensor> & _Fg;
 };

@@ -19,9 +19,6 @@ ElectricalEnergyDensity::ElectricalEnergyDensity(const InputParameters & paramet
     _energy_name(getParam<MaterialPropertyName>("electrical_energy_density")),
     _Phi_var(getVar("electric_potential", 0)),
     _grad_Phi(adCoupledGradient("electric_potential")),
-    _F(hasADMaterialProperty<RankTwoTensor>("deformation_gradient")
-           ? &getADMaterialProperty<RankTwoTensor>("deformation_gradient")
-           : nullptr),
     _E(declareADProperty<Real>(_energy_name)),
     _d_E_d_grad_Phi(
         declarePropertyDerivative<RealVectorValue, true>(_energy_name, "∇" + _Phi_var->name()))

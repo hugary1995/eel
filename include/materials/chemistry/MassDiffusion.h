@@ -27,4 +27,7 @@ protected:
 
   /// Derivative of the chemical energy density w.r.t. the log temperature
   ADMaterialProperty<Real> & _d_G_d_lnT;
+
+  /// The deformation gradient, if exists
+  const ADMaterialProperty<RankTwoTensor> * _F;
 };

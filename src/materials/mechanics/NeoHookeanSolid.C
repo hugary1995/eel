@@ -30,27 +30,21 @@ NeoHookeanSolid::computeQpProperties()
   const auto Jm = Fm.det();
 
   const ADRankTwoTensor d_psi_d_Fm = lambda * std::log(Jm) * Fm_inv_t + G * (Fm - Fm_inv_t);
-  _d_psi_dot_d_F_dot[_qp] = d_psi_d_Fm.initialContraction(_d_Fm_d_F[_qp]);
+  _d_psi_dot_d_F_dot[_qp] = d_psi_d_Fm * _Fg[_qp].inverse().transpose();
+  _psi_dot[_qp] = _d_psi_dot_d_F_dot[_qp].doubleContraction(_F_dot[_qp]);
 
   if (_Fs || _Ft)
   {
-    usingTensorIndices(i, j, k, l);
-    const auto I = ADRankTwoTensor::Identity();
-    const auto A = Fm_inv_t.times<i, j, k, l>(Fm_inv_t);
-    const auto B = Fm_inv_t.times<i, l, j, k>(Fm_inv_t);
-    const auto II = I.times<i, k, j, l>(I);
-    const auto d_2_psi_d_Fm_2 = lambda * (A - std::log(Jm) * B) + G * (II + B);
+    ADRankTwoTensor d_P_d_Jg =
+        -(lambda * (_F[_qp].inverse().transpose() / _Fg[_qp].trace() -
+                    std::log(Jm) * _F[_qp].inverse().transpose() * _Fg[_qp].inverse().transpose()) +
+          G * (Fm * _Fg[_qp].inverse() * _Fg[_qp].inverse().transpose() +
+               _F[_qp].inverse().transpose() * _Fg[_qp].inverse().transpose()));
 
     if (_Fs)
-      (*_d_psi_dot_d_lnc)[_qp] = (d_2_psi_d_Fm_2 * (*_d_Fm_d_Fs)[_qp] * (*_d_Fs_d_lnc)[_qp])
-                                     .initialContraction(_d_Fm_d_F[_qp])
-                                     .doubleContraction(_F_dot[_qp]);
+      (*_d_psi_dot_d_lnc)[_qp] = (d_P_d_Jg * (*_d_Js_d_lnc)[_qp]).doubleContraction(_F_dot[_qp]);
 
     if (_Ft)
-      (*_d_psi_dot_d_lnT)[_qp] = (d_2_psi_d_Fm_2 * (*_d_Fm_d_Ft)[_qp] * (*_d_Ft_d_lnT)[_qp])
-                                     .initialContraction(_d_Fm_d_F[_qp])
-                                     .doubleContraction(_F_dot[_qp]);
+      (*_d_psi_dot_d_lnT)[_qp] = (d_P_d_Jg * (*_d_Jt_d_lnT)[_qp]).doubleContraction(_F_dot[_qp]);
   }
-
-  _psi_dot[_qp] = _d_psi_dot_d_F_dot[_qp].doubleContraction(_F_dot[_qp]);
 }

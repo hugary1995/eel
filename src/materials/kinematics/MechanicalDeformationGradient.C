@@ -11,6 +11,8 @@ MechanicalDeformationGradient::validParams()
                              "from the total deformation gradient.");
   params.addRequiredParam<MaterialPropertyName>("mechanical_deformation_gradient",
                                                 "Name of the mechanical deformation gradient");
+  params.addRequiredParam<MaterialPropertyName>("eigen_deformation_gradient",
+                                                "Name of the eigen deformation gradient");
   params.addParam<MaterialPropertyName>("swelling_deformation_gradient",
                                         "Name of the swelling deformation gradient, if applicable");
   params.addParam<MaterialPropertyName>("thermal_deformation_gradient",
@@ -28,23 +30,14 @@ MechanicalDeformationGradient::MechanicalDeformationGradient(const InputParamete
             ? &getADMaterialProperty<RankTwoTensor>("thermal_deformation_gradient")
             : nullptr),
     _Fm(declareADProperty<RankTwoTensor>("mechanical_deformation_gradient")),
-    _d_Fm_d_F(declarePropertyDerivative<RankFourTensor, true>(
-        getParam<MaterialPropertyName>("mechanical_deformation_gradient"),
-        getParam<MaterialPropertyName>("deformation_gradient"))),
-    _d_Fm_d_Fs(_Fs ? &declarePropertyDerivative<RankFourTensor, true>(
-                         getParam<MaterialPropertyName>("mechanical_deformation_gradient"),
-                         getParam<MaterialPropertyName>("swelling_deformation_gradient"))
-                   : nullptr),
-    _d_Fm_d_Ft(_Ft ? &declarePropertyDerivative<RankFourTensor, true>(
-                         getParam<MaterialPropertyName>("mechanical_deformation_gradient"),
-                         getParam<MaterialPropertyName>("thermal_deformation_gradient"))
-                   : nullptr)
+    _Fg(declareADProperty<RankTwoTensor>("eigen_deformation_gradient"))
 {
 }
 
 void
 MechanicalDeformationGradient::initQpStatefulProperties()
 {
+  DeformationGradient::initQpStatefulProperties();
   _Fm[_qp].setToIdentity();
 }
 
@@ -53,21 +46,12 @@ MechanicalDeformationGradient::computeQpProperties()
 {
   DeformationGradient::computeQpProperties();
 
-  const auto I = ADRankTwoTensor::Identity();
-
   // Remove the eigen deformation gradients
   _Fm[_qp] = _F[_qp];
-  ADRankTwoTensor Fg = I;
+  _Fg[_qp].setToIdentity();
   if (_Fs)
-    Fg *= (*_Fs)[_qp];
+    _Fg[_qp] *= (*_Fs)[_qp];
   if (_Ft)
-    Fg *= (*_Ft)[_qp];
-  _Fm[_qp] *= Fg.inverse();
-
-  usingTensorIndices(i, j, k, l);
-  _d_Fm_d_F[_qp] = I.times<i, k, l, j>(Fg.inverse());
-  if (_Fs)
-    (*_d_Fm_d_Fs)[_qp] = -_Fm[_qp].times<i, k, l, j>((*_Fs)[_qp].inverse());
-  if (_Ft)
-    (*_d_Fm_d_Ft)[_qp] = -_Fm[_qp].times<i, k, l, j>((*_Ft)[_qp].inverse());
+    _Fg[_qp] *= (*_Ft)[_qp];
+  _Fm[_qp] *= _Fg[_qp].inverse();
 }

@@ -2,6 +2,10 @@
 
 [GlobalParams]
   energy_densities = 'dot(psi) G'
+  deformation_gradient = F
+  mechanical_deformation_gradient = Fm
+  eigen_deformation_gradient = Fg
+  swelling_deformation_gradient = Fs
 []
 
 [Mesh]
@@ -13,13 +17,31 @@
     nz = 20
     zmax = 10
   []
+  [right]
+    type = SideSetsFromBoundingBoxGenerator
+    input = pipe
+    bottom_left = '-0.10 -0.10 -0.10'
+    top_right = '1.1 1.1 5.0'
+    boundary_id_old = 'right'
+    boundary_id_new = 11
+    block_id = 0
+  []
+  [top]
+    type = SideSetsFromBoundingBoxGenerator
+    input = right
+    bottom_left = '-0.10 -0.10 -0.10'
+    top_right = '1.1 1.1 5.0'
+    boundary_id_old = 'top'
+    boundary_id_new = 12
+    block_id = 0
+  []
 []
 
 [Variables]
   [c]
     [InitialCondition]
       type = ConstantIC
-      value = 0.5
+      value = 1e-3
     []
   []
   [disp_x]
@@ -32,7 +54,7 @@
 
 [AuxVariables]
   [c0]
-    initial_condition = 0.005
+    initial_condition = 1e-4
   []
   [T]
     initial_condition = 300
@@ -82,26 +104,38 @@
   [x_fix]
     type = DirichletBC
     variable = disp_x
-    boundary = 'left front'
+    boundary = 4
     value = 0.0
   []
   [y_fix]
     type = DirichletBC
     variable = disp_y
-    boundary = 'bottom front'
+    boundary = 1
     value = 0.0
   []
   [z_fix]
     type = DirichletBC
     variable = disp_z
-    boundary = back
+    boundary = 0
     value = 0.0
   []
-  [push_z]
+  [push_x]
     type = FunctionNeumannBC
-    variable = disp_z
-    boundary = front
+    variable = disp_x
+    boundary = 11
     function = ramp
+  []
+  [push_y]
+    type = FunctionNeumannBC
+    variable = disp_y
+    boundary = 12
+    function = ramp
+  []
+  [open]
+    type = OpenBC
+    variable = c
+    boundary = 'back'
+    flux = j
   []
 []
 
@@ -109,7 +143,7 @@
   [ramp]
     type = PiecewiseLinear
     x = '0 0.05'
-    y = '0 -1'
+    y = '0 1'
   []
 []
 
@@ -134,17 +168,13 @@
   []
   [swelling]
     type = SwellingDeformationGradient
-    swelling_deformation_gradient = Fs
     concentration = c
     reference_concentration = c0
-    molar_volume = 0.1
+    molar_volume = 60
     swelling_coefficient = beta
   []
   [def_grad]
     type = MechanicalDeformationGradient
-    deformation_gradient = F
-    mechanical_deformation_gradient = Fm
-    swelling_deformation_gradient = Fs
     displacements = 'disp_x disp_y disp_z'
   []
   [neohookean]
@@ -152,9 +182,6 @@
     elastic_energy_density = psi
     lambda = lambda
     shear_modulus = mu
-    deformation_gradient = F
-    mechanical_deformation_gradient = Fm
-    swelling_deformation_gradient = Fs
     concentration = c
   []
   [pk1_stress]
@@ -182,7 +209,7 @@
   petsc_options_value = 'lu'
   automatic_scaling = true
 
-  dt = 0.01
+  dt = 0.001
   end_time = 0.1
 
   nl_rel_tol = 1e-08
@@ -191,8 +218,4 @@
 
 [Outputs]
   exodus = true
-[]
-
-[Debug]
-  show_material_props = true
 []

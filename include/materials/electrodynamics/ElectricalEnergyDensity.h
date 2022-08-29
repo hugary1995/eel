@@ -21,9 +21,6 @@ protected:
   /// The gradient of the electrical potential
   const ADVariableGradient & _grad_Phi;
 
-  /// The deformation gradient
-  const ADMaterialProperty<RankTwoTensor> * _F;
-
   /// The electrical energy density
   ADMaterialProperty<Real> & _E;
 
