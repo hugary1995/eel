@@ -1,8 +1,0 @@
-[Tests]
-  [mixing_and_heating]
-    type = Exodiff
-    input = 'mixing_and_heating.i'
-    exodiff = 'mixing_and_heating_out.e'
-    abs_zero = 1e-9
-  []
-[]
