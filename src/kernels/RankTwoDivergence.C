@@ -13,18 +13,20 @@ RankTwoDivergence::validParams()
                                         "An integer corresponding to the direction "
                                         "the variable this kernel acts in. (0 for x, "
                                         "1 for y, 2 for z)");
+  params.addParam<Real>("factor", 1, "The multiplication factor");
   return params;
 }
 
 RankTwoDivergence::RankTwoDivergence(const InputParameters & params)
   : ADKernel(params),
     _tensor(getADMaterialProperty<RankTwoTensor>("tensor")),
-    _component(getParam<unsigned int>("component"))
+    _component(getParam<unsigned int>("component")),
+    _factor(getParam<Real>("factor"))
 {
 }
 
 ADReal
 RankTwoDivergence::computeQpResidual()
 {
-  return _tensor[_qp].row(_component) * _grad_test[_i][_qp];
+  return -_factor * _tensor[_qp].row(_component) * _grad_test[_i][_qp];
 }

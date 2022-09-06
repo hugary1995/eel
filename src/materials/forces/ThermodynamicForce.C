@@ -7,6 +7,7 @@ ThermodynamicForce<T>::validParams()
   InputParameters params = DerivativeMaterialInterface<Material>::validParams();
   params.addRequiredParam<std::vector<MaterialPropertyName>>("energy_densities",
                                                              "Vector of energy densities");
+  params.addParam<Real>("factor", 1, "Factor to be multiplied");
   return params;
 }
 
@@ -15,7 +16,8 @@ ThermodynamicForce<T>::ThermodynamicForce(const InputParameters & parameters)
   : DerivativeMaterialInterface<Material>(parameters),
     _force(nullptr),
     _psi_names(getParam<std::vector<MaterialPropertyName>>("energy_densities")),
-    _d_psi_d_s(_psi_names.size())
+    _d_psi_d_s(_psi_names.size()),
+    _factor(getParam<Real>("factor"))
 {
 }
 
@@ -34,8 +36,7 @@ template <typename T>
 void
 ThermodynamicForce<T>::computeQpProperties()
 {
-  MathUtils::mooseSetToZero((*_force)[_qp]);
-  (*_force)[_qp] += computeQpThermodynamicForce(_d_psi_d_s);
+  (*_force)[_qp] = _factor * computeQpThermodynamicForce(_d_psi_d_s);
 }
 
 template <typename T>

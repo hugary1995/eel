@@ -1,9 +1,10 @@
 #pragma once
 
-#include "ChemicalEnergyDensity.h"
+#include "Material.h"
+#include "DerivativeMaterialInterface.h"
 #include "RankTwoTensorForward.h"
 
-class MassDiffusion : public ChemicalEnergyDensity
+class MassDiffusion : public DerivativeMaterialInterface<Material>
 {
 public:
   static InputParameters validParams();
@@ -13,21 +14,30 @@ public:
 protected:
   void computeQpProperties() override;
 
-  /// The diffusion coefficient
-  const ADMaterialProperty<RankTwoTensor> & _D;
+  /// Mass flux
+  ADMaterialProperty<RealVectorValue> & _j;
+
+  /// The mobility
+  const ADMaterialProperty<Real> & _M;
 
   /// Ideal gas constant
   const Real _R;
 
-  /// Temperature variable
-  const MooseVariable * _T_var;
-
   /// Temperature
   const ADVariableValue & _T;
 
-  /// Derivative of the chemical energy density w.r.t. the log temperature
-  ADMaterialProperty<Real> & _d_G_d_lnT;
+  /// Temperature gradient
+  const ADVariableGradient & _grad_T;
 
-  /// The deformation gradient, if exists
-  const ADMaterialProperty<RankTwoTensor> * _F;
+  /// Concentration
+  const ADVariableValue & _c;
+
+  /// Reference concentration
+  const VariableValue & _c0;
+
+  /// Concentration gradient
+  const ADVariableGradient & _grad_c;
+
+  /// Gradient of the additional chemical potential
+  const ADVariableGradient * _grad_mu;
 };

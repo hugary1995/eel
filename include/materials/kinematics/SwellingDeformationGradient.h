@@ -35,6 +35,6 @@ protected:
   /// The swelling coefficient
   const ADMaterialProperty<Real> & _alpha_s;
 
-  // Derivative of the swelling deformation gradient jacobian w.r.t. the log concentration
-  ADMaterialProperty<Real> & _d_Js_d_lnc;
+  // Derivative of the swelling deformation gradient jacobian w.r.t. the concentration
+  ADMaterialProperty<Real> & _d_Js_d_c;
 };

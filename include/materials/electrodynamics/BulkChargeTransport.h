@@ -13,11 +13,8 @@ protected:
   void computeQpProperties() override;
 
   /// The electric conductivity
-  const ADMaterialProperty<RankTwoTensor> & _sigma;
+  const ADMaterialProperty<Real> & _sigma;
 
   /// The derivative of the electrical energy density w.r.t. the log temperature
   ADMaterialProperty<Real> * _d_E_d_lnT;
-
-  /// The deformation gradient, if exists
-  const ADMaterialProperty<RankTwoTensor> * _F;
 };

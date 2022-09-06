@@ -10,6 +10,8 @@ HeatFlux::validParams()
                              "given energy densities for a given species.");
   params.addRequiredParam<MaterialPropertyName>("heat_flux", "Name of the heat flux");
   params.addRequiredParam<VariableName>("temperature", "The temperature variable");
+  params.set<Real>("factor") = -1;
+  params.suppressParameter<Real>("factor");
   return params;
 }
 

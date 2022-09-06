@@ -5,37 +5,46 @@ registerMooseObject("StingrayApp", MassDiffusion);
 InputParameters
 MassDiffusion::validParams()
 {
-  InputParameters params = ChemicalEnergyDensity::validParams();
-  params.addClassDescription(params.getClassDescription() +
-                             " This class defines the Fick's first law of mass diffusion.");
-  params.addRequiredParam<MaterialPropertyName>("diffusivity", "The diffusion coefficient tensor");
+  InputParameters params = DerivativeMaterialInterface<Material>::validParams();
+  params.addClassDescription("This class defines the mass flux.");
+  params.addRequiredParam<MaterialPropertyName>("mass_flux", "The mass flux name");
+  params.addRequiredParam<MaterialPropertyName>("mobility", "The mobility of the species");
   params.addRequiredParam<Real>("ideal_gas_constant", "The ideal gas constant");
-  params.addCoupledVar("temperature", "The temperature");
-  params.addParam<MaterialPropertyName>("deformation_gradient", "Name of the deformation gradient");
+  params.addRequiredCoupledVar("temperature", "The temperature for thermal diffusion");
+  params.addRequiredCoupledVar("concentration", "The concentration of the chemical species");
+  params.addRequiredCoupledVar("reference_concentration", "The reference concentration");
+  params.addCoupledVar("additional_chemical_potential",
+                       "Other chemical potential, e.g. the mechanical chemical potential for "
+                       "stress-assisted diffusion");
   return params;
 }
 
 MassDiffusion::MassDiffusion(const InputParameters & parameters)
-  : ChemicalEnergyDensity(parameters),
-    _D(getADMaterialProperty<RankTwoTensor>("diffusivity")),
+  : DerivativeMaterialInterface<Material>(parameters),
+    _j(declareADProperty<RealVectorValue>("mass_flux")),
+    _M(getADMaterialProperty<Real>("mobility")),
     _R(getParam<Real>("ideal_gas_constant")),
-    _T_var(getVar("temperature", 0)),
     _T(adCoupledValue("temperature")),
-    _d_G_d_lnT(declarePropertyDerivative<Real, true>(_energy_name, "ln(" + _T_var->name() + ")")),
-    _F(hasADMaterialProperty<RankTwoTensor>("deformation_gradient")
-           ? &getADMaterialProperty<RankTwoTensor>("deformation_gradient")
-           : nullptr)
+    _grad_T(adCoupledGradient("temperature")),
+    _c(adCoupledValue("concentration")),
+    _c0(coupledValue("reference_concentration")),
+    _grad_c(adCoupledGradient("concentration")),
+    _grad_mu(isParamValid("additional_chemical_potential")
+                 ? &adCoupledGradient("additional_chemical_potential")
+                 : nullptr)
 {
 }
 
 void
 MassDiffusion::computeQpProperties()
 {
-  // Pull back the diffusivity
-  const ADRankTwoTensor F = _F ? (*_F)[_qp] : ADRankTwoTensor::Identity();
-  const ADRankTwoTensor D_0 = F.det() * F.inverse().transpose() * _D[_qp] * F.inverse();
+  /// Base mass flux
+  _j[_qp] = -_M[_qp] * _R * _T[_qp] / _c[_qp] * _grad_c[_qp];
 
-  _d_G_d_grad_lnc[_qp] = -_R * _T[_qp] * D_0 * _grad_c[_qp];
-  _G[_qp] = 0.5 * _d_G_d_grad_lnc[_qp] * _grad_c[_qp] / _c[_qp];
-  _d_G_d_lnT[_qp] = _G[_qp];
+  /// Thermal diffusion
+  _j[_qp] += -_M[_qp] * _R * std::log(_c[_qp] / _c0[_qp]) * _grad_T[_qp];
+
+  /// Stress assisted diffusion
+  if (_grad_mu)
+    _j[_qp] += -_M[_qp] * (*_grad_mu)[_qp];
 }

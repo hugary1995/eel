@@ -30,4 +30,7 @@ protected:
 
   /// Equilibrium forces, i.e. derivative of the energy density w.r.t. the state variable
   std::vector<const ADMaterialProperty<T> *> _d_psi_d_s;
+
+  /// The multiplication factor
+  const Real _factor;
 };

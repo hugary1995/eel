@@ -18,4 +18,7 @@ protected:
 
   /// An integer corresponding to the direction this kernel acts in
   const unsigned int _component;
+
+  /// The multiplication factor
+  const Real _factor;
 };

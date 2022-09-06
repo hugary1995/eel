@@ -28,8 +28,7 @@ SwellingDeformationGradient::SwellingDeformationGradient(const InputParameters &
     _c_ref(adCoupledValue("reference_concentration")),
     _Omega(getParam<Real>("molar_volume")),
     _alpha_s(getADMaterialProperty<Real>("swelling_coefficient")),
-    _d_Js_d_lnc(
-        declarePropertyDerivative<Real, true>("det(" + _Fs_name + ")", "ln(" + _c_name + ")"))
+    _d_Js_d_c(declarePropertyDerivative<Real, true>("det(" + _Fs_name + ")", _c_name))
 {
 }
 
@@ -38,5 +37,5 @@ SwellingDeformationGradient::computeQpProperties()
 {
   ADReal Js = 1 + _alpha_s[_qp] * _Omega * (_c[_qp] - _c_ref[_qp]);
   _Fs[_qp] = std::cbrt(Js) * ADRankTwoTensor::Identity();
-  _d_Js_d_lnc[_qp] = _c[_qp] * std::pow(Js, -2. / 3.) / 3 * _alpha_s[_qp] * _Omega;
+  _d_Js_d_c[_qp] = _alpha_s[_qp] * _Omega;
 }

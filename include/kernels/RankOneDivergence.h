@@ -14,4 +14,7 @@ protected:
 
   /// The vector
   const ADMaterialProperty<RealVectorValue> & _vector;
+
+  /// The multiplication factor
+  const Real _factor;
 };

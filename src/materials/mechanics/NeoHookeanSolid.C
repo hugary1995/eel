@@ -33,18 +33,9 @@ NeoHookeanSolid::computeQpProperties()
   _d_psi_dot_d_F_dot[_qp] = d_psi_d_Fm * _Fg[_qp].inverse().transpose();
   _psi_dot[_qp] = _d_psi_dot_d_F_dot[_qp].doubleContraction(_F_dot[_qp]);
 
-  if (_Fs || _Ft)
+  if (_Fs)
   {
-    ADRankTwoTensor d_P_d_Jg =
-        -(lambda * (_F[_qp].inverse().transpose() / _Fg[_qp].trace() -
-                    std::log(Jm) * _F[_qp].inverse().transpose() * _Fg[_qp].inverse().transpose()) +
-          G * (Fm * _Fg[_qp].inverse() * _Fg[_qp].inverse().transpose() +
-               _F[_qp].inverse().transpose() * _Fg[_qp].inverse().transpose()));
-
-    if (_Fs)
-      (*_d_psi_dot_d_lnc)[_qp] = (d_P_d_Jg * (*_d_Js_d_lnc)[_qp]).doubleContraction(_F_dot[_qp]);
-
-    if (_Ft)
-      (*_d_psi_dot_d_lnT)[_qp] = (d_P_d_Jg * (*_d_Jt_d_lnT)[_qp]).doubleContraction(_F_dot[_qp]);
+    ADReal p = -_d_psi_dot_d_F_dot[_qp].doubleContraction(_F[_qp] * (*_Fs)[_qp].inverse()) / 3;
+    (*_d_psi_d_c)[_qp] = (*_d_Js_d_c)[_qp] * p;
   }
 }

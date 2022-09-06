@@ -14,5 +14,5 @@ protected:
   void computeQpProperties() override;
 
   /// The thermal conductivity
-  const ADMaterialProperty<RankTwoTensor> & _kappa;
+  const ADMaterialProperty<Real> & _kappa;
 };

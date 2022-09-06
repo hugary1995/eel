@@ -10,6 +10,8 @@ CurrentDensity::validParams()
                              "given energy densities.");
   params.addRequiredParam<MaterialPropertyName>("current_density", "Name of the current density");
   params.addRequiredParam<VariableName>("electric_potential", "The electric potential");
+  params.set<Real>("factor") = -1;
+  params.suppressParameter<Real>("factor");
   return params;
 }
 

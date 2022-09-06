@@ -31,23 +31,14 @@ MechanicalEnergyDensity::MechanicalEnergyDensity(const InputParameters & paramet
             ? &getADMaterialProperty<RankTwoTensor>("swelling_deformation_gradient")
             : nullptr),
     _Fs_name(_Fs ? getParam<MaterialPropertyName>("swelling_deformation_gradient") : ""),
-    _lnc_name(_Fs ? "ln(" + getParam<VariableName>("concentration") + ")" : ""),
-    _d_psi_dot_d_lnc(
-        _Fs ? &declarePropertyDerivative<Real, true>("dot(" + _energy_name + ")", _lnc_name)
-            : nullptr),
-    _d_Js_d_lnc(_Fs ? &getMaterialPropertyDerivative<Real, true>("det(" + _Fs_name + ")", _lnc_name)
-                    : nullptr),
+    _c_name(_Fs ? getParam<VariableName>("concentration") : ""),
+    _d_psi_d_c(_Fs ? &declarePropertyDerivative<Real, true>(_energy_name, _c_name) : nullptr),
+    _d_Js_d_c(_Fs ? &getMaterialPropertyDerivative<Real, true>("det(" + _Fs_name + ")", _c_name)
+                  : nullptr),
 
     // thermal expansion
     _Ft(isParamValid("thermal_deformation_gradient")
             ? &getADMaterialProperty<RankTwoTensor>("thermal_deformation_gradient")
-            : nullptr),
-    _Ft_name(_Ft ? getParam<MaterialPropertyName>("thermal_deformation_gradient") : ""),
-    _lnT_name(_Ft ? "ln(" + getParam<VariableName>("temperature") + ")" : ""),
-    _d_psi_dot_d_lnT(
-        _Ft ? &declarePropertyDerivative<Real, true>("dot(" + _energy_name + ")", _lnT_name)
-            : nullptr),
-    _d_Jt_d_lnT(_Ft ? &getMaterialPropertyDerivative<Real, true>("det(" + _Ft_name + ")", _lnT_name)
-                    : nullptr)
+            : nullptr)
 {
 }
