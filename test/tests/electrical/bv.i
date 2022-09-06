@@ -128,9 +128,9 @@ U = 0.1
 
 [Materials]
   [electric_constants]
-    type = ADGenericConstantRankTwoTensor
-    tensor_name = 'sigma'
-    tensor_values = '${sigma} ${sigma} ${sigma}'
+    type = ADGenericConstantMaterial
+    prop_names = 'sigma'
+    prop_values = '${sigma}'
   []
   [charge_trasport]
     type = BulkChargeTransport

@@ -1,5 +1,9 @@
 n = 32
 
+[GlobalParams]
+  energy_densities = 'E'
+[]
+
 [Mesh]
   [battery]
     type = GeneratedMeshGenerator
@@ -54,9 +58,9 @@ n = 32
 
 [Materials]
   [electric_constants]
-    type = ADGenericFunctionRankTwoTensor
-    tensor_name = 'sigma'
-    tensor_functions = 'sigma sigma sigma'
+    type = ADGenericFunctionMaterial
+    prop_names = 'sigma'
+    prop_values = 'sigma'
   []
   [charge_transport]
     type = BulkChargeTransport
@@ -67,7 +71,6 @@ n = 32
   [current]
     type = CurrentDensity
     current_density = i
-    energy_densities = 'E'
     electric_potential = Phi
   []
 []
