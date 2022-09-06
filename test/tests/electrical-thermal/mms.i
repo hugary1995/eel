@@ -36,7 +36,7 @@ n = 32
   []
   [kappa]
     type = ParsedFunction
-    value = '2.6*x+3'
+    value = '-2.6*x+3'
   []
 []
 
@@ -60,6 +60,7 @@ n = 32
     type = MaterialSource
     variable = T
     prop = r
+    coefficient = -1
   []
 []
 
@@ -74,16 +75,16 @@ n = 32
     type = ADMatNeumannBC
     variable = T
     boundary = right
-    value = 1
+    value = -1
     boundary_material = qconv
   []
 []
 
 [Materials]
   [electric_constants]
-    type = ADGenericFunctionRankTwoTensor
-    tensor_name = 'sigma'
-    tensor_functions = 'sigma sigma sigma'
+    type = ADGenericFunctionMaterial
+    prop_names = 'sigma'
+    prop_values = 'sigma'
   []
   [charge_trasport]
     type = BulkChargeTransport
@@ -98,9 +99,9 @@ n = 32
     electric_potential = Phi
   []
   [thermal_constants]
-    type = ADGenericFunctionRankTwoTensor
-    tensor_name = 'kappa'
-    tensor_functions = 'kappa kappa kappa'
+    type = ADGenericFunctionMaterial
+    prop_names = 'kappa'
+    prop_values = 'kappa'
   []
   [heat_conduction]
     type = HeatConduction
@@ -124,7 +125,7 @@ n = 32
     function = 'htc*(T-T_inf)'
     args = 'T'
     constant_names = 'htc T_inf'
-    constant_expressions = '135 300'
+    constant_expressions = '1.35 300'
     boundary = right
   []
 []

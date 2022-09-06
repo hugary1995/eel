@@ -2,10 +2,6 @@ R = 8.3145
 T = 300
 D = 1
 
-[GlobalParams]
-  energy_densities = 'G'
-[]
-
 [Mesh]
   [battery]
     type = GeneratedMeshGenerator
@@ -32,46 +28,31 @@ D = 1
 
 [Kernels]
   [mass_balance_time]
-    type = MassBalanceTimeDerivative
+    type = TimeDerivative
     variable = c
-    ideal_gas_constant = ${R}
-    temperature = T
   []
-  [mass_balance_1]
+  [mass_balance]
     type = RankOneDivergence
     variable = c
     vector = j
   []
-  [mass_balance_2]
-    type = MaterialSource
-    variable = c
-    prop = m
-  []
 []
 
 [Materials]
-  [diffusivity]
-    type = ADGenericConstantRankTwoTensor
-    tensor_name = 'D'
-    tensor_values = '${D} ${D} ${D}'
+  [mobility]
+    type = ADParsedMaterial
+    f_name = M
+    args = 'c T'
+    function = '${D}*c/${R}/T'
   []
   [diffusion]
     type = MassDiffusion
-    chemical_energy_density = G
-    concentration = c
+    mass_flux = j
+    mobility = M
     ideal_gas_constant = ${R}
     temperature = T
-    diffusivity = D
-  []
-  [mass_source]
-    type = MassSource
-    mass_source = m
     concentration = c
-  []
-  [mass_flux]
-    type = MassFlux
-    mass_flux = j
-    concentration = c
+    reference_concentration = c
   []
 []
 

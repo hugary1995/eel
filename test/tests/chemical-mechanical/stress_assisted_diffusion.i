@@ -1,7 +1,19 @@
 # Pumping a species from +z to -z via stress assisted diffusion
 
+E = 100
+nu = 0.3
+lambda = '${fparse E*nu/(1+nu)/(1-2*nu)}'
+mu = '${fparse E/2/(1+nu)}'
+
+D = 100
+Omega = 300
+c0 = 1e-3
+
+R = 8.3145
+T = 300
+
 [GlobalParams]
-  energy_densities = 'dot(psi) G'
+  energy_densities = 'dot(psi)'
   deformation_gradient = F
   mechanical_deformation_gradient = Fm
   eigen_deformation_gradient = Fg
@@ -12,16 +24,16 @@
   [pipe]
     type = GeneratedMeshGenerator
     dim = 3
-    nx = 2
-    ny = 2
-    nz = 20
+    nx = 6
+    ny = 6
+    nz = 60
     zmax = 10
   []
   [right]
     type = SideSetsFromBoundingBoxGenerator
     input = pipe
-    bottom_left = '-0.10 -0.10 -0.10'
-    top_right = '1.1 1.1 5.0'
+    bottom_left = '0 0 5'
+    top_right = '1 1 10'
     boundary_id_old = 'right'
     boundary_id_new = 11
     block_id = 0
@@ -29,8 +41,8 @@
   [top]
     type = SideSetsFromBoundingBoxGenerator
     input = right
-    bottom_left = '-0.10 -0.10 -0.10'
-    top_right = '1.1 1.1 5.0'
+    bottom_left = '0 0 5'
+    top_right = '1 1 10'
     boundary_id_old = 'top'
     boundary_id_new = 12
     block_id = 0
@@ -39,10 +51,7 @@
 
 [Variables]
   [c]
-    [InitialCondition]
-      type = ConstantIC
-      value = 1e-3
-    []
+    initial_condition = ${c0}
   []
   [disp_x]
   []
@@ -54,30 +63,31 @@
 
 [AuxVariables]
   [c0]
-    initial_condition = 1e-4
+    initial_condition = ${c0}
   []
   [T]
-    initial_condition = 300
+    initial_condition = ${T}
+  []
+  [mu]
+    family = MONOMIAL
+    [AuxKernel]
+      type = ADMaterialRealAux
+      property = 'dpsi/dc'
+      execute_on = 'LINEAR TIMESTEP_END'
+    []
   []
 []
 
 [Kernels]
   ### Chemical
   [mass_balance_time]
-    type = MassBalanceTimeDerivative
+    type = TimeDerivative
     variable = c
-    ideal_gas_constant = 8.3145
-    temperature = T
   []
-  [mass_balance_1]
+  [mass_balance]
     type = RankOneDivergence
     variable = c
     vector = j
-  []
-  [mass_balance_2]
-    type = MaterialSource
-    variable = c
-    prop = m
   []
   ### Mechanical
   [momentum_balance_x]
@@ -85,18 +95,21 @@
     variable = disp_x
     tensor = P
     component = 0
+    factor = -1
   []
   [momentum_balance_y]
     type = RankTwoDivergence
     variable = disp_y
     tensor = P
     component = 1
+    factor = -1
   []
   [momentum_balance_z]
     type = RankTwoDivergence
     variable = disp_z
     tensor = P
     component = 2
+    factor = -1
   []
 []
 
@@ -104,73 +117,86 @@
   [x_fix]
     type = DirichletBC
     variable = disp_x
-    boundary = 4
+    boundary = left
     value = 0.0
   []
   [y_fix]
     type = DirichletBC
     variable = disp_y
-    boundary = 1
+    boundary = bottom
     value = 0.0
   []
   [z_fix]
     type = DirichletBC
     variable = disp_z
-    boundary = 0
+    boundary = back
     value = 0.0
   []
   [push_x]
     type = FunctionNeumannBC
     variable = disp_x
     boundary = 11
-    function = ramp
+    function = ramp_x
   []
   [push_y]
     type = FunctionNeumannBC
     variable = disp_y
     boundary = 12
-    function = ramp
+    function = ramp_y
   []
-  [open]
-    type = OpenBC
-    variable = c
-    boundary = 'back'
-    flux = j
+  [push_z]
+    type = FunctionNeumannBC
+    variable = disp_z
+    boundary = front
+    function = ramp_z
   []
 []
 
 [Functions]
-  [ramp]
+  [ramp_x]
     type = PiecewiseLinear
     x = '0 0.05'
-    y = '0 1'
+    y = '0 ${fparse -0.1*E}'
+  []
+  [ramp_y]
+    type = PiecewiseLinear
+    x = '0 0.05'
+    y = '0 ${fparse -0.1*E}'
+  []
+  [ramp_z]
+    type = PiecewiseLinear
+    x = '0 0.05'
+    y = '0 ${fparse -0.1*E}'
   []
 []
 
 [Materials]
-  [diffusivity]
-    type = ADGenericConstantRankTwoTensor
-    tensor_name = 'D'
-    tensor_values = '100 100 100'
+  [mobility]
+    type = ADParsedMaterial
+    f_name = M
+    args = 'c T'
+    function = '${D}*c/${R}/T'
   []
-  [mass_diffusion]
+  [diffusion]
     type = MassDiffusion
-    chemical_energy_density = G
-    diffusivity = D
-    concentration = c
-    ideal_gas_constant = 8.3145
+    mass_flux = j
+    mobility = M
+    ideal_gas_constant = ${R}
     temperature = T
+    concentration = c
+    reference_concentration = c0
+    additional_chemical_potential = mu
   []
   [mechanical_parameters]
     type = ADGenericConstantMaterial
     prop_names = 'lambda mu beta'
-    prop_values = '1 1 1'
+    prop_values = '${lambda} ${mu} 1'
   []
   [swelling]
     type = SwellingDeformationGradient
     concentration = c
     reference_concentration = c0
-    molar_volume = 60
+    molar_volume = ${Omega}
     swelling_coefficient = beta
   []
   [def_grad]
@@ -189,22 +215,20 @@
     first_piola_kirchhoff_stress = P
     deformation_gradient_rate = dot(F)
   []
-  [mass_source]
-    type = MassSource
-    mass_source = m
-    concentration = c
-  []
-  [mass_flux]
-    type = MassFlux
-    mass_flux = j
-    concentration = c
+[]
+
+[Preconditioning]
+  [smp]
+    type = SMP
+    full = true
   []
 []
 
 [Executioner]
   type = Transient
-  solve_type = NEWTON
+  solve_type = PJFNK
 
+  petsc_options = '-ksp_converged_reason'
   petsc_options_iname = '-pc_type'
   petsc_options_value = 'lu'
   automatic_scaling = true
@@ -216,6 +240,23 @@
   nl_abs_tol = 1e-10
 []
 
+[VectorPostprocessors]
+  [c]
+    type = LineValueSampler
+    variable = c
+    start_point = '0 0 0'
+    end_point = '0 0 10'
+    sort_by = z
+    num_points = 100
+  []
+[]
+
 [Outputs]
+  [csv]
+    type = CSV
+    interval = 10
+    file_base = 'stress_assisted_diffusion_E_${E}_Omega_${Omega}'
+  []
   exodus = true
+  print_linear_residuals = false
 []
