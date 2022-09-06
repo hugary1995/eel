@@ -1,6 +1,6 @@
 #include "RankTwoDivergence.h"
 
-registerMooseObject("StingrayApp", RankTwoDivergence);
+registerMooseObject("EelApp", RankTwoDivergence);
 
 InputParameters
 RankTwoDivergence::validParams()

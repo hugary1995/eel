@@ -1,6 +1,6 @@
 #include "BulkChargeTransport.h"
 
-registerMooseObject("StingrayApp", BulkChargeTransport);
+registerMooseObject("EelApp", BulkChargeTransport);
 
 InputParameters
 BulkChargeTransport::validParams()

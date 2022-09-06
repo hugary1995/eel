@@ -1,6 +1,6 @@
 #include "EnergyBalanceTimeDerivative.h"
 
-registerMooseObject("StingrayApp", EnergyBalanceTimeDerivative);
+registerMooseObject("EelApp", EnergyBalanceTimeDerivative);
 
 InputParameters
 EnergyBalanceTimeDerivative::validParams()

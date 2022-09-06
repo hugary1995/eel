@@ -6,44 +6,43 @@
 //*
 //* Licensed under LGPL 2.1, please see LICENSE for details
 //* https://www.gnu.org/licenses/lgpl-2.1.html
-#include "StingrayTestApp.h"
-#include "StingrayApp.h"
+#include "EelTestApp.h"
+#include "EelApp.h"
 #include "Moose.h"
 #include "AppFactory.h"
 #include "MooseSyntax.h"
 #include "ModulesApp.h"
 
 InputParameters
-StingrayTestApp::validParams()
+EelTestApp::validParams()
 {
-  InputParameters params = StingrayApp::validParams();
+  InputParameters params = EelApp::validParams();
   return params;
 }
 
-StingrayTestApp::StingrayTestApp(InputParameters parameters) : MooseApp(parameters)
+EelTestApp::EelTestApp(InputParameters parameters) : MooseApp(parameters)
 {
-  StingrayTestApp::registerAll(
-      _factory, _action_factory, _syntax, getParam<bool>("allow_test_objects"));
+  EelTestApp::registerAll(_factory, _action_factory, _syntax, getParam<bool>("allow_test_objects"));
 }
 
-StingrayTestApp::~StingrayTestApp() {}
+EelTestApp::~EelTestApp() {}
 
 void
-StingrayTestApp::registerAll(Factory & f, ActionFactory & af, Syntax & s, bool use_test_objs)
+EelTestApp::registerAll(Factory & f, ActionFactory & af, Syntax & s, bool use_test_objs)
 {
-  StingrayApp::registerAll(f, af, s);
+  EelApp::registerAll(f, af, s);
   if (use_test_objs)
   {
-    Registry::registerObjectsTo(f, {"StingrayTestApp"});
-    Registry::registerActionsTo(af, {"StingrayTestApp"});
+    Registry::registerObjectsTo(f, {"EelTestApp"});
+    Registry::registerActionsTo(af, {"EelTestApp"});
   }
 }
 
 void
-StingrayTestApp::registerApps()
+EelTestApp::registerApps()
 {
-  registerApp(StingrayApp);
-  registerApp(StingrayTestApp);
+  registerApp(EelApp);
+  registerApp(EelTestApp);
 }
 
 /***************************************************************************************************
@@ -51,12 +50,12 @@ StingrayTestApp::registerApps()
  **************************************************************************************************/
 // External entry point for dynamic application loading
 extern "C" void
-StingrayTestApp__registerAll(Factory & f, ActionFactory & af, Syntax & s)
+EelTestApp__registerAll(Factory & f, ActionFactory & af, Syntax & s)
 {
-  StingrayTestApp::registerAll(f, af, s);
+  EelTestApp::registerAll(f, af, s);
 }
 extern "C" void
-StingrayTestApp__registerApps()
+EelTestApp__registerApps()
 {
-  StingrayTestApp::registerApps();
+  EelTestApp::registerApps();
 }

@@ -1,6 +1,6 @@
 #include "ButlerVolmerCurrentDensity.h"
 
-registerMooseObject("StingrayApp", ButlerVolmerCurrentDensity);
+registerMooseObject("EelApp", ButlerVolmerCurrentDensity);
 
 InputParameters
 ButlerVolmerCurrentDensity::validParams()

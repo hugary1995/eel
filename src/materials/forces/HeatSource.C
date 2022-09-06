@@ -1,6 +1,6 @@
 #include "HeatSource.h"
 
-registerADMooseObject("StingrayApp", HeatSource);
+registerADMooseObject("EelApp", HeatSource);
 
 InputParameters
 HeatSource::validParams()

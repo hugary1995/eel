@@ -1,6 +1,6 @@
 #include "MassDiffusion.h"
 
-registerMooseObject("StingrayApp", MassDiffusion);
+registerMooseObject("EelApp", MassDiffusion);
 
 InputParameters
 MassDiffusion::validParams()

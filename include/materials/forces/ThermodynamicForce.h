@@ -2,7 +2,7 @@
 
 #include "Material.h"
 #include "DerivativeMaterialInterface.h"
-#include "StingrayUtils.h"
+#include "EelUtils.h"
 
 template <typename T>
 class ThermodynamicForce : public DerivativeMaterialInterface<Material>

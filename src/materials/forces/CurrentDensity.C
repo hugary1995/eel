@@ -1,6 +1,6 @@
 #include "CurrentDensity.h"
 
-registerADMooseObject("StingrayApp", CurrentDensity);
+registerADMooseObject("EelApp", CurrentDensity);
 
 InputParameters
 CurrentDensity::validParams()

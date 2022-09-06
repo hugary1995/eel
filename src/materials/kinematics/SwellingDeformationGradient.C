@@ -1,6 +1,6 @@
 #include "SwellingDeformationGradient.h"
 
-registerADMooseObject("StingrayApp", SwellingDeformationGradient);
+registerADMooseObject("EelApp", SwellingDeformationGradient);
 
 InputParameters
 SwellingDeformationGradient::validParams()

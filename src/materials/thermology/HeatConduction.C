@@ -1,6 +1,6 @@
 #include "HeatConduction.h"
 
-registerMooseObject("StingrayApp", HeatConduction);
+registerMooseObject("EelApp", HeatConduction);
 
 InputParameters
 HeatConduction::validParams()

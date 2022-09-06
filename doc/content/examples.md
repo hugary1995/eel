@@ -112,7 +112,7 @@ In this example, the initially uniformly distributed concentration is "pumped" f
   \psi = \psi^c + \psi^m,
 \end{equation}
 
-and all the coupled consitutive relations follow from the variation. In terms of input file, since the implementation in Stingray strictly follows the variational framework, the model definition of this coupled system is a straight-forward merging of models defining separate physics, e.g. [#mixing] and [#swelling].
+and all the coupled consitutive relations follow from the variation. In terms of input file, since the implementation in Eel strictly follows the variational framework, the model definition of this coupled system is a straight-forward merging of models defining separate physics, e.g. [#mixing] and [#swelling].
 
 The animation of the result:
 

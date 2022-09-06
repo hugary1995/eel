@@ -1,6 +1,6 @@
 #include "HeatFlux.h"
 
-registerADMooseObject("StingrayApp", HeatFlux);
+registerADMooseObject("EelApp", HeatFlux);
 
 InputParameters
 HeatFlux::validParams()

@@ -1,6 +1,6 @@
 #include "ThermalDeformationGradient.h"
 
-registerADMooseObject("StingrayApp", ThermalDeformationGradient);
+registerADMooseObject("EelApp", ThermalDeformationGradient);
 
 InputParameters
 ThermalDeformationGradient::validParams()

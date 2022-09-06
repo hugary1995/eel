@@ -1,6 +1,6 @@
 #include "ChargeTransferReaction.h"
 
-registerMooseObject("StingrayApp", ChargeTransferReaction);
+registerMooseObject("EelApp", ChargeTransferReaction);
 
 InputParameters
 ChargeTransferReaction::validParams()

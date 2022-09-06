@@ -1,6 +1,6 @@
 #include "NeoHookeanSolid.h"
 
-registerMooseObject("StingrayApp", NeoHookeanSolid);
+registerMooseObject("EelApp", NeoHookeanSolid);
 
 InputParameters
 NeoHookeanSolid::validParams()

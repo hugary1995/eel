@@ -1,6 +1,6 @@
 #include "InterfaceContinuity.h"
 
-registerMooseObject("StingrayApp", InterfaceContinuity);
+registerMooseObject("EelApp", InterfaceContinuity);
 
 InputParameters
 InterfaceContinuity::validParams()

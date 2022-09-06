@@ -43,7 +43,7 @@ with constitutive relations (from Coleman-Noll)
   \end{aligned}
 \end{equation}
 
-In Stingray, the forces are automaticall calculated using the above definitions relying on the [derivative material interface](https://mooseframework.inl.gov/source/materials/DerivativeMaterialInterface.html).
+In Eel, the forces are automaticall calculated using the above definitions relying on the [derivative material interface](https://mooseframework.inl.gov/source/materials/DerivativeMaterialInterface.html).
 
 - [`FirstPiolaKirchhoffStress`](FirstPiolaKirchhoffStress.md) computes the first Piola-Kirchhoff stress $\bfP$.
 - [`MassSource`](MassSource.md) computes the chemical source $\mu_\alpha$.

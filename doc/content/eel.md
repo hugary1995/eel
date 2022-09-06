@@ -1,8 +1,8 @@
 # Syntax
 
-## The Stingray syntax
+## The Eel syntax
 
-!syntax complete groups=StingrayApp
+!syntax complete groups=EelApp
 
 ## The complete list of syntax
 

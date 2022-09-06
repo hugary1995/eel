@@ -1,6 +1,6 @@
 #include "OpenBC.h"
 
-registerMooseObject("StingrayApp", OpenBC);
+registerMooseObject("EelApp", OpenBC);
 
 InputParameters
 OpenBC::validParams()

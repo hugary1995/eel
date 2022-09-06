@@ -1,6 +1,6 @@
 #include "FirstPiolaKirchhoffStress.h"
 
-registerADMooseObject("StingrayApp", FirstPiolaKirchhoffStress);
+registerADMooseObject("EelApp", FirstPiolaKirchhoffStress);
 
 InputParameters
 FirstPiolaKirchhoffStress::validParams()

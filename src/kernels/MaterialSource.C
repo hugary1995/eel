@@ -1,6 +1,6 @@
 #include "MaterialSource.h"
 
-registerMooseObject("StingrayApp", MaterialSource);
+registerMooseObject("EelApp", MaterialSource);
 
 InputParameters
 MaterialSource::validParams()

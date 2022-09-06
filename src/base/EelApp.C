@@ -1,11 +1,11 @@
-#include "StingrayApp.h"
+#include "EelApp.h"
 #include "Moose.h"
 #include "AppFactory.h"
 #include "ModulesApp.h"
 #include "MooseSyntax.h"
 
 InputParameters
-StingrayApp::validParams()
+EelApp::validParams()
 {
   InputParameters params = MooseApp::validParams();
 
@@ -15,39 +15,39 @@ StingrayApp::validParams()
   return params;
 }
 
-StingrayApp::StingrayApp(InputParameters parameters) : MooseApp(parameters)
+EelApp::EelApp(InputParameters parameters) : MooseApp(parameters)
 {
-  StingrayApp::registerAll(_factory, _action_factory, _syntax);
+  EelApp::registerAll(_factory, _action_factory, _syntax);
 }
 
-StingrayApp::~StingrayApp() {}
+EelApp::~EelApp() {}
 
 void
-StingrayApp::registerAll(Factory & f, ActionFactory & af, Syntax & syntax)
+EelApp::registerAll(Factory & f, ActionFactory & af, Syntax & syntax)
 {
   ModulesApp::registerAll(f, af, syntax);
-  Registry::registerObjectsTo(f, {"StingrayApp"});
-  Registry::registerActionsTo(af, {"StingrayApp"});
+  Registry::registerObjectsTo(f, {"EelApp"});
+  Registry::registerActionsTo(af, {"EelApp"});
 
   /* register custom execute flags, action syntax, etc. here */
 }
 
 void
-StingrayApp::registerApps()
+EelApp::registerApps()
 {
-  registerApp(StingrayApp);
+  registerApp(EelApp);
 }
 
 /***************************************************************************************************
  *********************** Dynamic Library Entry Points - DO NOT MODIFY ******************************
  **************************************************************************************************/
 extern "C" void
-StingrayApp__registerAll(Factory & f, ActionFactory & af, Syntax & s)
+EelApp__registerAll(Factory & f, ActionFactory & af, Syntax & s)
 {
-  StingrayApp::registerAll(f, af, s);
+  EelApp::registerAll(f, af, s);
 }
 extern "C" void
-StingrayApp__registerApps()
+EelApp__registerApps()
 {
-  StingrayApp::registerApps();
+  EelApp::registerApps();
 }

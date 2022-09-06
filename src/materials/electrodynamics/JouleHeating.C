@@ -1,6 +1,6 @@
 #include "JouleHeating.h"
 
-registerMooseObject("StingrayApp", JouleHeating);
+registerMooseObject("EelApp", JouleHeating);
 
 InputParameters
 JouleHeating::validParams()

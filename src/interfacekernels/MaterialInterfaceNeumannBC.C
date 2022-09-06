@@ -1,6 +1,6 @@
 #include "MaterialInterfaceNeumannBC.h"
 
-registerMooseObject("StingrayApp", MaterialInterfaceNeumannBC);
+registerMooseObject("EelApp", MaterialInterfaceNeumannBC);
 
 InputParameters
 MaterialInterfaceNeumannBC::validParams()

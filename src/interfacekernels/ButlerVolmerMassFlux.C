@@ -1,6 +1,6 @@
 #include "ButlerVolmerMassFlux.h"
 
-registerMooseObject("StingrayApp", ButlerVolmerMassFlux);
+registerMooseObject("EelApp", ButlerVolmerMassFlux);
 
 InputParameters
 ButlerVolmerMassFlux::validParams()
