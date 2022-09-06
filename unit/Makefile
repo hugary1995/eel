@@ -51,20 +51,20 @@ ADDITIONAL_LIBS     := $(FRAMEWORK_DIR)/contrib/gtest/libgtest.la
 # dep apps
 CURRENT_DIR        := $(shell pwd)
 APPLICATION_DIR    := $(CURRENT_DIR)/..
-APPLICATION_NAME   := stingray
+APPLICATION_NAME   := eel
 include            $(FRAMEWORK_DIR)/app.mk
 
 APPLICATION_DIR    := $(CURRENT_DIR)
-APPLICATION_NAME   := stingray-unit
+APPLICATION_NAME   := eel-unit
 BUILD_EXEC         := yes
 
 DEP_APPS    ?= $(shell $(FRAMEWORK_DIR)/scripts/find_dep_apps.py $(APPLICATION_NAME))
 include $(FRAMEWORK_DIR)/app.mk
 
-# Find all the Stingray unit test source files and include their dependencies.
-stingray_unit_srcfiles := $(shell find $(CURRENT_DIR)/src -name "*.C")
-stingray_unit_deps := $(patsubst %.C, %.$(obj-suffix).d, $(stingray_unit_srcfiles))
--include $(stingray_unit_deps)
+# Find all the Eel unit test source files and include their dependencies.
+eel_unit_srcfiles := $(shell find $(CURRENT_DIR)/src -name "*.C")
+eel_unit_deps := $(patsubst %.C, %.$(obj-suffix).d, $(eel_unit_srcfiles))
+-include $(eel_unit_deps)
 
 ###############################################################################
 # Additional special case targets should be added here

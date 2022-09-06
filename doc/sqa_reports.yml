@@ -1,7 +1,7 @@
 Applications:
-    stingray:
+    eel:
         exe_directory: ${ROOT_DIR}
-        exe_name: stingray
+        exe_name: eel
         app_types:
-            - StingrayApp
+            - EelApp
         content_directory: doc/content

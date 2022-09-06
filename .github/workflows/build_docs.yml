@@ -31,7 +31,7 @@ jobs:
           mamba install moose-tools moose-libmesh
           conda list | grep moose
 
-      - name: Compile Stingray
+      - name: Compile Eel
         shell: bash -l {0}
         run: |
           make -j 2

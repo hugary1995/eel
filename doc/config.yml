@@ -9,8 +9,8 @@ Renderer:
 
 Extensions:
   MooseDocs.extensions.navigation:
-    name: Stingray
-    repo: https://github.com/hugary1995/stingray
+    name: Eel
+    repo: https://github.com/hugary1995/eel
     menu: !include ${ROOT_DIR}/doc/menu.yml
   MooseDocs.extensions.katex:
     macros: !include ${ROOT_DIR}/doc/katex.macros.yml
