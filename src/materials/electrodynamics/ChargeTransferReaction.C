@@ -12,6 +12,8 @@ ChargeTransferReaction::validParams()
                                                 "Give the current density a name");
   params.addRequiredParam<MaterialPropertyName>("charge_transfer_mass_flux",
                                                 "Give the mass flux a name");
+  params.addRequiredParam<MaterialPropertyName>("charge_transfer_heat_flux",
+                                                "Give the heat flux a name");
   params.addRequiredParam<Real>("exchange_current_density",
                                 "The exchange current density (normal to the interface) for the "
                                 "electrode/electrolyte interface");
@@ -32,6 +34,7 @@ ChargeTransferReaction::ChargeTransferReaction(const InputParameters & parameter
   : InterfaceMaterial(parameters),
     _i(declareADProperty<Real>(getParam<MaterialPropertyName>("charge_transfer_current_density"))),
     _j(declareADProperty<Real>(getParam<MaterialPropertyName>("charge_transfer_mass_flux"))),
+    _h(declareADProperty<Real>(getParam<MaterialPropertyName>("charge_transfer_heat_flux"))),
     _electrode(getParam<bool>("electrode")),
     _i0(getParam<Real>("exchange_current_density")),
     _alpha(getParam<Real>("charge_transfer_coefficient")),
@@ -61,4 +64,7 @@ ChargeTransferReaction::computeQpProperties()
 
   // Mass flux
   _j[_qp] = _i[_qp] * _R * _T[_qp] / _F;
+
+  // Heat flux
+  _h[_qp] = _i[_qp] * eta;
 }

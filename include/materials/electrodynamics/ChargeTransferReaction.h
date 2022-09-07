@@ -13,6 +13,7 @@ protected:
 
   ADMaterialProperty<Real> & _i;
   ADMaterialProperty<Real> & _j;
+  ADMaterialProperty<Real> & _h;
 
   const bool _electrode;
 

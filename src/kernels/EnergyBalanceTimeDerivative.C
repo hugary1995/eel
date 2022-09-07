@@ -25,5 +25,5 @@ EnergyBalanceTimeDerivative::EnergyBalanceTimeDerivative(const InputParameters &
 ADReal
 EnergyBalanceTimeDerivative::precomputeQpResidual()
 {
-  return -_rho[_qp] * _cp[_qp] * ADTimeDerivative::precomputeQpResidual();
+  return _rho[_qp] * _cp[_qp] * ADTimeDerivative::precomputeQpResidual();
 }

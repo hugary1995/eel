@@ -59,6 +59,8 @@ T = 300
   []
   [disp_z]
   []
+  [mu]
+  []
 []
 
 [AuxVariables]
@@ -67,14 +69,6 @@ T = 300
   []
   [T]
     initial_condition = ${T}
-  []
-  [mu]
-    family = MONOMIAL
-    [AuxKernel]
-      type = ADMaterialRealAux
-      property = 'dpsi/dc'
-      execute_on = 'LINEAR TIMESTEP_END'
-    []
   []
 []
 
@@ -110,6 +104,13 @@ T = 300
     tensor = P
     component = 2
     factor = -1
+  []
+  ### Projection
+  [mu]
+    type = ADMaterialPropertyValue
+    variable = mu
+    prop_name = dpsi/dc
+    positive = false
   []
 []
 
@@ -217,21 +218,15 @@ T = 300
   []
 []
 
-[Preconditioning]
-  [smp]
-    type = SMP
-    full = true
-  []
-[]
-
 [Executioner]
   type = Transient
-  solve_type = PJFNK
+  solve_type = NEWTON
 
-  petsc_options = '-ksp_converged_reason'
   petsc_options_iname = '-pc_type'
   petsc_options_value = 'lu'
   automatic_scaling = true
+  ignore_variables_for_autoscaling = 'mu'
+  line_search = none
 
   dt = 0.001
   end_time = 0.1

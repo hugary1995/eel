@@ -1,19 +1,25 @@
-I = 5e-3 #mA
+I = 5e-4 #mA
+width = 0.03 #mm
+in = '${fparse -I/width}'
+t0 = '${fparse -1e-5/in}'
+dt = '${fparse t0/100}'
+
 sigma_a = 1e0 #mS/mm
 sigma_e = 1e-1 #mS/mm
 sigma_cp = 1e-2 #mS/mm
-sigma_cm = 1e-2 #mS/mm
-sigma_ce = 5e-2 #mS/mm
+sigma_ca = 1e0 #mS/mm
+sigma_cm = 5e-2 #mS/mm
 
-c_penalty = 1
-
-width = 0.03 #mm
-in = '${fparse -I/width}'
+Phi_penalty = 10
 
 cmin = 1e-4 #mmol/mm^3
 cmax = 1e-3 #mmol/mm^3
-D_cp = 5e-5 #mm^2/s
-D_ce = 1e-4 #mm^2/s
+D_cp = 5e-2 #mm^2/s
+D_cm = 1e-1 #mm^2/s
+D_a = 1e-1 #mm^2/s
+D_e = 1e0 #mm^2/s
+
+c_penalty = 1e2
 
 R = 8.3145 #mJ/mmol/K
 T0 = 300 #K
@@ -38,11 +44,20 @@ CTE = 1e-5
 
 u_penalty = 1e8
 
-rho = 2.5e-9 #Mg/mm^3
-cv = 2.7e8 #mJ/Mg/K
+rho = 5e-10 #Mg/mm^3
+cv = 1e6 #mJ/Mg/K
 kappa = 2e-5 #mJ/mm/K/s
 
-T_penalty = 1e-2
+T_penalty = 2e-2
+
+[GlobalParams]
+  energy_densities = 'dot(psi) chi q q_ca'
+  deformation_gradient = F
+  mechanical_deformation_gradient = Fm
+  eigen_deformation_gradient = Fg
+  swelling_deformation_gradient = Fs
+  thermal_deformation_gradient = Ft
+[]
 
 [Mesh]
   [battery]
@@ -58,23 +73,12 @@ T_penalty = 1e-2
 []
 
 [Variables]
-  [Phi_cp]
-    block = cp
-  []
-  [Phi_cm]
+  [Phi_ca]
     block = cm
   []
-  [Phi_ce]
-    block = cm
-  []
-  [Phi_e]
-    block = e
-  []
-  [Phi_a]
-    block = a
+  [Phi]
   []
   [c]
-    block = 'cp cm'
   []
   [disp_x]
   []
@@ -83,26 +87,12 @@ T_penalty = 1e-2
   [T]
     initial_condition = ${T0}
   []
-[]
-
-[ICs]
-  [c_ce]
-    type = ConstantIC
-    variable = c
-    value = ${cmin}
-    block = 'cm'
-  []
-  [c_cp]
-    type = ConstantIC
-    variable = c
-    value = ${cmax}
-    block = 'cp'
+  [mu]
   []
 []
 
 [AuxVariables]
   [c_ref]
-    initial_condition = ${cmin}
   []
   [T_ref]
     initial_condition = ${T0}
@@ -119,162 +109,157 @@ T_penalty = 1e-2
   []
 []
 
-[Kernels]
-  [charge_balance_cp]
-    type = RankOneDivergence
-    variable = Phi_cp
-    vector = i_cp
-    block = 'cp'
-  []
-  [charge_balance_cm]
-    type = RankOneDivergence
-    variable = Phi_cm
-    vector = i_cm
-    block = 'cm'
-  []
-  [charge_balance_ce]
-    type = RankOneDivergence
-    variable = Phi_ce
-    vector = i_ce
-    block = 'cm'
-  []
-  [charge_balance_e]
-    type = RankOneDivergence
-    variable = Phi_e
-    vector = i_e
-    block = 'e'
-  []
-  [charge_balance_a]
-    type = RankOneDivergence
-    variable = Phi_a
-    vector = i_a
+[ICs]
+  [c_min]
+    type = ConstantIC
+    variable = c
+    value = '${cmin}'
     block = 'a'
   []
-  [mass_balance_1]
-    type = MaterialSource
+  [c_max]
+    type = ConstantIC
     variable = c
-    prop = mu
-    block = 'cp cm'
+    value = ${cmax}
+    block = 'cp cm e'
+  []
+  [c_ref_min]
+    type = ConstantIC
+    variable = c_ref
+    value = '${cmin}'
+    block = 'a'
+  []
+  [c_ref_max]
+    type = ConstantIC
+    variable = c_ref
+    value = ${cmax}
+    block = 'cp cm e'
+  []
+[]
+
+[Kernels]
+  # Charge balance
+  [charge_balance]
+    type = RankOneDivergence
+    variable = Phi
+    vector = i
+  []
+  [charge_balance_ca]
+    type = RankOneDivergence
+    variable = Phi_ca
+    vector = i_ca
+    block = cm
+  []
+  # Mass balance
+  [mass_balance_1]
+    type = TimeDerivative
+    variable = c
   []
   [mass_balance_2]
     type = RankOneDivergence
     variable = c
     vector = J
-    block = 'cp cm'
   []
+  # Momentum balance
   [momentum_balance_x]
     type = RankTwoDivergence
     variable = disp_x
     component = 0
     tensor = pk1
+    factor = -1
   []
   [momentum_balance_y]
     type = RankTwoDivergence
     variable = disp_y
     component = 1
     tensor = pk1
+    factor = -1
   []
+  # Projection
+  [mu]
+    type = ADMaterialPropertyValue
+    variable = mu
+    prop_name = dpsi/dc
+    positive = false
+  []
+  # Energy balance
   [energy_balance_1]
-    type = ADHeatConductionTimeDerivative
+    type = EnergyBalanceTimeDerivative
     variable = T
-    density_name = rho
+    density = rho
     specific_heat = cv
   []
   [energy_balance_2]
-    type = ADHeatConduction
+    type = RankOneDivergence
     variable = T
-    thermal_conductivity = kappa
+    vector = h
   []
-  [heat_source_cp]
+  [heat_source]
     type = MaterialSource
     variable = T
-    prop = jh_cp
+    prop = r
     coefficient = -1
-    block = cp
-  []
-  [heat_source_cm]
-    type = MaterialSource
-    variable = T
-    prop = jh_cm
-    coefficient = -1
-    block = cm
-  []
-  [heat_source_ce]
-    type = MaterialSource
-    variable = T
-    prop = jh_ce
-    coefficient = -1
-    block = cm
-  []
-  [heat_source_e]
-    type = MaterialSource
-    variable = T
-    prop = jh_e
-    coefficient = -1
-    block = e
-  []
-  [heat_source_a]
-    type = MaterialSource
-    variable = T
-    prop = jh_a
-    coefficient = -1
-    block = a
   []
 []
 
 [InterfaceKernels]
-  [current_a_e]
+  [negative_current]
     type = MaterialInterfaceNeumannBC
-    variable = Phi_a
-    neighbor_var = Phi_e
-    prop = ibv_a_e
-    factor = 1
-    boundary = 'a_e'
-  []
-  [current_e_a]
-    type = MaterialInterfaceNeumannBC
-    variable = Phi_e
-    neighbor_var = Phi_a
-    prop = ibv_a_e
+    variable = Phi
+    neighbor_var = Phi
+    prop = ie
     factor = -1
-    boundary = 'e_a'
+    boundary = 'e_a cp_cm'
   []
-  [current_ce_cp]
+  [positive_current]
     type = MaterialInterfaceNeumannBC
-    variable = Phi_ce
-    neighbor_var = Phi_cp
-    prop = ibv_ce_cp
-    factor = 1
-    boundary = 'cm_cp'
+    variable = Phi
+    neighbor_var = Phi
+    prop = ie
+    boundary = 'a_e cm_cp'
   []
-  [current_cp_ce]
-    type = MaterialInterfaceNeumannBC
-    variable = Phi_cp
-    neighbor_var = Phi_ce
-    prop = ibv_ce_cp
-    factor = -1
-    boundary = 'cp_cm'
-  []
-  [mass_flux_cp_ce]
+  [negative_mass]
     type = MaterialInterfaceNeumannBC
     variable = c
     neighbor_var = c
-    prop = jbv_ce_cp
+    prop = Je
     factor = -1
-    boundary = 'cp_cm'
+    boundary = 'e_a cp_cm'
   []
-  [continuity_cm_cp]
+  [positive_mass]
+    type = MaterialInterfaceNeumannBC
+    variable = c
+    neighbor_var = c
+    prop = Je
+    factor = 1
+    boundary = 'a_e cm_cp'
+  []
+  [heat]
+    type = MaterialInterfaceNeumannBC
+    variable = T
+    neighbor_var = T
+    prop = he
+    factor = 1
+    boundary = 'a_e cm_cp e_a cp_cm'
+  []
+  [continuity_c]
     type = InterfaceContinuity
-    variable = Phi_cm
-    neighbor_var = Phi_cp
+    variable = c
+    neighbor_var = c
     penalty = ${c_penalty}
+    boundary = 'cm_e'
+  []
+  [continuity_Phi_ca]
+    type = InterfaceContinuity
+    variable = Phi_ca
+    neighbor_var = Phi
+    penalty = ${Phi_penalty}
     boundary = 'cm_cp'
   []
-  [continuity_ce_e]
+  [continuity_Phi]
     type = InterfaceContinuity
-    variable = Phi_ce
-    neighbor_var = Phi_e
-    penalty = ${c_penalty}
+    variable = Phi
+    neighbor_var = Phi
+    penalty = ${Phi_penalty}
     boundary = 'cm_e'
   []
   [continuity_disp_x]
@@ -300,16 +285,24 @@ T_penalty = 1e-2
   []
 []
 
-[BCs]
-  [current_right]
-    type = FunctionNeumannBC
-    variable = Phi_a
-    boundary = right
-    function = '${in}*if(t<1,t,1)'
+[Functions]
+  [in]
+    type = PiecewiseLinear
+    x = '0 ${t0}'
+    y = '0 ${in}'
   []
-  [potential_left]
+[]
+
+[BCs]
+  [current]
+    type = FunctionNeumannBC
+    variable = Phi
+    boundary = right
+    function = in
+  []
+  [potential]
     type = DirichletBC
-    variable = Phi_cm
+    variable = Phi_ca
     boundary = left
     value = 0
   []
@@ -329,167 +322,81 @@ T_penalty = 1e-2
 
 [Materials]
   # Electrodynamics
-  [electric_constants_cp]
-    type = ADGenericConstantMaterial
-    prop_names = 'sigma_cp'
-    prop_values = '${sigma_cp}'
-    block = cp
+  [conductivity]
+    type = ADPiecewiseConstantByBlockMaterial
+    prop_name = 'sigma'
+    subdomain_to_prop_value = 'a ${sigma_a} e ${sigma_e} cm ${sigma_cm} cp ${sigma_cp}'
   []
-  [electric_constants_cm]
-    type = ADGenericConstantMaterial
-    prop_names = 'sigma_cm'
-    prop_values = '${sigma_cm}'
+  [conductivity_ca]
+    type = ADPiecewiseConstantByBlockMaterial
+    prop_name = 'sigma_ca'
+    subdomain_to_prop_value = 'cm ${sigma_ca}'
     block = cm
   []
-  [electric_constants_ce]
-    type = ADGenericConstantMaterial
-    prop_names = 'sigma_ce'
-    prop_values = '${sigma_ce}'
+  [charge_transport]
+    type = BulkChargeTransport
+    electrical_energy_density = q
+    electric_potential = Phi
+    electric_conductivity = sigma
+    temperature = T
+  []
+  [charge_transport_ca]
+    type = BulkChargeTransport
+    electrical_energy_density = q_ca
+    electric_potential = Phi_ca
+    electric_conductivity = sigma_ca
+    temperature = T
     block = cm
   []
-  [electric_constants_e]
-    type = ADGenericConstantMaterial
-    prop_names = 'sigma_e'
-    prop_values = '${sigma_e}'
-    block = e
+  [current_density]
+    type = CurrentDensity
+    current_density = i
+    electric_potential = Phi
   []
-  [electric_constants_a]
-    type = ADGenericConstantMaterial
-    prop_names = 'sigma_a'
-    prop_values = '${sigma_a}'
-    block = a
-  []
-  [polarization_cp]
-    type = Polarization
-    electrical_energy_density = psi_e_cp
-    electric_potential = Phi_cp
-    electric_conductivity = sigma_cp
-    block = cp
-  []
-  [polarization_cm]
-    type = Polarization
-    electrical_energy_density = psi_e_cm
-    electric_potential = Phi_cm
-    electric_conductivity = sigma_cm
+  [current_density_ca]
+    type = CurrentDensity
+    current_density = i_ca
+    electric_potential = Phi_ca
     block = cm
-  []
-  [polarization_ce]
-    type = Polarization
-    electrical_energy_density = psi_e_ce
-    electric_potential = Phi_ce
-    electric_conductivity = sigma_ce
-    block = cm
-  []
-  [polarization_e]
-    type = Polarization
-    electrical_energy_density = psi_e_e
-    electric_potential = Phi_e
-    electric_conductivity = sigma_e
-    block = e
-  []
-  [polarization_a]
-    type = Polarization
-    electrical_energy_density = psi_e_a
-    electric_potential = Phi_a
-    electric_conductivity = sigma_a
-    block = a
-  []
-  [electric_displacement_cp]
-    type = ElectricDisplacement
-    electric_displacement = i_cp
-    electric_potential = Phi_cp
-    energy_densities = 'psi_e_cp'
-    block = cp
-  []
-  [electric_displacement_cm]
-    type = ElectricDisplacement
-    electric_displacement = i_cm
-    electric_potential = Phi_cm
-    energy_densities = 'psi_e_cm'
-    block = cm
-  []
-  [electric_displacement_ce]
-    type = ElectricDisplacement
-    electric_displacement = i_ce
-    electric_potential = Phi_ce
-    energy_densities = 'psi_e_ce'
-    block = cm
-  []
-  [electric_displacement_e]
-    type = ElectricDisplacement
-    electric_displacement = i_e
-    electric_potential = Phi_e
-    energy_densities = 'psi_e_e'
-    block = e
-  []
-  [electric_displacement_a]
-    type = ElectricDisplacement
-    electric_displacement = i_a
-    electric_potential = Phi_a
-    energy_densities = 'psi_e_a'
-    block = a
   []
 
   # Chemical reactions
-  [diffusivity_cp]
-    type = ADGenericConstantRankTwoTensor
-    tensor_name = 'D'
-    tensor_values = '${D_cp} ${D_cp} ${D_cp}'
-    block = 'cp'
+  [diffusivity]
+    type = ADPiecewiseConstantByBlockMaterial
+    prop_name = 'D'
+    subdomain_to_prop_value = 'a ${D_a} e ${D_e} cm ${D_cm} cp ${D_cp}'
   []
-  [diffusivity_ce]
-    type = ADGenericConstantRankTwoTensor
-    tensor_name = 'D'
-    tensor_values = '${D_ce} ${D_ce} ${D_ce}'
-    block = 'cm'
-  []
-  [viscous_mass_transport]
-    type = ViscousMassTransport
-    chemical_dissipation_density = delta_c
-    concentration = c
-    ideal_gas_constant = ${R}
-    temperature = T
-    block = 'cp cm'
+  [mobility]
+    type = ADParsedMaterial
+    f_name = M
+    args = 'c T'
+    material_property_names = 'D'
+    function = 'D*c/${R}/T'
   []
   [diffusion]
-    type = FicksFirstLaw
-    chemical_energy_density = psi_c
-    concentration = c
-    diffusivity = D
+    type = MassDiffusion
+    mass_flux = J
+    mobility = M
     ideal_gas_constant = ${R}
     temperature = T
-    block = 'cp cm'
-  []
-  [mass_source]
-    type = MassSource
-    mass_source = mu
-    energy_densities = 'psi_m'
-    dissipation_densities = 'delta_c'
     concentration = c
-    block = 'cp cm'
-  []
-  [mass_flux]
-    type = MassFlux
-    mass_flux = J
-    energy_densities = 'psi_c'
-    concentration = c
-    block = 'cp cm'
+    reference_concentration = c_ref
+    additional_chemical_potential = mu
   []
 
   # Redox
   [ramp]
     type = ADGenericFunctionMaterial
     prop_names = 'ramp'
-    prop_values = 'if(t<1,t,1)'
+    prop_values = 'if(t<${t0},t/${t0},1)'
   []
   [OCP_anode_graphite]
     type = ADParsedMaterial
     f_name = U
-    function = '-0.0785*ramp'
-    # function = 'x:=c/${cmax}; -(122.12*x^6-321.81*x^5+315.59*x^4-141.26*x^3+28.218*x^2-1.9057*x+0.0785)*ramp'
-    # args = c
+    function = 'x:=c/${cmax}; -(122.12*x^6-321.81*x^5+315.59*x^4-141.26*x^3+28.218*x^2-1.9057*x+0.0785)*ramp'
+    args = c
     material_property_names = 'ramp'
-    block = a
+    block = 'a'
   []
   [OCP_cathode_NMC111]
     type = ADParsedMaterial
@@ -497,45 +404,16 @@ T_penalty = 1e-2
     function = 'x:=c/${cmax}; (6.0826-6.9922*x+7.1062*x^2-5.4549e-5*exp(124.23*x-114.2593)-2.5947*x^3)*ramp'
     args = c
     material_property_names = 'ramp'
-    block = cp
+    block = 'cp'
   []
-  [charge_transfer_cp_ce]
+  [charge_transfer_anode_elyte]
     type = ChargeTransferReaction
     electrode = true
-    charge_transfer_current_density = ibv_ce_cp
-    charge_transfer_mass_flux = jbv_ce_cp
-    electric_potential = Phi_cp
-    neighbor_electric_potential = Phi_ce
-    charge_transfer_coefficient = 0.5
-    exchange_current_density = ${i0_c}
-    faraday_constant = ${F}
-    ideal_gas_constant = ${R}
-    temperature = T
-    open_circuit_potential = U
-    boundary = 'cp_cm'
-  []
-  [charge_transfer_ce_cp]
-    type = ChargeTransferReaction
-    electrode = false
-    charge_transfer_current_density = ibv_ce_cp
-    charge_transfer_mass_flux = jbv_ce_cp
-    electric_potential = Phi_ce
-    neighbor_electric_potential = Phi_cp
-    charge_transfer_coefficient = 0.5
-    exchange_current_density = ${i0_c}
-    faraday_constant = ${F}
-    ideal_gas_constant = ${R}
-    temperature = T
-    open_circuit_potential = U
-    boundary = 'cm_cp'
-  []
-  [charge_transfer_a_e]
-    type = ChargeTransferReaction
-    electrode = true
-    charge_transfer_current_density = ibv_a_e
-    charge_transfer_mass_flux = jbv_a_e
-    electric_potential = Phi_a
-    neighbor_electric_potential = Phi_e
+    charge_transfer_current_density = ie
+    charge_transfer_mass_flux = Je
+    charge_transfer_heat_flux = he
+    electric_potential = Phi
+    neighbor_electric_potential = Phi
     charge_transfer_coefficient = 0.5
     exchange_current_density = ${i0_a}
     faraday_constant = ${F}
@@ -544,13 +422,14 @@ T_penalty = 1e-2
     open_circuit_potential = U
     boundary = 'a_e'
   []
-  [charge_transfer_e_a]
+  [charge_transfer_elyte_anode]
     type = ChargeTransferReaction
     electrode = false
-    charge_transfer_current_density = ibv_a_e
-    charge_transfer_mass_flux = jbv_a_e
-    electric_potential = Phi_e
-    neighbor_electric_potential = Phi_a
+    charge_transfer_current_density = ie
+    charge_transfer_mass_flux = Je
+    charge_transfer_heat_flux = he
+    electric_potential = Phi
+    neighbor_electric_potential = Phi
     charge_transfer_coefficient = 0.5
     exchange_current_density = ${i0_a}
     faraday_constant = ${F}
@@ -559,6 +438,38 @@ T_penalty = 1e-2
     open_circuit_potential = U
     boundary = 'e_a'
   []
+  [charge_transfer_cathode_elyte]
+    type = ChargeTransferReaction
+    electrode = true
+    charge_transfer_current_density = ie
+    charge_transfer_mass_flux = Je
+    charge_transfer_heat_flux = he
+    electric_potential = Phi
+    neighbor_electric_potential = Phi
+    charge_transfer_coefficient = 0.5
+    exchange_current_density = ${i0_c}
+    faraday_constant = ${F}
+    ideal_gas_constant = ${R}
+    temperature = T
+    open_circuit_potential = U
+    boundary = 'cp_cm'
+  []
+  [charge_transfer_elyte_cathode]
+    type = ChargeTransferReaction
+    electrode = false
+    charge_transfer_current_density = ie
+    charge_transfer_mass_flux = Je
+    charge_transfer_heat_flux = he
+    electric_potential = Phi
+    neighbor_electric_potential = Phi
+    charge_transfer_coefficient = 0.5
+    exchange_current_density = ${i0_c}
+    faraday_constant = ${F}
+    ideal_gas_constant = ${R}
+    temperature = T
+    open_circuit_potential = U
+    boundary = 'cm_cp'
+  []
 
   # Thermal
   [thermal_properties]
@@ -566,40 +477,21 @@ T_penalty = 1e-2
     prop_names = 'rho cv kappa'
     prop_values = '${rho} ${cv} ${kappa}'
   []
-  [joule_heating_cp]
-    type = JouleHeating
-    electric_potential = Phi_cp
-    electric_conductivity = sigma_cp
-    joule_heating = jh_cp
-    block = cp
+  [heat_conduction]
+    type = HeatConduction
+    thermal_energy_density = chi
+    thermal_conductivity = kappa
+    temperature = T
   []
-  [joule_heating_cm]
-    type = JouleHeating
-    electric_potential = Phi_cm
-    electric_conductivity = sigma_cm
-    joule_heating = jh_cm
-    block = cm
+  [heat_flux]
+    type = HeatFlux
+    heat_flux = h
+    temperature = T
   []
-  [joule_heating_ce]
-    type = JouleHeating
-    electric_potential = Phi_ce
-    electric_conductivity = sigma_ce
-    joule_heating = jh_ce
-    block = cm
-  []
-  [joule_heating_e]
-    type = JouleHeating
-    electric_potential = Phi_e
-    electric_conductivity = sigma_e
-    joule_heating = jh_e
-    block = e
-  []
-  [joule_heating_a]
-    type = JouleHeating
-    electric_potential = Phi_a
-    electric_conductivity = sigma_a
-    joule_heating = jh_a
-    block = a
+  [heat_source]
+    type = HeatSource
+    heat_source = r
+    temperature = T
   []
 
   # Mechanical
@@ -627,26 +519,17 @@ T_penalty = 1e-2
     prop_values = '${fparse E_a*nu_a/(1+nu_a)/(1-2*nu_a)} ${fparse E_a/2/(1+nu_a)}'
     block = a
   []
-  [bulk]
+  [swelling_coefficient]
     type = ADGenericConstantMaterial
     prop_names = 'beta'
     prop_values = '${beta}'
   []
-  [swelling_cp]
+  [swelling]
     type = SwellingDeformationGradient
-    concentrations = c
-    reference_concentrations = c_ref
-    molar_volumes = ${Omega}
+    concentration = c
+    reference_concentration = c_ref
+    molar_volume = ${Omega}
     swelling_coefficient = beta
-    block = cp
-  []
-  [swelling_other]
-    type = SwellingDeformationGradient
-    concentrations = c_ref
-    reference_concentrations = c_ref
-    molar_volumes = ${Omega}
-    swelling_coefficient = beta
-    block = 'cm e a'
   []
   [thermal_expansion]
     type = ThermalDeformationGradient
@@ -655,52 +538,35 @@ T_penalty = 1e-2
     CTE = ${CTE}
   []
   [defgrad]
-    type = DeformationGradient
+    type = MechanicalDeformationGradient
     displacements = 'disp_x disp_y'
   []
   [neohookean]
-    type = NeoHookeanElasticEnergyDensity
-    elastic_energy_density = psi_m
+    type = NeoHookeanSolid
+    elastic_energy_density = psi
     lambda = lambda
     shear_modulus = G
+    concentration = c
+    temperature = T
   []
-  [pk1_cp]
+  [pk1]
     type = FirstPiolaKirchhoffStress
     first_piola_kirchhoff_stress = pk1
-    energy_densities = 'psi_m psi_e_cp'
-    block = cp
-  []
-  [pk1_cm]
-    type = FirstPiolaKirchhoffStress
-    first_piola_kirchhoff_stress = pk1
-    energy_densities = 'psi_m psi_e_cm psi_e_ce'
-    block = cm
-  []
-  [pk1_e]
-    type = FirstPiolaKirchhoffStress
-    first_piola_kirchhoff_stress = pk1
-    energy_densities = 'psi_m psi_e_e'
-    block = e
-  []
-  [pk1_a]
-    type = FirstPiolaKirchhoffStress
-    first_piola_kirchhoff_stress = pk1
-    energy_densities = 'psi_m psi_e_a'
-    block = a
+    deformation_gradient_rate = dot(F)
   []
 []
 
 [Postprocessors]
   [V_l]
     type = SideAverageValue
-    variable = Phi_cm
+    variable = Phi_ca
     boundary = left
     outputs = none
     execute_on = 'INITIAL TIMESTEP_END'
   []
   [V_r]
     type = SideAverageValue
-    variable = Phi_a
+    variable = Phi
     boundary = right
     outputs = none
     execute_on = 'INITIAL TIMESTEP_END'
@@ -711,6 +577,12 @@ T_penalty = 1e-2
     pp_names = 'V_l V_r'
     execute_on = 'INITIAL TIMESTEP_END'
   []
+  [in]
+    type = FunctionValuePostprocessor
+    function = in
+    outputs = none
+    execute_on = 'INITIAL TIMESTEP_END'
+  []
   [dt]
     type = TimestepSize
     outputs = none
@@ -718,8 +590,8 @@ T_penalty = 1e-2
   []
   [dC]
     type = ParsedPostprocessor
-    function = 'dt*${I}'
-    pp_names = 'dt'
+    function = '-dt*in*${width}'
+    pp_names = 'dt in'
     outputs = none
     execute_on = 'INITIAL TIMESTEP_END'
   []
@@ -728,18 +600,29 @@ T_penalty = 1e-2
     postprocessor = dC
     execute_on = 'INITIAL TIMESTEP_END'
   []
-  [cmin_cp]
+  [cmin_c]
     type = NodalExtremeValue
     variable = c
     value_type = min
-    block = cp
+    block = 'cp cm'
+  []
+  [cmax_a]
+    type = NodalExtremeValue
+    variable = c
+    value_type = max
+    block = 'a'
   []
 []
 
 [UserObjects]
+  [kill_a]
+    type = Terminator
+    expression = 'cmax_a >= ${cmax}'
+    message = 'Concentration in anode exceeds the maximum allowable value.'
+  []
   [kill_cp]
     type = Terminator
-    expression = 'cmin_cp <= ${cmin}'
+    expression = 'cmin_c <= ${cmin}'
     message = 'Concentration in cathode particle is below the minimum allowable value.'
   []
 []
@@ -751,27 +634,23 @@ T_penalty = 1e-2
   petsc_options_iname = '-pc_type'
   petsc_options_value = 'lu'
   automatic_scaling = true
+  line_search = none
 
   nl_rel_tol = 1e-6
   nl_abs_tol = 1e-10
   nl_max_its = 20
 
   [TimeStepper]
-    # type = FunctionDT
-    # function = 'if(t<1, 0.05, 0.01)'
     type = IterationAdaptiveDT
-    dt = 0.0125
-    optimal_iterations = 6
+    dt = ${dt}
+    optimal_iterations = 7
     iteration_window = 2
-    cutback_factor = 0.5
-    cutback_factor_at_failure = 0.1
     growth_factor = 1.2
+    cutback_factor = 0.5
+    cutback_factor_at_failure = 0.2
+    linear_iteration_ratio = 1000000
   []
-  end_time = 100
-
-  [Quadrature]
-    order = CONSTANT
-  []
+  end_time = 100000
 []
 
 [Outputs]
