@@ -32,7 +32,9 @@ MechanicalEnergyDensity::MechanicalEnergyDensity(const InputParameters & paramet
             : nullptr),
     _Fs_name(_Fs ? getParam<MaterialPropertyName>("swelling_deformation_gradient") : ""),
     _c_name(_Fs ? getParam<VariableName>("concentration") : ""),
-    _d_psi_d_c(_Fs ? &declarePropertyDerivative<Real, true>(_energy_name, _c_name) : nullptr),
+    _d_psi_dot_d_c_dot(_Fs ? &declarePropertyDerivative<Real, true>("dot(" + _energy_name + ")",
+                                                                    "dot(" + _c_name + ")")
+                           : nullptr),
     _d_Js_d_c(_Fs ? &getMaterialPropertyDerivative<Real, true>("det(" + _Fs_name + ")", _c_name)
                   : nullptr),
 

@@ -13,7 +13,7 @@ R = 8.3145
 T = 300
 
 [GlobalParams]
-  energy_densities = 'dot(psi)'
+  energy_densities = 'dot(psi_m) dot(psi_c) zeta'
   deformation_gradient = F
   mechanical_deformation_gradient = Fm
   eigen_deformation_gradient = Fg
@@ -75,12 +75,13 @@ T = 300
 [Kernels]
   ### Chemical
   [mass_balance_time]
-    type = TimeDerivative
-    variable = c
+    type = CoupledTimeDerivative
+    variable = mu
+    v = c
   []
   [mass_balance]
     type = RankOneDivergence
-    variable = c
+    variable = mu
     vector = j
   []
   ### Mechanical
@@ -105,12 +106,12 @@ T = 300
     component = 2
     factor = -1
   []
-  ### Projection
-  [mu]
-    type = ADMaterialPropertyValue
-    variable = mu
-    prop_name = dpsi/dc
-    positive = false
+  ### Chemical potential
+  [c]
+    type = PrimalDualProjection
+    variable = c
+    primal_variable = dot(c)
+    dual_variable = mu
   []
 []
 
@@ -175,18 +176,27 @@ T = 300
   [mobility]
     type = ADParsedMaterial
     f_name = M
-    args = 'c T'
-    function = '${D}*c/${R}/T'
+    args = 'c0'
+    function = '${D}*c0/${R}/${T}'
+  []
+  [chemical_energy]
+    type = EntropicChemicalEnergyDensity
+    chemical_energy_density = psi_c
+    concentration = c
+    ideal_gas_constant = ${R}
+    temperature = T
+    reference_concentration = c0
   []
   [diffusion]
     type = MassDiffusion
-    mass_flux = j
+    dual_chemical_energy_density = zeta
+    chemical_potential = mu
     mobility = M
-    ideal_gas_constant = ${R}
-    temperature = T
-    concentration = c
-    reference_concentration = c0
-    additional_chemical_potential = mu
+  []
+  [mass_flux]
+    type = MassFlux
+    mass_flux = j
+    chemical_potential = mu
   []
   [mechanical_parameters]
     type = ADGenericConstantMaterial
@@ -206,7 +216,7 @@ T = 300
   []
   [neohookean]
     type = NeoHookeanSolid
-    elastic_energy_density = psi
+    elastic_energy_density = psi_m
     lambda = lambda
     shear_modulus = mu
     concentration = c
@@ -225,8 +235,7 @@ T = 300
   petsc_options_iname = '-pc_type'
   petsc_options_value = 'lu'
   automatic_scaling = true
-  ignore_variables_for_autoscaling = 'mu'
-  line_search = none
+  ignore_variables_for_autoscaling = 'c'
 
   dt = 0.001
   end_time = 0.1

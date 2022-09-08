@@ -36,6 +36,6 @@ NeoHookeanSolid::computeQpProperties()
   if (_Fs)
   {
     ADReal p = -_d_psi_dot_d_F_dot[_qp].doubleContraction(_F[_qp] * (*_Fs)[_qp].inverse()) / 3;
-    (*_d_psi_d_c)[_qp] = (*_d_Js_d_c)[_qp] * p;
+    (*_d_psi_dot_d_c_dot)[_qp] = (*_d_Js_d_c)[_qp] * p;
   }
 }

@@ -25,8 +25,8 @@ protected:
   /// Name of log concentration
   const VariableName _c_name;
 
-  /// Derivative of psi w.r.t. concentration
-  ADMaterialProperty<Real> * _d_psi_d_c;
+  /// Derivative of psi rate w.r.t. concentration rate
+  ADMaterialProperty<Real> * _d_psi_dot_d_c_dot;
 
   /// Derivative of Js w.r.t. concentration
   const ADMaterialProperty<Real> * _d_Js_d_c;

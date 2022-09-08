@@ -63,7 +63,7 @@ ChargeTransferReaction::computeQpProperties()
   _i[_qp] = _i0 * (std::exp(coef * eta) - std::exp(-coef * eta));
 
   // Mass flux
-  _j[_qp] = _i[_qp] * _R * _T[_qp] / _F;
+  _j[_qp] = _i[_qp] / _F;
 
   // Heat flux
   _h[_qp] = _i[_qp] * eta;

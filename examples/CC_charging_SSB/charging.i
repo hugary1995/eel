@@ -1,7 +1,7 @@
-I = 5e-4 #mA
+I = 3e-3 #mA
 width = 0.03 #mm
 in = '${fparse -I/width}'
-t0 = '${fparse -1e-5/in}'
+t0 = '${fparse -1e-2/in}'
 dt = '${fparse t0/100}'
 
 sigma_a = 1e0 #mS/mm
@@ -14,18 +14,18 @@ Phi_penalty = 10
 
 cmin = 1e-4 #mmol/mm^3
 cmax = 1e-3 #mmol/mm^3
-D_cp = 5e-2 #mm^2/s
-D_cm = 1e-1 #mm^2/s
-D_a = 1e-1 #mm^2/s
-D_e = 1e0 #mm^2/s
+D_cp = 5e-5 #mm^2/s
+D_cm = 1e-4 #mm^2/s
+D_a = 1e-3 #mm^2/s
+D_e = 1e-4 #mm^2/s
 
-c_penalty = 1e2
+mu_penalty = 1e-2
 
 R = 8.3145 #mJ/mmol/K
 T0 = 300 #K
 F = 96485 #mC/mmol
 
-i0_a = 1e-4 #mA/mm^2
+i0_a = 1e-1 #mA/mm^2
 i0_c = 1e-1 #mA/mm^2
 
 E_cp = 1e5
@@ -37,21 +37,20 @@ nu_cm = 0.25
 nu_e = 0.25
 nu_a = 0.3
 
-Omega = 60
-beta = 1
-
-CTE = 1e-5
-
 u_penalty = 1e8
 
-rho = 5e-10 #Mg/mm^3
-cv = 1e6 #mJ/Mg/K
-kappa = 2e-5 #mJ/mm/K/s
+Omega = 60
+beta = 1
+CTE = 1e-5
 
-T_penalty = 2e-2
+rho = 2.5e-9 #Mg/mm^3
+cv = 2.7e8 #mJ/Mg/K
+kappa = 2e-4 #mJ/mm/K/s
+
+T_penalty = 2e-1
 
 [GlobalParams]
-  energy_densities = 'dot(psi) chi q q_ca'
+  energy_densities = 'dot(psi_m) dot(psi_c) chi q q_ca zeta'
   deformation_gradient = F
   mechanical_deformation_gradient = Fm
   eigen_deformation_gradient = Fg
@@ -113,26 +112,38 @@ T_penalty = 2e-2
   [c_min]
     type = ConstantIC
     variable = c
-    value = '${cmin}'
+    value = ${cmin}
     block = 'a'
+  []
+  [c_mid]
+    type = ConstantIC
+    variable = c
+    value = '${fparse (cmax+cmin)/2}'
+    block = 'cm e'
   []
   [c_max]
     type = ConstantIC
     variable = c
     value = ${cmax}
-    block = 'cp cm e'
+    block = 'cp'
   []
   [c_ref_min]
     type = ConstantIC
     variable = c_ref
-    value = '${cmin}'
+    value = ${cmin}
     block = 'a'
+  []
+  [c_ref_mid]
+    type = ConstantIC
+    variable = c_ref
+    value = '${fparse (cmax+cmin)/2}'
+    block = 'cm e'
   []
   [c_ref_max]
     type = ConstantIC
     variable = c_ref
     value = ${cmax}
-    block = 'cp cm e'
+    block = 'cp'
   []
 []
 
@@ -151,13 +162,14 @@ T_penalty = 2e-2
   []
   # Mass balance
   [mass_balance_1]
-    type = TimeDerivative
-    variable = c
+    type = CoupledTimeDerivative
+    variable = mu
+    v = c
   []
   [mass_balance_2]
     type = RankOneDivergence
-    variable = c
-    vector = J
+    variable = mu
+    vector = j
   []
   # Momentum balance
   [momentum_balance_x]
@@ -174,12 +186,12 @@ T_penalty = 2e-2
     tensor = pk1
     factor = -1
   []
-  # Projection
-  [mu]
-    type = ADMaterialPropertyValue
-    variable = mu
-    prop_name = dpsi/dc
-    positive = false
+  # Chemical potential
+  [c]
+    type = PrimalDualProjection
+    variable = c
+    primal_variable = dot(c)
+    dual_variable = mu
   []
   # Energy balance
   [energy_balance_1]
@@ -219,17 +231,17 @@ T_penalty = 2e-2
   []
   [negative_mass]
     type = MaterialInterfaceNeumannBC
-    variable = c
-    neighbor_var = c
-    prop = Je
+    variable = mu
+    neighbor_var = mu
+    prop = je
     factor = -1
     boundary = 'e_a cp_cm'
   []
   [positive_mass]
     type = MaterialInterfaceNeumannBC
-    variable = c
-    neighbor_var = c
-    prop = Je
+    variable = mu
+    neighbor_var = mu
+    prop = je
     factor = 1
     boundary = 'a_e cm_cp'
   []
@@ -241,11 +253,11 @@ T_penalty = 2e-2
     factor = 1
     boundary = 'a_e cm_cp e_a cp_cm'
   []
-  [continuity_c]
+  [continuity_mu]
     type = InterfaceContinuity
-    variable = c
-    neighbor_var = c
-    penalty = ${c_penalty}
+    variable = mu
+    neighbor_var = mu
+    penalty = ${mu_penalty}
     boundary = 'cm_e'
   []
   [continuity_Phi_ca]
@@ -369,19 +381,28 @@ T_penalty = 2e-2
   [mobility]
     type = ADParsedMaterial
     f_name = M
-    args = 'c T'
+    args = 'c_ref T_ref'
     material_property_names = 'D'
-    function = 'D*c/${R}/T'
+    function = 'D*c_ref/${R}/T_ref'
+  []
+  [chemical_energy]
+    type = EntropicChemicalEnergyDensity
+    chemical_energy_density = psi_c
+    concentration = c
+    ideal_gas_constant = ${R}
+    temperature = T
+    reference_concentration = c_ref
   []
   [diffusion]
     type = MassDiffusion
-    mass_flux = J
+    dual_chemical_energy_density = zeta
+    chemical_potential = mu
     mobility = M
-    ideal_gas_constant = ${R}
-    temperature = T
-    concentration = c
-    reference_concentration = c_ref
-    additional_chemical_potential = mu
+  []
+  [mass_flux]
+    type = MassFlux
+    mass_flux = j
+    chemical_potential = mu
   []
 
   # Redox
@@ -410,7 +431,7 @@ T_penalty = 2e-2
     type = ChargeTransferReaction
     electrode = true
     charge_transfer_current_density = ie
-    charge_transfer_mass_flux = Je
+    charge_transfer_mass_flux = je
     charge_transfer_heat_flux = he
     electric_potential = Phi
     neighbor_electric_potential = Phi
@@ -426,7 +447,7 @@ T_penalty = 2e-2
     type = ChargeTransferReaction
     electrode = false
     charge_transfer_current_density = ie
-    charge_transfer_mass_flux = Je
+    charge_transfer_mass_flux = je
     charge_transfer_heat_flux = he
     electric_potential = Phi
     neighbor_electric_potential = Phi
@@ -442,7 +463,7 @@ T_penalty = 2e-2
     type = ChargeTransferReaction
     electrode = true
     charge_transfer_current_density = ie
-    charge_transfer_mass_flux = Je
+    charge_transfer_mass_flux = je
     charge_transfer_heat_flux = he
     electric_potential = Phi
     neighbor_electric_potential = Phi
@@ -458,7 +479,7 @@ T_penalty = 2e-2
     type = ChargeTransferReaction
     electrode = false
     charge_transfer_current_density = ie
-    charge_transfer_mass_flux = Je
+    charge_transfer_mass_flux = je
     charge_transfer_heat_flux = he
     electric_potential = Phi
     neighbor_electric_potential = Phi
@@ -543,7 +564,7 @@ T_penalty = 2e-2
   []
   [neohookean]
     type = NeoHookeanSolid
-    elastic_energy_density = psi
+    elastic_energy_density = psi_m
     lambda = lambda
     shear_modulus = G
     concentration = c
@@ -604,7 +625,7 @@ T_penalty = 2e-2
     type = NodalExtremeValue
     variable = c
     value_type = min
-    block = 'cp cm'
+    block = 'cp'
   []
   [cmax_a]
     type = NodalExtremeValue
@@ -631,14 +652,16 @@ T_penalty = 2e-2
   type = Transient
   solve_type = NEWTON
 
-  petsc_options_iname = '-pc_type'
-  petsc_options_value = 'lu'
+  petsc_options = '-ksp_converged_reason'
+  petsc_options_iname = '-pc_type -pc_asm_local_type -pc_asm_blocks -pc_asm_type -pc_asm_overlap -sub_pc_type -sub_pc_factor_levels -sub_ksp_type -ksp_gmres_restart'
+  petsc_options_value = 'asm additive 20 basic 1 ilu 2 preonly 151'
   automatic_scaling = true
-  line_search = none
+  ignore_variables_for_autoscaling = 'c'
 
   nl_rel_tol = 1e-6
   nl_abs_tol = 1e-10
   nl_max_its = 20
+  l_max_its = 150
 
   [TimeStepper]
     type = IterationAdaptiveDT

@@ -39,14 +39,8 @@ Omega = 60
 beta = 1e-3
 CTE = 1e-5
 
-rho = 2.5e-9 #Mg/mm^3
-cv = 2.7e8 #mJ/Mg/K
-kappa = 2e-4 #mJ/mm/K/s
-
-T_penalty = 2e-1
-
 [GlobalParams]
-  energy_densities = 'dot(psi_m) dot(psi_c) chi q zeta'
+  energy_densities = 'dot(psi_m) dot(psi_c) q zeta'
   deformation_gradient = F
   mechanical_deformation_gradient = Fm
   eigen_deformation_gradient = Fg
@@ -110,32 +104,22 @@ T_penalty = 2e-1
   []
   [c]
   []
+  [mu]
+  []
   [disp_x]
   []
   [disp_y]
-  []
-  [T]
-    initial_condition = ${T0}
-  []
-  [mu]
   []
 []
 
 [AuxVariables]
   [c_ref]
   []
-  [T_ref]
+  [T]
     initial_condition = ${T0}
   []
-  [stress]
-    order = CONSTANT
-    family = MONOMIAL
-    [AuxKernel]
-      type = ADRankTwoScalarAux
-      rank_two_tensor = pk1
-      scalar_type = VonMisesStress
-      execute_on = 'INITIAL TIMESTEP_END'
-    []
+  [T_ref]
+    initial_condition = ${T0}
   []
 []
 
@@ -196,6 +180,13 @@ T_penalty = 2e-1
     variable = mu
     vector = j
   []
+  # Chemical potential
+  [c]
+    type = PrimalDualProjection
+    variable = c
+    primal_variable = dot(c)
+    dual_variable = mu
+  []
   # Momentum balance
   [momentum_balance_x]
     type = RankTwoDivergence
@@ -210,31 +201,6 @@ T_penalty = 2e-1
     component = 1
     tensor = pk1
     factor = -1
-  []
-  # Chemical potential
-  [c]
-    type = PrimalDualProjection
-    variable = c
-    primal_variable = dot(c)
-    dual_variable = mu
-  []
-  # Energy balance
-  [energy_balance_1]
-    type = EnergyBalanceTimeDerivative
-    variable = T
-    density = rho
-    specific_heat = cv
-  []
-  [energy_balance_2]
-    type = RankOneDivergence
-    variable = T
-    vector = h
-  []
-  [heat_source]
-    type = MaterialSource
-    variable = T
-    prop = r
-    coefficient = -1
   []
 []
 
@@ -270,14 +236,6 @@ T_penalty = 2e-1
     factor = 1
     boundary = 'anode_elyte elyte_cathode'
   []
-  [heat]
-    type = MaterialInterfaceNeumannBC
-    variable = T
-    neighbor_var = T
-    prop = he
-    factor = 1
-    boundary = 'anode_elyte elyte_cathode elyte_anode cathode_elyte'
-  []
   [continuity_disp_x]
     type = InterfaceContinuity
     variable = disp_x
@@ -290,13 +248,6 @@ T_penalty = 2e-1
     variable = disp_y
     neighbor_var = disp_y
     penalty = ${u_penalty}
-    boundary = 'anode_elyte elyte_cathode'
-  []
-  [continuity_T]
-    type = InterfaceContinuity
-    variable = T
-    neighbor_var = T
-    penalty = ${T_penalty}
     boundary = 'anode_elyte elyte_cathode'
   []
 []
@@ -365,9 +316,9 @@ T_penalty = 2e-1
   [mobility]
     type = ADParsedMaterial
     f_name = M
-    args = 'c_ref T_ref'
+    args = 'c_ref T'
     material_property_names = 'D'
-    function = 'D*c_ref/${R}/T_ref'
+    function = 'D*c_ref/${R}/T'
   []
   [chemical_energy]
     type = EntropicChemicalEnergyDensity
@@ -474,29 +425,6 @@ T_penalty = 2e-1
     temperature = T
     open_circuit_potential = U
     boundary = 'elyte_cathode'
-  []
-
-  # Thermal
-  [thermal_properties]
-    type = ADGenericConstantMaterial
-    prop_names = 'rho cv kappa'
-    prop_values = '${rho} ${cv} ${kappa}'
-  []
-  [heat_conduction]
-    type = HeatConduction
-    thermal_energy_density = chi
-    thermal_conductivity = kappa
-    temperature = T
-  []
-  [heat_flux]
-    type = HeatFlux
-    heat_flux = h
-    temperature = T
-  []
-  [heat_source]
-    type = HeatSource
-    heat_source = r
-    temperature = T
   []
 
   # Mechanical
