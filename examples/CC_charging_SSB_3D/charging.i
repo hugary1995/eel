@@ -1,6 +1,6 @@
-I = 3e-4 #mA
-width = 0.03 #mm
-in = '${fparse -I/width}'
+I = 2.5e-4 #mA
+width = 0.05 #mm
+in = '${fparse -I/width/width}'
 t0 = '${fparse -1e-2/in}'
 dt = '${fparse t0/100}'
 
@@ -12,17 +12,15 @@ sigma_cm = 5e-2 #mS/mm
 
 Phi_penalty = 10
 
-cmin_a = 1e-4 #mmol/mm^3
-cmax_a = 1e-3 #mmol/mm^3
-c_e = 2e-3 #mmol/mm^3
-cmin_c = 1e-4 #mmol/mm^3
-cmax_c = 4e-3 #mmol/mm^3
+cmin = 1e-4 #mmol/mm^3
+cmid = 5e-4 #mmol/mm^3
+cmax = 1e-3 #mmol/mm^3
 D_cp = 5e-5 #mm^2/s
-D_cm = 5e-4 #mm^2/s
+D_cm = 1e-4 #mm^2/s
 D_a = 1e-3 #mm^2/s
-D_e = 5e-4 #mm^2/s
+D_e = 1e-4 #mm^2/s
 
-c_penalty = 1e-1
+mu_penalty = 1e-2
 
 R = 8.3145 #mJ/mmol/K
 T0 = 300 #K
@@ -43,7 +41,7 @@ nu_a = 0.3
 u_penalty = 1e8
 
 Omega = 60
-beta = 0.5
+beta = 1
 CTE = 1e-5
 
 rho = 2.5e-9 #Mg/mm^3
@@ -59,19 +57,57 @@ T_penalty = 2e-1
   eigen_deformation_gradient = Fg
   swelling_deformation_gradient = Fs
   thermal_deformation_gradient = Ft
+  displacements = 'disp_x disp_y disp_z'
 []
 
 [Mesh]
   [battery]
     type = FileMeshGenerator
-    file = 'gold/ssb.msh'
+    file = 'coarse.e'
+  []
+  [scale]
+    type = TransformGenerator
+    input = battery
+    transform = SCALE
+    vector_value = '1e-3 1e-3 1e-3' #um to mm
+  []
+  [cathode_particle]
+    type = RenameBlockGenerator
+    input = scale
+    old_block = '1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44'
+    new_block = 'cp cp cp cp cp cp cp cp cp cp cp cp cp cp cp cp cp cp cp cp cp cp cp cp cp cp cp cp cp cp cp cp cp cp cp cp cp cp cp cp cp cp cp cp'
+  []
+  [cathode_matrix]
+    type = RenameBlockGenerator
+    input = cathode_particle
+    old_block = '48'
+    new_block = 'cm'
+  []
+  [elyte]
+    type = RenameBlockGenerator
+    input = cathode_matrix
+    old_block = 49
+    new_block = 'e'
+  []
+  [anode]
+    type = RenameBlockGenerator
+    input = elyte
+    old_block = 50
+    new_block = 'a'
   []
   [interfaces]
     type = BreakMeshByBlockGenerator
-    input = battery
+    input = anode
     add_interface_on_two_sides = true
     split_interface = true
   []
+  [sidesets]
+    type = SideSetsFromNormalsGenerator
+    input = interfaces
+    normals = '-1 0 0 1 0 0'
+    new_boundary = 'left right'
+  []
+  use_displaced_mesh = false
 []
 
 [Variables]
@@ -85,6 +121,8 @@ T_penalty = 2e-1
   [disp_x]
   []
   [disp_y]
+  []
+  [disp_z]
   []
   [T]
     initial_condition = ${T0}
@@ -112,40 +150,40 @@ T_penalty = 2e-1
 []
 
 [ICs]
-  [c_a]
+  [c_min]
     type = ConstantIC
     variable = c
-    value = ${cmin_a}
+    value = ${cmin}
     block = 'a'
   []
-  [c_e]
+  [c_mid]
     type = ConstantIC
     variable = c
-    value = ${c_e}
+    value = '${fparse (cmax+cmin)/2}'
     block = 'cm e'
   []
-  [c_c]
+  [c_max]
     type = ConstantIC
     variable = c
-    value = ${cmax_c}
+    value = ${cmax}
     block = 'cp'
   []
-  [c_ref_a]
+  [c_ref_min]
     type = ConstantIC
     variable = c_ref
-    value = ${cmin_a}
+    value = ${cmin}
     block = 'a'
   []
-  [c_ref_e]
+  [c_ref_mid]
     type = ConstantIC
     variable = c_ref
-    value = ${c_e}
+    value = '${fparse (cmax+cmin)/2}'
     block = 'cm e'
   []
-  [c_ref_c]
+  [c_ref_max]
     type = ConstantIC
     variable = c_ref
-    value = ${cmax_c}
+    value = ${cmax}
     block = 'cp'
   []
 []
@@ -186,6 +224,13 @@ T_penalty = 2e-1
     type = RankTwoDivergence
     variable = disp_y
     component = 1
+    tensor = pk1
+    factor = -1
+  []
+  [momentum_balance_z]
+    type = RankTwoDivergence
+    variable = disp_z
+    component = 2
     tensor = pk1
     factor = -1
   []
@@ -256,13 +301,11 @@ T_penalty = 2e-1
     factor = 1
     boundary = 'a_e cm_cp e_a cp_cm'
   []
-  [continuity_c]
-    type = InterfaceCoupledVarContinuity
+  [continuity_mu]
+    type = InterfaceContinuity
     variable = mu
     neighbor_var = mu
-    v = c
-    v_neighbor = c
-    penalty = ${c_penalty}
+    penalty = ${mu_penalty}
     boundary = 'cm_e'
   []
   [continuity_Phi_ca]
@@ -290,6 +333,13 @@ T_penalty = 2e-1
     type = InterfaceContinuity
     variable = disp_y
     neighbor_var = disp_y
+    penalty = ${u_penalty}
+    boundary = 'cp_cm cm_e e_a'
+  []
+  [continuity_disp_z]
+    type = InterfaceContinuity
+    variable = disp_z
+    neighbor_var = disp_z
     penalty = ${u_penalty}
     boundary = 'cp_cm cm_e e_a'
   []
@@ -332,6 +382,12 @@ T_penalty = 2e-1
   [fix_y]
     type = DirichletBC
     variable = disp_y
+    value = 0
+    boundary = 'left right'
+  []
+  [fix_z]
+    type = DirichletBC
+    variable = disp_z
     value = 0
     boundary = 'left right'
   []
@@ -419,7 +475,7 @@ T_penalty = 2e-1
   [OCP_anode_graphite]
     type = ADParsedMaterial
     f_name = U
-    function = 'x:=c/${cmax_a}; -(122.12*x^6-321.81*x^5+315.59*x^4-141.26*x^3+28.218*x^2-1.9057*x+0.0785)*ramp'
+    function = 'x:=c/${cmax}; -(122.12*x^6-321.81*x^5+315.59*x^4-141.26*x^3+28.218*x^2-1.9057*x+0.0785)*ramp'
     args = c
     material_property_names = 'ramp'
     block = 'a'
@@ -427,7 +483,7 @@ T_penalty = 2e-1
   [OCP_cathode_NMC111]
     type = ADParsedMaterial
     f_name = U
-    function = 'x:=c/${cmax_c}; (6.0826-6.9922*x+7.1062*x^2-5.4549e-5*exp(124.23*x-114.2593)-2.5947*x^3)*ramp'
+    function = 'x:=c/${cmax}; (6.0826-6.9922*x+7.1062*x^2-5.4549e-5*exp(124.23*x-114.2593)-2.5947*x^3)*ramp'
     args = c
     material_property_names = 'ramp'
     block = 'cp'
@@ -565,7 +621,6 @@ T_penalty = 2e-1
   []
   [defgrad]
     type = MechanicalDeformationGradient
-    displacements = 'disp_x disp_y'
   []
   [neohookean]
     type = NeoHookeanSolid
@@ -643,12 +698,12 @@ T_penalty = 2e-1
 [UserObjects]
   [kill_a]
     type = Terminator
-    expression = 'cmax_a >= ${cmax_a}'
+    expression = 'cmax_a >= ${cmax}'
     message = 'Concentration in anode exceeds the maximum allowable value.'
   []
   [kill_cp]
     type = Terminator
-    expression = 'cmin_c <= ${cmin_c}'
+    expression = 'cmin_c <= ${cmin}'
     message = 'Concentration in cathode particle is below the minimum allowable value.'
   []
 []
@@ -657,37 +712,40 @@ T_penalty = 2e-1
   type = Transient
   solve_type = NEWTON
 
-  # petsc_options = '-ksp_converged_reason'
-  # petsc_options_iname = '-pc_type -pc_asm_local_type -pc_asm_blocks -pc_asm_type -pc_asm_overlap -sub_pc_type -sub_pc_factor_levels -sub_ksp_type -ksp_gmres_restart'
-  # petsc_options_value = 'asm additive 20 basic 1 ilu 2 preonly 151'
-  # petsc_options_iname = '-pc_type -pc_hypre_type -ksp_gmres_restart -pc_hypre_boomeramg_strong_threshold -pc_hypre_boomeramg_interp_type -pc_hypre_boomeramg_coarsen_type -pc_hypre_boomeramg_agg_nl -pc_hypre_boomeramg_agg_num_paths -pc_hypre_boomeramg_truncfactor -pc_hypre_boomeramg_smooth_type -pc_hypre_boomeramg_nodal_coarsen'
-  # petsc_options_value = 'hypre boomeramg 151 0.7 ext+i PMIS 4 2 0.4 euclid 5'
-  petsc_options_iname = '-pc_type'
-  petsc_options_value = 'lu'
+  petsc_options = '-ksp_converged_reason'
+  petsc_options_iname = '-pc_type -pc_asm_local_type -pc_asm_blocks -pc_asm_type -pc_asm_overlap -sub_pc_type -sub_pc_factor_levels -sub_ksp_type -ksp_gmres_restart'
+  petsc_options_value = 'asm additive 384 basic 1 ilu 2 preonly 301'
   automatic_scaling = true
   ignore_variables_for_autoscaling = 'c'
 
+  l_max_its = 300
+  l_tol = 1e-6
   nl_rel_tol = 1e-6
-  nl_abs_tol = 1e-10
-  nl_max_its = 20
-  l_max_its = 150
+  nl_abs_tol = 1e-9
+  nl_max_its = 12
 
   [TimeStepper]
     type = IterationAdaptiveDT
     dt = ${dt}
-    optimal_iterations = 7
-    iteration_window = 2
+    optimal_iterations = 6
+    iteration_window = 1
     growth_factor = 1.2
-    cutback_factor = 0.5
-    cutback_factor_at_failure = 0.2
+    cutback_factor = 0.2
+    cutback_factor_at_failure = 0.1
     linear_iteration_ratio = 1000000
   []
-  end_time = 100000
+  end_time = 10000
 []
 
 [Outputs]
-  file_base = 'beta_${beta}'
-  csv = true
-  exodus = true
+  [exo]
+    type = Exodus
+    interval = 5
+    file_base = '${outname}_I_${I}'
+  []
+  [csv]
+    type = CSV
+    file_base = '${outname}_I_${I}'
+  []
   print_linear_residuals = false
 []
