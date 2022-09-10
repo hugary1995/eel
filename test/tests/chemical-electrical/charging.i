@@ -455,8 +455,8 @@ i0_c = 1e-1 #mA/mm^2
   type = Transient
   solve_type = NEWTON
 
-  petsc_options_iname = '-pc_type -pc_asm_overlap -sub_pc_type -sub_pc_factor_levels -sub_ksp_type -ksp_gmres_restart'
-  petsc_options_value = 'asm 2 ilu 2 preonly 151'
+  petsc_options_iname = '-pc_type'
+  petsc_options_value = 'lu'
   automatic_scaling = true
   ignore_variables_for_autoscaling = 'c'
 
@@ -479,7 +479,6 @@ i0_c = 1e-1 #mA/mm^2
 []
 
 [Outputs]
-  file_base = 'I_${I}'
   csv = true
   exodus = true
   print_linear_residuals = false

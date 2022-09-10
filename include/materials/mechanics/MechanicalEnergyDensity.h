@@ -22,7 +22,7 @@ protected:
   /// Swelling deformation gradient name
   const MaterialPropertyName _Fs_name;
 
-  /// Name of log concentration
+  /// Name of concentration
   const VariableName _c_name;
 
   /// Derivative of psi rate w.r.t. concentration rate
@@ -33,4 +33,10 @@ protected:
 
   /// Thermal deformation gradient
   const ADMaterialProperty<RankTwoTensor> * _Ft;
+
+  /// Thermal deformation gradient name
+  const MaterialPropertyName _Ft_name;
+
+  /// Name of the temperature variable
+  const VariableName _T_name;
 };

@@ -59,8 +59,6 @@ T = 300
   []
   [disp_z]
   []
-  [mu]
-  []
 []
 
 [AuxVariables]
@@ -75,13 +73,12 @@ T = 300
 [Kernels]
   ### Chemical
   [mass_balance_time]
-    type = CoupledTimeDerivative
-    variable = mu
-    v = c
+    type = TimeDerivative
+    variable = c
   []
   [mass_balance]
     type = RankOneDivergence
-    variable = mu
+    variable = c
     vector = j
   []
   ### Mechanical
@@ -105,13 +102,6 @@ T = 300
     tensor = P
     component = 2
     factor = -1
-  []
-  ### Chemical potential
-  [c]
-    type = PrimalDualProjection
-    variable = c
-    primal_variable = dot(c)
-    dual_variable = mu
   []
 []
 
@@ -185,18 +175,15 @@ T = 300
     concentration = c
     ideal_gas_constant = ${R}
     temperature = T
-    reference_concentration = c0
+    reference_concentration = 1e-4
   []
   [diffusion]
-    type = MassDiffusion
-    dual_chemical_energy_density = zeta
-    chemical_potential = mu
-    mobility = M
-  []
-  [mass_flux]
-    type = MassFlux
+    type = CondensedMassDiffusion
     mass_flux = j
-    chemical_potential = mu
+    mobility = M
+    concentration = c
+    output_properties = 'j'
+    outputs = 'exodus'
   []
   [mechanical_parameters]
     type = ADGenericConstantMaterial
@@ -232,10 +219,11 @@ T = 300
   type = Transient
   solve_type = NEWTON
 
-  # petsc_options_iname = '-pc_type -pc_hypre_type -ksp_gmres_restart -pc_hypre_boomeramg_strong_threshold -pc_hypre_boomeramg_interp_type -pc_hypre_boomeramg_coarsen_type -pc_hypre_boomeramg_agg_nl -pc_hypre_boomeramg_agg_num_paths -pc_hypre_boomeramg_truncfactor -ksp_type'
-  # petsc_options_value = 'hypre boomeramg 301 0.7 ext+i PMIS 4 2 0.4 gmres'
-  petsc_options_iname = '-pc_type'
-  petsc_options_value = 'lu'
+  petsc_options = '-ksp_converged_reason'
+  petsc_options_iname = '-pc_type -pc_hypre_type -ksp_gmres_restart -pc_hypre_boomeramg_strong_threshold -pc_hypre_boomeramg_interp_type -pc_hypre_boomeramg_coarsen_type -pc_hypre_boomeramg_agg_nl -pc_hypre_boomeramg_agg_num_paths -pc_hypre_boomeramg_truncfactor'
+  petsc_options_value = 'hypre boomeramg 301 0.7 ext+i PMIS 4 2 0.4'
+  # petsc_options_iname = '-pc_type'
+  # petsc_options_value = 'lu'
   automatic_scaling = true
   ignore_variables_for_autoscaling = 'c'
 
@@ -261,8 +249,12 @@ T = 300
   [csv]
     type = CSV
     interval = 10
-    file_base = 'stress_assisted_diffusion_E_${E}_Omega_${Omega}'
+    file_base = 'stress_assisted_diffusion_condensed_E_${E}_Omega_${Omega}'
   []
   exodus = true
   print_linear_residuals = false
+[]
+
+[Debug]
+  show_material_props = true
 []

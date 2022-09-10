@@ -41,6 +41,8 @@ MechanicalEnergyDensity::MechanicalEnergyDensity(const InputParameters & paramet
     // thermal expansion
     _Ft(isParamValid("thermal_deformation_gradient")
             ? &getADMaterialProperty<RankTwoTensor>("thermal_deformation_gradient")
-            : nullptr)
+            : nullptr),
+    _Ft_name(_Ft ? getParam<MaterialPropertyName>("thermal_deformation_gradient") : ""),
+    _T_name(_Ft ? getParam<VariableName>("temperature") : "")
 {
 }

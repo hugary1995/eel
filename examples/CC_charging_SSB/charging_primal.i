@@ -10,20 +10,19 @@ sigma_cp = 1e-2 #mS/mm
 sigma_ca = 1e0 #mS/mm
 sigma_cm = 5e-2 #mS/mm
 
-Phi_penalty = 1000
+Phi_penalty = 10
 
 cmin_a = 1e-4 #mmol/mm^3
 cmax_a = 1e-3 #mmol/mm^3
 c_e = 2e-3 #mmol/mm^3
 cmin_c = 1e-4 #mmol/mm^3
 cmax_c = 4e-3 #mmol/mm^3
-c_ref_entropy = 5e-5
 D_cp = 5e-5 #mm^2/s
 D_cm = 5e-4 #mm^2/s
 D_a = 1e-3 #mm^2/s
 D_e = 5e-4 #mm^2/s
 
-c_penalty = 5e-1
+c_penalty = 1e-1
 
 R = 8.3145 #mJ/mmol/K
 T0 = 300 #K
@@ -44,14 +43,37 @@ nu_a = 0.3
 u_penalty = 1e8
 
 Omega = 60
-beta = 1e-2
+beta = 0.5
 CTE = 1e-5
 
 rho = 2.5e-9 #Mg/mm^3
 cv = 2.7e8 #mJ/Mg/K
 kappa = 2e-4 #mJ/mm/K/s
 
-T_penalty = 2
+T_penalty = 2e-1
+
+[MultiApps]
+  [dual]
+    type = TransientMultiApp
+    input_files = charging_dual.i
+    execute_on = 'TIMESTEP_BEGIN'
+  []
+[]
+
+[Transfers]
+  [from_dual]
+    type = MultiAppCopyTransfer
+    from_multi_app = dual
+    source_variable = c
+    variable = c
+  []
+  [to_dual]
+    type = MultiAppCopyTransfer
+    to_multi_app = dual
+    source_variable = 'mu'
+    variable = 'mu'
+  []
+[]
 
 [GlobalParams]
   energy_densities = 'dot(psi_m) dot(psi_c) chi q q_ca zeta'
@@ -81,10 +103,6 @@ T_penalty = 2
   []
   [Phi]
   []
-  [c]
-    order = CONSTANT
-    family = MONOMIAL
-  []
   [disp_x]
   []
   [disp_y]
@@ -97,9 +115,9 @@ T_penalty = 2
 []
 
 [AuxVariables]
+  [c]
+  []
   [c_ref]
-    order = CONSTANT
-    family = MONOMIAL
   []
   [T_ref]
     initial_condition = ${T0}
@@ -117,24 +135,6 @@ T_penalty = 2
 []
 
 [ICs]
-  [c_a]
-    type = ConstantIC
-    variable = c
-    value = ${cmin_a}
-    block = 'a'
-  []
-  [c_e]
-    type = ConstantIC
-    variable = c
-    value = ${c_e}
-    block = 'cm e'
-  []
-  [c_c]
-    type = ConstantIC
-    variable = c
-    value = ${cmax_c}
-    block = 'cp'
-  []
   [c_ref_a]
     type = ConstantIC
     variable = c_ref
@@ -168,16 +168,12 @@ T_penalty = 2
     vector = i_ca
     block = cm
   []
-  # Mass balance
-  [mass_balance_1]
-    type = CoupledTimeDerivative
+  # Chemical potential
+  [mu]
+    type = PrimalDualProjection
     variable = mu
-    v = c
-  []
-  [mass_balance_2]
-    type = RankOneDivergence
-    variable = mu
-    vector = j
+    primal_variable = dot(c)
+    dual_variable = mu
   []
   # Momentum balance
   [momentum_balance_x]
@@ -193,13 +189,6 @@ T_penalty = 2
     component = 1
     tensor = pk1
     factor = -1
-  []
-  # Chemical potential
-  [c]
-    type = PrimalDualProjection
-    variable = c
-    primal_variable = dot(c)
-    dual_variable = mu
   []
   # Energy balance
   [energy_balance_1]
@@ -239,34 +228,32 @@ T_penalty = 2
   []
   [negative_mass]
     type = MaterialInterfaceNeumannBC
-    variable = mu
-    neighbor_var = mu
+    variable = c
+    neighbor_var = c
     prop = je
     factor = -1
     boundary = 'e_a cp_cm'
   []
   [positive_mass]
     type = MaterialInterfaceNeumannBC
-    variable = mu
-    neighbor_var = mu
+    variable = c
+    neighbor_var = c
     prop = je
     factor = 1
     boundary = 'a_e cm_cp'
   []
-  # [heat]
-  #   type = MaterialInterfaceNeumannBC
-  #   variable = T
-  #   neighbor_var = T
-  #   prop = he
-  #   factor = 1
-  #   boundary = 'a_e cm_cp e_a cp_cm'
-  # []
+  [heat]
+    type = MaterialInterfaceNeumannBC
+    variable = T
+    neighbor_var = T
+    prop = he
+    factor = 1
+    boundary = 'a_e cm_cp e_a cp_cm'
+  []
   [continuity_c]
-    type = InterfaceCoupledVarContinuity
-    variable = mu
-    neighbor_var = mu
-    v = c
-    v_neighbor = c
+    type = InterfaceContinuity
+    variable = c
+    neighbor_var = c
     penalty = ${c_penalty}
     boundary = 'cm_e'
   []
@@ -322,7 +309,7 @@ T_penalty = 2
     boundary = right
     function = in
   []
-  [electric_potential]
+  [potential]
     type = DirichletBC
     variable = Phi_ca
     boundary = left
@@ -394,14 +381,6 @@ T_penalty = 2
     args = 'c_ref T_ref'
     material_property_names = 'D'
     function = 'D*c_ref/${R}/T_ref'
-  []
-  [chemical_energy]
-    type = EntropicChemicalEnergyDensity
-    chemical_energy_density = psi_c
-    concentration = c
-    ideal_gas_constant = ${R}
-    temperature = T
-    reference_concentration = ${c_ref_entropy}
   []
   [diffusion]
     type = MassDiffusion
@@ -632,13 +611,13 @@ T_penalty = 2
     execute_on = 'INITIAL TIMESTEP_END'
   []
   [cmin_c]
-    type = ElementExtremeValue
+    type = NodalExtremeValue
     variable = c
     value_type = min
     block = 'cp'
   []
   [cmax_a]
-    type = ElementExtremeValue
+    type = NodalExtremeValue
     variable = c
     value_type = max
     block = 'a'
@@ -662,25 +641,19 @@ T_penalty = 2
   type = Transient
   solve_type = NEWTON
 
-  petsc_options = '-ksp_converged_reason -pc_svd_monitor'
-  # petsc_options_iname = '-pc_type'
-  # petsc_options_value = 'bjacobi'
-  petsc_options_iname = '-pc_type -pc_bjacobi_blocks -ksp_type -ksp_gmres_restart'
-  petsc_options_value = 'bjacobi 2 gmres 1001'
+  # petsc_options = '-ksp_converged_reason'
   # petsc_options_iname = '-pc_type -pc_asm_local_type -pc_asm_blocks -pc_asm_type -pc_asm_overlap -sub_pc_type -sub_pc_factor_levels -sub_ksp_type -ksp_gmres_restart'
-  # petsc_options_value = 'asm additive 4 basic 1 ilu 2 preonly 151'
-  # petsc_options_iname = '-pc_type -pc_hypre_type -ksp_gmres_restart -pc_hypre_boomeramg_strong_threshold -pc_hypre_boomeramg_interp_type -pc_hypre_boomeramg_coarsen_type -pc_hypre_boomeramg_agg_nl -pc_hypre_boomeramg_agg_num_paths -pc_hypre_boomeramg_truncfactor -pc_hypre_boomeramg_grid_sweeps_all'
-  # petsc_options_value = 'hypre boomeramg 1001 0.4 ext+i PMIS 1 2 0.4 5'
-  # petsc_options_iname = '-pc_type -pc_factor_mat_solver_package'
-  # petsc_options_value = 'lu superlu_dist'
+  # petsc_options_value = 'asm additive 20 basic 1 ilu 2 preonly 151'
+  # petsc_options_iname = '-pc_type -pc_hypre_type -ksp_gmres_restart -pc_hypre_boomeramg_strong_threshold -pc_hypre_boomeramg_interp_type -pc_hypre_boomeramg_coarsen_type -pc_hypre_boomeramg_agg_nl -pc_hypre_boomeramg_agg_num_paths -pc_hypre_boomeramg_truncfactor -pc_hypre_boomeramg_smooth_type -pc_hypre_boomeramg_nodal_coarsen'
+  # petsc_options_value = 'hypre boomeramg 151 0.7 ext+i PMIS 4 2 0.4 euclid 5'
+  petsc_options_iname = '-pc_type'
+  petsc_options_value = 'lu'
   automatic_scaling = true
-  ignore_variables_for_autoscaling = 'c'
-  line_search = none
 
-  nl_rel_tol = 1e-6
+  nl_rel_tol = 1e-06
   nl_abs_tol = 1e-10
-  nl_max_its = 12
-  l_max_its = 151
+  nl_max_its = 20
+  l_max_its = 150
 
   [TimeStepper]
     type = IterationAdaptiveDT
@@ -688,12 +661,16 @@ T_penalty = 2
     optimal_iterations = 7
     iteration_window = 2
     growth_factor = 1.2
-    cutback_factor = 0.2
-    cutback_factor_at_failure = 0.1
+    cutback_factor = 0.5
+    cutback_factor_at_failure = 0.2
     linear_iteration_ratio = 1000000
   []
   end_time = 100000
-  # abort_on_solve_fail = true
+
+  fixed_point_algorithm = picard
+  fixed_point_max_its = 1000
+  fixed_point_rel_tol = 1e-06
+  fixed_point_abs_tol = 1e-10
 []
 
 [Outputs]

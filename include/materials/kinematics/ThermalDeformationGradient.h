@@ -33,6 +33,6 @@ protected:
   // The thermal expansion coefficient
   const ADMaterialProperty<Real> & _alpha_t;
 
-  /// Derivative of the thermal deformation gradient jacobian w.r.t. the log temperature
-  ADMaterialProperty<Real> & _d_Jt_d_lnT;
+  /// Derivative of the thermal deformation gradient jacobian w.r.t. the temperature
+  ADMaterialProperty<Real> & _d_Jt_d_T;
 };

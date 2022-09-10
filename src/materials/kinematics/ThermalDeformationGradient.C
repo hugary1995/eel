@@ -25,8 +25,7 @@ ThermalDeformationGradient::ThermalDeformationGradient(const InputParameters & p
     _T(adCoupledValue("temperature")),
     _T_ref(coupledValue("reference_temperature")),
     _alpha_t(getADMaterialProperty<Real>("CTE")),
-    _d_Jt_d_lnT(
-        declarePropertyDerivative<Real, true>("det(" + _Ft_name + ")", "ln(" + _T_name + ")"))
+    _d_Jt_d_T(declarePropertyDerivative<Real, true>("det(" + _Ft_name + ")", _T_name))
 {
 }
 
@@ -35,5 +34,5 @@ ThermalDeformationGradient::computeQpProperties()
 {
   ADReal Jt = 1 + _alpha_t[_qp] * (_T[_qp] - _T_ref[_qp]);
   _Ft[_qp] = std::cbrt(Jt) * ADRankTwoTensor::Identity();
-  _d_Jt_d_lnT[_qp] = _T[_qp] * std::pow(Jt, -2. / 3.) / 3 * _alpha_t[_qp];
+  _d_Jt_d_T[_qp] = _alpha_t[_qp];
 }
