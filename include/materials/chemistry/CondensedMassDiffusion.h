@@ -3,13 +3,12 @@
 #include "Material.h"
 #include "DerivativeMaterialInterface.h"
 #include "MathUtils.h"
+#include "EelUtils.h"
+#include <Eigen/Dense>
 
 class CondensedMassDiffusion : public DerivativeMaterialInterface<Material>
 {
 public:
-  typedef Eigen::Matrix<ADReal, Eigen::Dynamic, 1> ADRealEigenVector;
-  typedef Eigen::Matrix<ADReal, Eigen::Dynamic, Eigen::Dynamic> ADRealEigenMatrix;
-
   static InputParameters validParams();
 
   CondensedMassDiffusion(const InputParameters & parameters);
@@ -35,10 +34,12 @@ protected:
   /// The multi-index table
   const std::vector<std::vector<unsigned int>> _multi_index;
 
-  /// Number of basis functions
-  const unsigned int _q;
+  /// Number of basis functions for patch recovery
+  unsigned int _q;
 
-private:
-  ADRealEigenVector basisFunctions(const Point & q_point) const;
-  ADRealEigenMatrix basisFunctionGradients(const Point & q_point) const;
+  /// the current test function
+  const VariableTestValue & _test;
+
+  /// gradient of the test function
+  const VariableTestGradient & _grad_test;
 };

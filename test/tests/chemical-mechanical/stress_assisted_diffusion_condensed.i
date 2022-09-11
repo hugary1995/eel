@@ -254,7 +254,3 @@ T = 300
   exodus = true
   print_linear_residuals = false
 []
-
-[Debug]
-  show_material_props = true
-[]

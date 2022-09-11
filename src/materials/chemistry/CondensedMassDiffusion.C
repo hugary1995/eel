@@ -25,66 +25,78 @@ CondensedMassDiffusion::CondensedMassDiffusion(const InputParameters & parameter
     _c_var(getVar("concentration", 0)),
     _multi_index(
         MathUtils::multiIndex(_mesh.dimension(), getParam<unsigned int>("patch_polynomial_order"))),
-    _q(_multi_index.size())
+    _q(_multi_index.size()),
+    _test(_c_var->phi()),
+    _grad_test(_c_var->gradPhi())
 {
   for (auto i : make_range(_psi_names.size()))
     _d_psi_d_c_dot[i] =
         &getMaterialPropertyDerivative<Real, true>(_psi_names[i], "dot(" + _c_var->name() + ")");
 }
 
-CondensedMassDiffusion::ADRealEigenVector
-CondensedMassDiffusion::basisFunctions(const Point & q_point) const
-{
-  ADRealEigenVector p(_q);
-  for (unsigned int r = 0; r < _multi_index.size(); r++)
-  {
-    ADReal polynomial = 1.0;
-    for (unsigned int c = 0; c < _multi_index[r].size(); c++)
-      for (unsigned int p = 0; p < _multi_index[r][c]; p++)
-        polynomial *= q_point(c);
-    p(r) = polynomial;
-  }
-  return p;
-}
-
-CondensedMassDiffusion::ADRealEigenMatrix
-CondensedMassDiffusion::basisFunctionGradients(const Point & q_point) const
-{
-  ADRealEigenMatrix g(_q, 3);
-  for (unsigned int r = 0; r < _multi_index.size(); r++)
-    for (unsigned int i = 0; i < _multi_index[r].size(); i++)
-    {
-      ADReal d = _multi_index[r][i];
-      for (unsigned int c = 0; c < _multi_index[r].size(); c++)
-        for (unsigned int p = 0; (c == i ? p + 1 : p) < _multi_index[r][c]; p++)
-          d *= q_point(c);
-      g(r, i) = d;
-    }
-  return g;
-}
-
 void
 CondensedMassDiffusion::computeProperties()
 {
-  // Construct the least squares problem
-  ADRealEigenMatrix A = ADRealEigenMatrix::Zero(_q, _q);
-  ADRealEigenVector b = ADRealEigenVector::Zero(_q);
+  if (isBoundaryMaterial())
+    return;
+
+  using EelUtils::ADRealEigenMatrix;
+  using EelUtils::ADRealEigenVector;
+
+  // // Construct the least squares problem
+  // ADRealEigenMatrix A = ADRealEigenMatrix::Zero(_q, _q);
+  // ADRealEigenVector b = ADRealEigenVector::Zero(_q);
+  // ADRealEigenMatrix G = ADRealEigenMatrix::Zero(_q, 3);
+  // Real V = 0;
+  // for (_qp = 0; _qp < _qrule->n_points(); _qp++)
+  // {
+  //   ADRealEigenVector p = EelUtils::basisValues(_multi_index, _q_point[_qp]);
+  //   A += p * p.transpose();
+  //   for (auto d_psi_d_c_dot : _d_psi_d_c_dot)
+  //     b += p * (*d_psi_d_c_dot)[_qp];
+  //   G += EelUtils::basisGradients(_multi_index, _q_point[_qp]) * _JxW[_qp] * _coord[_qp];
+  //   V += _JxW[_qp] * _coord[_qp];
+  // }
+
+  // // Solve the least squares fitting
+  // ADRealEigenVector coef = A.completeOrthogonalDecomposition().solve(b);
+
+  // for (_qp = 0; _qp < _qrule->n_points(); _qp++)
+  // {
+  //   // Compute the fitted gradients
+  //   ADRealEigenVector grad_mu = G.transpose() * coef / V;
+  //   _j[_qp] = -_M[_qp] * ADRealVectorValue(grad_mu(0), grad_mu(1), grad_mu(2));
+  // }
+
+  unsigned int n_local_dofs = _c_var->numberOfDofs();
+  ADRealEigenVector re = ADRealEigenVector::Zero(n_local_dofs);
+  ADRealEigenMatrix ke = ADRealEigenMatrix::Zero(n_local_dofs, n_local_dofs);
+
+  // Construct the local L2 projection
+  for (unsigned int i = 0; i < _test.size(); i++)
+    for (_qp = 0; _qp < _qrule->n_points(); _qp++)
+    {
+      Real t = _JxW[_qp] * _coord[_qp] * _test[i][_qp];
+      for (auto d_psi_d_c_dot : _d_psi_d_c_dot)
+        re(i) += t * (*d_psi_d_c_dot)[_qp];
+      for (unsigned int j = 0; j < _test.size(); j++)
+        ke(i, j) += t * _test[j][_qp];
+    }
+
+  ADRealEigenVector sol;
+  // if (isBoundaryMaterial())
+  //   sol = ke.jacobiSvd().solve(re);
+  // else
+  sol = ke.ldlt().solve(re);
+
   for (_qp = 0; _qp < _qrule->n_points(); _qp++)
   {
-    ADRealEigenVector p = basisFunctions(_q_point[_qp]);
-    A += p * p.transpose();
-    for (auto d_psi_d_c_dot : _d_psi_d_c_dot)
-      b += p * (*d_psi_d_c_dot)[_qp];
-  }
+    // Interpolate gradient of chemical potential
+    ADRealVectorValue grad_mu;
+    for (unsigned int i = 0; i < _test.size(); i++)
+      grad_mu += _grad_test[i][_qp] * sol(i);
 
-  // Solve the least squares fitting
-  ADRealEigenVector coef = A.completeOrthogonalDecomposition().solve(b);
-
-  for (_qp = 0; _qp < _qrule->n_points(); _qp++)
-  {
-    // Compute the fitted gradients
-    ADRealEigenMatrix G = basisFunctionGradients(_q_point[_qp]);
-    ADRealEigenVector grad_mu = G.transpose() * coef;
-    _j[_qp] = -_M[_qp] * ADRealVectorValue(grad_mu(0), grad_mu(1), grad_mu(2));
+    // Mass flux
+    _j[_qp] = -_M[_qp] * grad_mu;
   }
 }

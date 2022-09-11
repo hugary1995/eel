@@ -1,27 +1,27 @@
-I = 3e-4 #mA
+I = 3e-3 #mA
 width = 0.03 #mm
 in = '${fparse -I/width}'
 t0 = '${fparse -1e-2/in}'
 dt = '${fparse t0/100}'
 
-sigma_a = 1e0 #mS/mm
-sigma_e = 1e-1 #mS/mm
-sigma_cp = 1e-2 #mS/mm
-sigma_ca = 1e0 #mS/mm
-sigma_cm = 5e-2 #mS/mm
+sigma_a = 0.2 #mS/mm
+sigma_e = 0.1 #mS/mm
+sigma_cp = 0.05 #mS/mm
+sigma_ca = 0.5 #mS/mm
+sigma_cm = 0.05 #mS/mm
 
-Phi_penalty = 1000
+Phi_penalty = 100
 
 cmin_a = 1e-4 #mmol/mm^3
 cmax_a = 1e-3 #mmol/mm^3
-c_e = 2e-3 #mmol/mm^3
+c_e = 5e-4 #mmol/mm^3
 cmin_c = 1e-4 #mmol/mm^3
-cmax_c = 4e-3 #mmol/mm^3
+cmax_c = 1e-3 #mmol/mm^3
 c_ref_entropy = 5e-5
 D_cp = 5e-5 #mm^2/s
-D_cm = 5e-4 #mm^2/s
-D_a = 1e-3 #mm^2/s
-D_e = 5e-4 #mm^2/s
+D_cm = 1e-4 #mm^2/s
+D_a = 5e-4 #mm^2/s
+D_e = 1e-4 #mm^2/s
 
 c_penalty = 5e-1
 
@@ -29,13 +29,13 @@ R = 8.3145 #mJ/mmol/K
 T0 = 300 #K
 F = 96485 #mC/mmol
 
-i0_a = 1e-1 #mA/mm^2
+i0_a = 1e-4 #mA/mm^2
 i0_c = 1e-1 #mA/mm^2
 
-E_cp = 1e5
+E_cp = 6e4
 E_cm = 5e4
-E_e = 1e4
-E_a = 2e5
+E_e = 5e4
+E_a = 1e5
 nu_cp = 0.3
 nu_cm = 0.25
 nu_e = 0.25
@@ -44,7 +44,7 @@ nu_a = 0.3
 u_penalty = 1e8
 
 Omega = 60
-beta = 1e-2
+beta = 1e-1
 CTE = 1e-5
 
 rho = 2.5e-9 #Mg/mm^3
@@ -82,8 +82,6 @@ T_penalty = 2
   [Phi]
   []
   [c]
-    order = CONSTANT
-    family = MONOMIAL
   []
   [disp_x]
   []
@@ -92,14 +90,10 @@ T_penalty = 2
   [T]
     initial_condition = ${T0}
   []
-  [mu]
-  []
 []
 
 [AuxVariables]
   [c_ref]
-    order = CONSTANT
-    family = MONOMIAL
   []
   [T_ref]
     initial_condition = ${T0}
@@ -170,13 +164,12 @@ T_penalty = 2
   []
   # Mass balance
   [mass_balance_1]
-    type = CoupledTimeDerivative
-    variable = mu
-    v = c
+    type = TimeDerivative
+    variable = c
   []
   [mass_balance_2]
     type = RankOneDivergence
-    variable = mu
+    variable = c
     vector = j
   []
   # Momentum balance
@@ -193,13 +186,6 @@ T_penalty = 2
     component = 1
     tensor = pk1
     factor = -1
-  []
-  # Chemical potential
-  [c]
-    type = PrimalDualProjection
-    variable = c
-    primal_variable = dot(c)
-    dual_variable = mu
   []
   # Energy balance
   [energy_balance_1]
@@ -239,34 +225,32 @@ T_penalty = 2
   []
   [negative_mass]
     type = MaterialInterfaceNeumannBC
-    variable = mu
-    neighbor_var = mu
+    variable = c
+    neighbor_var = c
     prop = je
     factor = -1
     boundary = 'e_a cp_cm'
   []
   [positive_mass]
     type = MaterialInterfaceNeumannBC
-    variable = mu
-    neighbor_var = mu
+    variable = c
+    neighbor_var = c
     prop = je
     factor = 1
     boundary = 'a_e cm_cp'
   []
-  # [heat]
-  #   type = MaterialInterfaceNeumannBC
-  #   variable = T
-  #   neighbor_var = T
-  #   prop = he
-  #   factor = 1
-  #   boundary = 'a_e cm_cp e_a cp_cm'
-  # []
+  [heat]
+    type = MaterialInterfaceNeumannBC
+    variable = T
+    neighbor_var = T
+    prop = he
+    factor = 1
+    boundary = 'a_e cm_cp e_a cp_cm'
+  []
   [continuity_c]
-    type = InterfaceCoupledVarContinuity
-    variable = mu
-    neighbor_var = mu
-    v = c
-    v_neighbor = c
+    type = InterfaceContinuity
+    variable = c
+    neighbor_var = c
     penalty = ${c_penalty}
     boundary = 'cm_e'
   []
@@ -404,15 +388,12 @@ T_penalty = 2
     reference_concentration = ${c_ref_entropy}
   []
   [diffusion]
-    type = MassDiffusion
-    dual_chemical_energy_density = zeta
-    chemical_potential = mu
-    mobility = M
-  []
-  [mass_flux]
-    type = MassFlux
+    type = CondensedMassDiffusion
     mass_flux = j
-    chemical_potential = mu
+    mobility = M
+    concentration = c
+    output_properties = 'j'
+    outputs = exodus
   []
 
   # Redox
@@ -632,13 +613,13 @@ T_penalty = 2
     execute_on = 'INITIAL TIMESTEP_END'
   []
   [cmin_c]
-    type = ElementExtremeValue
+    type = NodalExtremeValue
     variable = c
     value_type = min
     block = 'cp'
   []
   [cmax_a]
-    type = ElementExtremeValue
+    type = NodalExtremeValue
     variable = c
     value_type = max
     block = 'a'
@@ -662,25 +643,20 @@ T_penalty = 2
   type = Transient
   solve_type = NEWTON
 
-  petsc_options = '-ksp_converged_reason -pc_svd_monitor'
-  # petsc_options_iname = '-pc_type'
-  # petsc_options_value = 'bjacobi'
-  petsc_options_iname = '-pc_type -pc_bjacobi_blocks -ksp_type -ksp_gmres_restart'
-  petsc_options_value = 'bjacobi 2 gmres 1001'
-  # petsc_options_iname = '-pc_type -pc_asm_local_type -pc_asm_blocks -pc_asm_type -pc_asm_overlap -sub_pc_type -sub_pc_factor_levels -sub_ksp_type -ksp_gmres_restart'
-  # petsc_options_value = 'asm additive 4 basic 1 ilu 2 preonly 151'
-  # petsc_options_iname = '-pc_type -pc_hypre_type -ksp_gmres_restart -pc_hypre_boomeramg_strong_threshold -pc_hypre_boomeramg_interp_type -pc_hypre_boomeramg_coarsen_type -pc_hypre_boomeramg_agg_nl -pc_hypre_boomeramg_agg_num_paths -pc_hypre_boomeramg_truncfactor -pc_hypre_boomeramg_grid_sweeps_all'
-  # petsc_options_value = 'hypre boomeramg 1001 0.4 ext+i PMIS 1 2 0.4 5'
+  petsc_options = '-ksp_converged_reason'
+  petsc_options_iname = '-pc_type -pc_hypre_type -ksp_gmres_restart -pc_hypre_boomeramg_strong_threshold -pc_hypre_boomeramg_interp_type -pc_hypre_boomeramg_coarsen_type -pc_hypre_boomeramg_agg_nl -pc_hypre_boomeramg_agg_num_paths -pc_hypre_boomeramg_truncfactor'
+  petsc_options_value = 'hypre boomeramg 151 0.25 ext+i PMIS 4 2 0.4'
   # petsc_options_iname = '-pc_type -pc_factor_mat_solver_package'
   # petsc_options_value = 'lu superlu_dist'
   automatic_scaling = true
+  # line_search = none
   ignore_variables_for_autoscaling = 'c'
-  line_search = none
 
+  l_tol = 1e-06
   nl_rel_tol = 1e-6
   nl_abs_tol = 1e-10
   nl_max_its = 12
-  l_max_its = 151
+  l_max_its = 150
 
   [TimeStepper]
     type = IterationAdaptiveDT
@@ -690,10 +666,9 @@ T_penalty = 2
     growth_factor = 1.2
     cutback_factor = 0.2
     cutback_factor_at_failure = 0.1
-    linear_iteration_ratio = 1000000
+    linear_iteration_ratio = 100000
   []
   end_time = 100000
-  # abort_on_solve_fail = true
 []
 
 [Outputs]
