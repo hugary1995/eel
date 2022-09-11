@@ -4,35 +4,38 @@ in = '${fparse -I/width/width}'
 t0 = '${fparse -1e-2/in}'
 dt = '${fparse t0/100}'
 
-sigma_a = 1e0 #mS/mm
-sigma_e = 1e-1 #mS/mm
-sigma_cp = 1e-2 #mS/mm
-sigma_ca = 1e0 #mS/mm
-sigma_cm = 5e-2 #mS/mm
+sigma_a = 0.2 #mS/mm
+sigma_e = 0.1 #mS/mm
+sigma_cp = 0.05 #mS/mm
+sigma_ca = 0.5 #mS/mm
+sigma_cm = 0.05 #mS/mm
 
-Phi_penalty = 10
+Phi_penalty = 100
 
-cmin = 1e-4 #mmol/mm^3
-cmid = 5e-4 #mmol/mm^3
-cmax = 1e-3 #mmol/mm^3
+cmin_a = 1e-4 #mmol/mm^3
+cmax_a = 1e-3 #mmol/mm^3
+c_e = 5e-4 #mmol/mm^3
+cmin_c = 1e-4 #mmol/mm^3
+cmax_c = 1e-3 #mmol/mm^3
+c_ref_entropy = 5e-5
 D_cp = 5e-5 #mm^2/s
 D_cm = 1e-4 #mm^2/s
-D_a = 1e-3 #mm^2/s
+D_a = 5e-4 #mm^2/s
 D_e = 1e-4 #mm^2/s
 
-mu_penalty = 1e-2
+c_penalty = 5e-1
 
 R = 8.3145 #mJ/mmol/K
 T0 = 300 #K
 F = 96485 #mC/mmol
 
-i0_a = 1e-1 #mA/mm^2
+i0_a = 1e-4 #mA/mm^2
 i0_c = 1e-1 #mA/mm^2
 
-E_cp = 1e5
+E_cp = 6e4
 E_cm = 5e4
-E_e = 1e4
-E_a = 2e5
+E_e = 5e4
+E_a = 1e5
 nu_cp = 0.3
 nu_cm = 0.25
 nu_e = 0.25
@@ -41,14 +44,14 @@ nu_a = 0.3
 u_penalty = 1e8
 
 Omega = 60
-beta = 1
+beta = 1e-4
 CTE = 1e-5
 
 rho = 2.5e-9 #Mg/mm^3
 cv = 2.7e8 #mJ/Mg/K
 kappa = 2e-4 #mJ/mm/K/s
 
-T_penalty = 2e-1
+T_penalty = 2
 
 [GlobalParams]
   energy_densities = 'dot(psi_m) dot(psi_c) chi q q_ca zeta'
@@ -127,8 +130,6 @@ T_penalty = 2e-1
   [T]
     initial_condition = ${T0}
   []
-  [mu]
-  []
 []
 
 [AuxVariables]
@@ -150,40 +151,40 @@ T_penalty = 2e-1
 []
 
 [ICs]
-  [c_min]
+  [c_a]
     type = ConstantIC
     variable = c
-    value = ${cmin}
+    value = ${cmin_a}
     block = 'a'
   []
-  [c_mid]
+  [c_e]
     type = ConstantIC
     variable = c
-    value = '${fparse (cmax+cmin)/2}'
+    value = ${c_e}
     block = 'cm e'
   []
-  [c_max]
+  [c_c]
     type = ConstantIC
     variable = c
-    value = ${cmax}
+    value = ${cmax_c}
     block = 'cp'
   []
-  [c_ref_min]
+  [c_ref_a]
     type = ConstantIC
     variable = c_ref
-    value = ${cmin}
+    value = ${cmin_a}
     block = 'a'
   []
-  [c_ref_mid]
+  [c_ref_e]
     type = ConstantIC
     variable = c_ref
-    value = '${fparse (cmax+cmin)/2}'
+    value = ${c_e}
     block = 'cm e'
   []
-  [c_ref_max]
+  [c_ref_c]
     type = ConstantIC
     variable = c_ref
-    value = ${cmax}
+    value = ${cmax_c}
     block = 'cp'
   []
 []
@@ -203,13 +204,12 @@ T_penalty = 2e-1
   []
   # Mass balance
   [mass_balance_1]
-    type = CoupledTimeDerivative
-    variable = mu
-    v = c
+    type = TimeDerivative
+    variable = c
   []
   [mass_balance_2]
     type = RankOneDivergence
-    variable = mu
+    variable = c
     vector = j
   []
   # Momentum balance
@@ -233,13 +233,6 @@ T_penalty = 2e-1
     component = 2
     tensor = pk1
     factor = -1
-  []
-  # Chemical potential
-  [c]
-    type = PrimalDualProjection
-    variable = c
-    primal_variable = dot(c)
-    dual_variable = mu
   []
   # Energy balance
   [energy_balance_1]
@@ -279,16 +272,16 @@ T_penalty = 2e-1
   []
   [negative_mass]
     type = MaterialInterfaceNeumannBC
-    variable = mu
-    neighbor_var = mu
+    variable = c
+    neighbor_var = c
     prop = je
     factor = -1
     boundary = 'e_a cp_cm'
   []
   [positive_mass]
     type = MaterialInterfaceNeumannBC
-    variable = mu
-    neighbor_var = mu
+    variable = c
+    neighbor_var = c
     prop = je
     factor = 1
     boundary = 'a_e cm_cp'
@@ -301,11 +294,11 @@ T_penalty = 2e-1
     factor = 1
     boundary = 'a_e cm_cp e_a cp_cm'
   []
-  [continuity_mu]
+  [continuity_c]
     type = InterfaceContinuity
-    variable = mu
-    neighbor_var = mu
-    penalty = ${mu_penalty}
+    variable = c
+    neighbor_var = c
+    penalty = ${c_penalty}
     boundary = 'cm_e'
   []
   [continuity_Phi_ca]
@@ -451,19 +444,14 @@ T_penalty = 2e-1
     chemical_energy_density = psi_c
     concentration = c
     ideal_gas_constant = ${R}
-    temperature = T
-    reference_concentration = c_ref
+    temperature = T_ref
+    reference_concentration = ${c_ref_entropy}
   []
   [diffusion]
-    type = MassDiffusion
-    dual_chemical_energy_density = zeta
-    chemical_potential = mu
-    mobility = M
-  []
-  [mass_flux]
-    type = MassFlux
+    type = CondensedMassDiffusion
     mass_flux = j
-    chemical_potential = mu
+    mobility = M
+    concentration = c
   []
 
   # Redox
@@ -475,7 +463,7 @@ T_penalty = 2e-1
   [OCP_anode_graphite]
     type = ADParsedMaterial
     f_name = U
-    function = 'x:=c/${cmax}; -(122.12*x^6-321.81*x^5+315.59*x^4-141.26*x^3+28.218*x^2-1.9057*x+0.0785)*ramp'
+    function = 'x:=c/${cmax_a}; -(122.12*x^6-321.81*x^5+315.59*x^4-141.26*x^3+28.218*x^2-1.9057*x+0.0785)*ramp'
     args = c
     material_property_names = 'ramp'
     block = 'a'
@@ -483,7 +471,7 @@ T_penalty = 2e-1
   [OCP_cathode_NMC111]
     type = ADParsedMaterial
     f_name = U
-    function = 'x:=c/${cmax}; (6.0826-6.9922*x+7.1062*x^2-5.4549e-5*exp(124.23*x-114.2593)-2.5947*x^3)*ramp'
+    function = 'x:=c/${cmax_c}; (6.0826-6.9922*x+7.1062*x^2-5.4549e-5*exp(124.23*x-114.2593)-2.5947*x^3)*ramp'
     args = c
     material_property_names = 'ramp'
     block = 'cp'
@@ -698,12 +686,12 @@ T_penalty = 2e-1
 [UserObjects]
   [kill_a]
     type = Terminator
-    expression = 'cmax_a >= ${cmax}'
+    expression = 'cmax_a >= ${cmax_a}'
     message = 'Concentration in anode exceeds the maximum allowable value.'
   []
   [kill_cp]
     type = Terminator
-    expression = 'cmin_c <= ${cmin}'
+    expression = 'cmin_c <= ${cmin_c}'
     message = 'Concentration in cathode particle is below the minimum allowable value.'
   []
 []
@@ -713,12 +701,13 @@ T_penalty = 2e-1
   solve_type = NEWTON
 
   petsc_options = '-ksp_converged_reason'
-  petsc_options_iname = '-pc_type -pc_asm_local_type -pc_asm_blocks -pc_asm_type -pc_asm_overlap -sub_pc_type -sub_pc_factor_levels -sub_ksp_type -ksp_gmres_restart'
-  petsc_options_value = 'asm additive 384 basic 1 ilu 2 preonly 301'
+  petsc_options_iname = '-pc_type -pc_hypre_type -ksp_gmres_restart -pc_hypre_boomeramg_strong_threshold -pc_hypre_boomeramg_interp_type -pc_hypre_boomeramg_coarsen_type -pc_hypre_boomeramg_agg_nl -pc_hypre_boomeramg_agg_num_paths -pc_hypre_boomeramg_truncfactor'
+  petsc_options_value = 'hypre boomeramg 601 0.6 ext+i PMIS 4 2 0.4'
   automatic_scaling = true
-  ignore_variables_for_autoscaling = 'c'
+  ignore_variables_for_autoscaling = 'T'
+  verbose = true
 
-  l_max_its = 300
+  l_max_its = 600
   l_tol = 1e-6
   nl_rel_tol = 1e-6
   nl_abs_tol = 1e-9
@@ -732,7 +721,7 @@ T_penalty = 2e-1
     growth_factor = 1.2
     cutback_factor = 0.2
     cutback_factor_at_failure = 0.1
-    linear_iteration_ratio = 1000000
+    linear_iteration_ratio = 300
   []
   end_time = 10000
 []

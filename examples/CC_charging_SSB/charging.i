@@ -1,8 +1,7 @@
-I = 3e-3 #mA
+I = 1.2e-3 #mA
 width = 0.03 #mm
 in = '${fparse -I/width}'
 t0 = '${fparse -1e-2/in}'
-dt = '${fparse t0/100}'
 
 sigma_a = 0.2 #mS/mm
 sigma_e = 0.1 #mS/mm
@@ -10,7 +9,7 @@ sigma_cp = 0.05 #mS/mm
 sigma_ca = 0.5 #mS/mm
 sigma_cm = 0.05 #mS/mm
 
-Phi_penalty = 100
+Phi_penalty = 1
 
 cmin_a = 1e-4 #mmol/mm^3
 cmax_a = 1e-3 #mmol/mm^3
@@ -23,7 +22,7 @@ D_cm = 1e-4 #mm^2/s
 D_a = 5e-4 #mm^2/s
 D_e = 1e-4 #mm^2/s
 
-c_penalty = 5e-1
+c_penalty = 1
 
 R = 8.3145 #mJ/mmol/K
 T0 = 300 #K
@@ -44,14 +43,14 @@ nu_a = 0.3
 u_penalty = 1e8
 
 Omega = 60
-beta = 1e-1
+beta = 1e-4
 CTE = 1e-5
 
 rho = 2.5e-9 #Mg/mm^3
 cv = 2.7e8 #mJ/Mg/K
 kappa = 2e-4 #mJ/mm/K/s
 
-T_penalty = 2
+T_penalty = 1
 
 [GlobalParams]
   energy_densities = 'dot(psi_m) dot(psi_c) chi q q_ca zeta'
@@ -384,7 +383,7 @@ T_penalty = 2
     chemical_energy_density = psi_c
     concentration = c
     ideal_gas_constant = ${R}
-    temperature = T
+    temperature = T_ref
     reference_concentration = ${c_ref_entropy}
   []
   [diffusion]
@@ -650,7 +649,8 @@ T_penalty = 2
   # petsc_options_value = 'lu superlu_dist'
   automatic_scaling = true
   # line_search = none
-  ignore_variables_for_autoscaling = 'c'
+  ignore_variables_for_autoscaling = 'T'
+  verbose = true
 
   l_tol = 1e-06
   nl_rel_tol = 1e-6
@@ -658,15 +658,21 @@ T_penalty = 2
   nl_max_its = 12
   l_max_its = 150
 
+  # [TimeStepper]
+  #   type = IterationAdaptiveDT
+  #   dt = ${dt}
+  #   optimal_iterations = 7
+  #   iteration_window = 2
+  #   growth_factor = 1.2
+  #   cutback_factor = 0.2
+  #   cutback_factor_at_failure = 0.1
+  #   linear_iteration_ratio = 100000
+  # []
   [TimeStepper]
-    type = IterationAdaptiveDT
-    dt = ${dt}
-    optimal_iterations = 7
-    iteration_window = 2
+    type = FunctionDT
+    function = 'if(t<${t0}, ${fparse t0/50}, ${fparse -1e-2/in})'
     growth_factor = 1.2
-    cutback_factor = 0.2
     cutback_factor_at_failure = 0.1
-    linear_iteration_ratio = 100000
   []
   end_time = 100000
 []
