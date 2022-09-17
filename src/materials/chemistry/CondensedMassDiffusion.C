@@ -12,7 +12,6 @@ CondensedMassDiffusion::validParams()
   params.addRequiredParam<std::vector<MaterialPropertyName>>("energy_densities",
                                                              "Names of the energy densities");
   params.addRequiredCoupledVar("concentration", "The concentration of the chemical species");
-  params.addParam<unsigned int>("patch_polynomial_order", 1, "Order of the patch recovery order");
   return params;
 }
 
@@ -23,9 +22,6 @@ CondensedMassDiffusion::CondensedMassDiffusion(const InputParameters & parameter
     _psi_names(getParam<std::vector<MaterialPropertyName>>("energy_densities")),
     _d_psi_d_c_dot(_psi_names.size()),
     _c_var(getVar("concentration", 0)),
-    _multi_index(
-        MathUtils::multiIndex(_mesh.dimension(), getParam<unsigned int>("patch_polynomial_order"))),
-    _q(_multi_index.size()),
     _test(_c_var->phi()),
     _grad_test(_c_var->gradPhi())
 {
@@ -43,31 +39,6 @@ CondensedMassDiffusion::computeProperties()
   using EelUtils::ADRealEigenMatrix;
   using EelUtils::ADRealEigenVector;
 
-  // // Construct the least squares problem
-  // ADRealEigenMatrix A = ADRealEigenMatrix::Zero(_q, _q);
-  // ADRealEigenVector b = ADRealEigenVector::Zero(_q);
-  // ADRealEigenMatrix G = ADRealEigenMatrix::Zero(_q, 3);
-  // Real V = 0;
-  // for (_qp = 0; _qp < _qrule->n_points(); _qp++)
-  // {
-  //   ADRealEigenVector p = EelUtils::basisValues(_multi_index, _q_point[_qp]);
-  //   A += p * p.transpose();
-  //   for (auto d_psi_d_c_dot : _d_psi_d_c_dot)
-  //     b += p * (*d_psi_d_c_dot)[_qp];
-  //   G += EelUtils::basisGradients(_multi_index, _q_point[_qp]) * _JxW[_qp] * _coord[_qp];
-  //   V += _JxW[_qp] * _coord[_qp];
-  // }
-
-  // // Solve the least squares fitting
-  // ADRealEigenVector coef = A.completeOrthogonalDecomposition().solve(b);
-
-  // for (_qp = 0; _qp < _qrule->n_points(); _qp++)
-  // {
-  //   // Compute the fitted gradients
-  //   ADRealEigenVector grad_mu = G.transpose() * coef / V;
-  //   _j[_qp] = -_M[_qp] * ADRealVectorValue(grad_mu(0), grad_mu(1), grad_mu(2));
-  // }
-
   unsigned int n_local_dofs = _c_var->numberOfDofs();
   ADRealEigenVector re = ADRealEigenVector::Zero(n_local_dofs);
   ADRealEigenMatrix ke = ADRealEigenMatrix::Zero(n_local_dofs, n_local_dofs);
@@ -84,9 +55,6 @@ CondensedMassDiffusion::computeProperties()
     }
 
   ADRealEigenVector sol;
-  // if (isBoundaryMaterial())
-  //   sol = ke.jacobiSvd().solve(re);
-  // else
   sol = ke.ldlt().solve(re);
 
   for (_qp = 0; _qp < _qrule->n_points(); _qp++)

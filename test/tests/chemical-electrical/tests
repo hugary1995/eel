@@ -1,30 +1,9 @@
 [Tests]
-  [charge_galvanostatic]
+  [charging]
     type = Exodiff
-    input = 'base.i charge_galvanostatic.i'
-    cli_args = 'Executioner/num_steps=2'
-    exodiff = 'charge_galvanostatic.e'
-    abs_zero = 1e-9
-  []
-  [charge_potentiostatic]
-    type = Exodiff
-    input = 'base.i charge_potentiostatic.i'
-    cli_args = 'Mesh/fmg/file=gold/charge_galvanostatic.e Executioner/num_steps=2'
-    exodiff = 'charge_potentiostatic.e'
-    abs_zero = 1e-9
-  []
-  [discharge_galvanostatic]
-    type = Exodiff
-    input = 'base.i discharge_galvanostatic.i'
-    cli_args = 'Mesh/fmg/file=gold/charge_potentiostatic.e Executioner/num_steps=2'
-    exodiff = 'discharge_galvanostatic.e'
-    abs_zero = 1e-9
-  []
-  [discharge_potentiostatic]
-    type = Exodiff
-    input = 'base.i discharge_potentiostatic.i'
-    cli_args = 'Mesh/fmg/file=gold/discharge_galvanostatic.e Executioner/num_steps=2'
-    exodiff = 'discharge_potentiostatic.e'
+    input = 'charging.i'
+    exodiff = 'charging_out.e'
+    cli_args = 'Executioner/num_steps=10'
     abs_zero = 1e-9
   []
 []

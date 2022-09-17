@@ -1,14 +1,14 @@
 [Tests]
-  [mixing]
+  [split]
     type = Exodiff
-    input = 'mixing.i'
-    exodiff = 'mixing_out.e'
+    input = 'split.i'
+    exodiff = 'split_out.e'
     abs_zero = 1e-9
   []
-  [interface_mass_transport]
+  [split_condensed]
     type = Exodiff
-    input = 'interface_mass_transport.i'
-    exodiff = 'interface_mass_transport_out.e'
+    input = 'split_condensed.i'
+    exodiff = 'split_condensed_out.e'
     abs_zero = 1e-9
   []
 []

@@ -1,14 +1,15 @@
 [Tests]
-  [uniform_sphere_charge]
+  [mms]
     type = Exodiff
-    input = 'uniform_sphere_charge.i'
-    exodiff = 'uniform_sphere_charge_out.e'
+    input = 'mms.i'
+    exodiff = 'mms_out.e'
     abs_zero = 1e-9
   []
-  [redox]
+  [butler_volmer]
     type = Exodiff
-    input = 'redox.i'
-    exodiff = 'redox_out.e'
+    input = 'bv.i'
+    exodiff = 'bv_out.e'
+    cli_args = 'Executioner/num_steps=5'
     abs_zero = 1e-9
   []
 []

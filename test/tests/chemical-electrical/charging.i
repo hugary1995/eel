@@ -86,8 +86,6 @@ i0_c = 1e-1 #mA/mm^2
   []
   [c]
   []
-  [mu]
-  []
 []
 
 [AuxVariables]
@@ -146,21 +144,13 @@ i0_c = 1e-1 #mA/mm^2
   []
   # Mass balance
   [mass_balance_1]
-    type = CoupledTimeDerivative
-    variable = mu
-    v = c
+    type = TimeDerivative
+    variable = c
   []
   [mass_balance_2]
     type = RankOneDivergence
-    variable = mu
-    vector = j
-  []
-  # Chemical potential
-  [c]
-    type = PrimalDualProjection
     variable = c
-    primal_variable = dot(c)
-    dual_variable = mu
+    vector = j
   []
 []
 
@@ -182,16 +172,16 @@ i0_c = 1e-1 #mA/mm^2
   []
   [negative_mass]
     type = MaterialInterfaceNeumannBC
-    variable = mu
-    neighbor_var = mu
+    variable = c
+    neighbor_var = c
     prop = je
     factor = -1
     boundary = 'elyte_anode cathode_elyte'
   []
   [positive_mass]
     type = MaterialInterfaceNeumannBC
-    variable = mu
-    neighbor_var = mu
+    variable = c
+    neighbor_var = c
     prop = je
     factor = 1
     boundary = 'anode_elyte elyte_cathode'
@@ -263,15 +253,10 @@ i0_c = 1e-1 #mA/mm^2
     reference_concentration = c_ref
   []
   [diffusion]
-    type = MassDiffusion
-    dual_chemical_energy_density = zeta
-    chemical_potential = mu
-    mobility = M
-  []
-  [mass_flux]
-    type = MassFlux
+    type = CondensedMassDiffusion
     mass_flux = j
-    chemical_potential = mu
+    concentration = c
+    mobility = M
   []
 
   # Redox
@@ -458,7 +443,6 @@ i0_c = 1e-1 #mA/mm^2
   petsc_options_iname = '-pc_type'
   petsc_options_value = 'lu'
   automatic_scaling = true
-  ignore_variables_for_autoscaling = 'c'
 
   nl_rel_tol = 1e-6
   nl_abs_tol = 1e-10

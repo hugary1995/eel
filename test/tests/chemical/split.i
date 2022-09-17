@@ -1,6 +1,6 @@
 R = 8.3145
 T = 300
-D = 1
+M = 4e-5
 
 [GlobalParams]
   energy_densities = 'dot(psi_c) zeta'
@@ -55,12 +55,6 @@ D = 1
 []
 
 [Materials]
-  [mobility]
-    type = ADParsedMaterial
-    f_name = M
-    args = 'c T'
-    function = '${D}*c/${R}/T'
-  []
   [chemical_energy]
     type = EntropicChemicalEnergyDensity
     chemical_energy_density = psi_c
@@ -73,7 +67,7 @@ D = 1
     type = MassDiffusion
     dual_chemical_energy_density = zeta
     chemical_potential = mu
-    mobility = M
+    mobility = ${M}
   []
   [mass_flux]
     type = MassFlux

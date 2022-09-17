@@ -1,14 +1,9 @@
 [Tests]
-  [mixing_and_swelling]
-    type = Exodiff
-    input = 'mixing_and_swelling.i'
-    exodiff = 'mixing_and_swelling_out.e'
-    abs_zero = 1e-9
-  []
   [stress_assisted_diffusion]
     type = Exodiff
     input = 'stress_assisted_diffusion.i'
     exodiff = 'stress_assisted_diffusion_out.e'
+    cli_args = 'Executioner/num_steps=2'
     abs_zero = 1e-9
   []
 []

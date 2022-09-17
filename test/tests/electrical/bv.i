@@ -155,6 +155,7 @@ U = 0.1
     electrode = true
     charge_transfer_current_density = ibv
     charge_transfer_mass_flux = jbv
+    charge_transfer_heat_flux = hbv
     electric_potential = Phi
     neighbor_electric_potential = Phi
     charge_transfer_coefficient = ${alpha}
@@ -170,6 +171,7 @@ U = 0.1
     electrode = false
     charge_transfer_current_density = ibv
     charge_transfer_mass_flux = jbv
+    charge_transfer_heat_flux = hbv
     electric_potential = Phi
     neighbor_electric_potential = Phi
     charge_transfer_coefficient = ${alpha}
@@ -232,4 +234,5 @@ U = 0.1
     interval = 20
     execute_vector_postprocessors_on = FINAL
   []
+  exodus = true
 []
