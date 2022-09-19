@@ -177,11 +177,21 @@ T = 300
     temperature = T
     reference_concentration = 1e-4
   []
+  [chemical_potential]
+    type = ChemicalPotential
+    chemical_potential = mu_c
+    concentration = c
+  []
   [diffusion]
     type = CondensedMassDiffusion
-    mass_flux = j
+    dual_chemical_energy_density = zeta
+    chemical_potential = mu_c
     mobility = M
-    concentration = c
+  []
+  [mass_flux]
+    type = MassFlux
+    mass_flux = j
+    chemical_potential = mu_c
     output_properties = 'j'
     outputs = 'exodus'
   []

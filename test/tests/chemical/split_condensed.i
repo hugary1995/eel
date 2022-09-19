@@ -54,11 +54,21 @@ M = 4e-5
     temperature = T
     reference_concentration = c0
   []
-  [mass_flux]
-    type = CondensedMassDiffusion
-    mass_flux = j
+  [chemical_potential]
+    type = ChemicalPotential
+    chemical_potential = mu
     concentration = c
+  []
+  [diffusion]
+    type = CondensedMassDiffusion
+    dual_chemical_energy_density = zeta
+    chemical_potential = mu
     mobility = ${M}
+  []
+  [mass_flux]
+    type = MassFlux
+    mass_flux = j
+    chemical_potential = mu
   []
 []
 

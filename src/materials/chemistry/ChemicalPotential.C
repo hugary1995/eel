@@ -1,24 +1,25 @@
-#include "CondensedMassDiffusion.h"
+#include "ChemicalPotential.h"
 
-registerMooseObject("EelApp", CondensedMassDiffusion);
+registerMooseObject("EelApp", ChemicalPotential);
 
 InputParameters
-CondensedMassDiffusion::validParams()
+ChemicalPotential::validParams()
 {
   InputParameters params = DerivativeMaterialInterface<Material>::validParams();
   params.addClassDescription("This class defines the mass flux.");
-  params.addRequiredParam<MaterialPropertyName>("mass_flux", "The mass flux name");
-  params.addRequiredParam<MaterialPropertyName>("mobility", "The mobility of the species");
+  params.addRequiredParam<MaterialPropertyName>("chemical_potential",
+                                                "Name of the chemical potential");
   params.addRequiredParam<std::vector<MaterialPropertyName>>("energy_densities",
                                                              "Names of the energy densities");
   params.addRequiredCoupledVar("concentration", "The concentration of the chemical species");
   return params;
 }
 
-CondensedMassDiffusion::CondensedMassDiffusion(const InputParameters & parameters)
+ChemicalPotential::ChemicalPotential(const InputParameters & parameters)
   : DerivativeMaterialInterface<Material>(parameters),
-    _j(declareADProperty<RealVectorValue>("mass_flux")),
-    _M(getADMaterialProperty<Real>("mobility")),
+    _mu(declareADProperty<Real>("chemical_potential")),
+    _grad_mu(declareADPropertyByName<RealVectorValue>(
+        "∇" + getParam<MaterialPropertyName>("chemical_potential"))),
     _psi_names(getParam<std::vector<MaterialPropertyName>>("energy_densities")),
     _d_psi_d_c_dot(_psi_names.size()),
     _c_var(getVar("concentration", 0)),
@@ -31,11 +32,28 @@ CondensedMassDiffusion::CondensedMassDiffusion(const InputParameters & parameter
 }
 
 void
-CondensedMassDiffusion::computeProperties()
+ChemicalPotential::computeProperties()
 {
   if (isBoundaryMaterial())
     return;
 
+  auto sol = L2Projection();
+
+  for (_qp = 0; _qp < _qrule->n_points(); _qp++)
+  {
+    _mu[_qp] = 0;
+    _grad_mu[_qp] = 0;
+    for (unsigned int i = 0; i < _test.size(); i++)
+    {
+      _mu[_qp] += _test[i][_qp] * sol(i);
+      _grad_mu[_qp] += _grad_test[i][_qp] * sol(i);
+    }
+  }
+}
+
+EelUtils::ADRealEigenVector
+ChemicalPotential::L2Projection()
+{
   using EelUtils::ADRealEigenMatrix;
   using EelUtils::ADRealEigenVector;
 
@@ -54,17 +72,5 @@ CondensedMassDiffusion::computeProperties()
         ke(i, j) += t * _test[j][_qp];
     }
 
-  ADRealEigenVector sol;
-  sol = ke.ldlt().solve(re);
-
-  for (_qp = 0; _qp < _qrule->n_points(); _qp++)
-  {
-    // Interpolate gradient of chemical potential
-    ADRealVectorValue grad_mu;
-    for (unsigned int i = 0; i < _test.size(); i++)
-      grad_mu += _grad_test[i][_qp] * sol(i);
-
-    // Mass flux
-    _j[_qp] = -_M[_qp] * grad_mu;
-  }
+  return ke.ldlt().solve(re);
 }

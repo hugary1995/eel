@@ -5,21 +5,21 @@
 #include "EelUtils.h"
 #include <Eigen/Dense>
 
-class CondensedMassDiffusion : public DerivativeMaterialInterface<Material>
+class ChemicalPotential : public DerivativeMaterialInterface<Material>
 {
 public:
   static InputParameters validParams();
 
-  CondensedMassDiffusion(const InputParameters & parameters);
+  ChemicalPotential(const InputParameters & parameters);
 
   void computeProperties() override;
 
 protected:
-  /// Mass flux
-  ADMaterialProperty<RealVectorValue> & _j;
+  /// Chemical potential
+  ADMaterialProperty<Real> & _mu;
 
-  /// The mobility
-  const ADMaterialProperty<Real> & _M;
+  /// Chemical potential gradient
+  ADMaterialProperty<RealVectorValue> & _grad_mu;
 
   /// Energy names
   const std::vector<MaterialPropertyName> _psi_names;
@@ -35,4 +35,7 @@ protected:
 
   /// gradient of the test function
   const VariableTestGradient & _grad_test;
+
+private:
+  EelUtils::ADRealEigenVector L2Projection();
 };

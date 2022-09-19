@@ -252,11 +252,21 @@ i0_c = 1e-1 #mA/mm^2
     temperature = T
     reference_concentration = c_ref
   []
+  [chemical_potential]
+    type = ChemicalPotential
+    chemical_potential = mu
+    concentration = c
+  []
   [diffusion]
     type = CondensedMassDiffusion
-    mass_flux = j
-    concentration = c
+    dual_chemical_energy_density = zeta
+    chemical_potential = mu
     mobility = M
+  []
+  [mass_flux]
+    type = MassFlux
+    mass_flux = j
+    chemical_potential = mu
   []
 
   # Redox
