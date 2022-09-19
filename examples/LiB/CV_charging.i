@@ -54,6 +54,10 @@ T_penalty = 2e-1
   thermal_deformation_gradient = Ft
 []
 
+[Problem]
+  restart_file_base = 'CC_charging_I_${I}_cp/LATEST'
+[]
+
 [Mesh]
   [battery]
     type = GeneratedMeshGenerator
@@ -107,7 +111,6 @@ T_penalty = 2e-1
   [disp_y]
   []
   [T]
-    initial_condition = ${T0}
   []
 []
 
@@ -117,27 +120,11 @@ T_penalty = 2e-1
   [T_ref]
     initial_condition = ${T0}
   []
+  [Phi0]
+  []
 []
 
 [ICs]
-  [c_min]
-    type = ConstantIC
-    variable = c
-    value = ${cmin}
-    block = 'anode'
-  []
-  [c_mid]
-    type = ConstantIC
-    variable = c
-    value = '${fparse (cmax+cmin)/2}'
-    block = 'elyte'
-  []
-  [c_max]
-    type = ConstantIC
-    variable = c
-    value = ${cmax}
-    block = 'cathode'
-  []
   [c_ref_min]
     type = ConstantIC
     variable = c_ref
@@ -155,6 +142,16 @@ T_penalty = 2e-1
     variable = c_ref
     value = ${cmax}
     block = 'cathode'
+  []
+[]
+
+[AuxKernels]
+  [Phi0]
+    type = ParsedAux
+    variable = Phi0
+    function = 'Phi'
+    args = 'Phi'
+    execute_on = 'INITIAL'
   []
 []
 
@@ -266,17 +263,11 @@ T_penalty = 2e-1
 []
 
 [BCs]
-  [left]
-    type = FunctionNeumannBC
+  [Phi]
+    type = CoupledVarDirichletBC
     variable = Phi
-    boundary = left
-    function = in
-  []
-  [right]
-    type = DirichletBC
-    variable = Phi
-    boundary = right
-    value = 0
+    boundary = 'left right'
+    value = Phi0
   []
   [fix_x]
     type = DirichletBC
@@ -382,25 +373,18 @@ T_penalty = 2e-1
   []
 
   # Redox
-  [ramp]
-    type = ADGenericFunctionMaterial
-    prop_names = 'ramp'
-    prop_values = 'if(t<${t0},t/${t0},1)'
-  []
   [OCP_anode_graphite]
     type = ADParsedMaterial
     f_name = U
-    function = 'x:=c/${cmax}; -(122.12*x^6-321.81*x^5+315.59*x^4-141.26*x^3+28.218*x^2-1.9057*x+0.0785)*ramp'
+    function = 'x:=c/${cmax}; -(122.12*x^6-321.81*x^5+315.59*x^4-141.26*x^3+28.218*x^2-1.9057*x+0.0785)'
     args = c
-    material_property_names = 'ramp'
     block = 'anode'
   []
   [OCP_cathode_NMC111]
     type = ADParsedMaterial
     f_name = U
-    function = 'x:=c/${cmax}; (6.0826-6.9922*x+7.1062*x^2-5.4549e-5*exp(124.23*x-114.2593)-2.5947*x^3)*ramp'
+    function = 'x:=c/${cmax}; (6.0826-6.9922*x+7.1062*x^2-5.4549e-5*exp(124.23*x-114.2593)-2.5947*x^3)'
     args = c
-    material_property_names = 'ramp'
     block = 'cathode'
   []
   [charge_transfer_anode_elyte]
@@ -573,7 +557,6 @@ T_penalty = 2e-1
     property = i
     component = 0
     boundary = right
-    outputs = none
     execute_on = 'INITIAL TIMESTEP_END'
   []
   [dt]
@@ -592,18 +575,6 @@ T_penalty = 2e-1
     type = CumulativeValuePostprocessor
     postprocessor = dC
     execute_on = 'INITIAL TIMESTEP_END'
-  []
-  [c_a_max]
-    type = NodalExtremeValue
-    variable = c
-    value_type = max
-    block = anode
-  []
-  [c_c_min]
-    type = NodalExtremeValue
-    variable = c
-    value_type = min
-    block = cathode
   []
   [mass_a]
     type = ElementIntegralVariablePostprocessor
@@ -626,15 +597,10 @@ T_penalty = 2e-1
 []
 
 [UserObjects]
-  [kill_a]
+  [kill_i]
     type = Terminator
-    expression = 'c_a_max >= ${cmax}'
-    message = 'Concentration in anode exceeds the maximum allowable value.'
-  []
-  [kill_c]
-    type = Terminator
-    expression = 'c_c_min <= ${cmin}'
-    message = 'Concentration in cathode is below the minimum allowable value.'
+    expression = 'abs(I) <= 1e-6'
+    message = 'No current.'
   []
 []
 
@@ -660,11 +626,15 @@ T_penalty = 2e-1
     cutback_factor_at_failure = 0.2
     linear_iteration_ratio = 1000000
   []
+  start_time = 0
   end_time = 100000
+
+  steady_state_start_time = 10
+  steady_state_detection = true
 []
 
 [Outputs]
-  file_base = 'CC_charging_I_${I}'
+  file_base = 'CV_charging_I_${I}'
   csv = true
   exodus = true
   print_linear_residuals = false
