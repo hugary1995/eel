@@ -1,10 +1,4 @@
 [Tests]
-  [split]
-    type = Exodiff
-    input = 'split.i'
-    exodiff = 'split_out.e'
-    abs_zero = 1e-9
-  []
   [split_condensed]
     type = Exodiff
     input = 'split_condensed.i'

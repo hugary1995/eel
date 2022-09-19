@@ -22,10 +22,10 @@ protected:
   const ADVariableGradient & _grad_Phi;
 
   /// The chemical potential variable
-  const MooseVariable * _mu_var;
+  const MaterialPropertyName _mu_name;
 
   /// The gradient of the chemical potential
-  const ADVariableGradient & _grad_mu;
+  const ADMaterialProperty<RealVectorValue> & _grad_mu;
 
   /// The electrochemical energy density
   ADMaterialProperty<Real> & _E;

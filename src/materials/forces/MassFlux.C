@@ -9,8 +9,9 @@ MassFlux::validParams()
   params.addClassDescription("This class computes the mass flux associated with "
                              "given energy densities for a given species.");
   params.addRequiredParam<MaterialPropertyName>("mass_flux", "Name of the mass flux");
-  params.addRequiredParam<VariableName>("chemical_potential", "The chemical potential variable");
-  params.set<Real>("factor") = -1;
+  params.addRequiredParam<MaterialPropertyName>("chemical_potential",
+                                                "The chemical potential variable");
+  params.set<Real>("factor") = 1;
   params.suppressParameter<Real>("factor");
   return params;
 }
@@ -18,7 +19,7 @@ MassFlux::validParams()
 MassFlux::MassFlux(const InputParameters & parameters)
   : ThermodynamicForce<RealVectorValue>(parameters)
 {
-  const VariableName grad_mu_name = "∇" + getParam<VariableName>("chemical_potential");
+  const VariableName grad_mu_name = "∇" + getParam<MaterialPropertyName>("chemical_potential");
 
   // Get forces
   getThermodynamicForces(_d_psi_d_s, _psi_names, grad_mu_name);

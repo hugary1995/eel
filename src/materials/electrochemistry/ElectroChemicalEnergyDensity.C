@@ -9,7 +9,7 @@ ElectroChemicalEnergyDensity::validParams()
       "thermodynamic forces. We assume the electrochemical energy density depends "
       "on the gradients of electrical potential and chemical potential");
   params.addRequiredCoupledVar("electric_potential", "The electric potential");
-  params.addRequiredCoupledVar("chemical_potential", "The chemical potential");
+  params.addRequiredParam<MaterialPropertyName>("chemical_potential", "The chemical potential");
   params.addRequiredParam<MaterialPropertyName>("electrochemical_energy_density",
                                                 "Name of the electrochemical energy density");
   return params;
@@ -20,12 +20,11 @@ ElectroChemicalEnergyDensity::ElectroChemicalEnergyDensity(const InputParameters
     _energy_name(getParam<MaterialPropertyName>("electrochemical_energy_density")),
     _Phi_var(getVar("electric_potential", 0)),
     _grad_Phi(adCoupledGradient("electric_potential")),
-    _mu_var(getVar("chemical_potential", 0)),
-    _grad_mu(adCoupledGradient("chemical_potential")),
+    _mu_name(getParam<MaterialPropertyName>("chemical_potential")),
+    _grad_mu(getADMaterialProperty<RealVectorValue>("∇" + _mu_name)),
     _E(declareADProperty<Real>(_energy_name)),
     _d_E_d_grad_Phi(
         declarePropertyDerivative<RealVectorValue, true>(_energy_name, "∇" + _Phi_var->name())),
-    _d_E_d_grad_mu(
-        declarePropertyDerivative<RealVectorValue, true>(_energy_name, "∇" + _mu_var->name()))
+    _d_E_d_grad_mu(declarePropertyDerivative<RealVectorValue, true>(_energy_name, "∇" + _mu_name))
 {
 }

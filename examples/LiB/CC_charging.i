@@ -46,7 +46,7 @@ kappa = 2e-4 #mJ/mm/K/s
 T_penalty = 2e-1
 
 [GlobalParams]
-  energy_densities = 'dot(psi_m) dot(psi_c) chi q zeta'
+  energy_densities = 'dot(psi_m) dot(psi_c) chi q zeta m'
   deformation_gradient = F
   mechanical_deformation_gradient = Fm
   eigen_deformation_gradient = Fg
@@ -89,17 +89,9 @@ T_penalty = 2e-1
     bottom_left = '${l2} 0 0'
     top_right = '${l3} ${width} 0'
   []
-  [anode_elyte]
+  [interfaces]
     type = BreakMeshByBlockGenerator
     input = cathode
-    block_pairs = '1 2'
-    add_interface_on_two_sides = true
-    split_interface = true
-  []
-  [cathode_elyte]
-    type = BreakMeshByBlockGenerator
-    input = anode_elyte
-    block_pairs = '2 3'
     add_interface_on_two_sides = true
     split_interface = true
   []
@@ -234,22 +226,6 @@ T_penalty = 2e-1
     prop = ie
     boundary = 'anode_elyte elyte_cathode'
   []
-  [negative_mass]
-    type = MaterialInterfaceNeumannBC
-    variable = c
-    neighbor_var = c
-    prop = je
-    factor = -1
-    boundary = 'elyte_anode cathode_elyte'
-  []
-  [positive_mass]
-    type = MaterialInterfaceNeumannBC
-    variable = c
-    neighbor_var = c
-    prop = je
-    factor = 1
-    boundary = 'anode_elyte elyte_cathode'
-  []
   [heat]
     type = MaterialInterfaceNeumannBC
     variable = T
@@ -314,6 +290,12 @@ T_penalty = 2e-1
     value = 0
     boundary = 'bottom'
   []
+  [open]
+    type = OpenBC
+    variable = c
+    flux = jm
+    boundary = 'left right'
+  []
 []
 
 [Constraints]
@@ -366,11 +348,37 @@ T_penalty = 2e-1
     temperature = T
     reference_concentration = c_ref
   []
-  [diffusion]
-    type = CondensedMassDiffusion
-    mass_flux = j
+  [chemical_potential]
+    type = ChemicalPotential
+    chemical_potential = mu
     concentration = c
+  []
+  [diffusion]
+    type = MassDiffusion
+    dual_chemical_energy_density = zeta
+    chemical_potential = mu
     mobility = M
+  []
+  [mass_flux]
+    type = MassFlux
+    mass_flux = j
+    chemical_potential = mu
+  []
+
+  # Migration
+  [migration]
+    type = Migration
+    electrochemical_energy_density = m
+    electric_potential = Phi
+    chemical_potential = mu
+    electric_conductivity = sigma
+    faraday_constant = ${F}
+  []
+  [migration_flux]
+    type = MassFlux
+    mass_flux = jm
+    energy_densities = 'm'
+    chemical_potential = mu
   []
 
   # Redox

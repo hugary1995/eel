@@ -183,7 +183,7 @@ T = 300
     concentration = c
   []
   [diffusion]
-    type = CondensedMassDiffusion
+    type = MassDiffusion
     dual_chemical_energy_density = zeta
     chemical_potential = mu_c
     mobility = M

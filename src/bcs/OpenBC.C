@@ -18,5 +18,5 @@ OpenBC::OpenBC(const InputParameters & parameters)
 ADReal
 OpenBC::computeQpResidual()
 {
-  return -_test[_i][_qp] * _flux[_qp] * _normals[_qp];
+  return _test[_i][_qp] * _flux[_qp] * _normals[_qp];
 }

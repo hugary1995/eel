@@ -258,7 +258,7 @@ i0_c = 1e-1 #mA/mm^2
     concentration = c
   []
   [diffusion]
-    type = CondensedMassDiffusion
+    type = MassDiffusion
     dual_chemical_energy_density = zeta
     chemical_potential = mu
     mobility = M

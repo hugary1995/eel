@@ -60,7 +60,7 @@ M = 4e-5
     concentration = c
   []
   [diffusion]
-    type = CondensedMassDiffusion
+    type = MassDiffusion
     dual_chemical_energy_density = zeta
     chemical_potential = mu
     mobility = ${M}
