@@ -4,13 +4,13 @@ from pathlib import Path
 
 # Parameters
 filename = '3D_demo.e'
-outdir = 'disp/'
-variable = 'disp_'
-variable_name = 'Displacement'
-colorbar = 'Rainbow Desaturated'
+outdir = 'Phi_ca/'
+variable = 'Phi_ca'
+variable_name = 'Electric potential'
+colorbar = 'Jet'
 disp_magnitude = 10
-variable_min = 0
-variable_max = 6e-4
+variable_min = -0.019
+variable_max = 0
 matrix_opacity = 0.75
 backface_opacity = 0.75
 frames = 40
@@ -34,42 +34,14 @@ layout1 = GetLayout()
 layout1.SetSize((W, H))
 
 #######################################################
-# Particle
-#######################################################
-particle = ExodusIIReader(registrationName='particle', FileName=[filename])
-particle.ElementBlocks = ['cp']
-particle.DisplacementMagnitude = disp_magnitude
-Hide(particle, renderView1)
-
-cellDatatoPointData1 = CellDatatoPointData(
-    registrationName='CellDatatoPointData1', Input=particle)
-Hide(cellDatatoPointData1, renderView1)
-
-temporalInterpolator1 = TemporalInterpolator(
-    registrationName='TemporalInterpolator1', Input=cellDatatoPointData1)
-temporalInterpolator1.DiscreteTimeStepInterval = particle.TimestepValues[-1] / frames
-temporalInterpolator1Display = Show(
-    temporalInterpolator1, renderView1, 'UnstructuredGridRepresentation')
-temporalInterpolator1Display.Representation = 'Surface'
-temporalInterpolator1Display.SetScalarBarVisibility(renderView1, True)
-ColorBy(temporalInterpolator1Display, ('POINTS', variable, 'Magnitude'))
-temporalInterpolator1Display.RescaleTransferFunctionToDataRange(True, False)
-
-
-#######################################################
 # Matrix
 #######################################################
 matrix = ExodusIIReader(registrationName='matrix', FileName=[filename])
-matrix.ElementBlocks = ['cm', 'e', 'a']
+matrix.ElementBlocks = ['cm']
 matrix.DisplacementMagnitude = disp_magnitude
-Hide(matrix, renderView1)
-
-cellDatatoPointData2 = CellDatatoPointData(
-    registrationName='CellDatatoPointData2', Input=matrix)
-Hide(cellDatatoPointData2, renderView1)
 
 temporalInterpolator2 = TemporalInterpolator(
-    registrationName='TemporalInterpolator2', Input=cellDatatoPointData2)
+    registrationName='TemporalInterpolator2', Input=matrix)
 temporalInterpolator2.DiscreteTimeStepInterval = matrix.TimestepValues[-1] / frames
 temporalInterpolator2Display = Show(
     temporalInterpolator2, renderView1, 'UnstructuredGridRepresentation')
@@ -78,10 +50,22 @@ temporalInterpolator2Display.BackfaceRepresentation = 'Surface'
 temporalInterpolator2Display.BackfaceOpacity = backface_opacity
 temporalInterpolator2Display.Opacity = matrix_opacity
 temporalInterpolator2Display.SetScalarBarVisibility(renderView1, True)
-ColorBy(temporalInterpolator2Display, ('POINTS', variable, 'Magnitude'))
+ColorBy(temporalInterpolator2Display, ('POINTS', variable))
 temporalInterpolator2Display.RescaleTransferFunctionToDataRange(True, False)
 temporalInterpolator2Display.SetScalarBarVisibility(renderView1, True)
 
+
+#######################################################
+# Elyte and anode
+#######################################################
+elyteanode = ExodusIIReader(registrationName='elyteanode', FileName=[filename])
+elyteanode.ElementBlocks = ['e', 'a']
+elyteanode.DisplacementMagnitude = disp_magnitude
+
+alyteanode_display = GetDisplayProperties(elyteanode, view=renderView1)
+alyteanode_display.Representation = 'Feature Edges'
+alyteanode_display.AmbientColor = [0.0, 0.0, 0.0]
+alyteanode_display.DiffuseColor = [0.0, 0.0, 0.0]
 
 #######################################################
 # Colorbar
@@ -101,7 +85,7 @@ tLUTColorBar.Title = variable_name
 # Animation
 #######################################################
 Path(outdir).mkdir(parents=True, exist_ok=True)
-times = np.linspace(0, particle.TimestepValues[-1], frames)
+times = np.linspace(0, matrix.TimestepValues[-1], frames)
 for step in range(frames):
     print('Saving time step {}'.format(step))
     renderView1.ViewTime = times[step]

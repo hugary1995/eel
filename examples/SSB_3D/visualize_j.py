@@ -4,14 +4,13 @@ from pathlib import Path
 
 # Parameters
 filename = '3D_demo.e'
-outdir = 'c/'
-variable = 'c'
-variable_name = 'Concentration'
-colorbar = 'Jet'
+outdir = 'j/'
+variable = 'j_'
+variable_name = 'Mass flux'
+colorbar = 'Black-Body Radiation'
 disp_magnitude = 10
-variable_min = 1e-4
-variable_max = 1e-3
-particle_opacity = 1
+variable_min = 0
+variable_max = 2e-6
 matrix_opacity = 0.75
 backface_opacity = 0.75
 frames = 40
@@ -35,34 +34,19 @@ layout1 = GetLayout()
 layout1.SetSize((W, H))
 
 #######################################################
-# Particle
-#######################################################
-particle = ExodusIIReader(registrationName='particle', FileName=[filename])
-particle.ElementBlocks = ['cp']
-particle.DisplacementMagnitude = disp_magnitude
-
-temporalInterpolator1 = TemporalInterpolator(
-    registrationName='TemporalInterpolator1', Input=particle)
-temporalInterpolator1.DiscreteTimeStepInterval = particle.TimestepValues[-1] / frames
-temporalInterpolator1Display = Show(
-    temporalInterpolator1, renderView1, 'UnstructuredGridRepresentation')
-temporalInterpolator1Display.Representation = 'Surface'
-temporalInterpolator1Display.BackfaceRepresentation = 'Surface'
-temporalInterpolator1Display.BackfaceOpacity = backface_opacity
-temporalInterpolator1Display.Opacity = particle_opacity
-temporalInterpolator1Display.SetScalarBarVisibility(renderView1, True)
-ColorBy(temporalInterpolator1Display, ('POINTS', variable))
-temporalInterpolator1Display.RescaleTransferFunctionToDataRange(True, False)
-
-#######################################################
 # Matrix
 #######################################################
 matrix = ExodusIIReader(registrationName='matrix', FileName=[filename])
 matrix.ElementBlocks = ['cm', 'e', 'a']
 matrix.DisplacementMagnitude = disp_magnitude
+Hide(matrix, renderView1)
+
+cellDatatoPointData2 = CellDatatoPointData(
+    registrationName='CellDatatoPointData2', Input=matrix)
+Hide(cellDatatoPointData2, renderView1)
 
 temporalInterpolator2 = TemporalInterpolator(
-    registrationName='TemporalInterpolator2', Input=matrix)
+    registrationName='TemporalInterpolator2', Input=cellDatatoPointData2)
 temporalInterpolator2.DiscreteTimeStepInterval = matrix.TimestepValues[-1] / frames
 temporalInterpolator2Display = Show(
     temporalInterpolator2, renderView1, 'UnstructuredGridRepresentation')

@@ -9,8 +9,8 @@ variable = 'stress'
 variable_name = 'Stress'
 colorbar = 'Rainbow Desaturated'
 disp_magnitude = 10
-variable_min = 0
-variable_max = 1500
+variable_min = -1
+variable_max = 0.5
 matrix_opacity = 0.75
 backface_opacity = 0.75
 frames = 40
@@ -60,7 +60,7 @@ temporalInterpolator1Display.RescaleTransferFunctionToDataRange(True, False)
 # Matrix
 #######################################################
 matrix = ExodusIIReader(registrationName='matrix', FileName=[filename])
-matrix.ElementBlocks = ['cm', 'e', 'a']
+matrix.ElementBlocks = ['cm']
 matrix.DisplacementMagnitude = disp_magnitude
 Hide(matrix, renderView1)
 
@@ -82,6 +82,17 @@ ColorBy(temporalInterpolator2Display, ('POINTS', variable))
 temporalInterpolator2Display.RescaleTransferFunctionToDataRange(True, False)
 temporalInterpolator2Display.SetScalarBarVisibility(renderView1, True)
 
+#######################################################
+# Elyte and anode
+#######################################################
+elyteanode = ExodusIIReader(registrationName='elyteanode', FileName=[filename])
+elyteanode.ElementBlocks = ['e', 'a']
+elyteanode.DisplacementMagnitude = disp_magnitude
+
+alyteanode_display = GetDisplayProperties(elyteanode, view=renderView1)
+alyteanode_display.Representation = 'Feature Edges'
+alyteanode_display.AmbientColor = [0.0, 0.0, 0.0]
+alyteanode_display.DiffuseColor = [0.0, 0.0, 0.0]
 
 #######################################################
 # Colorbar

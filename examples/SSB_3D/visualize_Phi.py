@@ -9,8 +9,8 @@ variable = 'Phi'
 variable_name = 'Electric potential'
 colorbar = 'Jet'
 disp_magnitude = 10
-variable_min = -5.4
-variable_max = 0
+variable_min = -5.59
+variable_max = 0.18
 matrix_opacity = 0.75
 backface_opacity = 0.75
 frames = 40
@@ -34,49 +34,14 @@ layout1 = GetLayout()
 layout1.SetSize((W, H))
 
 #######################################################
-# Particle
-#######################################################
-particle = ExodusIIReader(registrationName='particle', FileName=[filename])
-particle.ElementBlocks = ['cp']
-particle.DisplacementMagnitude = disp_magnitude
-Hide(particle, renderView1)
-
-calculator1 = Calculator(registrationName='Calculator1', Input=particle)
-calculator1.ResultArrayName = 'Phi'
-calculator1.Function = 'Phi_cp'
-
-cellDatatoPointData1 = CellDatatoPointData(
-    registrationName='CellDatatoPointData1', Input=calculator1)
-Hide(cellDatatoPointData1, renderView1)
-
-temporalInterpolator1 = TemporalInterpolator(
-    registrationName='TemporalInterpolator1', Input=cellDatatoPointData1)
-temporalInterpolator1.DiscreteTimeStepInterval = particle.TimestepValues[-1] / frames
-temporalInterpolator1Display = Show(
-    temporalInterpolator1, renderView1, 'UnstructuredGridRepresentation')
-temporalInterpolator1Display.Representation = 'Surface'
-temporalInterpolator1Display.SetScalarBarVisibility(renderView1, True)
-ColorBy(temporalInterpolator1Display, ('POINTS', variable))
-temporalInterpolator1Display.RescaleTransferFunctionToDataRange(True, False)
-
-#######################################################
 # Matrix
 #######################################################
 matrix = ExodusIIReader(registrationName='matrix', FileName=[filename])
 matrix.ElementBlocks = ['cm', 'e', 'a']
 matrix.DisplacementMagnitude = disp_magnitude
-Hide(matrix, renderView1)
-
-calculator2 = Calculator(registrationName='Calculator2', Input=matrix)
-calculator2.ResultArrayName = 'Phi'
-calculator2.Function = 'Phi_ce+Phi_e+Phi_a'
-
-cellDatatoPointData2 = CellDatatoPointData(
-    registrationName='CellDatatoPointData2', Input=calculator2)
-Hide(cellDatatoPointData2, renderView1)
 
 temporalInterpolator2 = TemporalInterpolator(
-    registrationName='TemporalInterpolator2', Input=cellDatatoPointData2)
+    registrationName='TemporalInterpolator2', Input=matrix)
 temporalInterpolator2.DiscreteTimeStepInterval = matrix.TimestepValues[-1] / frames
 temporalInterpolator2Display = Show(
     temporalInterpolator2, renderView1, 'UnstructuredGridRepresentation')
@@ -107,7 +72,7 @@ tLUTColorBar.Title = variable_name
 # Animation
 #######################################################
 Path(outdir).mkdir(parents=True, exist_ok=True)
-times = np.linspace(0, particle.TimestepValues[-1], frames)
+times = np.linspace(0, matrix.TimestepValues[-1], frames)
 for step in range(frames):
     print('Saving time step {}'.format(step))
     renderView1.ViewTime = times[step]
