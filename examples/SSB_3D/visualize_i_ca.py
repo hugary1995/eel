@@ -52,7 +52,7 @@ temporalInterpolator2.DiscreteTimeStepInterval = matrix.TimestepValues[-1] / fra
 temporalInterpolator2Display = Show(
     temporalInterpolator2, renderView1, 'UnstructuredGridRepresentation')
 temporalInterpolator2Display.Representation = 'Surface'
-temporalInterpolator2Display.BackfaceRepresentation = 'Surface'
+temporalInterpolator2Display.BackfaceRepresentation = 'Cull Backface'
 temporalInterpolator2Display.BackfaceOpacity = backface_opacity
 temporalInterpolator2Display.Opacity = matrix_opacity
 temporalInterpolator2Display.SetScalarBarVisibility(renderView1, True)
@@ -68,7 +68,7 @@ elyteanode.ElementBlocks = ['e', 'a']
 elyteanode.DisplacementMagnitude = disp_magnitude
 
 alyteanode_display = GetDisplayProperties(elyteanode, view=renderView1)
-alyteanode_display.Representation = 'Feature Edges'
+alyteanode_display.Representation = 'Outline'
 alyteanode_display.AmbientColor = [0.0, 0.0, 0.0]
 alyteanode_display.DiffuseColor = [0.0, 0.0, 0.0]
 

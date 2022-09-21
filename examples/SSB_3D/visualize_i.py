@@ -45,13 +45,17 @@ cellDatatoPointData2 = CellDatatoPointData(
     registrationName='CellDatatoPointData2', Input=matrix)
 Hide(cellDatatoPointData2, renderView1)
 
+merged = MergeBlocks(Input=cellDatatoPointData2)
+merged.Tolerance = 0.001
+Hide(merged, renderView1)
+
 temporalInterpolator2 = TemporalInterpolator(
-    registrationName='TemporalInterpolator2', Input=cellDatatoPointData2)
+    registrationName='TemporalInterpolator2', Input=merged)
 temporalInterpolator2.DiscreteTimeStepInterval = matrix.TimestepValues[-1] / frames
 temporalInterpolator2Display = Show(
     temporalInterpolator2, renderView1, 'UnstructuredGridRepresentation')
 temporalInterpolator2Display.Representation = 'Surface'
-temporalInterpolator2Display.BackfaceRepresentation = 'Surface'
+temporalInterpolator2Display.BackfaceRepresentation = 'Cull Backface'
 temporalInterpolator2Display.BackfaceOpacity = backface_opacity
 temporalInterpolator2Display.Opacity = matrix_opacity
 temporalInterpolator2Display.SetScalarBarVisibility(renderView1, True)

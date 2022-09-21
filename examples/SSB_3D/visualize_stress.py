@@ -74,7 +74,7 @@ temporalInterpolator2.DiscreteTimeStepInterval = matrix.TimestepValues[-1] / fra
 temporalInterpolator2Display = Show(
     temporalInterpolator2, renderView1, 'UnstructuredGridRepresentation')
 temporalInterpolator2Display.Representation = 'Surface'
-temporalInterpolator2Display.BackfaceRepresentation = 'Surface'
+temporalInterpolator2Display.BackfaceRepresentation = 'Cull Backface'
 temporalInterpolator2Display.BackfaceOpacity = backface_opacity
 temporalInterpolator2Display.Opacity = matrix_opacity
 temporalInterpolator2Display.SetScalarBarVisibility(renderView1, True)

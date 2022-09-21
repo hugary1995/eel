@@ -32,7 +32,7 @@ for step in range(1, frames):
     h = cv2.imread('h/h__'+str(step)+'.png')
     s = cv2.imread('stress/stress_'+str(step)+'.png')
 
-    fig = Figure(figsize=(12, 3), dpi=120)
+    fig = Figure(figsize=(6, 6), dpi=120)
     canvas = FigureCanvas(fig)
     ax = fig.gca()
     ax.plot(C, V, 'k-')
@@ -46,9 +46,11 @@ for step in range(1, frames):
     CV = np.frombuffer(canvas.tostring_rgb(), dtype=np.uint8)
     CV = CV.reshape(fig.canvas.get_width_height()[::-1] + (3,))
 
-    row1 = np.concatenate((Phi_ca, i_ca, c, T), axis=1)
-    row2 = np.concatenate((Phi, i, j, h), axis=1)
-    row3 = np.concatenate((s, CV, logo), axis=1)
-    all = np.concatenate((row1, row2, row3))
+    row1 = np.concatenate((Phi_ca, i_ca, c), axis=1)
+    row2 = np.concatenate((Phi, i, j), axis=1)
+    row12 = np.concatenate((row1, row2))
+    row12 = np.concatenate((row12, CV), axis=1)
+    row3 = np.concatenate((s, T, h, logo), axis=1)
+    all = np.concatenate((row12, row3))
 
     cv2.imwrite('animation/frame_'+f'{step:02}'+'.png', all)

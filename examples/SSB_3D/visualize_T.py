@@ -7,7 +7,7 @@ filename = '3D_demo.e'
 outdir = 'T/'
 variable = 'T'
 variable_name = 'Temperature'
-colorbar = 'Jet'
+colorbar = 'jet'
 disp_magnitude = 10
 variable_min = 300
 variable_max = 312
@@ -68,8 +68,12 @@ cellDatatoPointData2 = CellDatatoPointData(
     registrationName='CellDatatoPointData2', Input=matrix)
 Hide(cellDatatoPointData2, renderView1)
 
+merged = MergeBlocks(Input=cellDatatoPointData2)
+merged.Tolerance = 0.001
+Hide(merged, renderView1)
+
 temporalInterpolator2 = TemporalInterpolator(
-    registrationName='TemporalInterpolator2', Input=cellDatatoPointData2)
+    registrationName='TemporalInterpolator2', Input=merged)
 temporalInterpolator2.DiscreteTimeStepInterval = matrix.TimestepValues[-1] / frames
 temporalInterpolator2Display = Show(
     temporalInterpolator2, renderView1, 'UnstructuredGridRepresentation')

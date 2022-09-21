@@ -7,7 +7,7 @@ filename = '3D_demo.e'
 outdir = 'c/'
 variable = 'c'
 variable_name = 'Concentration'
-colorbar = 'Jet'
+colorbar = 'Rainbow Uniform'
 disp_magnitude = 10
 variable_min = 1e-4
 variable_max = 1e-3
@@ -60,14 +60,19 @@ temporalInterpolator1Display.RescaleTransferFunctionToDataRange(True, False)
 matrix = ExodusIIReader(registrationName='matrix', FileName=[filename])
 matrix.ElementBlocks = ['cm', 'e', 'a']
 matrix.DisplacementMagnitude = disp_magnitude
+Hide(matrix, renderView1)
+
+merged = MergeBlocks(Input=matrix)
+merged.Tolerance = 0.001
+Hide(merged, renderView1)
 
 temporalInterpolator2 = TemporalInterpolator(
-    registrationName='TemporalInterpolator2', Input=matrix)
+    registrationName='TemporalInterpolator2', Input=merged)
 temporalInterpolator2.DiscreteTimeStepInterval = matrix.TimestepValues[-1] / frames
 temporalInterpolator2Display = Show(
     temporalInterpolator2, renderView1, 'UnstructuredGridRepresentation')
 temporalInterpolator2Display.Representation = 'Surface'
-temporalInterpolator2Display.BackfaceRepresentation = 'Surface'
+temporalInterpolator2Display.BackfaceRepresentation = 'Cull Backface'
 temporalInterpolator2Display.BackfaceOpacity = backface_opacity
 temporalInterpolator2Display.Opacity = matrix_opacity
 temporalInterpolator2Display.SetScalarBarVisibility(renderView1, True)

@@ -7,7 +7,7 @@ filename = '3D_demo.e'
 outdir = 'Phi/'
 variable = 'Phi'
 variable_name = 'Electric potential'
-colorbar = 'Jet'
+colorbar = 'jet'
 disp_magnitude = 10
 variable_min = -5.59
 variable_max = 0.18
@@ -39,14 +39,19 @@ layout1.SetSize((W, H))
 matrix = ExodusIIReader(registrationName='matrix', FileName=[filename])
 matrix.ElementBlocks = ['cm', 'e', 'a']
 matrix.DisplacementMagnitude = disp_magnitude
+Hide(matrix, renderView1)
+
+merged = MergeBlocks(Input=matrix)
+merged.Tolerance = 0.001
+Hide(merged, renderView1)
 
 temporalInterpolator2 = TemporalInterpolator(
-    registrationName='TemporalInterpolator2', Input=matrix)
+    registrationName='TemporalInterpolator2', Input=merged)
 temporalInterpolator2.DiscreteTimeStepInterval = matrix.TimestepValues[-1] / frames
 temporalInterpolator2Display = Show(
     temporalInterpolator2, renderView1, 'UnstructuredGridRepresentation')
 temporalInterpolator2Display.Representation = 'Surface'
-temporalInterpolator2Display.BackfaceRepresentation = 'Surface'
+temporalInterpolator2Display.BackfaceRepresentation = 'Cull Backface'
 temporalInterpolator2Display.BackfaceOpacity = backface_opacity
 temporalInterpolator2Display.Opacity = matrix_opacity
 temporalInterpolator2Display.SetScalarBarVisibility(renderView1, True)
