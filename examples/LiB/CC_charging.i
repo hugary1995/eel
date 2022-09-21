@@ -573,7 +573,6 @@ T_penalty = 2e-1
     property = i
     component = 0
     boundary = right
-    outputs = none
     execute_on = 'INITIAL TIMESTEP_END'
   []
   [dt]
@@ -598,12 +597,28 @@ T_penalty = 2e-1
     variable = c
     value_type = max
     block = anode
+    execute_on = 'INITIAL TIMESTEP_END'
   []
   [c_c_min]
     type = NodalExtremeValue
     variable = c
     value_type = min
     block = cathode
+    execute_on = 'INITIAL TIMESTEP_END'
+  []
+  [c_a_min]
+    type = NodalExtremeValue
+    variable = c
+    value_type = min
+    block = anode
+    execute_on = 'INITIAL TIMESTEP_END'
+  []
+  [c_c_max]
+    type = NodalExtremeValue
+    variable = c
+    value_type = max
+    block = cathode
+    execute_on = 'INITIAL TIMESTEP_END'
   []
   [mass_a]
     type = ElementIntegralVariablePostprocessor
@@ -650,6 +665,11 @@ T_penalty = 2e-1
   nl_abs_tol = 1e-10
   nl_max_its = 20
 
+  [Predictor]
+    type = SimplePredictor
+    scale = 1
+    skip_after_failed_timestep = true
+  []
   [TimeStepper]
     type = IterationAdaptiveDT
     dt = ${dt}
