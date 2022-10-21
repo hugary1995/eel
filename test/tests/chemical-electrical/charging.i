@@ -3,10 +3,18 @@ width = 0.03 #mm
 in = '${fparse -I/width}'
 t0 = '${fparse -1e-2/in}'
 dt = '${fparse t0/100}'
+Vmax = 5 #V
+
+vf_se = 0.3
+vf_cp = 0.6
+vf_ca = 0.1
 
 sigma_a = 1e0 #mS/mm
-sigma_e = 1e-1 #mS/mm
-sigma_c = 1e-2 #mS/mm
+sigma_se = 1e-1 #mS/mm
+sigma_cp = 1e-2 #mS/mm
+sigma_ca = 1e0 #mS/mm
+sigma_e = ${sigma_se}
+sigma_c = '${fparse vf_se*sigma_se + vf_cp*sigma_cp + vf_ca*sigma_ca}'
 
 l0 = 0
 l1 = 0.04
@@ -15,9 +23,12 @@ l3 = 0.12
 
 cmin = 1e-4 #mmol/mm^3
 cmax = 1e-3 #mmol/mm^3
-D_a = 1e-3 #mm^2/s
-D_e = 1e-4 #mm^2/s
-D_c = 5e-5 #mm^2/s
+M_a = 8e-11 #mm^2/s
+M_se = 2e-12 #mm^2/s
+M_cp = 4e-14 #mm^2/s
+M_ca = 1e-13 #mm^2/s
+M_e = ${M_se}
+M_c = '${fparse vf_se*M_se + vf_cp*M_cp + vf_ca*M_ca}'
 
 R = 8.3145 #mJ/mmol/K
 T0 = 300 #K
@@ -170,22 +181,6 @@ i0_c = 1e-1 #mA/mm^2
     prop = ie
     boundary = 'anode_elyte elyte_cathode'
   []
-  # [negative_mass]
-  #   type = MaterialInterfaceNeumannBC
-  #   variable = c
-  #   neighbor_var = c
-  #   prop = je
-  #   factor = -1
-  #   boundary = 'elyte_anode cathode_elyte'
-  # []
-  # [positive_mass]
-  #   type = MaterialInterfaceNeumannBC
-  #   variable = c
-  #   neighbor_var = c
-  #   prop = je
-  #   factor = 1
-  #   boundary = 'anode_elyte elyte_cathode'
-  # []
 []
 
 [Functions]
@@ -256,15 +251,8 @@ i0_c = 1e-1 #mA/mm^2
   # Chemical reactions
   [diffusivity]
     type = ADPiecewiseConstantByBlockMaterial
-    prop_name = 'D'
-    subdomain_to_prop_value = 'anode ${D_a} elyte ${D_e} cathode ${D_c}'
-  []
-  [mobility]
-    type = ADParsedMaterial
-    f_name = M
-    args = 'c_ref T'
-    material_property_names = 'D'
-    function = 'D*c_ref/${R}/T'
+    prop_name = 'M'
+    subdomain_to_prop_value = 'anode ${M_a} elyte ${M_e} cathode ${M_c}'
   []
   [chemical_energy]
     type = EntropicChemicalEnergyDensity
@@ -456,15 +444,10 @@ i0_c = 1e-1 #mA/mm^2
 []
 
 [UserObjects]
-  [kill_a]
+  [kill]
     type = Terminator
-    expression = 'c_a_max >= ${cmax}'
-    message = 'Concentration in anode exceeds the maximum allowable value.'
-  []
-  [kill_c]
-    type = Terminator
-    expression = 'c_c_min <= ${cmin}'
-    message = 'Concentration in cathode is below the minimum allowable value.'
+    expression = 'V >= ${Vmax}'
+    message = 'Voltage reached Vmax'
   []
 []
 
@@ -498,6 +481,7 @@ i0_c = 1e-1 #mA/mm^2
     cutback_factor_at_failure = 0.2
     linear_iteration_ratio = 1000000
   []
+  dtmax = 1
   end_time = 100000
 []
 
