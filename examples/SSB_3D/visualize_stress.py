@@ -9,8 +9,8 @@ variable = 'stress'
 variable_name = 'Stress'
 colorbar = 'Rainbow Desaturated'
 disp_magnitude = 10
-variable_min = -1
-variable_max = 0.5
+variable_min = -2
+variable_max = 0.7
 matrix_opacity = 0.75
 backface_opacity = 0.75
 frames = 40
@@ -60,7 +60,7 @@ temporalInterpolator1Display.RescaleTransferFunctionToDataRange(True, False)
 # Matrix
 #######################################################
 matrix = ExodusIIReader(registrationName='matrix', FileName=[filename])
-matrix.ElementBlocks = ['cm']
+matrix.ElementBlocks = ['cm', 'e', 'a']
 matrix.DisplacementMagnitude = disp_magnitude
 Hide(matrix, renderView1)
 
@@ -68,8 +68,12 @@ cellDatatoPointData2 = CellDatatoPointData(
     registrationName='CellDatatoPointData2', Input=matrix)
 Hide(cellDatatoPointData2, renderView1)
 
+merged = MergeBlocks(Input=cellDatatoPointData2)
+merged.Tolerance = 0.001
+Hide(merged, renderView1)
+
 temporalInterpolator2 = TemporalInterpolator(
-    registrationName='TemporalInterpolator2', Input=cellDatatoPointData2)
+    registrationName='TemporalInterpolator2', Input=merged)
 temporalInterpolator2.DiscreteTimeStepInterval = matrix.TimestepValues[-1] / frames
 temporalInterpolator2Display = Show(
     temporalInterpolator2, renderView1, 'UnstructuredGridRepresentation')
@@ -81,18 +85,6 @@ temporalInterpolator2Display.SetScalarBarVisibility(renderView1, True)
 ColorBy(temporalInterpolator2Display, ('POINTS', variable))
 temporalInterpolator2Display.RescaleTransferFunctionToDataRange(True, False)
 temporalInterpolator2Display.SetScalarBarVisibility(renderView1, True)
-
-#######################################################
-# Elyte and anode
-#######################################################
-elyteanode = ExodusIIReader(registrationName='elyteanode', FileName=[filename])
-elyteanode.ElementBlocks = ['e', 'a']
-elyteanode.DisplacementMagnitude = disp_magnitude
-
-alyteanode_display = GetDisplayProperties(elyteanode, view=renderView1)
-alyteanode_display.Representation = 'Feature Edges'
-alyteanode_display.AmbientColor = [0.0, 0.0, 0.0]
-alyteanode_display.DiffuseColor = [0.0, 0.0, 0.0]
 
 #######################################################
 # Colorbar

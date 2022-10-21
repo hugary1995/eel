@@ -40,7 +40,7 @@ beta = 1e-3
 CTE = 1e-5
 
 rho = 2.5e-9 #Mg/mm^3
-cv = 2.7e8 #mJ/Mg/K
+cv = 5.4e9 #mJ/Mg/K
 kappa = 2e-4 #mJ/mm/K/s
 
 T_penalty = 2e-1
@@ -116,6 +116,8 @@ T_penalty = 2e-1
   []
   [T_ref]
     initial_condition = ${T0}
+  []
+  [Phi0]
   []
 []
 
@@ -390,7 +392,8 @@ T_penalty = 2e-1
   [OCP_anode_graphite]
     type = ADParsedMaterial
     f_name = U
-    function = 'x:=c/${cmax}; -(122.12*x^6-321.81*x^5+315.59*x^4-141.26*x^3+28.218*x^2-1.9057*x+0.0785)*ramp'
+    function = 'x:=c/${cmax}; 2.77e-4*x^2-0.0069*x+0.0785'
+    # function = 'x:=c/${cmax}; -(122.12*x^6-321.81*x^5+315.59*x^4-141.26*x^3+28.218*x^2-1.9057*x+0.0785)*ramp'
     args = c
     material_property_names = 'ramp'
     block = 'anode'
@@ -638,6 +641,12 @@ T_penalty = 2e-1
     block = cathode
     execute_on = 'INITIAL TIMESTEP_END'
   []
+  [max_T]
+    type = NodalExtremeValue
+    variable = T
+    value_type = max
+    execute_on = 'INITIAL TIMESTEP_END'
+  []
 []
 
 [UserObjects]
@@ -681,13 +690,13 @@ T_penalty = 2e-1
     cutback_factor_at_failure = 0.2
     linear_iteration_ratio = 1000000
   []
-  end_time = 100000
+  dtmax = ${t0}
+  end_time = 1000000
 []
 
 [Outputs]
-  file_base = 'CC_charging_I_${I}'
+  file_base = 'cycle_1_CC_charging_I_${I}'
   csv = true
-  exodus = true
   print_linear_residuals = false
   checkpoint = true
 []

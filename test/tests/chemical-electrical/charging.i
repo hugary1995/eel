@@ -27,7 +27,7 @@ i0_a = 1e-1 #mA/mm^2
 i0_c = 1e-1 #mA/mm^2
 
 [GlobalParams]
-  energy_densities = 'dot(psi_c) q zeta'
+  energy_densities = 'dot(psi_c) q zeta m'
 []
 
 [Mesh]
@@ -170,22 +170,22 @@ i0_c = 1e-1 #mA/mm^2
     prop = ie
     boundary = 'anode_elyte elyte_cathode'
   []
-  [negative_mass]
-    type = MaterialInterfaceNeumannBC
-    variable = c
-    neighbor_var = c
-    prop = je
-    factor = -1
-    boundary = 'elyte_anode cathode_elyte'
-  []
-  [positive_mass]
-    type = MaterialInterfaceNeumannBC
-    variable = c
-    neighbor_var = c
-    prop = je
-    factor = 1
-    boundary = 'anode_elyte elyte_cathode'
-  []
+  # [negative_mass]
+  #   type = MaterialInterfaceNeumannBC
+  #   variable = c
+  #   neighbor_var = c
+  #   prop = je
+  #   factor = -1
+  #   boundary = 'elyte_anode cathode_elyte'
+  # []
+  # [positive_mass]
+  #   type = MaterialInterfaceNeumannBC
+  #   variable = c
+  #   neighbor_var = c
+  #   prop = je
+  #   factor = 1
+  #   boundary = 'anode_elyte elyte_cathode'
+  # []
 []
 
 [Functions]
@@ -209,6 +209,12 @@ i0_c = 1e-1 #mA/mm^2
     boundary = right
     value = 0
   []
+  [open]
+    type = OpenBC
+    variable = c
+    flux = jm
+    boundary = 'left right'
+  []
 []
 
 [Materials]
@@ -229,6 +235,22 @@ i0_c = 1e-1 #mA/mm^2
     type = CurrentDensity
     current_density = i
     electric_potential = Phi
+  []
+
+  # Migration
+  [migration]
+    type = Migration
+    electrochemical_energy_density = m
+    electric_potential = Phi
+    chemical_potential = mu
+    electric_conductivity = sigma
+    faraday_constant = ${F}
+  []
+  [migration_flux]
+    type = MassFlux
+    mass_flux = jm
+    energy_densities = 'm'
+    chemical_potential = mu
   []
 
   # Chemical reactions
@@ -453,11 +475,18 @@ i0_c = 1e-1 #mA/mm^2
   petsc_options_iname = '-pc_type'
   petsc_options_value = 'lu'
   automatic_scaling = true
+  line_search = none
 
   nl_rel_tol = 1e-6
   nl_abs_tol = 1e-10
   nl_max_its = 20
   l_max_its = 150
+
+  [Predictor]
+    type = SimplePredictor
+    scale = 1
+    skip_after_failed_timestep = true
+  []
 
   [TimeStepper]
     type = IterationAdaptiveDT

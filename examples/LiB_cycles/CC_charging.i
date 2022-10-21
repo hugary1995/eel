@@ -40,7 +40,7 @@ beta = 1e-3
 CTE = 1e-5
 
 rho = 2.5e-9 #Mg/mm^3
-cv = 2.7e8 #mJ/Mg/K
+cv = 5.4e9 #mJ/Mg/K
 kappa = 2e-4 #mJ/mm/K/s
 
 T_penalty = 2e-1
@@ -52,6 +52,10 @@ T_penalty = 2e-1
   eigen_deformation_gradient = Fg
   swelling_deformation_gradient = Fs
   thermal_deformation_gradient = Ft
+[]
+
+[Problem]
+  restart_file_base = 'cycle_${fparse cycle-1}_CC_discharging_I_${I}_cp/LATEST'
 []
 
 [Mesh]
@@ -107,7 +111,6 @@ T_penalty = 2e-1
   [disp_y]
   []
   [T]
-    initial_condition = ${T0}
   []
 []
 
@@ -117,27 +120,11 @@ T_penalty = 2e-1
   [T_ref]
     initial_condition = ${T0}
   []
+  [Phi0]
+  []
 []
 
 [ICs]
-  [c_min]
-    type = ConstantIC
-    variable = c
-    value = ${cmin}
-    block = 'anode'
-  []
-  [c_mid]
-    type = ConstantIC
-    variable = c
-    value = '${fparse (cmax+cmin)/2}'
-    block = 'elyte'
-  []
-  [c_max]
-    type = ConstantIC
-    variable = c
-    value = ${cmax}
-    block = 'cathode'
-  []
   [c_ref_min]
     type = ConstantIC
     variable = c_ref
@@ -385,12 +372,13 @@ T_penalty = 2e-1
   [ramp]
     type = ADGenericFunctionMaterial
     prop_names = 'ramp'
-    prop_values = 'if(t<${t0},t/${t0},1)'
+    prop_values = '1'
   []
   [OCP_anode_graphite]
     type = ADParsedMaterial
     f_name = U
-    function = 'x:=c/${cmax}; -(122.12*x^6-321.81*x^5+315.59*x^4-141.26*x^3+28.218*x^2-1.9057*x+0.0785)*ramp'
+    function = 'x:=c/${cmax}; 2.77e-4*x^2-0.0069*x+0.0785'
+    # function = 'x:=c/${cmax}; -(122.12*x^6-321.81*x^5+315.59*x^4-141.26*x^3+28.218*x^2-1.9057*x+0.0785)*ramp'
     args = c
     material_property_names = 'ramp'
     block = 'anode'
@@ -638,6 +626,12 @@ T_penalty = 2e-1
     block = cathode
     execute_on = 'INITIAL TIMESTEP_END'
   []
+  [max_T]
+    type = NodalExtremeValue
+    variable = T
+    value_type = max
+    execute_on = 'INITIAL TIMESTEP_END'
+  []
 []
 
 [UserObjects]
@@ -660,7 +654,6 @@ T_penalty = 2e-1
   petsc_options_iname = '-pc_type'
   petsc_options_value = 'lu'
   automatic_scaling = true
-  line_search = none
 
   nl_rel_tol = 1e-6
   nl_abs_tol = 1e-10
@@ -681,13 +674,14 @@ T_penalty = 2e-1
     cutback_factor_at_failure = 0.2
     linear_iteration_ratio = 1000000
   []
-  end_time = 100000
+  start_time = 0
+  dtmax = ${t0}
+  end_time = 1000000
 []
 
 [Outputs]
-  file_base = 'CC_charging_I_${I}'
+  file_base = 'cycle_${cycle}_CC_charging_I_${I}'
   csv = true
-  exodus = true
   print_linear_residuals = false
   checkpoint = true
 []
