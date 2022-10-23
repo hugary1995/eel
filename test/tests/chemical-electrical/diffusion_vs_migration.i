@@ -1,3 +1,7 @@
+m = 1 # larger m means more migration compared to diffusion
+R = 8.3145 #mJ/mmol/K
+F = 96485 #mC/mmol
+
 I = 3e-3 #mA
 width = 0.03 #mm
 in = '${fparse -I/width}'
@@ -6,13 +10,13 @@ dt = '${fparse t0/100}'
 Vmax = 5 #V
 
 vf_se = 0.3
-vf_cp = 0.6
-vf_ca = 0.1
+vf_cp = 0.5
+vf_ca = 0.2
 
-sigma_a = 1e0 #mS/mm
-sigma_se = 1e-1 #mS/mm
-sigma_cp = 1e-2 #mS/mm
-sigma_ca = 1e0 #mS/mm
+sigma_a = 0.2 #mS/mm
+sigma_se = 0.1 #mS/mm
+sigma_cp = 0.05 #mS/mm
+sigma_ca = 0.2 #mS/mm
 sigma_e = ${sigma_se}
 sigma_c = '${fparse vf_se*sigma_se + vf_cp*sigma_cp + vf_ca*sigma_ca}'
 
@@ -21,18 +25,19 @@ l1 = 0.04
 l2 = 0.07
 l3 = 0.12
 
-cmin = 1e-4 #mmol/mm^3
 cmax = 1e-3 #mmol/mm^3
-M_a = 8e-11 #mm^2/s
-M_se = 2e-12 #mm^2/s
-M_cp = 4e-14 #mm^2/s
-M_ca = 1e-13 #mm^2/s
+c0_a = 1e-4
+c0_e = 5e-4
+c0_c = 1e-3
+
+M_a = 8e-11
+M_se = '${fparse sigma_se/F/F/m}'
+M_cp = 4e-14
+M_ca = 1e-13
 M_e = ${M_se}
 M_c = '${fparse vf_se*M_se + vf_cp*M_cp + vf_ca*M_ca}'
 
-R = 8.3145 #mJ/mmol/K
 T0 = 300 #K
-F = 96485 #mC/mmol
 
 i0_a = 1e-1 #mA/mm^2
 i0_c = 1e-1 #mA/mm^2
@@ -108,40 +113,40 @@ i0_c = 1e-1 #mA/mm^2
 []
 
 [ICs]
-  [c_min]
+  [c_a]
     type = ConstantIC
     variable = c
-    value = ${cmin}
+    value = ${c0_a}
     block = 'anode'
   []
-  [c_mid]
+  [c_e]
     type = ConstantIC
     variable = c
-    value = '${fparse (cmax+cmin)/2}'
+    value = ${c0_e}
     block = 'elyte'
   []
-  [c_max]
+  [c_c]
     type = ConstantIC
     variable = c
-    value = ${cmax}
+    value = ${c0_c}
     block = 'cathode'
   []
-  [c_ref_min]
+  [c_ref_a]
     type = ConstantIC
     variable = c_ref
-    value = ${cmin}
+    value = ${c0_a}
     block = 'anode'
   []
-  [c_ref_mid]
+  [c_ref_e]
     type = ConstantIC
     variable = c_ref
-    value = '${fparse (cmax+cmin)/2}'
+    value = ${c0_e}
     block = 'elyte'
   []
-  [c_ref_max]
+  [c_ref_c]
     type = ConstantIC
     variable = c_ref
-    value = ${cmax}
+    value = ${c0_c}
     block = 'cathode'
   []
 []
@@ -443,6 +448,25 @@ i0_c = 1e-1 #mA/mm^2
   []
 []
 
+# [VectorPostprocessors]
+#   [Phi]
+#     type = LineValueSampler
+#     variable = Phi
+#     start_point = '0 0 0'
+#     end_point = '${l3} 0 0'
+#     sort_by = x
+#     num_points = 100
+#   []
+#   [c]
+#     type = LineValueSampler
+#     variable = c
+#     start_point = '0 0 0'
+#     end_point = '${l3} 0 0'
+#     sort_by = x
+#     num_points = 100
+#   []
+# []
+
 [UserObjects]
   [kill]
     type = Terminator
@@ -486,7 +510,10 @@ i0_c = 1e-1 #mA/mm^2
 []
 
 [Outputs]
+  file_base = 'diffusion_vs_migration_m_${m}'
   csv = true
   exodus = true
   print_linear_residuals = false
+  # sync_times = '0 5 10 15 20 25 30 35 40'
+  # interval = 100000
 []
