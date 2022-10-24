@@ -18,8 +18,6 @@ protected:
   /// Shear modulus
   const ADMaterialProperty<Real> & _G;
 
-  const bool _condensation;
-  ADMaterialProperty<Real> * _d_2_psi_dot_d_c_dot_d_c;
-  ADMaterialProperty<Real> * _d_2_psi_dot_d_c_dot_d_T;
-  const ADMaterialProperty<Real> * _d_Jt_d_T;
+  /// Non-swelling portion of the pressure
+  ADMaterialProperty<Real> * _p;
 };
