@@ -742,7 +742,8 @@ spread = 0.01
   print_linear_residuals = false
   [csv]
     type = CSV
-    sync_times = '0 3 6 9 12 15 18 21 24'
-    sync_only = true
+    execute_vector_postprocessors_on = 'FINAL'
+    # sync_times = '0 3 6 9 12 15 18 21 24'
+    # sync_only = true
   []
 []
