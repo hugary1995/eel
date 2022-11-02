@@ -48,6 +48,8 @@ Plane Surface(4) = {3};
 
 Physical Line("left") = {1};
 Physical Line("right") = {5};
+Physical Line("top") = {2, 3, 4};
+Physical Line("bottom") = {6, 7, 8};
 Physical Surface("cp") = {1};
 Physical Surface("cm") = {2};
 Physical Surface("e") = {3};
