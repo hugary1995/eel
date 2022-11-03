@@ -1,19 +1,21 @@
 from paraview.simple import *
 import numpy as np
 from pathlib import Path
+import sys
 
 # Parameters
-filename = '3D_demo.e'
+filename = sys.argv[1]
+frames = int(sys.argv[2])
+frame_begin = int(sys.argv[3])
 outdir = 'Phi/'
 variable = 'Phi'
 variable_name = 'Electric potential'
 colorbar = 'jet'
 disp_magnitude = 10
-variable_min = -5.59
-variable_max = 0.18
+variable_min = -5
+variable_max = 0
 matrix_opacity = 0.75
 backface_opacity = 0.75
-frames = 40
 W = 720
 H = 360
 cbar_location = [0.8, 0.25]
@@ -28,6 +30,7 @@ renderView1.CameraPosition = [0.18, 0.1, 0.17]
 renderView1.CameraFocalPoint = [0.08, 0.014, 0.015]
 renderView1.CameraViewUp = [-0.16, 0.90, -0.4]
 renderView1.UseLight = 0
+renderView1.AxesGrid.Visibility = 0
 renderView1.Update()
 
 layout1 = GetLayout()
@@ -83,5 +86,5 @@ for step in range(frames):
     renderView1.ViewTime = times[step]
     renderView1.Update()
     renderView1.Update()
-    SaveScreenshot(outdir+variable+"_"+str(step)+".png", renderView1,
+    SaveScreenshot(outdir+variable+"_"+f'{frame_begin+step:03}'+".png", renderView1,
                    ImageResolution=[W, H], TransparentBackground=0, CompressionLevel='0')
