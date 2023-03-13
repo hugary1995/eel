@@ -21,4 +21,6 @@ protected:
 
   /// The reference concentration
   const VariableValue & _c0;
+
+  const ADMaterialProperty<Real> & _mu0;
 };

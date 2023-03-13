@@ -10,9 +10,9 @@ public:
   MechanicalDeformationGradient(const InputParameters & parameters);
 
 protected:
-  void initQpStatefulProperties() override;
+  virtual void initQpStatefulProperties();
 
-  void computeQpProperties() override;
+  virtual void computeQpProperties();
 
   // The swelling deformation gradients
   const ADMaterialProperty<RankTwoTensor> * _Fs;

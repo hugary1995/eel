@@ -11,12 +11,12 @@ public:
 
   Strain(const InputParameters & parameters);
 
-  void computeProperties() override;
+  virtual void computeProperties();
 
 protected:
-  void initQpStatefulProperties() override;
+  virtual void initQpStatefulProperties();
 
-  void computeQpProperties() override;
+  virtual void computeQpProperties();
 
   /// Displacement variables
   std::vector<const ADVariableValue *> _disp;
@@ -31,17 +31,17 @@ protected:
   const Real & _current_elem_volume;
 
   /// Total strain name
-  const MaterialPropertyName _strain_name;
+  const MaterialPropertyName _E_name;
 
   /// The total strain
-  ADMaterialProperty<RankTwoTensor> & _strain;
+  ADMaterialProperty<RankTwoTensor> & _E;
 
   /// The total strain from the previous time step
-  const MaterialProperty<RankTwoTensor> & _strain_old;
+  const MaterialProperty<RankTwoTensor> & _E_old;
 
   /// The strain rate
-  ADMaterialProperty<RankTwoTensor> & _strain_dot;
+  ADMaterialProperty<RankTwoTensor> & _E_dot;
 
 private:
-  ADReal _strain_tr_avg;
+  ADReal _E_tr_avg;
 };

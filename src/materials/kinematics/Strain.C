@@ -24,10 +24,10 @@ Strain::Strain(const InputParameters & parameters)
     _grad_disp(adCoupledGradients("displacements")),
     _volumetric_locking_correction(getParam<bool>("volumetric_locking_correction")),
     _current_elem_volume(_assembly.elemVolume()),
-    _strain_name(getParam<MaterialPropertyName>("deformation_gradient")),
-    _strain(declareADPropertyByName<RankTwoTensor>(_strain_name)),
-    _strain_old(getMaterialPropertyOldByName<RankTwoTensor>(_strain_name)),
-    _strain_dot(declareADPropertyByName<RankTwoTensor>("dot(" + _strain_name + ")"))
+    _E_name(getParam<MaterialPropertyName>("strain")),
+    _E(declareADPropertyByName<RankTwoTensor>(_E_name)),
+    _E_old(getMaterialPropertyOldByName<RankTwoTensor>(_E_name)),
+    _E_dot(declareADPropertyByName<RankTwoTensor>("dot(" + _E_name + ")"))
 {
   if (getParam<bool>("use_displaced_mesh"))
     paramError("use_displaced_mesh",
@@ -41,26 +41,26 @@ Strain::Strain(const InputParameters & parameters)
 void
 Strain::initQpStatefulProperties()
 {
-  _strain[_qp].zero();
+  _E[_qp].zero();
 }
 
 void
 Strain::computeProperties()
 {
-  _strain_tr_avg = 0;
+  _E_tr_avg = 0;
 
   for (_qp = 0; _qp < _qrule->n_points(); ++_qp)
   {
-    const auto H = RankTwoTensor ::initializeFromRows(
+    const auto H = ADRankTwoTensor ::initializeFromRows(
         (*_grad_disp[0])[_qp], (*_grad_disp[1])[_qp], (*_grad_disp[2])[_qp]);
-    _strain[_qp] = (H + H.transpose()) / 2.0;
+    _E[_qp] = (H + H.transpose()) / 2.0;
 
     if (_volumetric_locking_correction)
-      _strain_tr_avg += _strain[_qp].trace() * _JxW[_qp] * _coord[_qp];
+      _E_tr_avg += _E[_qp].trace() * _JxW[_qp] * _coord[_qp];
   }
 
   if (_volumetric_locking_correction)
-    _strain_tr_avg /= _current_elem_volume;
+    _E_tr_avg /= _current_elem_volume;
 
   for (_qp = 0; _qp < _qrule->n_points(); ++_qp)
     computeQpProperties();
@@ -70,7 +70,7 @@ void
 Strain::computeQpProperties()
 {
   if (_volumetric_locking_correction)
-    _strain[_qp].addIa((_strain_tr_avg - _strain[_qp].trace()) / 3.0);
+    _E[_qp].addIa((_E_tr_avg - _E[_qp].trace()) / 3.0);
 
-  _strain_dot[_qp] = (_strain[_qp] - _strain_old[_qp]) / _dt;
+  _E_dot[_qp] = (_E[_qp] - _E_old[_qp]) / _dt;
 }
