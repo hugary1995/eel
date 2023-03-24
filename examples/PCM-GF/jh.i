@@ -1,0 +1,211 @@
+# There are two domains PCM for the phase change material, and GF for the graphite foam
+# The bottom is grounded, the top has a current flux.
+# The current is being ramped up from 0 to i over a period of time t0.
+# The left and right boundaries have heat convection boundary conditions.
+# Top and bottom I'm not sure... the default is zero heat flux.
+
+sigma_PCM = 1
+kappa_PCM = 1
+rho_PCM = 1
+cp_PCM = 1
+
+sigma_GF = 1
+kappa_GF = 1
+rho_GF = 1
+cp_GF = 1
+
+htc = 1
+T_inf = 300
+T0 = 300
+t0 = 10
+i = 1
+
+[GlobalParams]
+  energy_densities = 'E H'
+[]
+
+[Mesh]
+  [fmg]
+    type = FileMeshGenerator
+    file = 'gold/geo.msh'
+  []
+[]
+
+[Variables]
+  [Phi]
+  []
+  [T]
+    initial_condition = ${T0}
+  []
+[]
+
+[Kernels]
+  [charge_balance]
+    type = RankOneDivergence
+    variable = Phi
+    vector = i
+  []
+  [energy_balance_1]
+    type = EnergyBalanceTimeDerivative
+    variable = T
+    density = rho
+    specific_heat = cp
+  []
+  [energy_balance_2]
+    type = RankOneDivergence
+    variable = T
+    vector = h
+  []
+  [energy_balance_3]
+    type = MaterialSource
+    variable = T
+    prop = r
+    coefficient = -1
+  []
+[]
+
+[Functions]
+  [ramp]
+    type = PiecewiseLinear
+    x = '0 ${t0}'
+    y = '0 ${i}'
+  []
+[]
+
+[BCs]
+  [ground]
+    type = DirichletBC
+    variable = Phi
+    boundary = 'bottom'
+    value = 0
+  []
+  [current]
+    type = FunctionNeumannBC
+    variable = Phi
+    boundary = 'top'
+    function = ramp
+  []
+  [hconv]
+    type = ADMatNeumannBC
+    variable = T
+    boundary = 'left right'
+    value = -1
+    boundary_material = qconv
+  []
+[]
+
+[Materials]
+  [electrical_conductivity]
+    type = ADPiecewiseConstantByBlockMaterial
+    prop_name = sigma
+    subdomain_to_prop_value = 'PCM ${sigma_PCM} GF ${sigma_GF}'
+  []
+  [charge_trasport]
+    type = BulkChargeTransport
+    electrical_energy_density = E
+    electric_potential = Phi
+    electric_conductivity = sigma
+    temperature = T
+  []
+  [current]
+    type = CurrentDensity
+    current_density = i
+    electric_potential = Phi
+  []
+  [thermal_conductivity]
+    type = ADPiecewiseConstantByBlockMaterial
+    prop_name = kappa
+    subdomain_to_prop_value = 'PCM ${kappa_PCM} GF ${kappa_GF}'
+  []
+  [density]
+    type = ADPiecewiseConstantByBlockMaterial
+    prop_name = rho
+    subdomain_to_prop_value = 'PCM ${rho_PCM} GF ${rho_GF}'
+  []
+  [specific_heat]
+    type = ADPiecewiseConstantByBlockMaterial
+    prop_name = cp
+    subdomain_to_prop_value = 'PCM ${cp_PCM} GF ${cp_GF}'
+  []
+  [heat_conduction]
+    type = HeatConduction
+    thermal_energy_density = H
+    thermal_conductivity = kappa
+    temperature = T
+  []
+  [heat_flux]
+    type = HeatFlux
+    heat_flux = h
+    temperature = T
+  []
+  [heat_source]
+    type = HeatSource
+    heat_source = r
+    temperature = T
+  []
+  [qconv]
+    type = ADParsedMaterial
+    property_name = qconv
+    expression = 'htc*(T-T_inf)'
+    coupled_variables = 'T'
+    constant_names = 'htc T_inf'
+    constant_expressions = '${htc} ${T_inf}'
+    boundary = 'left right'
+  []
+  [entropy]
+    type = ADParsedMaterial
+    property_name = entropy
+    expression = 'rho*cp*(T-${T0})'
+    material_property_names = 'rho cp'
+    coupled_variables = 'T'
+  []
+[]
+
+[Executioner]
+  type = Transient
+  solve_type = NEWTON
+
+  petsc_options_iname = '-pc_type'
+  petsc_options_value = 'lu'
+  automatic_scaling = true
+
+  [TimeStepper]
+    type = IterationAdaptiveDT
+    dt = 1
+    optimal_iterations = 7
+    iteration_window = 2
+    linear_iteration_ratio = 100000
+  []
+
+  steady_state_detection = true
+[]
+
+[Postprocessors]
+  [volume_PCM]
+    type = VolumePostprocessor
+    block = PCM
+    execute_on = 'INITIAL TIMESTEP_END'
+    outputs = none
+  []
+  [volume_GF]
+    type = VolumePostprocessor
+    block = GF
+    execute_on = 'INITIAL TIMESTEP_END'
+    outputs = none
+  []
+  [porosity]
+    type = ParsedPostprocessor
+    function = 'volume_PCM/(volume_GF+volume_PCM)'
+    pp_names = 'volume_GF volume_PCM'
+    execute_on = 'INITIAL TIMESTEP_END'
+  []
+  [energy_absorbed_by_PCM]
+    type = ADElementIntegralMaterialProperty
+    mat_prop = entropy
+    execute_on = 'INITIAL TIMESTEP_END'
+  []
+[]
+
+[Outputs]
+  exodus = true
+[]
