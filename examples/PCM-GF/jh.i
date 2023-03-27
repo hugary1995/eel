@@ -1,4 +1,4 @@
-# There are two domains PCM for the phase change material, and GF for the graphite foam
+# There are two domains PCM for the phase change material, and G for the graphite.
 # The bottom is grounded, the top has a current flux.
 # The current is being ramped up from 0 to i over a period of time t0.
 # The left and right boundaries have heat convection boundary conditions.
@@ -9,10 +9,10 @@ kappa_PCM = 1
 rho_PCM = 1
 cp_PCM = 1
 
-sigma_GF = 1
-kappa_GF = 1
-rho_GF = 1
-cp_GF = 1
+sigma_G = 1
+kappa_G = 1
+rho_G = 1
+cp_G = 1
 
 htc = 1
 T_inf = 300
@@ -27,7 +27,8 @@ i = 1
 [Mesh]
   [fmg]
     type = FileMeshGenerator
-    file = 'gold/geo.msh'
+    file = 'gold/PCM-GF.msh'
+    # file = 'gold/PCM-GF-SiC.msh' # this alternative mesh has one more subdomain "SiC"
   []
 []
 
@@ -98,7 +99,7 @@ i = 1
   [electrical_conductivity]
     type = ADPiecewiseConstantByBlockMaterial
     prop_name = sigma
-    subdomain_to_prop_value = 'PCM ${sigma_PCM} GF ${sigma_GF}'
+    subdomain_to_prop_value = 'PCM ${sigma_PCM} G ${sigma_G}'
   []
   [charge_trasport]
     type = BulkChargeTransport
@@ -115,17 +116,17 @@ i = 1
   [thermal_conductivity]
     type = ADPiecewiseConstantByBlockMaterial
     prop_name = kappa
-    subdomain_to_prop_value = 'PCM ${kappa_PCM} GF ${kappa_GF}'
+    subdomain_to_prop_value = 'PCM ${kappa_PCM} G ${kappa_G}'
   []
   [density]
     type = ADPiecewiseConstantByBlockMaterial
     prop_name = rho
-    subdomain_to_prop_value = 'PCM ${rho_PCM} GF ${rho_GF}'
+    subdomain_to_prop_value = 'PCM ${rho_PCM} G ${rho_G}'
   []
   [specific_heat]
     type = ADPiecewiseConstantByBlockMaterial
     prop_name = cp
-    subdomain_to_prop_value = 'PCM ${cp_PCM} GF ${cp_GF}'
+    subdomain_to_prop_value = 'PCM ${cp_PCM} G ${cp_G}'
   []
   [heat_conduction]
     type = HeatConduction
@@ -187,16 +188,16 @@ i = 1
     execute_on = 'INITIAL TIMESTEP_END'
     outputs = none
   []
-  [volume_GF]
+  [volume_G]
     type = VolumePostprocessor
-    block = GF
+    block = G
     execute_on = 'INITIAL TIMESTEP_END'
     outputs = none
   []
   [porosity]
     type = ParsedPostprocessor
-    function = 'volume_PCM/(volume_GF+volume_PCM)'
-    pp_names = 'volume_GF volume_PCM'
+    function = 'volume_PCM/(volume_G+volume_PCM)'
+    pp_names = 'volume_G volume_PCM'
     execute_on = 'INITIAL TIMESTEP_END'
   []
   [energy_absorbed_by_PCM]
