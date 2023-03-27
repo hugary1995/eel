@@ -328,13 +328,13 @@ dtmax = '${fparse tf/100}'
     outputs = none
   []
   [delta_Esyy]
-    type = ChangeOverTimestepPostprocessor
+    type = ChangeOverTimePostprocessor
     postprocessor = Esyy
     execute_on = 'INITIAL TIMESTEP_END'
     outputs = none
   []
   [delta_Epyy]
-    type = ChangeOverTimestepPostprocessor
+    type = ChangeOverTimePostprocessor
     postprocessor = Epyy
     execute_on = 'INITIAL TIMESTEP_END'
     outputs = none
@@ -403,7 +403,7 @@ dtmax = '${fparse tf/100}'
 []
 
 [Outputs]
-  file_base = 'load_${load}'
+  file_base = 'out/load_${load}'
   csv = true
   exodus = true
 []

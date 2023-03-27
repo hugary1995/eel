@@ -32,7 +32,7 @@ fig, ax = plt.subplots(1, 4, figsize=(20, 5))
 
 ep_dot_sec = np.empty(len(loads))
 for i, load in enumerate(loads):
-    data = pd.read_csv("load_" + str(load) + ".csv")
+    data = pd.read_csv("out/load_" + str(load) + ".csv")
     ax[0].plot(data["time"], data["cavity_density"], label="load = " + str(load))
     ax[1].plot(data["time"], data["cavity_potential"])
     ax[2].loglog(data["time"], data["Eyy_dot"])
