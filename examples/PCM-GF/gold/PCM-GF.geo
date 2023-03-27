@@ -49,7 +49,7 @@ Line Loop(llc++) = {lc-4, lc-3, lc-2, lc-1};
 Plane Surface(sc++) = {llc-1, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25};
 
 Physical Surface("PCM") = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25};
-Physical Surface("GF") = {26};
+Physical Surface("G") = {26};
 Physical Line("top") = {103};
 Physical Line("bottom") = {101};
 Physical Line("left") = {104};
