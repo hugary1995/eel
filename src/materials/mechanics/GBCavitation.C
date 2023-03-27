@@ -25,7 +25,15 @@ GBCavitation::validParams()
 }
 
 GBCavitation::GBCavitation(const InputParameters & parameters)
-  : CZMComputeLocalTractionTotalBase(parameters)
+  : CZMComputeLocalTractionTotalBase(parameters),
+    _E(getADMaterialProperty<Real>("normal_stiffness")),
+    _G(getADMaterialProperty<Real>("tangential_stiffness")),
+    _w(getParam<Real>("interface_width")),
+    _mu0(getADMaterialProperty<Real>("reference_chemical_potential")),
+    _c(adCoupledValue("concentration")),
+    _R(getParam<Real>("ideal_gas_constant")),
+    _T(adCoupledValue("temperature")),
+    _Gc(getADMaterialProperty<Real>("critical_energy_release_rate"))
 {
 }
 
