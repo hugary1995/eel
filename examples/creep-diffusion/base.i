@@ -5,12 +5,9 @@ Omega = 100
 sigma_y = 300
 n = 5
 A = 1e-6
-ad = 1
-Nr = 5e-12
-Qv = 1e4
 
 c0 = 1e-6
-T0 = 800
+T = 800
 M = 1e-8
 mu0 = 1e3
 R = 8.3145
@@ -23,26 +20,8 @@ dtmax = '${fparse tf/100}'
 
 [GlobalParams]
   displacements = 'disp_x disp_y disp_z'
-  strain = E
-  swelling_strain = Es
-  mechanical_strain = Em
-  elastic_strain = Ee
-  plastic_strain = Ep
-  equivalent_plastic_strain = ep
-  eigen_strain = Eg
   energy_densities = 'dot(psi_m) dot(psi_c) Delta_p zeta'
   volumetric_locking_correction = true
-[]
-
-[Mesh]
-  [gmg]
-    type = GeneratedMeshGenerator
-    dim = 3
-    nx = 3
-    ny = 3
-    nz = 3
-  []
-  use_displaced_mesh = false
 []
 
 [Variables]
@@ -62,7 +41,7 @@ dtmax = '${fparse tf/100}'
     initial_condition = ${c0}
   []
   [T]
-    initial_condition = ${T0}
+    initial_condition = ${T}
   []
   [mu_old]
     order = CONSTANT
@@ -224,34 +203,37 @@ dtmax = '${fparse tf/100}'
     reference_concentration = c_ref
     molar_volume = ${Omega}
     swelling_coefficient = alpha
+    swelling_strain = Es
   []
   [strain]
     type = Strain
+    strain = E
   []
   [mechanical_strain]
     type = MechanicalStrain
+    swelling_strain = Es
+    strain = E
+    mechanical_strain = Em
+    eigen_strain = Eg
   []
   [envelope]
     type = ADDerivativeParsedMaterial
     property_name = Delta_p
-    expression = 'sigma_y * ep_dot * (1 - exp(-${ad}*mu_old/${R}/T))'
-    coupled_variables = 'mu_old T'
+    expression = 'sigma_y * ep_dot'
     material_property_names = 'sigma_y ep_dot mu0'
     additional_derivative_symbols = 'ep_dot'
     derivative_order = 2
     compute = false
   []
-  [vacancy_nucleation]
-    type = ADParsedMaterial
-    property_name = dDelta_p/dmu
-    # expression = 'sigma_y * ep_dot * exp(-${ad}*mu_old/${R}/T) * ${ad} / ${R} / T + if(p>0,1,0) * p * Nr * exp(-${av}*mu_old/${R}/T) * ${av} / ${R} / T'
-    expression = 'sigma_y * ep_dot * exp(-${ad}*mu_old/${R}/T) * ${ad} / ${R} / T + if(p>0,1,0) * p * Nr * exp(- ${Qv} / ${R} / T)'
-    coupled_variables = 'mu_old T'
-    material_property_names = 'sigma_y ep_dot Nr p'
-  []
   [elastic_energy_density]
     type = SDElasticEnergyDensity
     elastic_energy_density = psi_m
+    swelling_strain = Es
+    strain = E
+    plastic_strain = Ep
+    mechanical_strain = Em
+    equivalent_plastic_strain = ep
+    elastic_strain = Ee
     lambda = lambda
     shear_modulus = G
     concentration = c
@@ -305,22 +287,25 @@ dtmax = '${fparse tf/100}'
 []
 
 [Postprocessors]
-  [Eyy_dot]
+  [Eyy]
     type = ADElementAverageMaterialProperty
-    mat_prop = dot(Eyy)
+    mat_prop = Eyy
     execute_on = 'INITIAL TIMESTEP_END'
   []
   [Esyy]
     type = ADElementAverageMaterialProperty
     mat_prop = Esyy
     execute_on = 'INITIAL TIMESTEP_END'
-    outputs = none
   []
   [Epyy]
     type = ADElementAverageMaterialProperty
     mat_prop = Epyy
     execute_on = 'INITIAL TIMESTEP_END'
-    outputs = none
+  []
+  [Eyy_dot]
+    type = ADElementAverageMaterialProperty
+    mat_prop = dot(Eyy)
+    execute_on = 'INITIAL TIMESTEP_END'
   []
   [dt]
     type = TimestepSize
@@ -375,10 +360,11 @@ dtmax = '${fparse tf/100}'
   petsc_options_iname = '-pc_type'
   petsc_options_value = 'lu'
   automatic_scaling = true
+  ignore_variables_for_autoscaling = 'c'
   line_search = none
 
   nl_rel_tol = 1e-6
-  nl_abs_tol = 1e-10
+  nl_abs_tol = 1e-8
   nl_max_its = 20
   nl_forced_its = 1
 
@@ -399,11 +385,13 @@ dtmax = '${fparse tf/100}'
     type = SimplePredictor
     scale = 1
     skip_after_failed_timestep = true
+    skip_times_old = '${t0}'
   []
 []
 
 [Outputs]
-  file_base = 'out/load_${load}'
+  sync_times = '${t0}'
+  file_base = 'out/T_${T}_load_${load}'
   csv = true
   exodus = true
 []
