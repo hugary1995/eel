@@ -6,6 +6,8 @@ Ei = 1e5
 Gi = 8e4
 Qvi = 1e4
 
+Ly = 2
+
 [Mesh]
   [gmg]
     type = GeneratedMeshGenerator
@@ -81,7 +83,7 @@ Qvi = 1e4
     interface_width = ${w}
     mobility = M
     molar_volume = ${Omega}
-    reference_nucleation_rate = Nr
+    reference_nucleation_rate = Nri
     normal_stiffness = Ei
     tangential_stiffness = Gi
     swelling_coefficient = alpha

@@ -9,6 +9,8 @@ GBCavitation::validParams()
   params.addClassDescription("Grain boundary cavitation model");
   params.addRequiredCoupledVar("reference_concentration",
                                "The reference concentration at which no swelling occurs");
+  params.addRequiredParam<MaterialPropertyName>("reference_chemical_potential",
+                                                "reference chemical potential");
   params.addRequiredParam<MaterialPropertyName>("swelling_coefficient", "The swelling coefficient");
   params.addRequiredParam<Real>("molar_volume", "The molar volume of the chemical species");
   params.addRequiredParam<MaterialPropertyName>("normal_stiffness",
@@ -33,6 +35,7 @@ GBCavitation::validParams()
   params.addRequiredParam<MaterialPropertyName>("cavity_flux", "Name of the cavity flux");
   params.addRequiredParam<MaterialPropertyName>("cavity_nucleation_rate",
                                                 "Name of the cavity nucleation rate");
+  params.addParam<Real>("residual_stiffness", 1e-6, "residual stiffness when fully damaged");
 
   return params;
 }
@@ -45,6 +48,8 @@ GBCavitation::GBCavitation(const InputParameters & parameters)
     _c_neighbor(adCoupledNeighborValue("concentration")),
     _c_ref(adCoupledValue("reference_concentration")),
     _c_ref_neighbor(adCoupledNeighborValue("reference_concentration")),
+    _mu0(getADMaterialProperty<Real>("reference_chemical_potential")),
+    _mu0_neighbor(getNeighborADMaterialProperty<Real>("reference_chemical_potential")),
     _eta(getADMaterialProperty<Real>("swelling_coefficient")),
     _eta_neighbor(getNeighborADMaterialProperty<Real>("swelling_coefficient")),
     _Omega(getParam<Real>("molar_volume")),
@@ -63,7 +68,8 @@ GBCavitation::GBCavitation(const InputParameters & parameters)
     _d(declareADProperty<Real>("damage")),
     _d_old(getMaterialPropertyOld<Real>("damage")),
     _D(declareADProperty<Real>("damage_driving_force")),
-    _D_old(getMaterialPropertyOld<Real>("damage_driving_force"))
+    _D_old(getMaterialPropertyOld<Real>("damage_driving_force")),
+    _g0(getParam<Real>("residual_stiffness"))
 {
 }
 
@@ -86,9 +92,9 @@ GBCavitation::computeInterfaceTraction()
   ADRealVectorValue n = _czm_total_rotation[_qp].transpose() * _normals[_qp];
 
   // cavity displacement jump
-  ADRealVectorValue uc = _eta[_qp] * _Omega * (_c[_qp] - _c_ref[_qp]) * n;
+  ADRealVectorValue uc = _eta[_qp] * _Omega * (_c[_qp] - _c_ref[_qp]) * -n;
   ADRealVectorValue uc_neighbor =
-      _eta_neighbor[_qp] * _Omega * (_c_neighbor[_qp] - _c_ref_neighbor[_qp]) * (-n);
+      _eta_neighbor[_qp] * _Omega * (_c_neighbor[_qp] - _c_ref_neighbor[_qp]) * n;
   ADRealVectorValue juc = uc_neighbor - uc;
 
   // elastic displacement jump
@@ -104,31 +110,29 @@ GBCavitation::computeInterfaceTraction()
   ADRankTwoTensor C(_E[_qp], _G[_qp], _G[_qp], 0, 0, 0);
 
   // damage driving force
-  _D[_qp] = 0.5 * (C * jue_active / _w) * jue_active / _w;
+  _D[_qp] = 0.5 * (C * jue_active / _w) * jue_active / _w +
+            0.5 * (_mu0[_qp] * _c[_qp] + _mu0_neighbor[_qp] * _c_neighbor[_qp]);
 
   // damage (with irreversibility)
-  if (_D_old[_qp] < _Gc[_qp])
-    _d[_qp] = 0;
-  else
-  {
-    _d[_qp] = 1 - _Gc[_qp] / _D_old[_qp];
-    _d[_qp] = std::max(_d[_qp], _d_old[_qp]);
-  }
+  _d[_qp] = (1 - _g0) * _D_old[_qp] / ((1 - _g0) * _D_old[_qp] + 3 * _Gc[_qp]);
+  _d[_qp] = std::max(_d[_qp], _d_old[_qp]);
+  _d[_qp] = std::min(_d[_qp], 1.0);
 
   // damage degradation
-  ADReal g = (1 - _d[_qp]) * (1 - _d[_qp]);
+  ADReal g = (1 - _d[_qp]) * (1 - _d[_qp]) * (1 - _g0) + _g0;
 
   // local traction
-  _interface_traction[_qp] = g * C * jue_active / _w + C * jue_inactive / _w;
+  _interface_traction[_qp] = g * C * jue_active / _w + g * C * jue_inactive / _w;
 
   // cavity flux
-  ADReal mu = _R * _T[_qp] * std::log(_c[_qp] / _c_ref[_qp]);
-  ADReal mu_neighbor = _R * _T_neighbor[_qp] * std::log(_c_neighbor[_qp] / _c_ref_neighbor[_qp]);
+  ADReal mu = g * _mu0[_qp] + _R * _T[_qp] * std::log(_c[_qp] / _c_ref[_qp]);
+  ADReal mu_neighbor = g * _mu0_neighbor[_qp] +
+                       _R * _T_neighbor[_qp] * std::log(_c_neighbor[_qp] / _c_ref_neighbor[_qp]);
   _j[_qp] = -_M[_qp] * (mu_neighbor - mu) / _w;
 
   // cavity nucleation rate
   ADReal tn = _interface_traction[_qp] * n;
-  ADReal m = tn > 0 ? g * tn * _Nr[_qp] * std::exp(-_Q / _R / _T[_qp]) : 0;
-  ADReal m_neighbor = tn > 0 ? g * tn * _Nr[_qp] * std::exp(-_Q / _R / _T_neighbor[_qp]) : 0;
+  ADReal m = tn > 0 ? tn * _Nr[_qp] * std::exp(-_Q / _R / _T[_qp]) : 0;
+  ADReal m_neighbor = tn > 0 ? tn * _Nr[_qp] * std::exp(-_Q / _R / _T_neighbor[_qp]) : 0;
   _m[_qp] = m + m_neighbor;
 }

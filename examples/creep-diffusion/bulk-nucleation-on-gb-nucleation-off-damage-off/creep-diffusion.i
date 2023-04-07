@@ -1,6 +1,8 @@
 Nr = 5e-12
 Qv = 1e4
 
+Ly = 1
+
 [Mesh]
   [gmg]
     type = GeneratedMeshGenerator
@@ -13,6 +15,11 @@ Qv = 1e4
 []
 
 [Materials]
+  [bulk_properties]
+    type = ADGenericConstantMaterial
+    prop_names = 'Nr'
+    prop_values = '${Nr}'
+  []
   [bulk_nucleation]
     type = ADParsedMaterial
     property_name = dDelta_p/dmu

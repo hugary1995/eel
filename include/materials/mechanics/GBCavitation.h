@@ -23,6 +23,9 @@ protected:
   const ADVariableValue & _c_ref;
   const ADVariableValue & _c_ref_neighbor;
 
+  const ADMaterialProperty<Real> & _mu0;
+  const ADMaterialProperty<Real> & _mu0_neighbor;
+
   const ADMaterialProperty<Real> & _eta;
   const ADMaterialProperty<Real> & _eta_neighbor;
 
@@ -58,4 +61,6 @@ protected:
   ADMaterialProperty<Real> & _D;
 
   const MaterialProperty<Real> & _D_old;
+
+  const Real _g0;
 };

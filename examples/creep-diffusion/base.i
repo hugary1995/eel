@@ -16,7 +16,7 @@ load = 200
 t0 = '${fparse load*60}'
 dt = '${fparse t0/100}'
 tf = 1e9
-dtmax = '${fparse tf/100}'
+dtmax = '${fparse tf/1000}'
 
 [GlobalParams]
   displacements = 'disp_x disp_y disp_z'
@@ -167,6 +167,7 @@ dtmax = '${fparse tf/100}'
   [chemical_potential]
     type = ChemicalPotential
     chemical_potential = mu
+    energy_densities = 'dot(psi_c)'
     concentration = c
   []
   [diffusion]
@@ -194,8 +195,8 @@ dtmax = '${fparse tf/100}'
   []
   [swelling_coefficient]
     type = ADGenericConstantMaterial
-    prop_names = 'alpha Nr'
-    prop_values = '${alpha} ${Nr}'
+    prop_names = 'alpha'
+    prop_values = '${alpha}'
   []
   [swelling]
     type = SwellingStrain
@@ -287,9 +288,29 @@ dtmax = '${fparse tf/100}'
 []
 
 [Postprocessors]
+  [uy]
+    type = SideAverageValue
+    variable = disp_y
+    boundary = top
+    execute_on = 'INITIAL TIMESTEP_END'
+    outputs = none
+  []
   [Eyy]
-    type = ADElementAverageMaterialProperty
-    mat_prop = Eyy
+    type = ParsedPostprocessor
+    pp_names = 'uy'
+    function = 'uy/${Ly}'
+    execute_on = 'INITIAL TIMESTEP_END'
+  []
+  [delta_Eyy]
+    type = ChangeOverTimePostprocessor
+    postprocessor = Eyy
+    execute_on = 'INITIAL TIMESTEP_END'
+    outputs = none
+  []
+  [Eyy_dot]
+    type = ParsedPostprocessor
+    pp_names = 'delta_Eyy dt'
+    function = 'delta_Eyy/dt'
     execute_on = 'INITIAL TIMESTEP_END'
   []
   [Esyy]
@@ -300,11 +321,6 @@ dtmax = '${fparse tf/100}'
   [Epyy]
     type = ADElementAverageMaterialProperty
     mat_prop = Epyy
-    execute_on = 'INITIAL TIMESTEP_END'
-  []
-  [Eyy_dot]
-    type = ADElementAverageMaterialProperty
-    mat_prop = dot(Eyy)
     execute_on = 'INITIAL TIMESTEP_END'
   []
   [dt]

@@ -40,8 +40,9 @@ for T in Ts:
 
 ax.set_xlabel("log(load)")
 ax.set_ylabel("log(secondary creep strain rate)")
+ax.set_title("bulk nucleation [ON], GB nucelation [ON], GB damage [OFF]")
 ax.legend()
 
 fig.tight_layout()
 
-plt.show()
+plt.savefig("results.png", bbox_inches="tight")

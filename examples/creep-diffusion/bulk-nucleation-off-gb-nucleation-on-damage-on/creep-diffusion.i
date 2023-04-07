@@ -1,13 +1,11 @@
-Nr = 1e-11
-Qv = 5e4
-
 Nri = 5e-12
-Qvi = 1e4
-Mi = 1e-8
-Gc = 1e8
+Mi = 1e-10
+Gc = 0.5
 w = 1e-3
 Ei = 1e5
 Gi = 8e4
+Qvi = 1e4
+mu0i = 1e3
 
 Ly = 2
 
@@ -67,22 +65,10 @@ Ly = 2
 []
 
 [Materials]
-  [bulk_properties]
-    type = ADGenericConstantMaterial
-    prop_names = 'Nr'
-    prop_values = '${Nr}'
-  []
-  [bulk_nucleation]
-    type = ADParsedMaterial
-    property_name = dDelta_p/dmu
-    expression = 'if(p>0,1,0) * p * Nr * exp(- ${Qv} / ${R} / T)'
-    coupled_variables = 'T'
-    material_property_names = 'sigma_y ep_dot Nr p mu'
-  []
   [interface_properties]
     type = ADGenericConstantMaterial
-    prop_names = 'Nri Mi Gc Ei Gi'
-    prop_values = '${Nri} ${Mi} ${Gc} ${Ei} ${Gi}'
+    prop_names = 'Nri Mi Gc Ei Gi mu0i'
+    prop_values = '${Nri} ${Mi} ${Gc} ${Ei} ${Gi} ${mu0i}'
     boundary = interface
   []
   [traction_separation]
@@ -92,6 +78,7 @@ Ly = 2
     cavity_nucleation_rate = mi
     concentration = c
     reference_concentration = c_ref
+    reference_chemical_potential = mu0i
     critical_energy_release_rate = Gc
     damage = d
     ideal_gas_constant = ${R}
@@ -104,5 +91,33 @@ Ly = 2
     swelling_coefficient = alpha
     temperature = T
     boundary = interface
+  []
+[]
+
+[Postprocessors]
+  [d]
+    type = ADSideAverageMaterialProperty
+    property = d
+    boundary = interface
+    execute_on = 'INITIAL TIMESTEP_END'
+  []
+  [D]
+    type = ADSideAverageMaterialProperty
+    property = damage_driving_force
+    boundary = interface
+    execute_on = 'INITIAL TIMESTEP_END'
+  []
+  [c]
+    type = SideAverageValue
+    variable = c
+    boundary = interface
+    execute_on = 'INITIAL TIMESTEP_END'
+  []
+[]
+
+[UserObjects]
+  [kill]
+    type = Terminator
+    expression = 'd > 1-1e-6'
   []
 []
