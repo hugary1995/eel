@@ -1,4 +1,4 @@
-name: Documentation
+name: Tests
 
 on:
   # Triggers the workflow on push or pull request events but only for the master branch
@@ -36,18 +36,6 @@ jobs:
         run: |
           make -j 2
 
-      - name: Build documentation
+      - name: Regression tests
         shell: bash -l {0}
-        run: |
-          mkdir gh-pages
-          cd doc
-          ./moosedocs.py check
-          ./moosedocs.py build --destination ../gh-pages/
-
-      - name: Deploy to GitHub Pages
-        if: ${{ github.event_name == 'push' }}
-        uses: JamesIves/github-pages-deploy-action@4.1.4
-        with:
-          branch: gh-pages
-          folder: gh-pages
-          single-commit: true
+        run: ./run_tests -j 2
