@@ -63,7 +63,7 @@ GBCavitation::GBCavitation(const InputParameters & parameters)
     _Nr(getADMaterialProperty<Real>("reference_nucleation_rate")),
     _Q(getParam<Real>("activation_energy")),
     _M(getADMaterialProperty<Real>("mobility")),
-    _j(declareADProperty<Real>("cavity_flux")),
+    _j(declareADProperty<Real>("cavity_flux")), // TODO: change to vector
     _m(declareADProperty<Real>("cavity_nucleation_rate")),
     _d(declareADProperty<Real>("damage")),
     _d_old(getMaterialPropertyOld<Real>("damage")),
@@ -125,10 +125,32 @@ GBCavitation::computeInterfaceTraction()
   _interface_traction[_qp] = g * C * jue_active / _w + g * C * jue_inactive / _w;
 
   // cavity flux
-  ADReal mu = g * _mu0[_qp] + _R * _T[_qp] * std::log(_c[_qp] / _c_ref[_qp]);
-  ADReal mu_neighbor = g * _mu0_neighbor[_qp] +
-                       _R * _T_neighbor[_qp] * std::log(_c_neighbor[_qp] / _c_ref_neighbor[_qp]);
-  _j[_qp] = -_M[_qp] * (mu_neighbor - mu) / _w;
+  // ADReal mu = g * _mu0[_qp] + _R * _T[_qp] * std::log(_c[_qp] / _c_ref[_qp]);
+
+  // ADReal mu_neighbor = g * _mu0_neighbor[_qp] +
+  //                      _R * _T_neighbor[_qp] * std::log(_c_neighbor[_qp] / _c_ref_neighbor[_qp]);
+  // _j[_qp] = -_M[_qp] * (mu_neighbor - mu) / _w;
+
+  //TODO: change mu: add term w*eta*Omega*vector(t)*vector(en)
+  ADReal mu = _w*_eta*_Omega*_interface_traction[_qp]*n[_qp] + g * _mu0[_qp] + _R * _T[_qp] * std::log(_c[_qp] / _c_ref[_qp]);
+
+  // TODO: compute grad(mu): see ChemicalPotential.C
+  ADRealVectorValue grad_mu;
+  auto sol = L2Projection();
+  
+  for (_qp = 0; _qp < _qrule->n_points(); _qp++) // TODO: start from here
+  {
+    _mu[_qp] = 0;
+    _grad_mu[_qp] = 0;
+    for (unsigned int i = 0; i < _test.size(); i++)
+    {
+      _mu[_qp] += _test[i][_qp] * sol(i);
+      _grad_mu[_qp] += _grad_test[i][_qp] * sol(i);
+    }
+  }
+  
+  // TODO: comput j here and grad(j) in GBCavitationTransport (or maybe just here)
+
 
   // cavity nucleation rate
   ADReal tn = _interface_traction[_qp] * n;
