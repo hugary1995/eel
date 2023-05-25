@@ -63,7 +63,7 @@ GBCavitation::GBCavitation(const InputParameters & parameters)
     _Nr(getADMaterialProperty<Real>("reference_nucleation_rate")),
     _Q(getParam<Real>("activation_energy")),
     _M(getADMaterialProperty<Real>("mobility")),
-    _j(declareADProperty<Real>("cavity_flux")), // TODO: change to vector
+    _j(declareADProperty<Real>("cavity_flux")),
     _m(declareADProperty<Real>("cavity_nucleation_rate")),
     _d(declareADProperty<Real>("damage")),
     _d_old(getMaterialPropertyOld<Real>("damage")),
@@ -103,7 +103,7 @@ GBCavitation::computeInterfaceTraction()
   // tension-compression split
   ADRealVectorValue jue_active = jue;
   if (jue(0) < 0)
-    jue(0) = 0;
+    jue_active(0) = 0;
   ADRealVectorValue jue_inactive = jue - jue_active;
 
   // interface stiffness

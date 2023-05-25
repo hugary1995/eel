@@ -1,6 +1,8 @@
 #include "GBCavitationTransportTest.h"
 
-registerMooseObject("EelApp", GBCavitationTransport);
+// #include "Assembly.h"
+
+registerMooseObject("EelApp", GBCavitationTransportTest);
 
 InputParameters
 GBCavitationTransportTest::validParams()
@@ -15,7 +17,6 @@ GBCavitationTransportTest::GBCavitationTransportTest(const InputParameters & par
   : ADInterfaceKernel(parameters),
     _u_old(_var.slnOld()),
     _u_old_neighbor(_neighbor_var.slnOldNeighbor()),
-    // _j(getADMaterialProperty<Real>("cavity_flux")),
     _j(getADMaterialProperty<RealVectorValue>("cavity_flux")),
     _m(getADMaterialProperty<Real>("cavity_nucleation_rate"))
 {

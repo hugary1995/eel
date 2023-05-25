@@ -1,6 +1,6 @@
 #include "GBCavitationTest.h"
 
-registerMooseObject("EelApp", GBCavitation);
+registerMooseObject("EelApp", GBCavitationTest);
 
 InputParameters
 GBCavitationTest::validParams()
@@ -29,14 +29,12 @@ GBCavitationTest::validParams()
                                 "Activation energy for grain boundary void nucleation");
   params.addRequiredParam<MaterialPropertyName>("reference_nucleation_rate",
                                                 "Reference void nucleation rate");
-  params.addRequiredParam<MaterialPropertyName>(
-      "mobility",
-      "Mobility of the grain boundary cavity (its ability to travel across the interface)");
-  params.addRequiredParam<MaterialPropertyName>("cavity_flux", "Name of the cavity flux");
+  params.addRequiredParam<MaterialPropertyName>("interface_chemical_potential",
+                                                "Name of gb chemical potential");
   params.addRequiredParam<MaterialPropertyName>("cavity_nucleation_rate",
                                                 "Name of the cavity nucleation rate");
   params.addParam<Real>("residual_stiffness", 1e-6, "residual stiffness when fully damaged");
-
+  params.addParam<Real>("penalty", 1, "penalty");
   return params;
 }
 
@@ -45,13 +43,12 @@ GBCavitationTest::GBCavitationTest(const InputParameters & parameters)
     _czm_total_rotation(getADMaterialProperty<RankTwoTensor>("czm_total_rotation")),
     _normals(_assembly.normals()),
     _c(adCoupledValue("concentration")),
-    _c_var(getVar("concentration", 0)), // change to a moose varible
+    _c_var(getVar("concentration", 0)),
     _c_neighbor(adCoupledNeighborValue("concentration")),
     _c_ref(adCoupledValue("reference_concentration")),
     _c_ref_neighbor(adCoupledNeighborValue("reference_concentration")),
     _mu0(getADMaterialProperty<Real>("reference_chemical_potential")),
     _mu0_neighbor(getNeighborADMaterialProperty<Real>("reference_chemical_potential")),
-    // _mui_neighbor(getNeighborADMaterialProperty<Real>("interface_chemical_potential")),
     _eta(getADMaterialProperty<Real>("swelling_coefficient")),
     _eta_neighbor(getNeighborADMaterialProperty<Real>("swelling_coefficient")),
     _Omega(getParam<Real>("molar_volume")),
@@ -64,18 +61,14 @@ GBCavitationTest::GBCavitationTest(const InputParameters & parameters)
     _Gc(getADMaterialProperty<Real>("critical_energy_release_rate")),
     _Nr(getADMaterialProperty<Real>("reference_nucleation_rate")),
     _Q(getParam<Real>("activation_energy")),
-    _M(getADMaterialProperty<Real>("mobility")),
-    // _j(declareADProperty<Real>("cavity_flux")), // TODO: change to vector
-    _j(declareADProperty<RealVectorValue>("cavity_flux")),
-    _mui(declareADProperty<Real>("interface_chemical_potential")), // add mui
-    _grad_mui(declareADProperty<RealVectorValue>(
-        "gradient_interface_chemical_potential")),                 // add grad mui
-    _m(declareADProperty<Real>("cavity_nucleation_rate")),
+    _mui(declareADProperty<Real>("interface_chemical_potential")),
+    _mi(declareADProperty<Real>("cavity_nucleation_rate")),
     _d(declareADProperty<Real>("damage")),
     _d_old(getMaterialPropertyOld<Real>("damage")),
     _D(declareADProperty<Real>("damage_driving_force")),
     _D_old(getMaterialPropertyOld<Real>("damage_driving_force")),
-    _g0(getParam<Real>("residual_stiffness")), // TODO: add test and grad(test) of c
+    _g0(getParam<Real>("residual_stiffness")),
+    _p(getParam<Real>("penalty")),
     _test(_c_var->phi()),
     _grad_test(_c_var->gradPhi())
 {
@@ -110,12 +103,20 @@ GBCavitationTest::computeInterfaceTraction()
 
   // tension-compression split
   ADRealVectorValue jue_active = jue;
+
+  // penalty
+  ADReal penalty = 1;
+
+  if (ju(0) < 0)
+    penalty = 1 + _p * ju(0) * ju(0) / _w / _w;
+
   if (jue(0) < 0)
-    jue(0) = 0;
+    jue_active(0) = 0;
+
   ADRealVectorValue jue_inactive = jue - jue_active;
 
   // interface stiffness
-  ADRankTwoTensor C(_E[_qp], _G[_qp], _G[_qp], 0, 0, 0);
+  ADRankTwoTensor C(penalty * _E[_qp], _G[_qp], _G[_qp], 0, 0, 0);
 
   // damage driving force
   _D[_qp] = 0.5 * (C * jue_active / _w) * jue_active / _w +
@@ -132,58 +133,13 @@ GBCavitationTest::computeInterfaceTraction()
   // local traction
   _interface_traction[_qp] = g * C * jue_active / _w + g * C * jue_inactive / _w;
 
-  // cavity flux
-  // ADReal mu = g * _mu0[_qp] + _R * _T[_qp] * std::log(_c[_qp] / _c_ref[_qp]);
-
-  // ADReal mu_neighbor = g * _mu0_neighbor[_qp] +
-  //                      _R * _T_neighbor[_qp] * std::log(_c_neighbor[_qp] / _c_ref_neighbor[_qp]);
-  // _j[_qp] = -_M[_qp] * (mu_neighbor - mu) / _w;
-
-  // TODO: change mu: add term w*eta*Omega*vector(t)*vector(en)
+  // interface potential
   _mui[_qp] = _w * _eta[_qp] * _Omega * _interface_traction[_qp] * n + g * _mu0[_qp] +
               _R * _T[_qp] * std::log(_c[_qp] / _c_ref[_qp]);
-
-  // TODO: compute grad(mu): see ChemicalPotential.C
-  auto sol = L2Projection();
-
-  for (_qp = 0; _qp < _qrule->n_points(); _qp++) // TODO: start from here
-  {
-    _grad_mui[_qp] = 0;
-    for (unsigned int i = 0; i < _test.size(); i++)
-    {
-      _grad_mui[_qp] += _grad_test[i][_qp] * sol(i);
-    }
-  }
-
-  // TODO: comput j here and grad(j) in GBCavitationTransport
-  _j[_qp] = -_M[_qp] * _grad_mui[_qp];
 
   // cavity nucleation rate
   ADReal tn = _interface_traction[_qp] * n;
   ADReal m = tn > 0 ? tn * _Nr[_qp] * std::exp(-_Q / _R / _T[_qp]) : 0;
   ADReal m_neighbor = tn > 0 ? tn * _Nr[_qp] * std::exp(-_Q / _R / _T_neighbor[_qp]) : 0;
-  _m[_qp] = m + m_neighbor;
-}
-
-EelUtils::ADRealEigenVector
-GBCavitationTest::L2Projection()
-{
-  using EelUtils::ADRealEigenMatrix;
-  using EelUtils::ADRealEigenVector;
-
-  unsigned int n_local_dofs = _c_var->numberOfDofs();
-  ADRealEigenVector re = ADRealEigenVector::Zero(n_local_dofs);
-  ADRealEigenMatrix ke = ADRealEigenMatrix::Zero(n_local_dofs, n_local_dofs);
-
-  // Construct the local L2 projection
-  for (unsigned int i = 0; i < _test.size(); i++)
-    for (_qp = 0; _qp < _qrule->n_points(); _qp++)
-    {
-      Real t = _JxW[_qp] * _coord[_qp] * _test[i][_qp];
-      re(i) += t * _mui[_qp];
-      for (unsigned int j = 0; j < _test.size(); j++)
-        ke(i, j) += t * _test[j][_qp];
-    }
-
-  return ke.ldlt().solve(re);
+  _mi[_qp] = m + m_neighbor;
 }

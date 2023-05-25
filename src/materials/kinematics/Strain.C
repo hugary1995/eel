@@ -74,5 +74,8 @@ Strain::computeQpProperties()
   if (_volumetric_locking_correction)
     _E[_qp].addIa((_E_tr_avg - _E[_qp].trace()) / 3.0);
 
-  _E_dot[_qp] = (_E[_qp] - _E_old[_qp]) / _dt;
+  if (_t_step > 0)
+    _E_dot[_qp] = (_E[_qp] - _E_old[_qp]) / _dt;
+  else
+    _E_dot[_qp].zero();
 }

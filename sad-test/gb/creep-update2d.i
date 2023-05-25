@@ -13,7 +13,7 @@ M = 1e-8
 mu0 = 1e3
 R = 8.3145
 
-load = 1e-1
+load = 1
 t0 = '${fparse load*60}'
 dt = '${fparse t0/100}'
 tf = 1e9
@@ -22,18 +22,20 @@ dtmax = '${fparse tf/1000}'
 # GB
 # Nri = 5e-12
 Nri = 0
-Mi = 1e-10
-Gc = 0.5
+# Mi = 1e-10
+Mi = 1e-8
+# Gc = 0.5
+Gc = 1e20
 w = 1e-3
 Ei = 1e5
 Gi = 8e4
 Qvi = 1e4
 mu0i = 1e3
 
-Ly = 2
+Ly = 1
 
 [GlobalParams]
-  displacements = 'disp_x disp_y disp_z'
+  displacements = 'disp_x disp_y'
   energy_densities = 'dot(psi_m) dot(psi_c) Delta_p zeta'
   volumetric_locking_correction = false
 []
@@ -42,31 +44,28 @@ Ly = 2
 [Mesh]
   [gmg]
     type = GeneratedMeshGenerator
-    dim = 3
-    xmax = 1
-    ymax = 1
-    zmax = 1
-    nx = 4
-    ny = 4
-    nz = 4
+    dim = 2
+    nx = 10
+    ny = 10
   []
   [bottom_half]
     type = SubdomainBoundingBoxGenerator
     input = gmg
     block_id = 0
     bottom_left = '0 0 0'
-    top_right = '1 0.5 1'
+    top_right = '1 0.5 0'
   []
   [top_half]
     type = SubdomainBoundingBoxGenerator
     input = bottom_half
     block_id = 1
     bottom_left = '0 0.5 0'
-    top_right = '1 1 1'
+    top_right = '1 1 0'
   []
   [break]
     type = BreakMeshByBlockGenerator
     input = top_half
+    add_interface_on_two_sides = true
   []
   use_displaced_mesh = false
 []
@@ -76,14 +75,12 @@ Ly = 2
   []
   [disp_y]
   []
-  [disp_z]
-  []
   [c]
     initial_condition = ${c0}
   []
 []
 
-# for gb interface
+#### for gb interface
 [Modules]
   [TensorMechanics]
     [CohesiveZoneMaster]
@@ -100,6 +97,9 @@ Ly = 2
   [c_ref]
     initial_condition = ${c0}
   []
+  # [c]
+  #   initial_condition = ${c0}
+  # []
   [T]
     initial_condition = ${T}
   []
@@ -129,22 +129,22 @@ Ly = 2
     tensor = cauchy
     factor = -1
   []
-  [momentum_balance_z]
-    type = RankTwoDivergence
-    variable = disp_z
-    component = 2
-    tensor = cauchy
-    factor = -1
-  []
+  # [momentum_balance_z]
+  #   type = RankTwoDivergence
+  #   variable = disp_z
+  #   component = 2
+  #   tensor = cauchy
+  #   factor = -1
+  # []
   [mass_balance_1]
     type = TimeDerivative
     variable = c
   []
-  [mass_balance_2]
-    type = RankOneDivergence
-    variable = c
-    vector = j
-  []
+  # [mass_balance_2]
+  #   type = RankOneDivergence
+  #   variable = c
+  #   vector = j
+  # []
   # [mass_source]
   #   type = MaterialSource
   #   variable = c
@@ -155,7 +155,7 @@ Ly = 2
 
 [InterfaceKernels]
   [gb]
-    type = GBCavitationTransport
+    type = GBCavitationTransportTest
     variable = c
     neighbor_var = c
     cavity_flux = ji
@@ -170,6 +170,12 @@ Ly = 2
     x = '0 ${t0}'
     y = '0 ${load}'
   []
+  # [spatial]
+  #   type = PiecewiseLinear
+  #   axis = x
+  #   x = '0 0.5 1'
+  #   y = '0 1 1'
+  # []
   [spatial]
     type = ADParsedFunction
     expression = 'if(x<0.5, 0, 1)'
@@ -177,7 +183,7 @@ Ly = 2
   [load]
     type = CompositeFunction
     functions = 'temporal spatial'
-    scale_factor = -1
+    scale_factor = 1
   []
   # [load]
   #   type = PiecewiseLinear
@@ -217,7 +223,7 @@ Ly = 2
   [fix_x]
     type = DirichletBC
     variable = disp_x
-    boundary = 'left'
+    boundary = 'bottom'
     value = 0
   []
   [fix_y]
@@ -226,13 +232,14 @@ Ly = 2
     boundary = 'bottom'
     value = 0
   []
-  [fix_z]
-    type = DirichletBC
-    variable = disp_z
-    boundary = 'back front'
-    value = 0
-  []
+  # [fix_z]
+  #   type = DirichletBC
+  #   variable = disp_z
+  #   boundary = 'back'
+  #   value = 0
+  # []
   [force_y]
+    # type = FunctionDirichletBC
     type = FunctionNeumannBC
     variable = disp_y
     boundary = 'top'
@@ -408,18 +415,20 @@ Ly = 2
     boundary = interface
   []
   [traction_separation]
-    type = GBCavitation
+    type = GBCavitationTest
     activation_energy = ${Qvi}
-    cavity_flux = ji
+    penalty = 1e3
+    # cavity_flux = ji
     cavity_nucleation_rate = mi
     concentration = c
     reference_concentration = c_ref
     reference_chemical_potential = mu0i
+    interface_chemical_potential = mui
     critical_energy_release_rate = Gc
     damage = d
     ideal_gas_constant = ${R}
     interface_width = ${w}
-    mobility = M
+    # mobility = M
     molar_volume = ${Omega}
     reference_nucleation_rate = Nri
     normal_stiffness = Ei
@@ -427,6 +436,39 @@ Ly = 2
     swelling_coefficient = alpha
     temperature = T
     boundary = interface
+    outputs = 'exodus'
+  []
+  # [traction_separation]
+  #   type = GBCavitation
+  #   activation_energy = ${Qvi}
+  #   cavity_flux = ji
+  #   cavity_nucleation_rate = mi
+  #   concentration = c
+  #   reference_concentration = c_ref
+  #   reference_chemical_potential = mu0i
+  #   # chemical_potential = mui
+  #   critical_energy_release_rate = Gc
+  #   damage = d
+  #   ideal_gas_constant = ${R}
+  #   interface_width = ${w}
+  #   mobility = Mi
+  #   molar_volume = ${Omega}
+  #   reference_nucleation_rate = Nri
+  #   normal_stiffness = Ei
+  #   tangential_stiffness = Gi
+  #   swelling_coefficient = alpha
+  #   temperature = T
+  #   boundary = interface
+  #   outputs = 'exodus'
+  # []
+  [gb_mass_flux]
+    type = GBChemicalPotentialGradient
+    interface_chemical_potential = mui
+    interface_mobility = Mi
+    cavity_flux = ji
+    concentration = c
+    boundary = interface
+    outputs = 'exodus'
   []
 []
 
@@ -539,6 +581,7 @@ Ly = 2
   []
   end_time = ${tf}
   dtmax = ${dtmax}
+  num_steps = 10
 
   [Predictor]
     type = SimplePredictor
@@ -550,7 +593,7 @@ Ly = 2
 
 [Outputs]
   sync_times = '${t0}'
-  file_base = 'out/T_${T}_load_${load}'
+  file_base = 'out/2d_T_${T}_load_${load}'
   csv = true
   exodus = true
 []
