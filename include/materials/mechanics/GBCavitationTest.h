@@ -50,15 +50,9 @@ protected:
 
   const Real & _Q;
 
-  const ADMaterialProperty<Real> & _M;
+  ADMaterialProperty<Real> & _mui;
 
-  ADMaterialProperty<RealVectorValue> & _j;        // change j to vector
-
-  ADMaterialProperty<Real> & _mui;                 // add mui
-
-  ADMaterialProperty<RealVectorValue> & _grad_mui; // add grad_mui
-
-  ADMaterialProperty<Real> & _m;
+  ADMaterialProperty<Real> & _mi;
 
   ADMaterialProperty<Real> & _d;
 
@@ -70,12 +64,11 @@ protected:
 
   const Real _g0;
 
+  const Real _p;
+
   // the current test function
   const VariableTestValue & _test;
 
   /// gradient of the test function
   const VariableTestGradient & _grad_test;
-
-private:
-  EelUtils::ADRealEigenVector L2Projection();
 };
