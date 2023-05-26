@@ -18,4 +18,6 @@ protected:
   const ADMaterialProperty<RealVectorValue> & _j; // TODO: change j to vector
 
   const ADMaterialProperty<Real> & _m;
+
+  const Real _w;
 };

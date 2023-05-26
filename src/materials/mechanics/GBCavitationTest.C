@@ -93,10 +93,7 @@ GBCavitationTest::computeInterfaceTraction()
   ADRealVectorValue n = _czm_total_rotation[_qp].transpose() * _normals[_qp];
 
   // cavity displacement jump
-  ADRealVectorValue uc = _eta[_qp] * _Omega * (_c[_qp] - _c_ref[_qp]) * -n;
-  ADRealVectorValue uc_neighbor =
-      _eta_neighbor[_qp] * _Omega * (_c_neighbor[_qp] - _c_ref_neighbor[_qp]) * n;
-  ADRealVectorValue juc = uc_neighbor - uc;
+  ADRealVectorValue juc = _eta[_qp] * _Omega * (_c[_qp] - _c_ref[_qp]) * n;
 
   // elastic displacement jump
   ADRealVectorValue jue = ju - juc;

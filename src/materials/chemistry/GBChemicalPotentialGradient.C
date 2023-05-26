@@ -42,9 +42,9 @@ GBChemicalPotentialGradient::computeProperties()
     _grad_mui[_qp] = 0;
 
     for (unsigned int i = 0; i < _test.size(); i++)
-    {
       _grad_mui[_qp] += _grad_test[i][_qp] * sol(i);
-    }
+
+    _grad_mui[_qp] = _grad_mui[_qp] - (_grad_mui[_qp] * _normals[_qp]) * _normals[_qp];
 
     // compute cavatiy flux
     _ji[_qp] = -_Mi[_qp] * _grad_mui[_qp];
@@ -65,11 +65,11 @@ GBChemicalPotentialGradient::L2Projection()
   for (unsigned int i = 0; i < _test.size(); i++)
     for (_qp = 0; _qp < _qrule->n_points(); _qp++)
     {
-      Real t = _JxW[_qp] * _coord[_qp] * _test[i][_qp];
-      re(i) += t * _mui[_qp];
+      Real t = _JxW[_qp] * _coord[_qp];
+      re(i) += _test[i][_qp] * _mui[_qp];
       for (unsigned int j = 0; j < _test.size(); j++)
-        ke(i, j) += t * _test[j][_qp];
+        ke(i, j) += _test[i][_qp] * _test[j][_qp];
     }
 
-  return ke.ldlt().solve(re);
+  return ke.completeOrthogonalDecomposition().solve(re);
 }
