@@ -1,29 +1,30 @@
 lambda = 1e5
 G = 8e4
-alpha = 1e-3
+alpha = -1e-5
 Omega = 100
 sigma_y = 300
 n = 5
 A = 1e-6
 
 c0 = 1e-3
-cref = 1e-6
+cref = 1e-4
 T = 800
 M = 1e-8
 mu0 = 1e3
 R = 8.3145
 
-load = 1e2
-t0 = '${fparse load*60}'
+load = 0.1
+t0 = 1e3
 dt = '${fparse t0/100}'
-tf = 1e9
-dtmax = '${fparse tf/1000}'
+tf = 1e4
+dtmax = '${fparse tf/100}'
 
 # GB
+alphai = -1e-5
 Nri = 5e-12
-Mi = 1e-5
+Mi = 1e-10
 Gc = 1e20
-w = 1e-3
+w = 1
 Ei = 1e5
 Gi = 8e4
 Qvi = 1e4
@@ -140,13 +141,13 @@ Ly = 1
 []
 
 [InterfaceKernels]
-  # [c]
-  #   type = InterfaceContinuity
-  #   variable = c
-  #   neighbor_var = c
-  #   penalty = 1e3
-  #   boundary = interface
-  # []
+  [c]
+    type = InterfaceContinuity
+    variable = c
+    neighbor_var = c
+    penalty = 1e3
+    boundary = interface
+  []
   [gb]
     type = GBCavitationTransportTest
     variable = c
@@ -156,6 +157,22 @@ Ly = 1
     interface_width = ${w}
     boundary = interface
   []
+  # [no_penetration_x]
+  #   type = NoPenetration
+  #   variable = disp_x
+  #   neighbor_var = disp_x
+  #   component = 0
+  #   penalty = 1e7
+  #   boundary = interface
+  # []
+  # [no_penetration_y]
+  #   type = NoPenetration
+  #   variable = disp_y
+  #   neighbor_var = disp_y
+  #   component = 1
+  #   penalty = 1e7
+  #   boundary = interface
+  # []
 []
 
 [Functions]
@@ -166,7 +183,7 @@ Ly = 1
   []
   [spatial]
     type = ADParsedFunction
-    expression = 'if(x<0.5, 0, 1)'
+    expression = 'x'
   []
   [load]
     type = CompositeFunction
@@ -189,7 +206,7 @@ Ly = 1
     value = 0
   []
   [force_y]
-    type = FunctionNeumannBC
+    type = FunctionDirichletBC
     variable = disp_y
     boundary = 'top'
     function = load
@@ -215,7 +232,7 @@ Ly = 1
   [chemical_potential]
     type = ChemicalPotential
     chemical_potential = mu
-    energy_densities = 'dot(psi_c)' # turn off stress-aided diffusion in bulk
+    # energy_densities = 'dot(psi_c)' # turn off stress-aided diffusion in bulk
     concentration = c
     outputs = exodus
   []
@@ -345,7 +362,7 @@ Ly = 1
   [traction_separation]
     type = GBCavitationTest
     activation_energy = ${Qvi}
-    penalty = 1e3
+    penalty = 1
     cavity_nucleation_rate = mi
     concentration = c
     reference_concentration = c_ref
@@ -359,7 +376,7 @@ Ly = 1
     reference_nucleation_rate = Nri
     normal_stiffness = Ei
     tangential_stiffness = Gi
-    swelling_coefficient = alpha
+    swelling_coefficient = ${alphai}
     temperature = T
     boundary = interface
     outputs = 'exodus'
@@ -464,6 +481,7 @@ Ly = 1
   petsc_options_iname = '-pc_type'
   petsc_options_value = 'lu'
   automatic_scaling = true
+  verbose = true
   line_search = none
 
   nl_rel_tol = 1e-6
@@ -481,9 +499,8 @@ Ly = 1
     cutback_factor_at_failure = 0.2
     linear_iteration_ratio = 100000
   []
-  end_time = ${t0}
+  end_time = ${tf}
   dtmax = ${dtmax}
-  num_steps = 10
 
   [Predictor]
     type = SimplePredictor

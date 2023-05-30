@@ -37,16 +37,19 @@ GBChemicalPotentialGradient::computeProperties()
   // compute chemical potential gradient
   auto sol = L2Projection();
 
+  ADRealVectorValue grad_mu_avg = 0;
+  Real volume = 0;
   for (_qp = 0; _qp < _qrule->n_points(); _qp++)
   {
-    _grad_mui[_qp] = 0;
-
+    volume += _JxW[_qp] * _coord[_qp];
     for (unsigned int i = 0; i < _test.size(); i++)
-      _grad_mui[_qp] += _grad_test[i][_qp] * sol(i);
+      grad_mu_avg += _grad_test[i][_qp] * sol(i) * _JxW[_qp] * _coord[_qp];
+  }
+  grad_mu_avg /= volume;
 
-    _grad_mui[_qp] = _grad_mui[_qp] - (_grad_mui[_qp] * _normals[_qp]) * _normals[_qp];
-
-    // compute cavatiy flux
+  for (_qp = 0; _qp < _qrule->n_points(); _qp++)
+  {
+    _grad_mui[_qp] = grad_mu_avg - (grad_mu_avg * _normals[_qp]) * _normals[_qp];
     _ji[_qp] = -_Mi[_qp] * _grad_mui[_qp];
   }
 }

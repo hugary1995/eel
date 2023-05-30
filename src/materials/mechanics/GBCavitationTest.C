@@ -105,7 +105,7 @@ GBCavitationTest::computeInterfaceTraction()
   ADReal penalty = 1;
 
   if (ju(0) < 0)
-    penalty = 1 + _p * ju(0) * ju(0) / _w / _w;
+    penalty = _p;
 
   if (jue(0) < 0)
     jue_active(0) = 0;
@@ -128,10 +128,10 @@ GBCavitationTest::computeInterfaceTraction()
   ADReal g = (1 - _d[_qp]) * (1 - _d[_qp]) * (1 - _g0) + _g0;
 
   // local traction
-  _interface_traction[_qp] = g * C * jue_active / _w + g * C * jue_inactive / _w;
+  _interface_traction[_qp] = g * C * jue_active / _w + C * jue_inactive / _w;
 
   // interface potential
-  _mui[_qp] = _w * _eta[_qp] * _Omega * _interface_traction[_qp] * n + g * _mu0[_qp] +
+  _mui[_qp] = -_w * _eta[_qp] * _Omega * _interface_traction[_qp] * n + g * _mu0[_qp] +
               _R * _T[_qp] * std::log(_c[_qp] / _c_ref[_qp]);
 
   // cavity nucleation rate
