@@ -7,15 +7,15 @@ n = 5
 A = 1e-6
 
 c0 = 1e-3
-# cref = 1e-4
-cref = 1e-3
+cref = 1e-4
+# cref = 1e-3
 T = 800
 M = 1e-8
 # M = 0 # turn off bulk diffusion
 mu0 = 1e3
 R = 8.3145
-Nr = 5e-12
-# Nr = 0 # turn off bulk nucleation
+# Nr = 5e-12
+Nr = 0 # turn off bulk nucleation
 Qv = 1e4
 
 # load = 0.1
@@ -27,12 +27,13 @@ dtmax = '${fparse tf/100}'
 
 # GB
 alphai = -1e-5
-Nri = 5e-12
-# Nri = 0 # turn off gb nucleation
+# alphai = 0
+# Nri = 5e-12
+Nri = 0 # turn off gb nucleation
 Mi = 1e-10
-# Mi = 0 # turn off diffusion
+# Mi = 0 # turn off gb diffusion
 Gc = 1e20 # turn off damage
-w = 1
+w = 0.1
 Ei = 1e5
 Gi = 8e4
 Qvi = 1e4
@@ -49,21 +50,25 @@ Ly = 1
 
 # mesh with top and bottom half
 [Mesh]
-  [cmg]
-    type = CartesianMeshGenerator
-    dim = 2
-    dx = '0.25 0.25 0.25 0.25'
-    dy = '0.25 0.25 0.25 0.25'
-    ix = '20 20 20 20'
-    iy = '20 20 20 20'
-    subdomain_id = '0 1 2 3
-                    4 5 6 7
-                    8 9 10 11
-                    12 13 14 15'
+  # [cmg]
+  #   type = CartesianMeshGenerator
+  #   dim = 2
+  #   dx = '0.25 0.25 0.25 0.25'
+  #   dy = '0.25 0.25 0.25 0.25'
+  #   ix = '20 20 20 20'
+  #   iy = '20 20 20 20'
+  #   subdomain_id = '0 1 2 3
+  #                   4 5 6 7
+  #                   8 9 10 11
+  #                   12 13 14 15'
+  # []
+  [fmg]
+    type = FileMeshGenerator
+    file = './mesh/2d_n16_quad.msh'
   []
   [break]
     type = BreakMeshByBlockGenerator
-    input = cmg
+    input = fmg
     add_interface_on_two_sides = true
   []
   use_displaced_mesh = false
@@ -150,15 +155,15 @@ Ly = 1
     penalty = 1e3
     boundary = interface
   []
-  [gb]
-    type = GBCavitationTransportTest
-    variable = c
-    neighbor_var = c
-    cavity_flux = ji
-    cavity_nucleation_rate = mi
-    interface_width = ${w}
-    boundary = interface
-  []
+  # [gb]
+  #   type = GBCavitationTransportTest
+  #   variable = c
+  #   neighbor_var = c
+  #   cavity_flux = ji
+  #   cavity_nucleation_rate = mi
+  #   interface_width = ${w}
+  #   boundary = interface
+  # []
   # [no_penetration_x]
   #   type = NoPenetration
   #   variable = disp_x
@@ -236,7 +241,7 @@ Ly = 1
   [chemical_potential]
     type = ChemicalPotential
     chemical_potential = mu
-    # energy_densities = 'dot(psi_c)' # turn off stress-aided diffusion in bulk
+    energy_densities = 'dot(psi_c)' # turn off stress-aided diffusion in bulk
     concentration = c
     outputs = exodus
   []
@@ -278,10 +283,15 @@ Ly = 1
   [yield_stress]
     type = ADPiecewiseConstantByBlockMaterial
     prop_name = sigma_y
-    subdomain_to_prop_value = '0 100 1 250 2 150 3 210
+    # subdomain_to_prop_value = '0 100 1 250 2 150 3 210
+    #                            4 300 5 50 6 220 7 100
+    #                            8 250 9 150 10 100 11 300
+    #                            12 150 13 300 14 250 15 100'
+    subdomain_to_prop_value = '1 250 2 150 3 210
                                4 300 5 50 6 220 7 100
                                8 250 9 150 10 100 11 300
-                               12 150 13 300 14 250 15 100'
+                               12 150 13 300 14 250 15 100 16 250'
+    outputs = exodus
   []
   [swelling_coefficient]
     type = ADGenericConstantMaterial
@@ -536,8 +546,11 @@ Ly = 1
 []
 
 [Outputs]
-  file_base = 'vary_sigma_y'
+  file_base = 'bulk_dif_vol'
+  [exodus]
+    type = Exodus
+    interval = 1
+  []
   csv = true
-  exodus = true
   print_linear_residuals = false
 []
