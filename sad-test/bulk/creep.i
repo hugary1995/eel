@@ -1,8 +1,7 @@
 # 2d stress-aided-diffusion test (only bluk)
 lambda = 1e5
 G = 8e4
-# alpha = 1
-alpha = 100
+alpha = -1
 Omega = 100
 sigma_y = 300
 n = 5
@@ -11,7 +10,7 @@ A = 1e-6 # creep coefficient
 c0 = 1e-6
 T = 800
 M = 1e-8 # mobility 
-mu0 = 1e3
+mu0 = 1
 R = 8.3145
 
 load = 100
@@ -27,7 +26,7 @@ Ly = 1
 [GlobalParams]
   displacements = 'disp_x disp_y'
   energy_densities = 'dot(psi_m) dot(psi_c) Delta_p zeta'
-  volumetric_locking_correction = false # volumetric locking will averge stree over the element, so no mass flux
+  volumetric_locking_correction = true # volumetric locking will averge stree over the element, so no mass flux
 []
 
 [Mesh]
@@ -44,6 +43,10 @@ Ly = 1
   [disp_x]
   []
   [disp_y]
+  []
+  [mu_var]
+    # order = FIRST
+    # family = MONOMIAL
   []
   [c]
     initial_condition = ${c0}
@@ -83,15 +86,26 @@ Ly = 1
     tensor = cauchy
     factor = -1
   []
+  [mu]
+    type = ADMaterialPropertyValue
+    variable = mu_var
+    prop_name = mu
+  []
   [mass_balance_1]
     type = TimeDerivative
     variable = c
   []
   [mass_balance_2]
-    type = RankOneDivergence
+    type = MassDiffusionTest
     variable = c
-    vector = j
+    chemical_potential = mu_var
+    mobility = M
   []
+  # [mass_balance_2]
+  #   type = RankOneDivergence
+  #   variable = c
+  #   vector = j
+  # []
   # [mass_source]
   #   type = MaterialSource
   #   variable = c
@@ -171,31 +185,30 @@ Ly = 1
     reference_chemical_potential = mu0
   []
   [chemical_potential]
-    type = ChemicalPotential
+    type = ChemicalPotentialTest
     chemical_potential = mu
     # energy_densities = 'dot(psi_c)'
-    energy_densities = 'dot(psi_m) dot(psi_c) Delta_p zeta'
     concentration = c
     outputs = exodus
   []
-  [diffusion]
-    type = MassDiffusion
-    dual_chemical_energy_density = zeta
-    chemical_potential = mu
-    mobility = M
-  []
-  [mass_flux]
-    type = MassFlux
-    mass_flux = j
-    chemical_potential = mu
-    outputs = exodus
-  []
-  [mass_source]
-    type = MassSource
-    mass_source = m
-    chemical_potential = mu
-    outputs = exodus
-  []
+  # [diffusion]
+  #   type = MassDiffusion
+  #   dual_chemical_energy_density = zeta
+  #   chemical_potential = mu
+  #   mobility = M
+  # []
+  # [mass_flux]
+  #   type = MassFlux
+  #   mass_flux = j
+  #   chemical_potential = mu
+  #   outputs = exodus
+  # []
+  # [mass_source]
+  #   type = MassSource
+  #   mass_source = m
+  #   chemical_potential = mu
+  #   outputs = exodus
+  # []
   [stiffness]
     type = ADGenericConstantMaterial
     prop_names = 'lambda G sigma_y'
@@ -380,6 +393,16 @@ Ly = 1
   [p]
     type = ADElementAverageMaterialProperty
     mat_prop = p
+    execute_on = 'INITIAL TIMESTEP_END'
+  []
+  [mu_avg]
+    type = ADElementAverageMaterialProperty
+    mat_prop = mu
+    execute_on = 'INITIAL TIMESTEP_END'
+  []
+  [mu_var_avg]
+    type = ElementAverageValue
+    variable = mu_var
     execute_on = 'INITIAL TIMESTEP_END'
   []
 []

@@ -68,9 +68,7 @@ GBCavitationTest::GBCavitationTest(const InputParameters & parameters)
     _D(declareADProperty<Real>("damage_driving_force")),
     _D_old(getMaterialPropertyOld<Real>("damage_driving_force")),
     _g0(getParam<Real>("residual_stiffness")),
-    _p(getParam<Real>("penalty")),
-    _test(_c_var->phi()),
-    _grad_test(_c_var->gradPhi())
+    _p(getParam<Real>("penalty"))
 {
 }
 

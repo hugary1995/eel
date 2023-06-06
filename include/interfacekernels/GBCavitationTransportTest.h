@@ -15,7 +15,9 @@ protected:
 
   const VariableValue & _u_old_neighbor;
 
-  const ADMaterialProperty<RealVectorValue> & _j; // TODO: change j to vector
+  const ADMaterialProperty<Real> & _M;
+
+  const ADVariableGradient & _grad_mu;
 
   const ADMaterialProperty<Real> & _m;
 

@@ -1,28 +1,33 @@
+# 2d stress-aided-diffusion test (only bluk)
 lambda = 1e5
 G = 8e4
-alpha = -1e-5
+alpha = -0.5
 Omega = 100
 sigma_y = 300
 n = 5
-A = 1e-6
+A = 1e-6 # creep coefficient
 
-c0 = 1e-3
-cref = 1e-4
+c0 = 1e-6
 T = 800
-M = 1e-8
+M = 1e-8 # mobility 
 mu0 = 1e3
 R = 8.3145
 
-load = 0.1
-t0 = 1e3
+load = 100
+t0 = '${fparse load*60}'
 dt = '${fparse t0/100}'
-tf = 1e4
-dtmax = '${fparse tf/100}'
+tf = 1e9
+dtmax = '${fparse tf/1000}'
+
+Nr = 5e-12 # nucleation rate
+Qv = 1e4
+Ly = 1
 
 # GB
-alphai = -1e-5
-Nri = 5e-12
-Mi = 1e-10
+# Nri = 5e-12
+alphai = -1
+Nri = 0
+Mi = 1e-8
 Gc = 1e20
 w = 1
 Ei = 1e5
@@ -30,15 +35,12 @@ Gi = 8e4
 Qvi = 1e4
 mu0i = 1e3
 
-Ly = 1
-
 [GlobalParams]
   displacements = 'disp_x disp_y'
   energy_densities = 'dot(psi_m) dot(psi_c) Delta_p zeta'
-  volumetric_locking_correction = false
+  volumetric_locking_correction = true # volumetric locking will averge stree over the element, so no mass flux
 []
 
-# mesh with top and bottom half
 [Mesh]
   [gmg]
     type = GeneratedMeshGenerator
@@ -51,14 +53,14 @@ Ly = 1
     input = gmg
     block_id = 0
     bottom_left = '0 0 0'
-    top_right = '1 0.5 0'
+    top_right = '1 0.5 1'
   []
   [top_half]
     type = SubdomainBoundingBoxGenerator
     input = bottom_half
     block_id = 1
     bottom_left = '0 0.5 0'
-    top_right = '1 1 0'
+    top_right = '1 1 1'
   []
   [break]
     type = BreakMeshByBlockGenerator
@@ -67,17 +69,7 @@ Ly = 1
   use_displaced_mesh = false
 []
 
-[Variables]
-  [disp_x]
-  []
-  [disp_y]
-  []
-  [c]
-    initial_condition = ${c0}
-  []
-[]
-
-#### for gb interface
+# for gb interface
 [Modules]
   [TensorMechanics]
     [CohesiveZoneMaster]
@@ -90,9 +82,21 @@ Ly = 1
   []
 []
 
+[Variables]
+  [disp_x]
+  []
+  [disp_y]
+  []
+  [mu_var]
+  []
+  [c]
+    initial_condition = ${c0}
+  []
+[]
+
 [AuxVariables]
   [c_ref]
-    initial_condition = ${cref}
+    initial_condition = ${c0}
   []
   [T]
     initial_condition = ${T}
@@ -123,15 +127,26 @@ Ly = 1
     tensor = cauchy
     factor = -1
   []
+  [mu]
+    type = ADMaterialPropertyValue
+    variable = mu_var
+    prop_name = mu
+  []
   [mass_balance_1]
     type = TimeDerivative
     variable = c
   []
   [mass_balance_2]
-    type = RankOneDivergence
+    type = MassDiffusionTest
     variable = c
-    vector = j
+    chemical_potential = mu_var
+    mobility = M
   []
+  # [mass_balance_2]
+  #   type = RankOneDivergence
+  #   variable = c
+  #   vector = j
+  # []
   # [mass_source]
   #   type = MaterialSource
   #   variable = c
@@ -141,38 +156,23 @@ Ly = 1
 []
 
 [InterfaceKernels]
-  [c]
-    type = InterfaceContinuity
-    variable = c
-    neighbor_var = c
-    penalty = 1e3
+  [mu]
+    type = InterfaceADMaterialPropertyValue
+    variable = mu_var
+    neighbor_var = mu_var
+    mat_prop = mui
     boundary = interface
   []
-  [gb]
+  [mass]
     type = GBCavitationTransportTest
     variable = c
     neighbor_var = c
-    cavity_flux = ji
     cavity_nucleation_rate = mi
+    mobility = Mi
     interface_width = ${w}
+    chemical_potential = mu_var
     boundary = interface
   []
-  # [no_penetration_x]
-  #   type = NoPenetration
-  #   variable = disp_x
-  #   neighbor_var = disp_x
-  #   component = 0
-  #   penalty = 1e7
-  #   boundary = interface
-  # []
-  # [no_penetration_y]
-  #   type = NoPenetration
-  #   variable = disp_y
-  #   neighbor_var = disp_y
-  #   component = 1
-  #   penalty = 1e7
-  #   boundary = interface
-  # []
 []
 
 [Functions]
@@ -182,8 +182,10 @@ Ly = 1
     y = '0 ${load}'
   []
   [spatial]
-    type = ADParsedFunction
-    expression = 'x'
+    type = PiecewiseLinear
+    axis = x
+    x = '0 0.5 1'
+    y = '0 0 1'
   []
   [load]
     type = CompositeFunction
@@ -206,7 +208,7 @@ Ly = 1
     value = 0
   []
   [force_y]
-    type = FunctionDirichletBC
+    type = FunctionNeumannBC
     variable = disp_y
     boundary = 'top'
     function = load
@@ -214,7 +216,21 @@ Ly = 1
 []
 
 [Materials]
-  # bulk
+  # creep-diffision (bulk)
+  [bulk_properties]
+    type = ADGenericConstantMaterial
+    prop_names = 'Nr'
+    prop_values = '${Nr}'
+  []
+  [bulk_nucleation]
+    type = ADParsedMaterial
+    property_name = dDelta_p/dmu
+    expression = 'if(p>0,1,0) * p * Nr * exp(- ${Qv} / ${R} / T)'
+    coupled_variables = 'T'
+    material_property_names = 'sigma_y ep_dot Nr p mu'
+  []
+
+  # 
   [chemical]
     type = ADGenericConstantMaterial
     prop_names = 'M mu0'
@@ -230,30 +246,30 @@ Ly = 1
     reference_chemical_potential = mu0
   []
   [chemical_potential]
-    type = ChemicalPotential
+    type = ChemicalPotentialTest
     chemical_potential = mu
-    # energy_densities = 'dot(psi_c)' # turn off stress-aided diffusion in bulk
+    # energy_densities = 'dot(psi_c)'
     concentration = c
     outputs = exodus
   []
-  [diffusion]
-    type = MassDiffusion
-    dual_chemical_energy_density = zeta
-    chemical_potential = mu
-    mobility = M
-  []
-  [mass_flux]
-    type = MassFlux
-    mass_flux = j
-    chemical_potential = mu
-    outputs = exodus
-  []
-  [mass_source]
-    type = MassSource
-    mass_source = m
-    chemical_potential = mu
-    outputs = exodus
-  []
+  # [diffusion]
+  #   type = MassDiffusion
+  #   dual_chemical_energy_density = zeta
+  #   chemical_potential = mu
+  #   mobility = M
+  # []
+  # [mass_flux]
+  #   type = MassFlux
+  #   mass_flux = j
+  #   chemical_potential = mu
+  #   outputs = exodus
+  # []
+  # [mass_source]
+  #   type = MassSource
+  #   mass_source = m
+  #   chemical_potential = mu
+  #   outputs = exodus
+  # []
   [stiffness]
     type = ADGenericConstantMaterial
     prop_names = 'lambda G sigma_y'
@@ -355,14 +371,13 @@ Ly = 1
   # gb
   [interface_properties]
     type = ADGenericConstantMaterial
-    prop_names = 'Nri Mi Gc Ei Gi mu0i'
-    prop_values = '${Nri} ${Mi} ${Gc} ${Ei} ${Gi} ${mu0i}'
+    prop_names = 'Nri Mi Gc Ei Gi mu0i alphai'
+    prop_values = '${Nri} ${Mi} ${Gc} ${Ei} ${Gi} ${mu0i} ${alphai}'
     boundary = interface
   []
   [traction_separation]
     type = GBCavitationTest
     activation_energy = ${Qvi}
-    penalty = 1
     cavity_nucleation_rate = mi
     concentration = c
     reference_concentration = c_ref
@@ -376,23 +391,22 @@ Ly = 1
     reference_nucleation_rate = Nri
     normal_stiffness = Ei
     tangential_stiffness = Gi
-    swelling_coefficient = ${alphai}
+    swelling_coefficient = alphai
     temperature = T
     boundary = interface
-    outputs = 'exodus'
-  []
-  [gb_mass_flux]
-    type = GBChemicalPotentialGradient
-    interface_chemical_potential = mui
-    interface_mobility = Mi
-    cavity_flux = ji
-    concentration = c
-    boundary = interface
-    outputs = 'exodus'
+    output_properties = 'mui'
+    outputs = exodus
   []
 []
 
 [Postprocessors]
+  [cmin]
+    type = NodalExtremeValue
+    variable = c
+    value_type = min
+    execute_on = 'INITIAL TIMESTEP_END'
+    outputs = none
+  []
   [uy]
     type = SideAverageValue
     variable = disp_y
@@ -472,6 +486,16 @@ Ly = 1
     mat_prop = p
     execute_on = 'INITIAL TIMESTEP_END'
   []
+  [mu_avg]
+    type = ADElementAverageMaterialProperty
+    mat_prop = mu
+    execute_on = 'INITIAL TIMESTEP_END'
+  []
+  [mu_var_avg]
+    type = ElementAverageValue
+    variable = mu_var
+    execute_on = 'INITIAL TIMESTEP_END'
+  []
 []
 
 [Executioner]
@@ -481,7 +505,7 @@ Ly = 1
   petsc_options_iname = '-pc_type'
   petsc_options_value = 'lu'
   automatic_scaling = true
-  verbose = true
+  ignore_variables_for_autoscaling = 'c mu_var'
   line_search = none
 
   nl_rel_tol = 1e-6
@@ -511,7 +535,8 @@ Ly = 1
 []
 
 [Outputs]
+  sync_times = '${t0}'
+  file_base = 'out/T_${T}_load_${load}'
   csv = true
   exodus = true
-  print_linear_residuals = false
 []
