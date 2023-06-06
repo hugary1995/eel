@@ -65,10 +65,4 @@ protected:
   const Real _g0;
 
   const Real _p;
-
-  // the current test function
-  const VariableTestValue & _test;
-
-  /// gradient of the test function
-  const VariableTestGradient & _grad_test;
 };
