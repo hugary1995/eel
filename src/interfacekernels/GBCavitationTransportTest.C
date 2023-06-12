@@ -37,10 +37,12 @@ GBCavitationTransportTest::computeQpResidual(Moose::DGResidualType type)
     case Moose::Element:
       r += _test[_i][_qp] * (_u[_qp] - _u_old[_qp]) / _dt;
       r += _grad_test[_i][_qp] * _M[_qp] * _grad_mu[_qp];
+      r += -_test[_i][_qp] * _m[_qp] / 2;
       break;
     case Moose::Neighbor:
       r += _test_neighbor[_i][_qp] * (_neighbor_value[_qp] - _u_old_neighbor[_qp]) / _dt;
       r += _grad_test_neighbor[_i][_qp] * _M[_qp] * _grad_mu[_qp];
+      r += -_test_neighbor[_i][_qp] * _m[_qp] / 2;
       break;
   }
 
