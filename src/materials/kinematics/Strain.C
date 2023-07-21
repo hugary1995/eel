@@ -57,11 +57,11 @@ Strain::computeProperties()
         (*_grad_disp[0])[_qp], (*_grad_disp[1])[_qp], (*_grad_disp[2])[_qp]);
     _E[_qp] = (H + H.transpose()) / 2.0;
 
-    if (_volumetric_locking_correction)
+    if (_volumetric_locking_correction & !isBoundaryMaterial())
       _E_tr_avg += _E[_qp].trace() * _JxW[_qp] * _coord[_qp];
   }
 
-  if (_volumetric_locking_correction)
+  if (_volumetric_locking_correction & !isBoundaryMaterial())
     _E_tr_avg /= _current_elem_volume;
 
   for (_qp = 0; _qp < _qrule->n_points(); ++_qp)
@@ -71,7 +71,7 @@ Strain::computeProperties()
 void
 Strain::computeQpProperties()
 {
-  if (_volumetric_locking_correction)
+  if (_volumetric_locking_correction & !isBoundaryMaterial())
     _E[_qp].addIa((_E_tr_avg - _E[_qp].trace()) / 3.0);
 
   if (_t_step > 0)

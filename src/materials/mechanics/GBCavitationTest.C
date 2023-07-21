@@ -33,6 +33,7 @@ GBCavitationTest::validParams()
                                                 "Name of gb chemical potential");
   params.addRequiredParam<MaterialPropertyName>("cavity_nucleation_rate",
                                                 "Name of the cavity nucleation rate");
+  params.addRequiredParam<MaterialPropertyName>("stress", "Name of the stress");
   params.addParam<Real>("residual_stiffness", 1e-6, "residual stiffness when fully damaged");
   params.addParam<Real>("penalty", 1, "penalty");
   return params;
@@ -68,7 +69,8 @@ GBCavitationTest::GBCavitationTest(const InputParameters & parameters)
     _D(declareADProperty<Real>("damage_driving_force")),
     _D_old(getMaterialPropertyOld<Real>("damage_driving_force")),
     _g0(getParam<Real>("residual_stiffness")),
-    _p(getParam<Real>("penalty"))
+    _p(getParam<Real>("penalty")),
+    _stress(getADMaterialProperty<RankTwoTensor>("stress"))
 {
 }
 
@@ -129,7 +131,7 @@ GBCavitationTest::computeInterfaceTraction()
   _interface_traction[_qp] = g * C * jue_active / _w + C * jue_inactive / _w;
 
   // interface potential
-  _mui[_qp] = -_w * _eta[_qp] * _Omega * _interface_traction[_qp] * n + g * _mu0[_qp] +
+  _mui[_qp] = -_w * _eta[_qp] * _Omega * _stress[_qp].tr() + g * _mu0[_qp] +
               _R * _T[_qp] * std::log(_c[_qp] / _c_ref[_qp]);
 
   // cavity nucleation rate

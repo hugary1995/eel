@@ -65,4 +65,6 @@ protected:
   const Real _g0;
 
   const Real _p;
+
+  const ADMaterialProperty<RankTwoTensor> & _stress;
 };
