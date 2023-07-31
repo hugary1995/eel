@@ -8,8 +8,9 @@ n = 5
 A = 1e-6 # creep coefficient
 
 c0 = 1e-6
+c_ref = 1e-6
 T = 800
-M = 1e-8 # mobility 
+M = 1e-10 # mobility 
 mu0 = 1
 R = 8.3145
 
@@ -19,7 +20,8 @@ dt = '${fparse t0/100}'
 tf = 1e9
 dtmax = '${fparse tf/1000}'
 
-Nr = 5e-12 # nucleation rate
+# Nr = 5e-12 # nucleation rate
+Nr = 0
 Qv = 1e4
 Ly = 1
 
@@ -137,7 +139,7 @@ Ly = 1
   [fix_x]
     type = DirichletBC
     variable = disp_x
-    boundary = 'bottom'
+    boundary = 'lefts'
     value = 0
   []
   [fix_y]
@@ -150,6 +152,12 @@ Ly = 1
     type = FunctionNeumannBC
     variable = disp_y
     boundary = 'top'
+    function = load
+  []
+  [force_x]
+    type = FunctionNeumannBC
+    variable = disp_x
+    boundary = 'right'
     function = load
   []
 []

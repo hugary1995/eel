@@ -1,4 +1,4 @@
-#
+`#
 lambda = 1e5
 G = 8e4
 alpha = -5e-3
@@ -10,7 +10,7 @@ A = 1e-6
 
 c0 = 1e-3
 # c0 = 1e-6
-c_ref = 1e-4
+c_ref = 1e-3
 T = 800
 # M = 1e-8
 M = 1e-10
@@ -52,11 +52,13 @@ dtmax = '${fparse tf/1000}'
 ## load test
 alphai = -5e-3
 # Nr = 1e-11
-Nr = 1e-9
+# Nr = 1e-9
+Nr = 0
 Qv = 5e4
 
-Nri = 5e-12
+# Nri = 5e-12
 # Nri = 1e-9
+Nri = 0
 Qvi = 1e4
 # Mi = 1e-8
 Mi = 1e-10
@@ -613,7 +615,7 @@ Ly = 1
   sync_times = '${t0}'
   # file_base = 'nuc-out/nuc_nr${nr_ratio}_m${m_ratio}_T${T}_load${load}'
   # file_base = 'out/sad_a${a_ratio}_m${m_ratio}_T${T}_load${load}'
-  file_base = 'load-plastic/load${load}'
+  file_base = 'load-nuc-off/load${load}'
   csv = true
   exodus = true
 []

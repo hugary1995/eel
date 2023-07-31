@@ -135,10 +135,14 @@ GBCavitationTest::computeInterfaceTraction()
               _R * _T[_qp] * std::log(_c[_qp] / _c_ref[_qp]);
 
   // cavity nucleation rate
-  ADReal tn = _interface_traction[_qp] * n;
+  // ADReal tn = _interface_traction[_qp] * n;
   // ADReal m = tn > 0 ? tn * _Nr[_qp] * std::exp(-_Q / _R / _T[_qp]) : 0;
   // ADReal m_neighbor = tn > 0 ? tn * _Nr[_qp] * std::exp(-_Q / _R / _T_neighbor[_qp]) : 0;
-  ADReal m = std::abs(tn) * _Nr[_qp] * std::exp(-_Q / _R / _T[_qp]);
-  ADReal m_neighbor = std::abs(tn) * _Nr[_qp] * std::exp(-_Q / _R / _T_neighbor[_qp]);
+  // ADReal m = std::abs(tn) * _Nr[_qp] * std::exp(-_Q / _R / _T[_qp]);
+  // ADReal m_neighbor = std::abs(tn) * _Nr[_qp] * std::exp(-_Q / _R / _T_neighbor[_qp]);
+
+  ADReal m = (_c_ref[_qp] - _c[_qp]) / _c_ref[_qp] * _Nr[_qp] * std::exp(_Q / _R / _T[_qp]);
+  ADReal m_neighbor = (_c_ref_neighbor[_qp] - _c_neighbor[_qp]) / _c_ref_neighbor[_qp] * _Nr[_qp] *
+                      std::exp(_Q / _R / _T_neighbor[_qp]);
   _mi[_qp] = m + m_neighbor;
 }

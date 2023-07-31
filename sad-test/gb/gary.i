@@ -1,39 +1,44 @@
 # 2d stress-aided-diffusion test (only bluk)
 lambda = 1e5
 G = 8e4
-alpha = -0.5
+alpha = -1.0
 Omega = 100
 sigma_y = 300
 n = 5
-A = 1e-6 # creep coefficient
+A = 0 # creep coefficient
 
 c0 = 1e-6
 T = 800
-M = 1e-8 # mobility 
+M = 1e-11 # mobility
 mu0 = 1e3
 R = 8.3145
 
-load = 100
+load = 50
 t0 = '${fparse load*60}'
 dt = '${fparse t0/100}'
 tf = 1e9
 dtmax = '${fparse tf/1000}'
 
-Nr = 5e-12 # nucleation rate
+# Nr = 5e-12 # nucleation rate
+Nr = 0
 Qv = 1e4
 Ly = 1
 
 # GB
 # Nri = 5e-12
-alphai = -1
+alphai = -1.0
 Nri = 0
-Mi = 1e-8
+Mi = 1e-11
 Gc = 1e20
 w = 1
 Ei = 1e5
 Gi = 8e4
+# Gi = 8e8
 Qvi = 1e4
 mu0i = 1e3
+
+# alpha_ratio = '${fparse alphai/alpha}'
+m_ratio = '${fparse Mi/M}'
 
 [GlobalParams]
   displacements = 'disp_x disp_y'
@@ -45,8 +50,8 @@ mu0i = 1e3
   [gmg]
     type = GeneratedMeshGenerator
     dim = 2
-    nx = 10
-    ny = 10
+    nx = 50
+    ny = 50
   []
   [bottom_half]
     type = SubdomainBoundingBoxGenerator
@@ -65,8 +70,10 @@ mu0i = 1e3
   [break]
     type = BreakMeshByBlockGenerator
     input = top_half
+    add_interface_on_two_sides = true
   []
   use_displaced_mesh = false
+
 []
 
 # for gb interface
@@ -109,6 +116,10 @@ mu0i = 1e3
       property = mu
       execute_on = 'INITIAL TIMESTEP_END'
     []
+  []
+  [gb_eyy]
+    order = CONSTANT
+    family = MONOMIAL
   []
 []
 
@@ -155,14 +166,26 @@ mu0i = 1e3
   # []
 []
 
-[InterfaceKernels]
-  [mu]
-    type = InterfaceADMaterialPropertyValue
-    variable = mu_var
-    neighbor_var = mu_var
-    mat_prop = mui
+[AuxKernels]
+  [gb_strain_yy]
+    type = ADRankTwoAux
+    variable = gb_eyy
+    rank_two_tensor = E
+    index_i = 1
+    index_j = 1
     boundary = interface
   []
+[]
+
+[InterfaceKernels]
+  # [mu]
+  #   type = InterfaceADMaterialPropertyValue
+  #   variable = mu_var
+  #   neighbor_var = mu_var
+  #   mat_prop = mui
+  #   boundary = interface
+  #   element_width = 1
+  # []
   [mass]
     type = GBCavitationTransportTest
     variable = c
@@ -172,6 +195,13 @@ mu0i = 1e3
     interface_width = ${w}
     chemical_potential = mu_var
     boundary = interface
+  []
+  [continuity]
+    type = InterfaceContinuity
+    variable = c
+    neighbor_var = c
+    boundary = interface
+    penalty = 1e6
   []
 []
 
@@ -230,7 +260,7 @@ mu0i = 1e3
     material_property_names = 'sigma_y ep_dot Nr p mu'
   []
 
-  # 
+  #
   [chemical]
     type = ADGenericConstantMaterial
     prop_names = 'M mu0'
@@ -252,6 +282,29 @@ mu0i = 1e3
     concentration = c
     outputs = exodus
   []
+  # debug
+  [stress_trace]
+    type = ADRankTwoInvariant
+    rank_two_tensor = cauchy
+    invariant = FirstInvariant
+    property_name = trace
+    outputs = exodus
+  []
+  [mu_p]
+    type = ADParsedMaterial
+    expression = '-alpha*${Omega}*trace'
+    material_property_names = 'alpha trace'
+    outputs = exodus
+    property_name = mu_p
+  []
+  [mu_c]
+    type = ADParsedMaterial
+    expression = '${R}*T*log(c/c_ref)'
+    coupled_variables = 'c c_ref T'
+    outputs = exodus
+    property_name = mu_c
+  []
+
   # [diffusion]
   #   type = MassDiffusion
   #   dual_chemical_energy_density = zeta
@@ -291,6 +344,8 @@ mu0i = 1e3
   [strain]
     type = Strain
     strain = E
+    output_properties = 'E'
+    outputs = 'exodus'
   []
   [mechanical_strain]
     type = MechanicalStrain
@@ -324,7 +379,7 @@ mu0i = 1e3
     creep_coefficient = ${A}
     plastic_dissipation_material = envelope
     plastic_power_density = Delta_p
-    output_properties = 'ep ddot(psi_m)/ddot(c)'
+    output_properties = 'ep ddot(psi_m)/ddot(c) dot(psi_m)'
     outputs = 'exodus'
   []
   [stress]
@@ -338,6 +393,7 @@ mu0i = 1e3
     property_name = p
     rank_two_tensor = cauchy
     invariant = Hydrostatic
+    outputs = 'exodus'
   []
   [strain_yy]
     type = ADRankTwoCartesianComponent
@@ -394,8 +450,9 @@ mu0i = 1e3
     swelling_coefficient = alphai
     temperature = T
     boundary = interface
+    stress = cauchy
+    outputs = 'exodus pp'
     output_properties = 'mui'
-    outputs = exodus
   []
 []
 
@@ -532,11 +589,18 @@ mu0i = 1e3
     skip_after_failed_timestep = true
     skip_times_old = '${t0}'
   []
+  num_steps = 5
 []
 
 [Outputs]
+  [pp]
+    type = CSV
+  []
   sync_times = '${t0}'
-  file_base = 'out/T_${T}_load_${load}'
-  csv = true
-  exodus = true
+  file_base = 'out/gb_M_ratio${m_ratio}'
+  [exodus]
+    type = Exodus
+  []
+  # csv = true
+  # exodus = true
 []
