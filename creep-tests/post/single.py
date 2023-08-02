@@ -12,7 +12,7 @@ fig, ax = plt.subplots(3, 2, figsize=(10, 8))
 plt.style.use('science')
 
 # load data
-data = pd.read_csv("../gold/single_conserv_load50_Mi1e-8_M1e-16_Nri1e-3.csv")
+data = pd.read_csv("../gold/single_traction_load50_Mi1e-6_M1e-16_Nri1e-10.csv")
 
 # plot avergaed cavity density over time
 ax[0][0].plot(data["time"], data["cavity_density"], label='averaged cavity density total')
@@ -67,5 +67,5 @@ ax[2][1].set_ylabel("Rate")
 fig.tight_layout()
 # %% save fig
 
-fig.savefig('single_conserv_gb.png')
+fig.savefig('single_traction_gb.png')
 # %%

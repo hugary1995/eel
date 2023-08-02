@@ -11,16 +11,16 @@ Nr = 0 # turn off nucleation in bulk
 c0 = 1
 c_ref = 1
 T = 800
-M = 1e-11
-# M = 1e-16
+# M = 1e-11
+M = 1e-16
 mu0 = 1e3
 R = 8.3145
 
 # GB
 alphai = -0.1
-Nri = 1e-6
-Mi = 1e-16
-# Mi = 1e-8
+Nri = 1e-10
+# Mi = 1e-16
+Mi = 1e-6
 Gc = 1e40
 w = 1
 Ei = 1e5
