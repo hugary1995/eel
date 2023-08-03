@@ -1,9 +1,11 @@
 <!-- results summary for NH-Colbe creep simulations on single grain using coupled creep cavitation model -->
 <!-- Yangyuanchen Liu -->
 
-# NH-Coble creep
+# NH-Coble creep simulations
 
 ## Single grain
+
+fix bottom, uniform tension on top, non-uniform load on right
 
 > inlcude a single `interior` grain and a `exterior` grain, with the GB.
 
