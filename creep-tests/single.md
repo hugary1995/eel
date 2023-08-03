@@ -14,6 +14,7 @@ fix bottom, uniform tension on top, non-uniform load on right
 $$
 m= (c_{ref} - c)/c_{ref}N_r \exp{(-\frac{Q_v}{RT})},
 $$
+
 in which we keep $\int_\Omega\dot{c}=0$ approximately.
 
 * Bulk dominate
@@ -29,9 +30,11 @@ in which we keep $\int_\Omega\dot{c}=0$ approximately.
 ### ii. with the traction-induced nucleation on GB
 
 Now if we turn back to traction-induced nucleation term
+
 $$
 m= \boldsymbol{t}\cdot\boldsymbol{e}_n N_r \exp{(-\frac{Q_v}{RT})},
 $$
+
 but without the bracket, since we want both source (tension) and sink (compression).
 
 Repeat simulations in i).
