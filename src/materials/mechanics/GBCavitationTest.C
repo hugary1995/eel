@@ -92,8 +92,11 @@ GBCavitationTest::computeInterfaceTraction()
   // local normal
   ADRealVectorValue n = _czm_total_rotation[_qp].transpose() * _normals[_qp];
 
+  // let c_ref = (1+a*tn)*c_ref on GB, try with conserv nucelation term
+  ADReal f = (1 + 1e-4 * _stress[_qp].tr());
+
   // cavity displacement jump
-  ADRealVectorValue juc = _eta[_qp] * _Omega * (_c[_qp] - _c_ref[_qp]) * n;
+  ADRealVectorValue juc = _eta[_qp] * _Omega * (_c[_qp] - f * _c_ref[_qp]) * n;
 
   // elastic displacement jump
   ADRealVectorValue jue = ju - juc;
@@ -137,14 +140,14 @@ GBCavitationTest::computeInterfaceTraction()
   // cavity nucleation rate (2 forms)
 
   // traction-induced form
-  ADReal tn = _interface_traction[_qp] * n;
-  ADReal m = tn * _Nr[_qp] * std::exp(-_Q / _R / _T[_qp]);
-  ADReal m_neighbor = tn * _Nr[_qp] * std::exp(-_Q / _R / _T_neighbor[_qp]);
+  // ADReal tn = _interface_traction[_qp] * n;
+  // ADReal m = tn * _Nr[_qp] * std::exp(-_Q / _R / _T[_qp]);
+  // ADReal m_neighbor = tn * _Nr[_qp] * std::exp(-_Q / _R / _T_neighbor[_qp]);
 
   // `conservative' form
-  // ADReal m = (_c_ref[_qp] - _c[_qp]) / _c_ref[_qp] * _Nr[_qp] * std::exp(_Q / _R / _T[_qp]);
-  // ADReal m_neighbor = (_c_ref_neighbor[_qp] - _c_neighbor[_qp]) / _c_ref_neighbor[_qp] * _Nr[_qp] *
-  //                     std::exp(_Q / _R / _T_neighbor[_qp]);
+  ADReal m = (f * _c_ref[_qp] - _c[_qp]) / _c_ref[_qp] * _Nr[_qp] * std::exp(_Q / _R / _T[_qp]);
+  ADReal m_neighbor = (f * _c_ref_neighbor[_qp] - _c_neighbor[_qp]) / _c_ref_neighbor[_qp] *
+                      _Nr[_qp] * std::exp(_Q / _R / _T_neighbor[_qp]);
 
   _mi[_qp] = m + m_neighbor;
 }

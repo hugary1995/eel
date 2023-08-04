@@ -19,7 +19,7 @@ Ly = 1
 
 # GB
 alphai = -1e-3
-Nri = 1e-9
+Nri = 1e-6
 Mi = 1e-16
 # Mi = 1e-6
 Gc = 1e40
@@ -212,7 +212,6 @@ dtmax = '${fparse tf/1000}'
     []
   []
 []
-
 
 [Constraints]
   [ev_x]
@@ -524,10 +523,10 @@ dtmax = '${fparse tf/1000}'
   [exodus]
     type = Exodus
     interval = 1
-    file_base = '../out/4grains_periodic_bc_load${load}_a${alpha}_ai${alphai}_Mi${Mi}_M${M}_Nri${Nri}'
+    file_base = '../out/4grains_conserv_periodic_bc_load${load}_a${alpha}_ai${alphai}_Mi${Mi}_M${M}_Nri${Nri}'
   []
   [csv]
     type = CSV
-    file_base = '../gold/4grians_periodic_bc_load${load}_a${alpha}_ai${alphai}_Mi${Mi}_M${M}_Nri${Nri}'
+    file_base = '../gold/4grians_conserv_periodic_bc_load${load}_a${alpha}_ai${alphai}_Mi${Mi}_M${M}_Nri${Nri}'
   []
 []
