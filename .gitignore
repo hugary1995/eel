@@ -109,6 +109,7 @@ build
 !**/gold/*.pvtu
 !**/gold/*.xml*
 !**/gold/*.json*
+!**/post/*.png
 
 peacock_run_tmp.i
 yaml_dump*
