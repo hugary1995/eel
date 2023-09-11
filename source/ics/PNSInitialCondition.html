@@ -1,0 +1,389 @@
+<!DOCTYPE html><head><meta charset="UTF-8"><title>PNSInitialCondition | Eel</title><link href="../../contrib/materialize/materialize.min.css" type="text/css" rel="stylesheet" media="screen,projection"></link><link href="../../contrib/prism/prism.min.css" type="text/css" rel="stylesheet"></link><link href="../../css/moose.css" type="text/css" rel="stylesheet"></link><link href="../../css/devel_moose.css" type="text/css" rel="stylesheet"></link><link href="../../css/alert_moose.css" type="text/css" rel="stylesheet"></link><link href="../../css/content_moose.css" type="text/css" rel="stylesheet"></link><link href="../../css/sqa_moose.css" type="text/css" rel="stylesheet"></link><link href="../../css/civet_moose.css" type="text/css" rel="stylesheet"></link><script type="text/javascript" src="../../contrib/jquery/jquery.min.js"></script></head><body><div class="page-wrap"><header><nav><div class="nav-wrapper container"><a href="../../index.html" class="left moose-logo hide-on-med-and-down" id="home-button">Eel</a><a href="https://github.com/hugary1995/eel" class="right"><img src="../../media/framework/github-logo.png" class="github-mark"></img><img src="../../media/framework/github-mark.png" class="github-logo"></img></a><ul class="right hide-on-med-and-down"><li><a href="../../eel.html">Documentation</a></li></ul><a href="#" class="sidenav-trigger" data-target="cca97f1e-2c83-48c7-b3f7-ba120de179be"><i class="material-icons">menu</i></a><ul class="sidenav" id="cca97f1e-2c83-48c7-b3f7-ba120de179be"><li><a href="../../eel.html">Documentation</a></li></ul><a href="#moose-search" class="modal-trigger"><i class="material-icons">search</i></a></div></nav><div class="modal modal-fixed-footer moose-search-modal" id="moose-search"><div class="modal-content container moose-search-modal-content"><div class="row"><div class="col l12"><div class="input-field"><input type_="text" onkeyup="mooseSearch()" placeholder="/index.md" id="moose-search-box"></input></div></div><div><div class="col s12" id="moose-search-results"></div></div></div></div><div class="modal-footer"><a href="#!" class="modal-close btn-flat">Close</a></div></div></header><main class="main"><div class="container"><div class="row"><div class="col hide-on-med-and-down l12"><nav class="breadcrumb-nav"><div class="nav-wrapper"><a href=".." class="breadcrumb">source</a><span class="breadcrumb">ics</span><a href="#" class="breadcrumb">PNSInitialCondition</a></div></nav></div></div><div class="row"><div class="moose-content col s12 m12 l10"><section id="c21a0a79-b744-419f-8fcd-220ba48d099c" data-section-level="1" data-section-text="PNSInitialCondition"><h1 id="pnsinitialcondition">PNSInitialCondition</h1><p><code>PNSInitialCondition</code> can be used to initialize variables by evaluating fluid properties for porous flow calculations. It can accept both interstitial and superficial velocities for initializing superficial or interstitial velocity variables and energy.</p><section class="scrollspy" id="eda5e88e-4e7d-40ae-9dda-504b6853f65c" data-section-level="2" data-section-text="Example input file syntax"><h2 id="example-input-file-syntax">Example input file syntax</h2><p>In this example, we initialize the first component of the superficial momentum with a specified superficial velocity. The superficial velocity is specified as a vector. We could have alternatively specified an interstitial velocity and the porosity.</p><pre class="moose-pre" style="max-height:350px;"><code class="language-text">[superficial_rhou]
+  type = PNSInitialCondition
+  fluid_properties = &#x27;fp&#x27;
+  initial_pressure = ${p_initial}
+  initial_temperature = ${T}
+  initial_superficial_velocity = &#x27;1 0.2 18&#x27;
+  porosity = porosity
+  variable = &#x27;superficial_rhou&#x27;
+[]
+</code></pre><a class="moose-source-filename tooltipped modal-trigger" href="#fa47c942-7c42-427a-8949-d276b4d10cfb">(moose/modules/navier_stokes/test/tests/ics/pns_test.i)</a></section><section class="scrollspy" id="b76d53c6-adff-447c-90d4-79063b597fc0" data-section-level="2" data-section-text="Input Parameters"><h2 id="input-parameters">Input Parameters</h2><section id="a25bc905-6b01-49aa-8c29-00929fd50fcf" data-section-level="3" data-section-text="Required Parameters" data-details-open="open"><details class="moose-section-content" open="open"><ul class="collapsible" data-collapsible="expandable"><li><div class="collapsible-header"><span class="moose-parameter-name">fluid_properties</span><span class="moose-parameter-header-description">The name of the user object for fluid properties</span></div><div class="collapsible-body"><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>UserObjectName</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>No</p><p class="moose-parameter-description"><span>Description:</span>The name of the user object for fluid properties</p></div></li><li><div class="collapsible-header"><span class="moose-parameter-name">initial_pressure</span><span class="moose-parameter-header-description">The initial pressure, assumed constant everywhere</span></div><div class="collapsible-body"><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>double</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>No</p><p class="moose-parameter-description"><span>Description:</span>The initial pressure, assumed constant everywhere</p></div></li><li><div class="collapsible-header"><span class="moose-parameter-name">initial_temperature</span><span class="moose-parameter-header-description">The initial temperature, assumed constant everywhere</span></div><div class="collapsible-body"><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>double</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>No</p><p class="moose-parameter-description"><span>Description:</span>The initial temperature, assumed constant everywhere</p></div></li><li><div class="collapsible-header"><span class="moose-parameter-name">variable</span><span class="moose-parameter-header-description">The variable this initial condition is supposed to provide values for.</span></div><div class="collapsible-body"><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>VariableName</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>No</p><p class="moose-parameter-description"><span>Description:</span>The variable this initial condition is supposed to provide values for.</p></div></li></ul><summary><h3 data-details-open="open"><span class="moose-section-icon"></span>Required Parameters</h3></summary></details></section><section id="76164d38-9af2-4653-84ec-78751350af55" data-section-level="3" data-section-text="Optional Parameters" data-details-open="open"><details class="moose-section-content" open="open"><ul class="collapsible" data-collapsible="expandable"><li><div class="collapsible-header"><span class="moose-parameter-name">block</span><span class="moose-parameter-header-description">The list of blocks (ids or names) that this object will be applied</span></div><div class="collapsible-body"><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>std::vector&lt;SubdomainName&gt;</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>No</p><p class="moose-parameter-description"><span>Description:</span>The list of blocks (ids or names) that this object will be applied</p></div></li><li><div class="collapsible-header"><span class="moose-parameter-name">boundary</span><span class="moose-parameter-header-description">The list of boundaries (ids or names) from the mesh where this object applies</span></div><div class="collapsible-body"><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>std::vector&lt;BoundaryName&gt;</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>No</p><p class="moose-parameter-description"><span>Description:</span>The list of boundaries (ids or names) from the mesh where this object applies</p></div></li><li><div class="collapsible-header"><span class="moose-parameter-name">initial_interstitial_velocity</span><span class="moose-parameter-header-description">The initial interstitial velocity, assumed constant everywhere</span></div><div class="collapsible-body"><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>libMesh::VectorValue&lt;double&gt;</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>No</p><p class="moose-parameter-description"><span>Description:</span>The initial interstitial velocity, assumed constant everywhere</p></div></li><li><div class="collapsible-header"><span class="moose-parameter-name">initial_superficial_velocity</span><span class="moose-parameter-header-description">The initial superficial velocity, assumed constant everywhere</span></div><div class="collapsible-body"><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>libMesh::VectorValue&lt;double&gt;</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>No</p><p class="moose-parameter-description"><span>Description:</span>The initial superficial velocity, assumed constant everywhere</p></div></li><li><div class="collapsible-header"><span class="moose-parameter-name">porosity</span><span class="moose-parameter-header-description">Porosity variable (defaults to porosity material property).</span></div><div class="collapsible-body"><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>std::vector&lt;VariableName&gt;</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>No</p><p class="moose-parameter-description"><span>Description:</span>Porosity variable (defaults to porosity material property).</p></div></li><li><div class="collapsible-header"><span class="moose-parameter-name">prop_getter_suffix</span><span class="moose-parameter-header-description">An optional suffix parameter that can be appended to any attempt to retrieve/get material properties. The suffix will be prepended with a '_' character.</span></div><div class="collapsible-body"><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>MaterialPropertyName</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>No</p><p class="moose-parameter-description"><span>Description:</span>An optional suffix parameter that can be appended to any attempt to retrieve/get material properties. The suffix will be prepended with a '_' character.</p></div></li><li><div class="collapsible-header"><span class="moose-parameter-name">variable_type</span><span class="moose-parameter-header-description">Specifies what this variable is in the Navier Stokes namespace of variables</span></div><div class="collapsible-body"><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>MooseEnum</p><p class="moose-parameter-description-options"><span>Options:</span>ht, e, Mach, pressure, rho, rhou, rhov, rhow, rho_et, specific_volume, temperature, vel_x, vel_y, vel_z, superficial_vel_x, superficial_vel_y, superficial_vel_z, superficial_rho, superficial_rhou, superficial_rhov, superficial_rhow, superficial_rho_et, superficial_rho_ht</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>No</p><p class="moose-parameter-description"><span>Description:</span>Specifies what this variable is in the Navier Stokes namespace of variables</p></div></li></ul><summary><h3 data-details-open="open"><span class="moose-section-icon"></span>Optional Parameters</h3></summary></details></section><section id="410b0a98-6b18-4e8e-8f78-3392c9d38634" data-section-level="3" data-section-text="Advanced Parameters" data-details-open="close"><details class="moose-section-content"><ul class="collapsible" data-collapsible="expandable"><li><div class="collapsible-header"><span class="moose-parameter-name">control_tags</span><span class="moose-parameter-header-description">Adds user-defined labels for accessing object parameters via control logic.</span></div><div class="collapsible-body"><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>std::vector&lt;std::string&gt;</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>No</p><p class="moose-parameter-description"><span>Description:</span>Adds user-defined labels for accessing object parameters via control logic.</p></div></li><li><div class="collapsible-header"><span class="moose-parameter-name">enable</span><span class="moose-parameter-header-default">True</span><span class="moose-parameter-header-description">Set the enabled status of the MooseObject.</span></div><div class="collapsible-body"><p class="moose-parameter-description-default"><span>Default:</span>True</p><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>bool</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>No</p><p class="moose-parameter-description"><span>Description:</span>Set the enabled status of the MooseObject.</p></div></li><li><div class="collapsible-header"><span class="moose-parameter-name">ignore_uo_dependency</span><span class="moose-parameter-header-default">False</span><span class="moose-parameter-header-description">When set to true, a UserObject retrieved by this IC will not be executed before the this IC</span></div><div class="collapsible-body"><p class="moose-parameter-description-default"><span>Default:</span>False</p><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>bool</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>No</p><p class="moose-parameter-description"><span>Description:</span>When set to true, a UserObject retrieved by this IC will not be executed before the this IC</p></div></li></ul><summary><h3 data-details-open="close"><span class="moose-section-icon"></span>Advanced Parameters</h3></summary></details></section></section></section><div class="moose-modal modal" id="fa47c942-7c42-427a-8949-d276b4d10cfb"><div class="modal-content"><h4>(moose/modules/navier_stokes/test/tests/ics/pns_test.i)</h4><pre class="moose-pre"><code class="language-text">p_initial=1.01e5
+T=273.15
+
+[Mesh]
+  [cartesian]
+    type = GeneratedMeshGenerator
+    dim = 2
+    xmin = 0
+    xmax = 1
+    ymin = 1
+    ymax = 2
+    nx = 4
+    ny = 4
+  []
+[]
+
+[FluidProperties]
+  [fp]
+    type = IdealGasFluidProperties
+  []
+[]
+
+[Problem]
+  kernel_coverage_check = false
+  solve = false
+  skip_nl_system_check = true
+[]
+
+[AuxVariables]
+  [porosity]
+    initial_condition = 0.2
+  []
+  [pressure]
+    type = MooseVariableFVReal
+  []
+  [superficial_vel_x]
+    type = MooseVariableFVReal
+  []
+  [superficial_vel_y]
+    type = MooseVariableFVReal
+  []
+  [superficial_vel_z]
+    type = MooseVariableFVReal
+  []
+  [temperature]
+    type = MooseVariableFVReal
+  []
+  [vel_x]
+    type = MooseVariableFVReal
+  []
+  [vel_y]
+    type = MooseVariableFVReal
+  []
+  [vel_z]
+    type = MooseVariableFVReal
+  []
+  [superficial_rho_ht]
+    type = MooseVariableFVReal
+  []
+  [ht]
+    type = MooseVariableFVReal
+  []
+  [e]
+    type = MooseVariableFVReal
+  []
+  [Mach]
+    type = MooseVariableFVReal
+  []
+  [superficial_rho]
+    type = MooseVariableFVReal
+  []
+  [superficial_rhou]
+    type = MooseVariableFVReal
+  []
+  [superficial_rhov]
+    type = MooseVariableFVReal
+  []
+  [superficial_rhow]
+    type = MooseVariableFVReal
+  []
+  [superficial_rho_et]
+    type = MooseVariableFVReal
+  []
+  [rho]
+    type = MooseVariableFVReal
+  []
+  [rhou]
+    type = MooseVariableFVReal
+  []
+  [rhov]
+    type = MooseVariableFVReal
+  []
+  [rhow]
+    type = MooseVariableFVReal
+  []
+  [rho_et]
+    type = MooseVariableFVReal
+  []
+  [specific_volume]
+    type = MooseVariableFVReal
+  []
+  [pressure_2]
+  []
+  [superficial_vel_x_2]
+  []
+  [superficial_vel_y_2]
+  []
+  [superficial_vel_z_2]
+  []
+  [vel_x_2]
+  []
+  [vel_y_2]
+  []
+  [vel_z_2]
+  []
+  [temperature_2]
+  []
+  [ht_2]
+  []
+  [superficial_rho_ht_2]
+  []
+  [e_2]
+  []
+  [Mach_2]
+  []
+  [superficial_rho_2]
+  []
+  [superficial_rhou_2]
+  []
+  [superficial_rhov_2]
+  []
+  [superficial_rhow_2]
+  []
+  [superficial_rho_et_2]
+  []
+  [rho_2]
+  []
+  [rhou_2]
+  []
+  [rhov_2]
+  []
+  [rhow_2]
+  []
+  [rho_et_2]
+  []
+  [specific_volume_2]
+  []
+[]
+
+[GlobalParams]
+  fluid_properties = &#x27;fp&#x27;
+  initial_pressure = ${p_initial}
+  initial_temperature = ${T}
+  initial_superficial_velocity = &#x27;1 0.2 18&#x27;
+  porosity = porosity
+[]
+
+[ICs]
+  [p]
+    type = PNSInitialCondition
+    variable = &#x27;pressure&#x27;
+  []
+  [vel_x]
+    type = PNSInitialCondition
+    variable = &#x27;vel_x&#x27;
+  []
+  [vel_y]
+    type = PNSInitialCondition
+    variable = &#x27;vel_y&#x27;
+  []
+  [vel_z]
+    type = PNSInitialCondition
+    variable = &#x27;vel_z&#x27;
+  []
+  [superficial_vel_x]
+    type = PNSInitialCondition
+    variable = &#x27;superficial_vel_x&#x27;
+  []
+  [superficial_vel_y]
+    type = PNSInitialCondition
+    variable = &#x27;superficial_vel_y&#x27;
+  []
+  [superficial_vel_z]
+    type = PNSInitialCondition
+    variable = &#x27;superficial_vel_z&#x27;
+  []
+  [temperature]
+    type = PNSInitialCondition
+    variable = &#x27;temperature&#x27;
+  []
+  [ht]
+    type = PNSInitialCondition
+    variable = &#x27;ht&#x27;
+  []
+  [superficial_rho_ht]
+    type = PNSInitialCondition
+    variable = &#x27;superficial_rho_ht&#x27;
+  []
+  [e]
+    type = PNSInitialCondition
+    variable = &#x27;e&#x27;
+  []
+  [Mach]
+    type = PNSInitialCondition
+    variable = &#x27;Mach&#x27;
+  []
+  [superficial_rho]
+    type = PNSInitialCondition
+    variable = &#x27;superficial_rho&#x27;
+  []
+  [superficial_rhou]
+    type = PNSInitialCondition
+    fluid_properties = &#x27;fp&#x27;
+    initial_pressure = ${p_initial}
+    initial_temperature = ${T}
+    initial_superficial_velocity = &#x27;1 0.2 18&#x27;
+    porosity = porosity
+    variable = &#x27;superficial_rhou&#x27;
+  []
+  [superficial_rhov]
+    type = PNSInitialCondition
+    variable = &#x27;superficial_rhov&#x27;
+  []
+  [superficial_rhow]
+    type = PNSInitialCondition
+    variable = &#x27;superficial_rhow&#x27;
+  []
+  [rho]
+    type = PNSInitialCondition
+    variable = &#x27;rho&#x27;
+  []
+  [rhou]
+    type = PNSInitialCondition
+    variable = &#x27;rhou&#x27;
+  []
+  [rhov]
+    type = PNSInitialCondition
+    variable = &#x27;rhov&#x27;
+  []
+  [rhow]
+    type = PNSInitialCondition
+    variable = &#x27;rhow&#x27;
+  []
+  [rho_et]
+    type = PNSInitialCondition
+    variable = &#x27;rho_et&#x27;
+  []
+  [superficial_rho_et]
+    type = PNSInitialCondition
+    variable = &#x27;superficial_rho_et&#x27;
+  []
+  [specific_volume]
+    type = PNSInitialCondition
+    variable = &#x27;specific_volume&#x27;
+  []
+  [p_2]
+    type = PNSInitialCondition
+    variable = &#x27;pressure_2&#x27;
+    variable_type = &#x27;pressure&#x27;
+  []
+  [superficial_vel_x_2]
+    type = PNSInitialCondition
+    variable = &#x27;superficial_vel_x_2&#x27;
+    variable_type = &#x27;superficial_vel_x&#x27;
+  []
+  [superficial_vel_y_2]
+    type = PNSInitialCondition
+    variable = &#x27;superficial_vel_y_2&#x27;
+    variable_type = &#x27;superficial_vel_y&#x27;
+  []
+  [superficial_vel_z_2]
+    type = PNSInitialCondition
+    variable = &#x27;superficial_vel_z_2&#x27;
+    variable_type = &#x27;superficial_vel_z&#x27;
+  []
+  [vel_x_2]
+    type = PNSInitialCondition
+    variable = &#x27;vel_x_2&#x27;
+    variable_type = &#x27;vel_x&#x27;
+  []
+  [vel_y_2]
+    type = PNSInitialCondition
+    variable = &#x27;vel_y_2&#x27;
+    variable_type = &#x27;vel_y&#x27;
+  []
+  [vel_z_2]
+    type = PNSInitialCondition
+    variable = &#x27;vel_z_2&#x27;
+    variable_type = &#x27;vel_z&#x27;
+  []
+  [temperature_2]
+    type = PNSInitialCondition
+    variable = &#x27;temperature_2&#x27;
+    variable_type = &#x27;temperature&#x27;
+  []
+  [superficial_ht_2]
+    type = PNSInitialCondition
+    variable = &#x27;superficial_rho_ht_2&#x27;
+    variable_type = &#x27;superficial_rho_ht&#x27;
+  []
+  [ht_2]
+    type = PNSInitialCondition
+    variable = &#x27;ht_2&#x27;
+    variable_type = &#x27;ht&#x27;
+  []
+  [e_2]
+    type = PNSInitialCondition
+    variable = &#x27;e_2&#x27;
+    variable_type = &#x27;e&#x27;
+  []
+  [Mach_2]
+    type = PNSInitialCondition
+    variable = &#x27;Mach_2&#x27;
+    variable_type = &#x27;Mach&#x27;
+  []
+  [superficial_rho_2]
+    type = PNSInitialCondition
+    variable = &#x27;superficial_rho_2&#x27;
+    variable_type = &#x27;superficial_rho&#x27;
+  []
+  [superficial_rhou_2]
+    type = PNSInitialCondition
+    variable = &#x27;superficial_rhou_2&#x27;
+    variable_type = &#x27;superficial_rhou&#x27;
+  []
+  [superficial_rhov_2]
+    type = PNSInitialCondition
+    variable = &#x27;superficial_rhov_2&#x27;
+    variable_type = &#x27;superficial_rhov&#x27;
+  []
+  [superficial_rhow_2]
+    type = PNSInitialCondition
+    variable = &#x27;superficial_rhow_2&#x27;
+    variable_type = &#x27;superficial_rhow&#x27;
+  []
+  [superficial_rho_et_2]
+    type = PNSInitialCondition
+    variable = &#x27;superficial_rho_et_2&#x27;
+    variable_type = &#x27;superficial_rho_et&#x27;
+  []
+  [rho_2]
+    type = PNSInitialCondition
+    variable = &#x27;rho_2&#x27;
+    variable_type = &#x27;rho&#x27;
+  []
+  [rhou_2]
+    type = PNSInitialCondition
+    variable = &#x27;rhou_2&#x27;
+    variable_type = &#x27;rhou&#x27;
+  []
+  [rhov_2]
+    type = PNSInitialCondition
+    variable = &#x27;rhov_2&#x27;
+    variable_type = &#x27;rhov&#x27;
+  []
+  [rhow_2]
+    type = PNSInitialCondition
+    variable = &#x27;rhow_2&#x27;
+    variable_type = &#x27;rhow&#x27;
+  []
+  [rho_et_2]
+    type = PNSInitialCondition
+    variable = &#x27;rho_et_2&#x27;
+    variable_type = &#x27;rho_et&#x27;
+  []
+  [specific_volume_2]
+    type = PNSInitialCondition
+    variable = &#x27;specific_volume_2&#x27;
+    variable_type = &#x27;specific_volume&#x27;
+  []
+[]
+
+[Executioner]
+  type = Steady
+[]
+
+[Outputs]
+  exodus = true
+[]
+</code></pre></div><div class="modal-footer"><a class="modal-close btn-flat">Close</a></div></div></div><div class="col hide-on-med-and-down l2"><div class="toc-wrapper pin-top"><ul class="section table-of-contents"><li><a href="#eda5e88e-4e7d-40ae-9dda-504b6853f65c" class="tooltipped" data-position="left" data-tooltip="Example input file syntax">Example input file syntax</a></li><li><a href="#b76d53c6-adff-447c-90d4-79063b597fc0" class="tooltipped" data-position="left" data-tooltip="Input Parameters">Input Parameters</a></li></ul></div></div></div></div></main></div></body><script type="text/javascript" src="../../contrib/materialize/materialize.min.js"></script><script type="text/javascript" src="../../contrib/clipboard/clipboard.min.js"></script><script type="text/javascript" src="../../contrib/prism/prism.min.js"></script><script type="text/javascript" src="../../js/init.js"></script><script type="text/javascript" src="../../js/navigation.js"></script><script type="text/javascript" src="../../contrib/fuse/fuse.min.js"></script><script type="text/javascript" src="../../js/search_index.js"></script><script type="text/javascript" src="../../js/sqa_moose.js"></script>

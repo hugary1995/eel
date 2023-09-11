@@ -1,0 +1,2312 @@
+<!DOCTYPE html><head><meta charset="UTF-8"><title>Incompressible Finite Volume Navier Stokes | Eel</title><link href="../../contrib/materialize/materialize.min.css" type="text/css" rel="stylesheet" media="screen,projection"></link><link href="../../contrib/prism/prism.min.css" type="text/css" rel="stylesheet"></link><link href="../../css/moose.css" type="text/css" rel="stylesheet"></link><link href="../../css/devel_moose.css" type="text/css" rel="stylesheet"></link><link href="../../css/alert_moose.css" type="text/css" rel="stylesheet"></link><link href="../../css/content_moose.css" type="text/css" rel="stylesheet"></link><link href="../../css/sqa_moose.css" type="text/css" rel="stylesheet"></link><link href="../../css/civet_moose.css" type="text/css" rel="stylesheet"></link><link href="../../contrib/katex/katex.min.css" type="text/css" rel="stylesheet"></link><link href="../../css/katex_moose.css" type="text/css" rel="stylesheet"></link><script type="text/javascript" src="../../contrib/jquery/jquery.min.js"></script><script type="text/javascript" src="../../contrib/katex/katex.min.js"></script></head><body><div class="page-wrap"><header><nav><div class="nav-wrapper container"><a href="../../index.html" class="left moose-logo hide-on-med-and-down" id="home-button">Eel</a><a href="https://github.com/hugary1995/eel" class="right"><img src="../../media/framework/github-logo.png" class="github-mark"></img><img src="../../media/framework/github-mark.png" class="github-logo"></img></a><ul class="right hide-on-med-and-down"><li><a href="../../eel.html">Documentation</a></li></ul><a href="#" class="sidenav-trigger" data-target="677b5a88-8bb1-4031-ad23-630afed2d304"><i class="material-icons">menu</i></a><ul class="sidenav" id="677b5a88-8bb1-4031-ad23-630afed2d304"><li><a href="../../eel.html">Documentation</a></li></ul><a href="#moose-search" class="modal-trigger"><i class="material-icons">search</i></a></div></nav><div class="modal modal-fixed-footer moose-search-modal" id="moose-search"><div class="modal-content container moose-search-modal-content"><div class="row"><div class="col l12"><div class="input-field"><input type_="text" onkeyup="mooseSearch()" placeholder="/index.md" id="moose-search-box"></input></div></div><div><div class="col s12" id="moose-search-results"></div></div></div></div><div class="modal-footer"><a href="#!" class="modal-close btn-flat">Close</a></div></div></header><main class="main"><div class="container"><div class="row"><div class="col hide-on-med-and-down l12"><nav class="breadcrumb-nav"><div class="nav-wrapper"><span class="breadcrumb">modules</span><a href="." class="breadcrumb">navier_stokes</a><a href="#" class="breadcrumb">insfv</a></div></nav></div></div><div class="row"><div class="moose-content col s12 m12 l10"><section id="d7199d81-8156-47fd-ad39-bf43f610b58f" data-section-level="1" data-section-text="Incompressible Finite Volume Navier Stokes"><h1 id="incompressible-finite-volume-navier-stokes">Incompressible Finite Volume Navier Stokes</h1><p>MOOSE&#x27;s Incompressible Navier Stokes Finite Volume (INSFV) implementation uses a colocated grid. To suppress the checkerboard pattern in the pressure field, <code>INSFV</code> objects support a Rhie-Chow interpolation for the velocity. Users can get a feel for INSFV by looking at some tests. In addition, to ease the burden of preparing long input files, the <a href="../../syntax/Modules/NavierStokesFV/index.html">NavierStokesFV</a> action syntax can also be used to set up INSFV simulations.</p><section class="scrollspy" id="405b3c85-4171-4f85-bad5-ce51f29d8958" data-section-level="2" data-section-text="Lid Driven Cavity Flow"><h2 id="lid-driven-cavity-flow">Lid Driven Cavity Flow</h2><p>This example solves the INS equations for mass, momentum, and energy in a closed cavity. Because there are no inlet or outlet boundaries, one pressure degree of freedom must be constrained in order to eliminate the nullspace. This is done using the <code>FVScalarLagrangeMultiplier</code> object which implements the mean-zero pressure approach. The finite element theory of the mean-zero approach is described <a href="https://github.com/idaholab/large_media/blob/master/framework/scalar_constraint_kernel.pdf">here</a>. The finite volume implementation is completed by simply substituting unity for the test functions.</p><pre class="moose-pre" style="max-height:350px;"><code class="language-text">mu = 1
+rho = 1
+k = .01
+cp = 1
+velocity_interp_method = &#x27;rc&#x27;
+advected_interp_method = &#x27;average&#x27;
+
+[GlobalParams]
+  rhie_chow_user_object = &#x27;rc&#x27;
+[]
+
+[UserObjects]
+  [rc]
+    type = INSFVRhieChowInterpolator
+    u = vel_x
+    v = vel_y
+    pressure = pressure
+  []
+[]
+
+[Mesh]
+  [gen]
+    type = GeneratedMeshGenerator
+    dim = 2
+    xmin = 0
+    xmax = 1
+    ymin = 0
+    ymax = 1
+    nx = 32
+    ny = 32
+  []
+[]
+
+[Variables]
+  [vel_x]
+    type = INSFVVelocityVariable
+  []
+  [vel_y]
+    type = INSFVVelocityVariable
+  []
+  [pressure]
+    type = INSFVPressureVariable
+  []
+  [T_fluid]
+    type = INSFVEnergyVariable
+  []
+  [lambda]
+    family = SCALAR
+    order = FIRST
+  []
+[]
+
+[AuxVariables]
+  [U]
+    order = CONSTANT
+    family = MONOMIAL
+    fv = true
+  []
+[]
+
+[AuxKernels]
+  [mag]
+    type = VectorMagnitudeAux
+    variable = U
+    x = vel_x
+    y = vel_y
+  []
+[]
+
+[FVKernels]
+  [mass]
+    type = INSFVMassAdvection
+    variable = pressure
+    advected_interp_method = ${advected_interp_method}
+    velocity_interp_method = ${velocity_interp_method}
+    rho = ${rho}
+  []
+  [mean_zero_pressure]
+    type = FVIntegralValueConstraint
+    variable = pressure
+    lambda = lambda
+  []
+
+  [u_advection]
+    type = INSFVMomentumAdvection
+    variable = vel_x
+    velocity_interp_method = ${velocity_interp_method}
+    advected_interp_method = ${advected_interp_method}
+    rho = ${rho}
+    momentum_component = &#x27;x&#x27;
+  []
+
+  [u_viscosity]
+    type = INSFVMomentumDiffusion
+    variable = vel_x
+    mu = ${mu}
+    momentum_component = &#x27;x&#x27;
+  []
+
+  [u_pressure]
+    type = INSFVMomentumPressure
+    variable = vel_x
+    momentum_component = &#x27;x&#x27;
+    pressure = pressure
+  []
+
+  [v_advection]
+    type = INSFVMomentumAdvection
+    variable = vel_y
+    velocity_interp_method = ${velocity_interp_method}
+    advected_interp_method = ${advected_interp_method}
+    rho = ${rho}
+    momentum_component = &#x27;y&#x27;
+  []
+
+  [v_viscosity]
+    type = INSFVMomentumDiffusion
+    variable = vel_y
+    mu = ${mu}
+    momentum_component = &#x27;y&#x27;
+  []
+
+  [v_pressure]
+    type = INSFVMomentumPressure
+    variable = vel_y
+    momentum_component = &#x27;y&#x27;
+    pressure = pressure
+  []
+
+  [temp_conduction]
+    type = FVDiffusion
+    coeff = &#x27;k&#x27;
+    variable = T_fluid
+  []
+
+  [temp_advection]
+    type = INSFVEnergyAdvection
+    variable = T_fluid
+    velocity_interp_method = ${velocity_interp_method}
+    advected_interp_method = ${advected_interp_method}
+  []
+[]
+
+[FVBCs]
+  [top_x]
+    type = INSFVNoSlipWallBC
+    variable = vel_x
+    boundary = &#x27;top&#x27;
+    function = &#x27;lid_function&#x27;
+  []
+
+  [no_slip_x]
+    type = INSFVNoSlipWallBC
+    variable = vel_x
+    boundary = &#x27;left right bottom&#x27;
+    function = 0
+  []
+
+  [no_slip_y]
+    type = INSFVNoSlipWallBC
+    variable = vel_y
+    boundary = &#x27;left right top bottom&#x27;
+    function = 0
+  []
+
+  [T_hot]
+    type = FVDirichletBC
+    variable = T_fluid
+    boundary = &#x27;bottom&#x27;
+    value = 1
+  []
+
+  [T_cold]
+    type = FVDirichletBC
+    variable = T_fluid
+    boundary = &#x27;top&#x27;
+    value = 0
+  []
+[]
+
+[Materials]
+  [functor_constants]
+    type = ADGenericFunctorMaterial
+    prop_names = &#x27;cp k&#x27;
+    prop_values = &#x27;${cp} ${k}&#x27;
+  []
+  [ins_fv]
+    type = INSFVEnthalpyMaterial
+    temperature = &#x27;T_fluid&#x27;
+    rho = ${rho}
+  []
+[]
+
+[Functions]
+  [lid_function]
+    type = ParsedFunction
+    expression = &#x27;4*x*(1-x)&#x27;
+  []
+[]
+
+[Executioner]
+  type = Steady
+  solve_type = &#x27;NEWTON&#x27;
+  petsc_options_iname = &#x27;-pc_type -pc_factor_shift_type&#x27;
+  petsc_options_value = &#x27;lu NONZERO&#x27;
+  nl_rel_tol = 1e-12
+[]
+
+[Outputs]
+  exodus = true
+[]
+</code></pre><a class="moose-source-filename tooltipped modal-trigger" href="#0940bd8d-4546-42bf-bfd9-63416a52b0ca">(moose/modules/navier_stokes/test/tests/finite_volume/ins/lid-driven/lid-driven-with-energy.i)</a></section><section class="scrollspy" id="e325f301-9574-4e8e-986c-cdae88d4a097" data-section-level="2" data-section-text="Channel Flow"><h2 id="channel-flow">Channel Flow</h2><p>There are examples of both no-slip and free-slip channel flow. The only difference between the two inputs is in the boundary condition block. For the no-slip case, a Dirichlet 0 condition is applied to the tangential velocity (in this case <code>u</code>); this condition is not applied for free-slip. A Dirichlet 0 condition is applied on the pressure at the outlet boundary for both inputs. This is necessary, in particular for the no-slip case, because if a Dirichlet condition is not applied for a finite volume variable at a boundary, then a zero-gradient condition is implicitly applied. This is an invalid boundary condition for no-slip; in fully developed flow we know that pressure, while constant across the channel cross-section, decreases in the direction of flow. (Otherwise without that pressure driving-force, how are you going to drive flow with the walls slowing you down?)</p><p>One may reasonably ask why we implicitly apply a zero normal-gradient condition when Dirichlet conditions are not applied. This is so that <code>FVFluxKernels</code> executed along a boundary have a value for the field in the neighboring ghost cell. <code>FVFluxKernels</code> are always executed along a boundary if <code>FVDirichletBCs</code> are active; their execution ensures that that the Dirichlet condition is weakly enforced. When <code>FVDirichletBCs</code> are not active, <code>FVFluxKernels</code> may still be forced to execute along a boundary by specifying <code>force_boundary_execution = true</code> in the respective block. Forcing execution of a <code>FVFluxKernel</code> on a boundary when no Dirichlet BC is present, e.g. with an implicit application of the zero normal-gradient condition, is typically identical to applying a corresponding <code>FVFluxBC</code> because the latter only has access to the cell center value adjacent to the boundary. By directly using a cell-center value in a <code>FVFluxBC</code> (see for example <a href="../../source/fvbcs/FVConstantScalarOutflowBC.html"><code>FVConstantScalarOutflowBC</code></a>), you are implicitly applying the same zero normal-gradient condition. In the future (see <a href="https://github.com/idaholab/moose/issues/16169">MOOSE issue #16169</a>), we hope to be able to apply more appropriate outflow conditions.</p><ul class="browser-default"><li><p>no slip</p></li></ul><pre class="moose-pre" style="max-height:350px;"><code class="language-text">mu = 1.1
+rho = 1.1
+l = 2
+U = 1
+advected_interp_method = &#x27;average&#x27;
+velocity_interp_method = &#x27;rc&#x27;
+
+[GlobalParams]
+  rhie_chow_user_object = &#x27;rc&#x27;
+[]
+
+[UserObjects]
+  [rc]
+    type = INSFVRhieChowInterpolator
+    u = vel_x
+    v = vel_y
+    pressure = pressure
+  []
+[]
+
+[Mesh]
+  [gen]
+    type = GeneratedMeshGenerator
+    dim = 2
+    xmin = 0
+    xmax = 10
+    ymin = ${fparse -l / 2}
+    ymax = ${fparse l / 2}
+    nx = 100
+    ny = 20
+  []
+  uniform_refine = 0
+[]
+
+[Variables]
+  [vel_x]
+    type = INSFVVelocityVariable
+    initial_condition = 1
+  []
+  [vel_y]
+    type = INSFVVelocityVariable
+    initial_condition = 1
+  []
+  [pressure]
+    type = INSFVPressureVariable
+  []
+[]
+
+[FVKernels]
+  [mass]
+    type = INSFVMassAdvection
+    variable = pressure
+    advected_interp_method = ${advected_interp_method}
+    velocity_interp_method = ${velocity_interp_method}
+    rho = ${rho}
+  []
+
+  [u_advection]
+    type = INSFVMomentumAdvection
+    variable = vel_x
+    advected_interp_method = ${advected_interp_method}
+    velocity_interp_method = ${velocity_interp_method}
+    rho = ${rho}
+    momentum_component = &#x27;x&#x27;
+  []
+  [u_viscosity]
+    type = INSFVMomentumDiffusion
+    variable = vel_x
+    mu = ${mu}
+    momentum_component = &#x27;x&#x27;
+  []
+  [u_pressure]
+    type = INSFVMomentumPressure
+    variable = vel_x
+    momentum_component = &#x27;x&#x27;
+    pressure = pressure
+  []
+
+  [v_advection]
+    type = INSFVMomentumAdvection
+    variable = vel_y
+    advected_interp_method = ${advected_interp_method}
+    velocity_interp_method = ${velocity_interp_method}
+    rho = ${rho}
+    momentum_component = &#x27;y&#x27;
+  []
+  [v_viscosity]
+    type = INSFVMomentumDiffusion
+    variable = vel_y
+    mu = ${mu}
+    momentum_component = &#x27;y&#x27;
+  []
+  [v_pressure]
+    type = INSFVMomentumPressure
+    variable = vel_y
+    momentum_component = &#x27;y&#x27;
+    pressure = pressure
+  []
+[]
+
+[FVBCs]
+  [inlet-u]
+    type = INSFVInletVelocityBC
+    boundary = &#x27;left&#x27;
+    variable = vel_x
+    function = &#x27;${U}&#x27;
+  []
+  [inlet-v]
+    type = INSFVInletVelocityBC
+    boundary = &#x27;left&#x27;
+    variable = vel_y
+    function = &#x27;0&#x27;
+  []
+  [walls-u]
+    type = INSFVNoSlipWallBC
+    boundary = &#x27;top bottom&#x27;
+    variable = vel_x
+    function = 0
+  []
+  [walls-v]
+    type = INSFVNoSlipWallBC
+    boundary = &#x27;top bottom&#x27;
+    variable = vel_y
+    function = 0
+  []
+  [outlet_p]
+    type = INSFVOutletPressureBC
+    boundary = &#x27;right&#x27;
+    variable = pressure
+    function = &#x27;0&#x27;
+  []
+[]
+
+[Executioner]
+  type = Steady
+  solve_type = &#x27;NEWTON&#x27;
+  nl_rel_tol = 1e-12
+[]
+
+[Preconditioning]
+  active = FSP
+  [FSP]
+    type = FSP
+    # It is the starting point of splitting
+    topsplit = &#x27;up&#x27; # &#x27;up&#x27; should match the following block name
+    [up]
+      splitting = &#x27;u p&#x27; # &#x27;u&#x27; and &#x27;p&#x27; are the names of subsolvers
+      splitting_type  = schur
+      # Splitting type is set as schur, because the pressure part of Stokes-like systems
+      # is not diagonally dominant. CAN NOT use additive, multiplicative and etc.
+      #
+      # Original system:
+      #
+      # | Auu Aup | | u | = | f_u |
+      # | Apu 0   | | p |   | f_p |
+      #
+      # is factorized into
+      #
+      # |I             0 | | Auu  0|  | I  Auu^{-1}*Aup | | u | = | f_u |
+      # |Apu*Auu^{-1}  I | | 0   -S|  | 0  I            | | p |   | f_p |
+      #
+      # where
+      #
+      # S = Apu*Auu^{-1}*Aup
+      #
+      # The preconditioning is accomplished via the following steps
+      #
+      # (1) p* = f_p - Apu*Auu^{-1}f_u,
+      # (2) p = (-S)^{-1} p*
+      # (3) u = Auu^{-1}(f_u-Aup*p)
+
+      petsc_options_iname = &#x27;-pc_fieldsplit_schur_fact_type  -pc_fieldsplit_schur_precondition -ksp_gmres_restart -ksp_rtol -ksp_type&#x27;
+      petsc_options_value = &#x27;full                            selfp                             300                1e-4      fgmres&#x27;
+    []
+    [u]
+      vars = &#x27;vel_x vel_y&#x27;
+      petsc_options_iname = &#x27;-pc_type -pc_hypre_type -ksp_type -ksp_rtol -ksp_gmres_restart -ksp_pc_side&#x27;
+      petsc_options_value = &#x27;hypre    boomeramg      gmres    5e-1      300                 right&#x27;
+    []
+    [p]
+      vars = &#x27;pressure&#x27;
+      petsc_options_iname = &#x27;-ksp_type -ksp_gmres_restart -ksp_rtol -pc_type -ksp_pc_side&#x27;
+      petsc_options_value = &#x27;gmres    300                5e-1      jacobi    right&#x27;
+    []
+  []
+  [SMP]
+    type = SMP
+    full = true
+    petsc_options_iname = &#x27;-pc_type -pc_factor_shift_type&#x27;
+    petsc_options_value = &#x27;lu       NONZERO&#x27;
+  []
+[]
+
+[Outputs]
+  print_linear_residuals = true
+  print_nonlinear_residuals = true
+  [out]
+    type = Exodus
+    hide = &#x27;Re lin cum_lin&#x27;
+  []
+  [perf]
+    type = PerfGraphOutput
+  []
+[]
+
+[Postprocessors]
+  [Re]
+    type = ParsedPostprocessor
+    function = &#x27;${rho} * ${l} * ${U}&#x27;
+    pp_names = &#x27;&#x27;
+  []
+  [lin]
+    type = NumLinearIterations
+  []
+  [cum_lin]
+    type = CumulativeValuePostprocessor
+    postprocessor = lin
+  []
+[]
+</code></pre><a class="moose-source-filename tooltipped modal-trigger" href="#29443d76-2dce-455b-bcd9-a5ffa65ed840">(moose/modules/navier_stokes/test/tests/finite_volume/ins/channel-flow/2d-rc-no-slip.i)</a><ul class="browser-default"><li><p>free slip</p></li></ul><pre class="moose-pre" style="max-height:350px;"><code class="language-text">mu = 1.1
+rho = 1.1
+advected_interp_method = &#x27;average&#x27;
+velocity_interp_method = &#x27;rc&#x27;
+
+[Mesh]
+  [gen]
+    type = GeneratedMeshGenerator
+    dim = 2
+    xmin = 0
+    xmax = 10
+    ymin = -1
+    ymax = 1
+    nx = 100
+    ny = 20
+  []
+[]
+
+[GlobalParams]
+  rhie_chow_user_object = &#x27;rc&#x27;
+[]
+
+[UserObjects]
+  [rc]
+    type = INSFVRhieChowInterpolator
+    u = vel_x
+    v = vel_y
+    pressure = pressure
+  []
+[]
+
+[Variables]
+  [vel_x]
+    type = INSFVVelocityVariable
+    initial_condition = 1
+  []
+  [vel_y]
+    type = INSFVVelocityVariable
+    initial_condition = 1
+  []
+  [pressure]
+    type = INSFVPressureVariable
+  []
+[]
+
+[FVKernels]
+  [mass]
+    type = INSFVMassAdvection
+    variable = pressure
+    advected_interp_method = ${advected_interp_method}
+    velocity_interp_method = ${velocity_interp_method}
+    rho = ${rho}
+  []
+
+  [u_advection]
+    type = INSFVMomentumAdvection
+    variable = vel_x
+    advected_interp_method = ${advected_interp_method}
+    velocity_interp_method = ${velocity_interp_method}
+    rho = ${rho}
+    momentum_component = &#x27;x&#x27;
+  []
+  [u_viscosity]
+    type = INSFVMomentumDiffusion
+    variable = vel_x
+    mu = ${mu}
+    momentum_component = &#x27;x&#x27;
+  []
+  [u_pressure]
+    type = INSFVMomentumPressure
+    variable = vel_x
+    momentum_component = &#x27;x&#x27;
+    pressure = pressure
+  []
+
+  [v_advection]
+    type = INSFVMomentumAdvection
+    variable = vel_y
+    advected_interp_method = ${advected_interp_method}
+    velocity_interp_method = ${velocity_interp_method}
+    rho = ${rho}
+    momentum_component = &#x27;y&#x27;
+  []
+  [v_viscosity]
+    type = INSFVMomentumDiffusion
+    variable = vel_y
+    mu = ${mu}
+    momentum_component = &#x27;y&#x27;
+  []
+  [v_pressure]
+    type = INSFVMomentumPressure
+    variable = vel_y
+    momentum_component = &#x27;y&#x27;
+    pressure = pressure
+  []
+[]
+
+[FVBCs]
+  [inlet-u]
+    type = INSFVInletVelocityBC
+    boundary = &#x27;left&#x27;
+    variable = vel_x
+    function = &#x27;1&#x27;
+  []
+  [inlet-v]
+    type = INSFVInletVelocityBC
+    boundary = &#x27;left&#x27;
+    variable = vel_y
+    function = 0
+  []
+  [walls-u]
+    type = INSFVNaturalFreeSlipBC
+    boundary = &#x27;top bottom&#x27;
+    variable = vel_x
+    momentum_component = &#x27;x&#x27;
+  []
+  [walls-v]
+    type = INSFVNaturalFreeSlipBC
+    boundary = &#x27;top bottom&#x27;
+    variable = vel_y
+    momentum_component = &#x27;y&#x27;
+  []
+  [outlet_p]
+    type = INSFVOutletPressureBC
+    boundary = &#x27;right&#x27;
+    variable = pressure
+    function = 0
+  []
+[]
+
+[Executioner]
+  type = Steady
+  solve_type = &#x27;NEWTON&#x27;
+  petsc_options_iname = &#x27;-pc_type -pc_factor_shift_type&#x27;
+  petsc_options_value = &#x27;lu NONZERO&#x27;
+  nl_rel_tol = 1e-12
+[]
+
+[Outputs]
+  exodus = true
+  csv = true
+[]
+</code></pre><a class="moose-source-filename tooltipped modal-trigger" href="#07034d66-13be-4a30-a40a-eec9ce7b4d72">(moose/modules/navier_stokes/test/tests/finite_volume/ins/channel-flow/2d-rc.i)</a></section><section class="scrollspy" id="5b494ea7-2a06-4891-9350-2a5ead68e5d2" data-section-level="2" data-section-text="Axisymmetric Channel Flow"><h2 id="axisymmetric-channel-flow">Axisymmetric Channel Flow</h2><p>Channel flow in axisymmetric coordinates is also implemented. Below is an example of solving the no-slip problem using an <code>average</code> interpolation for the velocity:</p><pre class="moose-pre" style="max-height:350px;"><code class="language-text">mu = 1
+rho = 1
+advected_interp_method = &#x27;average&#x27;
+velocity_interp_method = &#x27;average&#x27;
+
+[GlobalParams]
+  rhie_chow_user_object = &#x27;rc&#x27;
+[]
+
+[UserObjects]
+  [rc]
+    type = INSFVRhieChowInterpolator
+    u = u
+    v = v
+    pressure = pressure
+  []
+[]
+
+[Mesh]
+  [gen]
+    type = GeneratedMeshGenerator
+    dim = 2
+    xmin = 0
+    xmax = 1
+    ymin = 0
+    ymax = 4
+    nx = 10
+    ny = 40
+  []
+[]
+
+[Problem]
+  coord_type = &#x27;RZ&#x27;
+[]
+
+[Variables]
+  [u]
+    type = INSFVVelocityVariable
+    initial_condition = 1
+  []
+  [v]
+    type = INSFVVelocityVariable
+    initial_condition = 1
+  []
+  [pressure]
+    type = INSFVPressureVariable
+  []
+[]
+
+[FVKernels]
+  [mass]
+    type = INSFVMassAdvection
+    variable = pressure
+    advected_interp_method = ${advected_interp_method}
+    velocity_interp_method = ${velocity_interp_method}
+    rho = ${rho}
+  []
+
+  [u_advection]
+    type = INSFVMomentumAdvection
+    variable = u
+    advected_interp_method = ${advected_interp_method}
+    velocity_interp_method = ${velocity_interp_method}
+    rho = ${rho}
+    momentum_component = &#x27;x&#x27;
+  []
+  [u_viscosity]
+    type = INSFVMomentumDiffusion
+    variable = u
+    mu = ${mu}
+    momentum_component = &#x27;x&#x27;
+  []
+  [u_pressure]
+    type = INSFVMomentumPressure
+    variable = u
+    momentum_component = &#x27;x&#x27;
+    pressure = pressure
+  []
+
+  [v_advection]
+    type = INSFVMomentumAdvection
+    variable = v
+    advected_interp_method = ${advected_interp_method}
+    velocity_interp_method = ${velocity_interp_method}
+    rho = ${rho}
+    momentum_component = &#x27;y&#x27;
+  []
+  [v_viscosity]
+    type = INSFVMomentumDiffusion
+    variable = v
+    mu = ${mu}
+    momentum_component = &#x27;y&#x27;
+  []
+  [v_pressure]
+    type = INSFVMomentumPressure
+    variable = v
+    momentum_component = &#x27;y&#x27;
+    pressure = pressure
+  []
+[]
+
+[FVBCs]
+  [inlet-u]
+    type = INSFVInletVelocityBC
+    boundary = &#x27;bottom&#x27;
+    variable = u
+    function = 0
+  []
+  [inlet-v]
+    type = INSFVInletVelocityBC
+    boundary = &#x27;bottom&#x27;
+    variable = v
+    function = 1
+  []
+  [no-slip-wall-u]
+    type = INSFVNoSlipWallBC
+    boundary = &#x27;right&#x27;
+    variable = u
+    function = 0
+  []
+  [no-slip-wall-v]
+    type = INSFVNoSlipWallBC
+    boundary = &#x27;right&#x27;
+    variable = v
+    function = 0
+  []
+  [outlet-p]
+    type = INSFVOutletPressureBC
+    boundary = &#x27;top&#x27;
+    variable = pressure
+    function = 0
+  []
+  [axis-u]
+    type = INSFVSymmetryVelocityBC
+    boundary = &#x27;left&#x27;
+    variable = u
+    u = u
+    v = v
+    mu = ${mu}
+    momentum_component = x
+  []
+  [axis-v]
+    type = INSFVSymmetryVelocityBC
+    boundary = &#x27;left&#x27;
+    variable = v
+    u = u
+    v = v
+    mu = ${mu}
+    momentum_component = y
+  []
+  [axis-p]
+    type = INSFVSymmetryPressureBC
+    boundary = &#x27;left&#x27;
+    variable = pressure
+  []
+[]
+
+[Postprocessors]
+  [in]
+    type = SideIntegralVariablePostprocessor
+    variable = v
+    boundary = &#x27;bottom&#x27;
+  []
+  [out]
+    type = SideIntegralVariablePostprocessor
+    variable = v
+    boundary = &#x27;top&#x27;
+  []
+[]
+
+[Executioner]
+  type = Steady
+  solve_type = &#x27;NEWTON&#x27;
+  petsc_options_iname = &#x27;-pc_type -pc_factor_shift_type&#x27;
+  petsc_options_value = &#x27;lu NONZERO&#x27;
+  nl_rel_tol = 1e-12
+[]
+
+[Outputs]
+  exodus = true
+  csv = true
+[]
+</code></pre><a class="moose-source-filename tooltipped modal-trigger" href="#0ba51be4-4f72-47c1-8239-df7400c392b2">(moose/modules/navier_stokes/test/tests/finite_volume/ins/channel-flow/cylindrical/2d-average-no-slip.i)</a><p>The Rhie-Chow interpolation can be used simply by specifying <code>velocity_interp_method=&#x27;rc&#x27;</code> either in the input file or from the command line. An axisymmetric example with free slip conditions, using the Rhie-Chow interpolation is shown below:</p><pre class="moose-pre" style="max-height:350px;"><code class="language-text">mu = 1.1
+rho = 1.1
+advected_interp_method = &#x27;average&#x27;
+velocity_interp_method = &#x27;rc&#x27;
+
+[Mesh]
+  [gen]
+    type = GeneratedMeshGenerator
+    dim = 2
+    xmin = 0
+    xmax = 2
+    ymin = 0
+    ymax = 10
+    nx = 10
+    ny = 50
+  []
+[]
+
+[Problem]
+  coord_type = &#x27;RZ&#x27;
+[]
+
+[GlobalParams]
+  rhie_chow_user_object = &#x27;rc&#x27;
+[]
+
+[UserObjects]
+  [rc]
+    type = INSFVRhieChowInterpolator
+    u = u
+    v = v
+    pressure = pressure
+  []
+[]
+
+[Variables]
+  [u]
+    type = INSFVVelocityVariable
+    initial_condition = 1
+  []
+  [v]
+    type = INSFVVelocityVariable
+    initial_condition = 1
+  []
+  [pressure]
+    type = INSFVPressureVariable
+  []
+[]
+
+[FVKernels]
+  [mass]
+    type = INSFVMassAdvection
+    variable = pressure
+    advected_interp_method = ${advected_interp_method}
+    velocity_interp_method = ${velocity_interp_method}
+    rho = ${rho}
+  []
+
+  [u_advection]
+    type = INSFVMomentumAdvection
+    variable = u
+    advected_interp_method = ${advected_interp_method}
+    velocity_interp_method = ${velocity_interp_method}
+    rho = ${rho}
+    momentum_component = &#x27;x&#x27;
+  []
+  [u_viscosity]
+    type = INSFVMomentumDiffusion
+    variable = u
+    mu = ${mu}
+    momentum_component = &#x27;x&#x27;
+  []
+  [u_pressure]
+    type = INSFVMomentumPressure
+    variable = u
+    momentum_component = &#x27;x&#x27;
+    pressure = pressure
+  []
+
+  [v_advection]
+    type = INSFVMomentumAdvection
+    variable = v
+    advected_interp_method = ${advected_interp_method}
+    velocity_interp_method = ${velocity_interp_method}
+    rho = ${rho}
+    momentum_component = &#x27;y&#x27;
+  []
+  [v_viscosity]
+    type = INSFVMomentumDiffusion
+    variable = v
+    mu = ${mu}
+    momentum_component = &#x27;y&#x27;
+  []
+  [v_pressure]
+    type = INSFVMomentumPressure
+    variable = v
+    momentum_component = &#x27;y&#x27;
+    pressure = pressure
+  []
+[]
+
+[FVBCs]
+  [inlet-u]
+    type = INSFVInletVelocityBC
+    boundary = &#x27;bottom&#x27;
+    variable = u
+    function = 0
+  []
+  [inlet-v]
+    type = INSFVInletVelocityBC
+    boundary = &#x27;bottom&#x27;
+    variable = v
+    function = 1
+  []
+  [free-slip-wall-u]
+    type = INSFVNaturalFreeSlipBC
+    boundary = &#x27;right&#x27;
+    variable = u
+    momentum_component = &#x27;x&#x27;
+  []
+  [free-slip-wall-v]
+    type = INSFVNaturalFreeSlipBC
+    boundary = &#x27;right&#x27;
+    variable = v
+    momentum_component = &#x27;y&#x27;
+  []
+  [outlet-p]
+    type = INSFVOutletPressureBC
+    boundary = &#x27;top&#x27;
+    variable = pressure
+    function = 0
+  []
+  [axis-u]
+    type = INSFVSymmetryVelocityBC
+    boundary = &#x27;left&#x27;
+    variable = u
+    u = u
+    v = v
+    mu = ${mu}
+    momentum_component = x
+  []
+  [axis-v]
+    type = INSFVSymmetryVelocityBC
+    boundary = &#x27;left&#x27;
+    variable = v
+    u = u
+    v = v
+    mu = ${mu}
+    momentum_component = y
+  []
+  [axis-p]
+    type = INSFVSymmetryPressureBC
+    boundary = &#x27;left&#x27;
+    variable = pressure
+  []
+[]
+
+[Postprocessors]
+  [in]
+    type = SideIntegralVariablePostprocessor
+    variable = v
+    boundary = &#x27;bottom&#x27;
+    outputs = &#x27;csv&#x27;
+  []
+  [out]
+    type = SideIntegralVariablePostprocessor
+    variable = v
+    boundary = &#x27;top&#x27;
+    outputs = &#x27;csv&#x27;
+  []
+[]
+
+[Executioner]
+  type = Steady
+  solve_type = &#x27;NEWTON&#x27;
+  petsc_options_iname = &#x27;-pc_type -pc_factor_shift_type&#x27;
+  petsc_options_value = &#x27;lu NONZERO&#x27;
+  nl_rel_tol = 1e-12
+[]
+
+[Outputs]
+  exodus = true
+  csv = true
+[]
+</code></pre><a class="moose-source-filename tooltipped modal-trigger" href="#dc7b7b9d-4a7b-4f2f-b53e-c24599e99acb">(moose/modules/navier_stokes/test/tests/finite_volume/ins/channel-flow/cylindrical/2d-rc-slip.i)</a></section><section class="scrollspy" id="7650f9d9-6eb0-4cfe-80c0-8d20ed2d4387" data-section-level="2" data-section-text="Skewness - correction"><h2 id="skewness-correction">Skewness-correction</h2><p>The skewness-correction of different variables can be enabled by defining the <code>face_interp_method=skewness-corrected</code> parameter for the INSFVVariables and selecting it as an option in the advection kernels. It has proven to increase accuracy on unstructured grids. In case of a skewed 2D triangulation, it increases the order of the <span class="moose-katex-inline-equation" id="moose-equation-7fab5614-cf83-476c-b692-fd38b4101051"><script>var element = document.getElementById("moose-equation-7fab5614-cf83-476c-b692-fd38b4101051");katex.render("L^2", element, {displayMode:false,throwOnError:false,macros:{"\\bs":"\\boldsymbol{#1}","\\grad":"\\bs{\\nabla}","\\divergence":"\\grad \\cdot","\\norm":"\\left\\lVert#1\\right\\rVert","\\abs":"\\left\\lvert#1\\right\\rvert","\\diff":"\\text{ d}#1","\\bfa":"\\boldsymbol{a}","\\bfb":"\\boldsymbol{b}","\\bfc":"\\boldsymbol{c}","\\bfd":"\\boldsymbol{d}","\\bfe":"\\boldsymbol{e}","\\bff":"\\boldsymbol{f}","\\bfg":"\\boldsymbol{g}","\\bfh":"\\boldsymbol{h}","\\bfi":"\\boldsymbol{i}","\\bfj":"\\boldsymbol{j}","\\bfk":"\\boldsymbol{k}","\\bfl":"\\boldsymbol{l}","\\bfm":"\\boldsymbol{m}","\\bfn":"\\boldsymbol{n}","\\bfo":"\\boldsymbol{o}","\\bfp":"\\boldsymbol{p}","\\bfq":"\\boldsymbol{q}","\\bfr":"\\boldsymbol{r}","\\bfs":"\\boldsymbol{s}","\\bft":"\\boldsymbol{t}","\\bfu":"\\boldsymbol{u}","\\bfv":"\\boldsymbol{v}","\\bfw":"\\boldsymbol{w}","\\bfx":"\\boldsymbol{x}","\\bfy":"\\boldsymbol{y}","\\bfz":"\\boldsymbol{z}","\\bfA":"\\boldsymbol{A}","\\bfB":"\\boldsymbol{B}","\\bfC":"\\boldsymbol{C}","\\bfD":"\\boldsymbol{D}","\\bfE":"\\boldsymbol{E}","\\bfF":"\\boldsymbol{F}","\\bfG":"\\boldsymbol{G}","\\bfH":"\\boldsymbol{H}","\\bfI":"\\boldsymbol{I}","\\bfJ":"\\boldsymbol{J}","\\bfK":"\\boldsymbol{K}","\\bfL":"\\boldsymbol{L}","\\bfM":"\\boldsymbol{M}","\\bfN":"\\boldsymbol{N}","\\bfO":"\\boldsymbol{O}","\\bfP":"\\boldsymbol{P}","\\bfQ":"\\boldsymbol{Q}","\\bfR":"\\boldsymbol{R}","\\bfS":"\\boldsymbol{S}","\\bfT":"\\boldsymbol{T}","\\bfU":"\\boldsymbol{U}","\\bfV":"\\boldsymbol{V}","\\bfW":"\\boldsymbol{W}","\\bfX":"\\boldsymbol{X}","\\bfY":"\\boldsymbol{Y}","\\bfZ":"\\boldsymbol{Z}"}});</script></span> error from <span class="moose-katex-inline-equation" id="moose-equation-36c956ac-ee92-45cb-899a-fe00b1349aec"><script>var element = document.getElementById("moose-equation-36c956ac-ee92-45cb-899a-fe00b1349aec");katex.render("O(h)", element, {displayMode:false,throwOnError:false,macros:{"\\bs":"\\boldsymbol{#1}","\\grad":"\\bs{\\nabla}","\\divergence":"\\grad \\cdot","\\norm":"\\left\\lVert#1\\right\\rVert","\\abs":"\\left\\lvert#1\\right\\rvert","\\diff":"\\text{ d}#1","\\bfa":"\\boldsymbol{a}","\\bfb":"\\boldsymbol{b}","\\bfc":"\\boldsymbol{c}","\\bfd":"\\boldsymbol{d}","\\bfe":"\\boldsymbol{e}","\\bff":"\\boldsymbol{f}","\\bfg":"\\boldsymbol{g}","\\bfh":"\\boldsymbol{h}","\\bfi":"\\boldsymbol{i}","\\bfj":"\\boldsymbol{j}","\\bfk":"\\boldsymbol{k}","\\bfl":"\\boldsymbol{l}","\\bfm":"\\boldsymbol{m}","\\bfn":"\\boldsymbol{n}","\\bfo":"\\boldsymbol{o}","\\bfp":"\\boldsymbol{p}","\\bfq":"\\boldsymbol{q}","\\bfr":"\\boldsymbol{r}","\\bfs":"\\boldsymbol{s}","\\bft":"\\boldsymbol{t}","\\bfu":"\\boldsymbol{u}","\\bfv":"\\boldsymbol{v}","\\bfw":"\\boldsymbol{w}","\\bfx":"\\boldsymbol{x}","\\bfy":"\\boldsymbol{y}","\\bfz":"\\boldsymbol{z}","\\bfA":"\\boldsymbol{A}","\\bfB":"\\boldsymbol{B}","\\bfC":"\\boldsymbol{C}","\\bfD":"\\boldsymbol{D}","\\bfE":"\\boldsymbol{E}","\\bfF":"\\boldsymbol{F}","\\bfG":"\\boldsymbol{G}","\\bfH":"\\boldsymbol{H}","\\bfI":"\\boldsymbol{I}","\\bfJ":"\\boldsymbol{J}","\\bfK":"\\boldsymbol{K}","\\bfL":"\\boldsymbol{L}","\\bfM":"\\boldsymbol{M}","\\bfN":"\\boldsymbol{N}","\\bfO":"\\boldsymbol{O}","\\bfP":"\\boldsymbol{P}","\\bfQ":"\\boldsymbol{Q}","\\bfR":"\\boldsymbol{R}","\\bfS":"\\boldsymbol{S}","\\bfT":"\\boldsymbol{T}","\\bfU":"\\boldsymbol{U}","\\bfV":"\\boldsymbol{V}","\\bfW":"\\boldsymbol{W}","\\bfX":"\\boldsymbol{X}","\\bfY":"\\boldsymbol{Y}","\\bfZ":"\\boldsymbol{Z}"}});</script></span> to <span class="moose-katex-inline-equation" id="moose-equation-05770ad2-c6eb-474d-a4fa-4203cacce9c5"><script>var element = document.getElementById("moose-equation-05770ad2-c6eb-474d-a4fa-4203cacce9c5");katex.render("O(h^2)", element, {displayMode:false,throwOnError:false,macros:{"\\bs":"\\boldsymbol{#1}","\\grad":"\\bs{\\nabla}","\\divergence":"\\grad \\cdot","\\norm":"\\left\\lVert#1\\right\\rVert","\\abs":"\\left\\lvert#1\\right\\rvert","\\diff":"\\text{ d}#1","\\bfa":"\\boldsymbol{a}","\\bfb":"\\boldsymbol{b}","\\bfc":"\\boldsymbol{c}","\\bfd":"\\boldsymbol{d}","\\bfe":"\\boldsymbol{e}","\\bff":"\\boldsymbol{f}","\\bfg":"\\boldsymbol{g}","\\bfh":"\\boldsymbol{h}","\\bfi":"\\boldsymbol{i}","\\bfj":"\\boldsymbol{j}","\\bfk":"\\boldsymbol{k}","\\bfl":"\\boldsymbol{l}","\\bfm":"\\boldsymbol{m}","\\bfn":"\\boldsymbol{n}","\\bfo":"\\boldsymbol{o}","\\bfp":"\\boldsymbol{p}","\\bfq":"\\boldsymbol{q}","\\bfr":"\\boldsymbol{r}","\\bfs":"\\boldsymbol{s}","\\bft":"\\boldsymbol{t}","\\bfu":"\\boldsymbol{u}","\\bfv":"\\boldsymbol{v}","\\bfw":"\\boldsymbol{w}","\\bfx":"\\boldsymbol{x}","\\bfy":"\\boldsymbol{y}","\\bfz":"\\boldsymbol{z}","\\bfA":"\\boldsymbol{A}","\\bfB":"\\boldsymbol{B}","\\bfC":"\\boldsymbol{C}","\\bfD":"\\boldsymbol{D}","\\bfE":"\\boldsymbol{E}","\\bfF":"\\boldsymbol{F}","\\bfG":"\\boldsymbol{G}","\\bfH":"\\boldsymbol{H}","\\bfI":"\\boldsymbol{I}","\\bfJ":"\\boldsymbol{J}","\\bfK":"\\boldsymbol{K}","\\bfL":"\\boldsymbol{L}","\\bfM":"\\boldsymbol{M}","\\bfN":"\\boldsymbol{N}","\\bfO":"\\boldsymbol{O}","\\bfP":"\\boldsymbol{P}","\\bfQ":"\\boldsymbol{Q}","\\bfR":"\\boldsymbol{R}","\\bfS":"\\boldsymbol{S}","\\bfT":"\\boldsymbol{T}","\\bfU":"\\boldsymbol{U}","\\bfV":"\\boldsymbol{V}","\\bfW":"\\boldsymbol{W}","\\bfX":"\\boldsymbol{X}","\\bfY":"\\boldsymbol{Y}","\\bfZ":"\\boldsymbol{Z}"}});</script></span> for velocity, and from <span class="moose-katex-inline-equation" id="moose-equation-f5345174-86fb-4602-9053-73a75595c929"><script>var element = document.getElementById("moose-equation-f5345174-86fb-4602-9053-73a75595c929");katex.render("O(h^{0.5})", element, {displayMode:false,throwOnError:false,macros:{"\\bs":"\\boldsymbol{#1}","\\grad":"\\bs{\\nabla}","\\divergence":"\\grad \\cdot","\\norm":"\\left\\lVert#1\\right\\rVert","\\abs":"\\left\\lvert#1\\right\\rvert","\\diff":"\\text{ d}#1","\\bfa":"\\boldsymbol{a}","\\bfb":"\\boldsymbol{b}","\\bfc":"\\boldsymbol{c}","\\bfd":"\\boldsymbol{d}","\\bfe":"\\boldsymbol{e}","\\bff":"\\boldsymbol{f}","\\bfg":"\\boldsymbol{g}","\\bfh":"\\boldsymbol{h}","\\bfi":"\\boldsymbol{i}","\\bfj":"\\boldsymbol{j}","\\bfk":"\\boldsymbol{k}","\\bfl":"\\boldsymbol{l}","\\bfm":"\\boldsymbol{m}","\\bfn":"\\boldsymbol{n}","\\bfo":"\\boldsymbol{o}","\\bfp":"\\boldsymbol{p}","\\bfq":"\\boldsymbol{q}","\\bfr":"\\boldsymbol{r}","\\bfs":"\\boldsymbol{s}","\\bft":"\\boldsymbol{t}","\\bfu":"\\boldsymbol{u}","\\bfv":"\\boldsymbol{v}","\\bfw":"\\boldsymbol{w}","\\bfx":"\\boldsymbol{x}","\\bfy":"\\boldsymbol{y}","\\bfz":"\\boldsymbol{z}","\\bfA":"\\boldsymbol{A}","\\bfB":"\\boldsymbol{B}","\\bfC":"\\boldsymbol{C}","\\bfD":"\\boldsymbol{D}","\\bfE":"\\boldsymbol{E}","\\bfF":"\\boldsymbol{F}","\\bfG":"\\boldsymbol{G}","\\bfH":"\\boldsymbol{H}","\\bfI":"\\boldsymbol{I}","\\bfJ":"\\boldsymbol{J}","\\bfK":"\\boldsymbol{K}","\\bfL":"\\boldsymbol{L}","\\bfM":"\\boldsymbol{M}","\\bfN":"\\boldsymbol{N}","\\bfO":"\\boldsymbol{O}","\\bfP":"\\boldsymbol{P}","\\bfQ":"\\boldsymbol{Q}","\\bfR":"\\boldsymbol{R}","\\bfS":"\\boldsymbol{S}","\\bfT":"\\boldsymbol{T}","\\bfU":"\\boldsymbol{U}","\\bfV":"\\boldsymbol{V}","\\bfW":"\\boldsymbol{W}","\\bfX":"\\boldsymbol{X}","\\bfY":"\\boldsymbol{Y}","\\bfZ":"\\boldsymbol{Z}"}});</script></span> to <span class="moose-katex-inline-equation" id="moose-equation-4610382c-705f-4fe0-a497-7d921dd29903"><script>var element = document.getElementById("moose-equation-4610382c-705f-4fe0-a497-7d921dd29903");katex.render("O(h)", element, {displayMode:false,throwOnError:false,macros:{"\\bs":"\\boldsymbol{#1}","\\grad":"\\bs{\\nabla}","\\divergence":"\\grad \\cdot","\\norm":"\\left\\lVert#1\\right\\rVert","\\abs":"\\left\\lvert#1\\right\\rvert","\\diff":"\\text{ d}#1","\\bfa":"\\boldsymbol{a}","\\bfb":"\\boldsymbol{b}","\\bfc":"\\boldsymbol{c}","\\bfd":"\\boldsymbol{d}","\\bfe":"\\boldsymbol{e}","\\bff":"\\boldsymbol{f}","\\bfg":"\\boldsymbol{g}","\\bfh":"\\boldsymbol{h}","\\bfi":"\\boldsymbol{i}","\\bfj":"\\boldsymbol{j}","\\bfk":"\\boldsymbol{k}","\\bfl":"\\boldsymbol{l}","\\bfm":"\\boldsymbol{m}","\\bfn":"\\boldsymbol{n}","\\bfo":"\\boldsymbol{o}","\\bfp":"\\boldsymbol{p}","\\bfq":"\\boldsymbol{q}","\\bfr":"\\boldsymbol{r}","\\bfs":"\\boldsymbol{s}","\\bft":"\\boldsymbol{t}","\\bfu":"\\boldsymbol{u}","\\bfv":"\\boldsymbol{v}","\\bfw":"\\boldsymbol{w}","\\bfx":"\\boldsymbol{x}","\\bfy":"\\boldsymbol{y}","\\bfz":"\\boldsymbol{z}","\\bfA":"\\boldsymbol{A}","\\bfB":"\\boldsymbol{B}","\\bfC":"\\boldsymbol{C}","\\bfD":"\\boldsymbol{D}","\\bfE":"\\boldsymbol{E}","\\bfF":"\\boldsymbol{F}","\\bfG":"\\boldsymbol{G}","\\bfH":"\\boldsymbol{H}","\\bfI":"\\boldsymbol{I}","\\bfJ":"\\boldsymbol{J}","\\bfK":"\\boldsymbol{K}","\\bfL":"\\boldsymbol{L}","\\bfM":"\\boldsymbol{M}","\\bfN":"\\boldsymbol{N}","\\bfO":"\\boldsymbol{O}","\\bfP":"\\boldsymbol{P}","\\bfQ":"\\boldsymbol{Q}","\\bfR":"\\boldsymbol{R}","\\bfS":"\\boldsymbol{S}","\\bfT":"\\boldsymbol{T}","\\bfU":"\\boldsymbol{U}","\\bfV":"\\boldsymbol{V}","\\bfW":"\\boldsymbol{W}","\\bfX":"\\boldsymbol{X}","\\bfY":"\\boldsymbol{Y}","\\bfZ":"\\boldsymbol{Z}"}});</script></span> for pressure. For an example see:</p><pre class="moose-pre" style="max-height:350px;"><code class="language-text">mu = 1.0
+rho = 1.0
+
+[Problem]
+  error_on_jacobian_nonzero_reallocation = true
+[]
+
+[Mesh]
+  [gen_mesh]
+    type = FileMeshGenerator
+    file = skewed.msh
+  []
+  coord_type = &#x27;XYZ&#x27;
+[]
+
+[GlobalParams]
+  rhie_chow_user_object = &#x27;rc&#x27;
+[]
+
+[UserObjects]
+  [rc]
+    type = INSFVRhieChowInterpolator
+    u = vel_x
+    v = vel_y
+    pressure = pressure
+  []
+[]
+
+[Variables]
+  [vel_x]
+    type = INSFVVelocityVariable
+    initial_condition = 1
+    face_interp_method = &#x27;skewness-corrected&#x27;
+  []
+  [vel_y]
+    type = INSFVVelocityVariable
+    initial_condition = 1
+    face_interp_method = &#x27;skewness-corrected&#x27;
+  []
+  [pressure]
+    type = INSFVPressureVariable
+    face_interp_method = &#x27;skewness-corrected&#x27;
+  []
+  [lambda]
+    family = SCALAR
+    order = FIRST
+  []
+[]
+
+[FVKernels]
+  [mass]
+    type = INSFVMassAdvection
+    variable = pressure
+    advected_interp_method = &#x27;skewness-corrected&#x27;
+    velocity_interp_method = &#x27;rc&#x27;
+    rho = ${rho}
+  []
+  [mean_zero_pressure]
+    type = FVIntegralValueConstraint
+    variable = pressure
+    lambda = lambda
+  []
+
+  [u_advection]
+    type = INSFVMomentumAdvection
+    variable = vel_x
+    advected_interp_method = &#x27;skewness-corrected&#x27;
+    velocity_interp_method = &#x27;rc&#x27;
+    rho = ${rho}
+    momentum_component = &#x27;x&#x27;
+  []
+  [u_viscosity]
+    type = INSFVMomentumDiffusion
+    variable = vel_x
+    mu = ${mu}
+    momentum_component = &#x27;x&#x27;
+  []
+  [u_pressure]
+    type = INSFVMomentumPressure
+    variable = vel_x
+    momentum_component = &#x27;x&#x27;
+    pressure = pressure
+  []
+  [u_forcing]
+    type = INSFVBodyForce
+    variable = vel_x
+    functor = forcing_u
+    momentum_component = &#x27;x&#x27;
+  []
+
+  [v_advection]
+    type = INSFVMomentumAdvection
+    variable = vel_y
+    advected_interp_method = &#x27;skewness-corrected&#x27;
+    velocity_interp_method = &#x27;rc&#x27;
+    rho = ${rho}
+    momentum_component = &#x27;y&#x27;
+  []
+  [v_viscosity]
+    type = INSFVMomentumDiffusion
+    variable = vel_y
+    mu = ${mu}
+    momentum_component = &#x27;y&#x27;
+  []
+  [v_pressure]
+    type = INSFVMomentumPressure
+    variable = vel_y
+    momentum_component = &#x27;y&#x27;
+    pressure = pressure
+  []
+  [v_forcing]
+    type = INSFVBodyForce
+    variable = vel_y
+    functor = forcing_v
+    momentum_component = &#x27;y&#x27;
+  []
+[]
+
+[FVBCs]
+  [no-slip-wall-u]
+    type = INSFVNoSlipWallBC
+    boundary = &#x27;left right top bottom&#x27;
+    variable = vel_x
+    function = &#x27;0&#x27;
+  []
+  [no-slip-wall-v]
+    type = INSFVNoSlipWallBC
+    boundary = &#x27;left right top bottom&#x27;
+    variable = vel_y
+    function = &#x27;0&#x27;
+  []
+[]
+
+[Functions]
+  [exact_u]
+    type = ParsedFunction
+    expression = &#x27;x^2*(1-x)^2*(2*y-6*y^2+4*y^3)&#x27;
+  []
+  [exact_v]
+    type = ParsedFunction
+    expression = &#x27;-y^2*(1-y)^2*(2*x-6*x^2+4*x^3)&#x27;
+  []
+  [exact_p]
+    type = ParsedFunction
+    expression = &#x27;x*(1-x)-2/12&#x27;
+  []
+  [forcing_u]
+    type = ParsedFunction
+    expression = &#x27;-4*mu/rho*(-1+2*y)*(y^2-6*x*y^2+6*x^2*y^2-y+6*x*y-6*x^2*y+3*x^2-6*x^3+3*x^4)+1-2*x+4*x^3&#x27;
+            &#x27;*y^2*(2*y^2-2*y+1)*(y-1)^2*(-1+2*x)*(x-1)^3&#x27;
+    symbol_names = &#x27;mu rho&#x27;
+    symbol_values = &#x27;${mu} ${rho}&#x27;
+  []
+  [forcing_v]
+    type = ParsedFunction
+    expression = &#x27;4*mu/rho*(-1+2*x)*(x^2-6*y*x^2+6*x^2*y^2-x+6*x*y-6*x*y^2+3*y^2-6*y^3+3*y^4)+4*y^3*x^2*(2&#x27;
+            &#x27;*x^2-2*x+1)*(x-1)^2*(-1+2*y)*(y-1)^3&#x27;
+    symbol_names = &#x27;mu rho&#x27;
+    symbol_values = &#x27;${mu} ${rho}&#x27;
+  []
+[]
+
+[Executioner]
+  type = Steady
+  solve_type = &#x27;NEWTON&#x27;
+  petsc_options_iname = &#x27;-pc_type -pc_factor_shift_type&#x27;
+  petsc_options_value = &#x27;lu NONZERO&#x27;
+  nl_rel_tol = 1e-8
+[]
+
+[Outputs]
+  [out]
+    type = Exodus
+    hide = lambda
+  []
+  csv = true
+[]
+
+[Postprocessors]
+  [h]
+    type = AverageElementSize
+    outputs = &#x27;console csv&#x27;
+    execute_on = &#x27;timestep_end&#x27;
+  []
+  [L2u]
+    type = ElementL2FunctorError
+    approximate = vel_x
+    exact = exact_u
+    outputs = &#x27;console csv&#x27;
+    execute_on = &#x27;timestep_end&#x27;
+  []
+  [L2v]
+    type = ElementL2FunctorError
+    approximate = vel_y
+    exact = exact_v
+    outputs = &#x27;console csv&#x27;
+    execute_on = &#x27;timestep_end&#x27;
+  []
+  [L2p]
+    approximate = pressure
+    exact = exact_p
+    type = ElementL2FunctorError
+    outputs = &#x27;console csv&#x27;
+    execute_on = &#x27;timestep_end&#x27;
+  []
+[]
+</code></pre><a class="moose-source-filename tooltipped modal-trigger" href="#c7995af1-f898-474b-ab3c-cec28eb48333">(moose/modules/navier_stokes/test/tests/finite_volume/ins/mms/skew-correction/skewed-vortex.i)</a></section><section class="scrollspy" id="4b30401e-3d3a-4299-8351-59a6e6575217" data-section-level="2" data-section-text="Cell - centered vector field reconstruction using face fluxes"><h2 id="cell-centered-vector-field-reconstruction-using-face-fluxes">Cell-centered vector field reconstruction using face fluxes</h2><section id="de4e3d4d-8d64-4777-81c7-acb32d4058cd" data-section-level="3" data-section-text="Weller ' s method"><h3 id="weller-s-method">Weller&#x27;s method</h3><p>For a detailed description on the origins and properties of this method, see <a href="#weller2014non">Weller (2014)</a> and <a href="#aguerre2018oscillation">Aguerre et al. (2018)</a>. In short, this reconstruction can be used to obtain cell-center velocities and pressure gradients based on face fluxes and normal pressure face gradients, respectively. It exhibits a second order convergence (<span class="moose-katex-inline-equation" id="moose-equation-40fbf9f9-1569-4a42-999c-53e939ec5188"><script>var element = document.getElementById("moose-equation-40fbf9f9-1569-4a42-999c-53e939ec5188");katex.render("O(h^2)", element, {displayMode:false,throwOnError:false,macros:{"\\bs":"\\boldsymbol{#1}","\\grad":"\\bs{\\nabla}","\\divergence":"\\grad \\cdot","\\norm":"\\left\\lVert#1\\right\\rVert","\\abs":"\\left\\lvert#1\\right\\rvert","\\diff":"\\text{ d}#1","\\bfa":"\\boldsymbol{a}","\\bfb":"\\boldsymbol{b}","\\bfc":"\\boldsymbol{c}","\\bfd":"\\boldsymbol{d}","\\bfe":"\\boldsymbol{e}","\\bff":"\\boldsymbol{f}","\\bfg":"\\boldsymbol{g}","\\bfh":"\\boldsymbol{h}","\\bfi":"\\boldsymbol{i}","\\bfj":"\\boldsymbol{j}","\\bfk":"\\boldsymbol{k}","\\bfl":"\\boldsymbol{l}","\\bfm":"\\boldsymbol{m}","\\bfn":"\\boldsymbol{n}","\\bfo":"\\boldsymbol{o}","\\bfp":"\\boldsymbol{p}","\\bfq":"\\boldsymbol{q}","\\bfr":"\\boldsymbol{r}","\\bfs":"\\boldsymbol{s}","\\bft":"\\boldsymbol{t}","\\bfu":"\\boldsymbol{u}","\\bfv":"\\boldsymbol{v}","\\bfw":"\\boldsymbol{w}","\\bfx":"\\boldsymbol{x}","\\bfy":"\\boldsymbol{y}","\\bfz":"\\boldsymbol{z}","\\bfA":"\\boldsymbol{A}","\\bfB":"\\boldsymbol{B}","\\bfC":"\\boldsymbol{C}","\\bfD":"\\boldsymbol{D}","\\bfE":"\\boldsymbol{E}","\\bfF":"\\boldsymbol{F}","\\bfG":"\\boldsymbol{G}","\\bfH":"\\boldsymbol{H}","\\bfI":"\\boldsymbol{I}","\\bfJ":"\\boldsymbol{J}","\\bfK":"\\boldsymbol{K}","\\bfL":"\\boldsymbol{L}","\\bfM":"\\boldsymbol{M}","\\bfN":"\\boldsymbol{N}","\\bfO":"\\boldsymbol{O}","\\bfP":"\\boldsymbol{P}","\\bfQ":"\\boldsymbol{Q}","\\bfR":"\\boldsymbol{R}","\\bfS":"\\boldsymbol{S}","\\bfT":"\\boldsymbol{T}","\\bfU":"\\boldsymbol{U}","\\bfV":"\\boldsymbol{V}","\\bfW":"\\boldsymbol{W}","\\bfX":"\\boldsymbol{X}","\\bfY":"\\boldsymbol{Y}","\\bfZ":"\\boldsymbol{Z}"}});</script></span>) spatially. The expression for the vector value at the cell centers is the following:</p><span class="moose-katex-block-equation"><span class="moose-katex-equation table-cell" id="moose-equation-4310779a-8c04-45d8-9f4b-ade9b189d7a0"></span><span class="moose-katex-equation-number">(1)</span><script>var element = document.getElementById("moose-equation-4310779a-8c04-45d8-9f4b-ade9b189d7a0");katex.render("\\vec{v}_C = \\left(\\sum\\limits_f^{N_f} S_f\\vec{n}_f \\otimes \\vec{n}_f \\right)^{-1} \\left(\\sum\\limits_f^{N_f} \\vec{n}_f \\phi_f \\right)", element, {displayMode:true,throwOnError:false,macros:{"\\bs":"\\boldsymbol{#1}","\\grad":"\\bs{\\nabla}","\\divergence":"\\grad \\cdot","\\norm":"\\left\\lVert#1\\right\\rVert","\\abs":"\\left\\lvert#1\\right\\rvert","\\diff":"\\text{ d}#1","\\bfa":"\\boldsymbol{a}","\\bfb":"\\boldsymbol{b}","\\bfc":"\\boldsymbol{c}","\\bfd":"\\boldsymbol{d}","\\bfe":"\\boldsymbol{e}","\\bff":"\\boldsymbol{f}","\\bfg":"\\boldsymbol{g}","\\bfh":"\\boldsymbol{h}","\\bfi":"\\boldsymbol{i}","\\bfj":"\\boldsymbol{j}","\\bfk":"\\boldsymbol{k}","\\bfl":"\\boldsymbol{l}","\\bfm":"\\boldsymbol{m}","\\bfn":"\\boldsymbol{n}","\\bfo":"\\boldsymbol{o}","\\bfp":"\\boldsymbol{p}","\\bfq":"\\boldsymbol{q}","\\bfr":"\\boldsymbol{r}","\\bfs":"\\boldsymbol{s}","\\bft":"\\boldsymbol{t}","\\bfu":"\\boldsymbol{u}","\\bfv":"\\boldsymbol{v}","\\bfw":"\\boldsymbol{w}","\\bfx":"\\boldsymbol{x}","\\bfy":"\\boldsymbol{y}","\\bfz":"\\boldsymbol{z}","\\bfA":"\\boldsymbol{A}","\\bfB":"\\boldsymbol{B}","\\bfC":"\\boldsymbol{C}","\\bfD":"\\boldsymbol{D}","\\bfE":"\\boldsymbol{E}","\\bfF":"\\boldsymbol{F}","\\bfG":"\\boldsymbol{G}","\\bfH":"\\boldsymbol{H}","\\bfI":"\\boldsymbol{I}","\\bfJ":"\\boldsymbol{J}","\\bfK":"\\boldsymbol{K}","\\bfL":"\\boldsymbol{L}","\\bfM":"\\boldsymbol{M}","\\bfN":"\\boldsymbol{N}","\\bfO":"\\boldsymbol{O}","\\bfP":"\\boldsymbol{P}","\\bfQ":"\\boldsymbol{Q}","\\bfR":"\\boldsymbol{R}","\\bfS":"\\boldsymbol{S}","\\bfT":"\\boldsymbol{T}","\\bfU":"\\boldsymbol{U}","\\bfV":"\\boldsymbol{V}","\\bfW":"\\boldsymbol{W}","\\bfX":"\\boldsymbol{X}","\\bfY":"\\boldsymbol{Y}","\\bfZ":"\\boldsymbol{Z}"}});</script></span><p>where <span class="moose-katex-inline-equation" id="moose-equation-d99904fe-792d-4bf3-a389-41602767d096"><script>var element = document.getElementById("moose-equation-d99904fe-792d-4bf3-a389-41602767d096");katex.render("\\vec{n_f}", element, {displayMode:false,throwOnError:false,macros:{"\\bs":"\\boldsymbol{#1}","\\grad":"\\bs{\\nabla}","\\divergence":"\\grad \\cdot","\\norm":"\\left\\lVert#1\\right\\rVert","\\abs":"\\left\\lvert#1\\right\\rvert","\\diff":"\\text{ d}#1","\\bfa":"\\boldsymbol{a}","\\bfb":"\\boldsymbol{b}","\\bfc":"\\boldsymbol{c}","\\bfd":"\\boldsymbol{d}","\\bfe":"\\boldsymbol{e}","\\bff":"\\boldsymbol{f}","\\bfg":"\\boldsymbol{g}","\\bfh":"\\boldsymbol{h}","\\bfi":"\\boldsymbol{i}","\\bfj":"\\boldsymbol{j}","\\bfk":"\\boldsymbol{k}","\\bfl":"\\boldsymbol{l}","\\bfm":"\\boldsymbol{m}","\\bfn":"\\boldsymbol{n}","\\bfo":"\\boldsymbol{o}","\\bfp":"\\boldsymbol{p}","\\bfq":"\\boldsymbol{q}","\\bfr":"\\boldsymbol{r}","\\bfs":"\\boldsymbol{s}","\\bft":"\\boldsymbol{t}","\\bfu":"\\boldsymbol{u}","\\bfv":"\\boldsymbol{v}","\\bfw":"\\boldsymbol{w}","\\bfx":"\\boldsymbol{x}","\\bfy":"\\boldsymbol{y}","\\bfz":"\\boldsymbol{z}","\\bfA":"\\boldsymbol{A}","\\bfB":"\\boldsymbol{B}","\\bfC":"\\boldsymbol{C}","\\bfD":"\\boldsymbol{D}","\\bfE":"\\boldsymbol{E}","\\bfF":"\\boldsymbol{F}","\\bfG":"\\boldsymbol{G}","\\bfH":"\\boldsymbol{H}","\\bfI":"\\boldsymbol{I}","\\bfJ":"\\boldsymbol{J}","\\bfK":"\\boldsymbol{K}","\\bfL":"\\boldsymbol{L}","\\bfM":"\\boldsymbol{M}","\\bfN":"\\boldsymbol{N}","\\bfO":"\\boldsymbol{O}","\\bfP":"\\boldsymbol{P}","\\bfQ":"\\boldsymbol{Q}","\\bfR":"\\boldsymbol{R}","\\bfS":"\\boldsymbol{S}","\\bfT":"\\boldsymbol{T}","\\bfU":"\\boldsymbol{U}","\\bfV":"\\boldsymbol{V}","\\bfW":"\\boldsymbol{W}","\\bfX":"\\boldsymbol{X}","\\bfY":"\\boldsymbol{Y}","\\bfZ":"\\boldsymbol{Z}"}});</script></span> denotes the surface normal, <span class="moose-katex-inline-equation" id="moose-equation-ad94bfea-f97e-48ae-8713-fd846972226c"><script>var element = document.getElementById("moose-equation-ad94bfea-f97e-48ae-8713-fd846972226c");katex.render("S_f", element, {displayMode:false,throwOnError:false,macros:{"\\bs":"\\boldsymbol{#1}","\\grad":"\\bs{\\nabla}","\\divergence":"\\grad \\cdot","\\norm":"\\left\\lVert#1\\right\\rVert","\\abs":"\\left\\lvert#1\\right\\rvert","\\diff":"\\text{ d}#1","\\bfa":"\\boldsymbol{a}","\\bfb":"\\boldsymbol{b}","\\bfc":"\\boldsymbol{c}","\\bfd":"\\boldsymbol{d}","\\bfe":"\\boldsymbol{e}","\\bff":"\\boldsymbol{f}","\\bfg":"\\boldsymbol{g}","\\bfh":"\\boldsymbol{h}","\\bfi":"\\boldsymbol{i}","\\bfj":"\\boldsymbol{j}","\\bfk":"\\boldsymbol{k}","\\bfl":"\\boldsymbol{l}","\\bfm":"\\boldsymbol{m}","\\bfn":"\\boldsymbol{n}","\\bfo":"\\boldsymbol{o}","\\bfp":"\\boldsymbol{p}","\\bfq":"\\boldsymbol{q}","\\bfr":"\\boldsymbol{r}","\\bfs":"\\boldsymbol{s}","\\bft":"\\boldsymbol{t}","\\bfu":"\\boldsymbol{u}","\\bfv":"\\boldsymbol{v}","\\bfw":"\\boldsymbol{w}","\\bfx":"\\boldsymbol{x}","\\bfy":"\\boldsymbol{y}","\\bfz":"\\boldsymbol{z}","\\bfA":"\\boldsymbol{A}","\\bfB":"\\boldsymbol{B}","\\bfC":"\\boldsymbol{C}","\\bfD":"\\boldsymbol{D}","\\bfE":"\\boldsymbol{E}","\\bfF":"\\boldsymbol{F}","\\bfG":"\\boldsymbol{G}","\\bfH":"\\boldsymbol{H}","\\bfI":"\\boldsymbol{I}","\\bfJ":"\\boldsymbol{J}","\\bfK":"\\boldsymbol{K}","\\bfL":"\\boldsymbol{L}","\\bfM":"\\boldsymbol{M}","\\bfN":"\\boldsymbol{N}","\\bfO":"\\boldsymbol{O}","\\bfP":"\\boldsymbol{P}","\\bfQ":"\\boldsymbol{Q}","\\bfR":"\\boldsymbol{R}","\\bfS":"\\boldsymbol{S}","\\bfT":"\\boldsymbol{T}","\\bfU":"\\boldsymbol{U}","\\bfV":"\\boldsymbol{V}","\\bfW":"\\boldsymbol{W}","\\bfX":"\\boldsymbol{X}","\\bfY":"\\boldsymbol{Y}","\\bfZ":"\\boldsymbol{Z}"}});</script></span> the surface area and <span class="moose-katex-inline-equation" id="moose-equation-b84bea40-06d4-4b36-87eb-267a42f70718"><script>var element = document.getElementById("moose-equation-b84bea40-06d4-4b36-87eb-267a42f70718");katex.render("\\phi_f", element, {displayMode:false,throwOnError:false,macros:{"\\bs":"\\boldsymbol{#1}","\\grad":"\\bs{\\nabla}","\\divergence":"\\grad \\cdot","\\norm":"\\left\\lVert#1\\right\\rVert","\\abs":"\\left\\lvert#1\\right\\rvert","\\diff":"\\text{ d}#1","\\bfa":"\\boldsymbol{a}","\\bfb":"\\boldsymbol{b}","\\bfc":"\\boldsymbol{c}","\\bfd":"\\boldsymbol{d}","\\bfe":"\\boldsymbol{e}","\\bff":"\\boldsymbol{f}","\\bfg":"\\boldsymbol{g}","\\bfh":"\\boldsymbol{h}","\\bfi":"\\boldsymbol{i}","\\bfj":"\\boldsymbol{j}","\\bfk":"\\boldsymbol{k}","\\bfl":"\\boldsymbol{l}","\\bfm":"\\boldsymbol{m}","\\bfn":"\\boldsymbol{n}","\\bfo":"\\boldsymbol{o}","\\bfp":"\\boldsymbol{p}","\\bfq":"\\boldsymbol{q}","\\bfr":"\\boldsymbol{r}","\\bfs":"\\boldsymbol{s}","\\bft":"\\boldsymbol{t}","\\bfu":"\\boldsymbol{u}","\\bfv":"\\boldsymbol{v}","\\bfw":"\\boldsymbol{w}","\\bfx":"\\boldsymbol{x}","\\bfy":"\\boldsymbol{y}","\\bfz":"\\boldsymbol{z}","\\bfA":"\\boldsymbol{A}","\\bfB":"\\boldsymbol{B}","\\bfC":"\\boldsymbol{C}","\\bfD":"\\boldsymbol{D}","\\bfE":"\\boldsymbol{E}","\\bfF":"\\boldsymbol{F}","\\bfG":"\\boldsymbol{G}","\\bfH":"\\boldsymbol{H}","\\bfI":"\\boldsymbol{I}","\\bfJ":"\\boldsymbol{J}","\\bfK":"\\boldsymbol{K}","\\bfL":"\\boldsymbol{L}","\\bfM":"\\boldsymbol{M}","\\bfN":"\\boldsymbol{N}","\\bfO":"\\boldsymbol{O}","\\bfP":"\\boldsymbol{P}","\\bfQ":"\\boldsymbol{Q}","\\bfR":"\\boldsymbol{R}","\\bfS":"\\boldsymbol{S}","\\bfT":"\\boldsymbol{T}","\\bfU":"\\boldsymbol{U}","\\bfV":"\\boldsymbol{V}","\\bfW":"\\boldsymbol{W}","\\bfX":"\\boldsymbol{X}","\\bfY":"\\boldsymbol{Y}","\\bfZ":"\\boldsymbol{Z}"}});</script></span> the face flux. Latter can be computed by the face vector values by <span class="moose-katex-inline-equation" id="moose-equation-fa572fa5-9f2c-4801-8007-5fb9e1c9994c"><script>var element = document.getElementById("moose-equation-fa572fa5-9f2c-4801-8007-5fb9e1c9994c");katex.render("\\phi_f = (\\vec{v}_f \\cdot n_f) S_f", element, {displayMode:false,throwOnError:false,macros:{"\\bs":"\\boldsymbol{#1}","\\grad":"\\bs{\\nabla}","\\divergence":"\\grad \\cdot","\\norm":"\\left\\lVert#1\\right\\rVert","\\abs":"\\left\\lvert#1\\right\\rvert","\\diff":"\\text{ d}#1","\\bfa":"\\boldsymbol{a}","\\bfb":"\\boldsymbol{b}","\\bfc":"\\boldsymbol{c}","\\bfd":"\\boldsymbol{d}","\\bfe":"\\boldsymbol{e}","\\bff":"\\boldsymbol{f}","\\bfg":"\\boldsymbol{g}","\\bfh":"\\boldsymbol{h}","\\bfi":"\\boldsymbol{i}","\\bfj":"\\boldsymbol{j}","\\bfk":"\\boldsymbol{k}","\\bfl":"\\boldsymbol{l}","\\bfm":"\\boldsymbol{m}","\\bfn":"\\boldsymbol{n}","\\bfo":"\\boldsymbol{o}","\\bfp":"\\boldsymbol{p}","\\bfq":"\\boldsymbol{q}","\\bfr":"\\boldsymbol{r}","\\bfs":"\\boldsymbol{s}","\\bft":"\\boldsymbol{t}","\\bfu":"\\boldsymbol{u}","\\bfv":"\\boldsymbol{v}","\\bfw":"\\boldsymbol{w}","\\bfx":"\\boldsymbol{x}","\\bfy":"\\boldsymbol{y}","\\bfz":"\\boldsymbol{z}","\\bfA":"\\boldsymbol{A}","\\bfB":"\\boldsymbol{B}","\\bfC":"\\boldsymbol{C}","\\bfD":"\\boldsymbol{D}","\\bfE":"\\boldsymbol{E}","\\bfF":"\\boldsymbol{F}","\\bfG":"\\boldsymbol{G}","\\bfH":"\\boldsymbol{H}","\\bfI":"\\boldsymbol{I}","\\bfJ":"\\boldsymbol{J}","\\bfK":"\\boldsymbol{K}","\\bfL":"\\boldsymbol{L}","\\bfM":"\\boldsymbol{M}","\\bfN":"\\boldsymbol{N}","\\bfO":"\\boldsymbol{O}","\\bfP":"\\boldsymbol{P}","\\bfQ":"\\boldsymbol{Q}","\\bfR":"\\boldsymbol{R}","\\bfS":"\\boldsymbol{S}","\\bfT":"\\boldsymbol{T}","\\bfU":"\\boldsymbol{U}","\\bfV":"\\boldsymbol{V}","\\bfW":"\\boldsymbol{W}","\\bfX":"\\boldsymbol{X}","\\bfY":"\\boldsymbol{Y}","\\bfZ":"\\boldsymbol{Z}"}});</script></span>.</p><p></p></section></section><section class="scrollspy" id="00d91a59-57b8-460d-a087-5f23e889a7d3" data-section-level="2" data-section-text="References"><h2 id="references">References</h2><div class="moose-bibliography"><ol><li id="aguerre2018oscillation">Horacio&nbsp;J Aguerre, Cesar&nbsp;I Pairetti, Cesar&nbsp;M Venier, Santiago&nbsp;M<span class="bibtex-protected">á</span>rquez Dami<span class="bibtex-protected">á</span>n, and Norberto&nbsp;M Nigro.
+An oscillation-free flow solver based on flux reconstruction.
+<em>Journal of Computational Physics</em>, 365:135–148, 2018.<a href="#b9366e15-de26-45ad-9f6b-e784b35ccad2" class="modal-trigger moose-bibtex-modal" style="padding-left:10px;">[BibTeX]</a><div class="modal" id="b9366e15-de26-45ad-9f6b-e784b35ccad2"><div class="modal-content"><pre style="line-height:1.25;"><code class="language-latex">@article{aguerre2018oscillation,
+    author = "Aguerre, Horacio J and Pairetti, Cesar I and Venier, Cesar M and Dami{\'a}n, Santiago M{\'a}rquez and Nigro, Norberto M",
+    title = "An oscillation-free flow solver based on flux reconstruction",
+    journal = "Journal of Computational Physics",
+    volume = "365",
+    pages = "135--148",
+    year = "2018",
+    publisher = "Elsevier"
+}
+</code></pre></div></div></li><li id="weller2014non">Hilary Weller.
+Non-orthogonal version of the arbitrary polygonal c-grid and a new diamond grid.
+<em>Geoscientific Model Development</em>, 7(3):779–797, 2014.<a href="#f5a36193-a1f7-405f-b314-62f8e7a47399" class="modal-trigger moose-bibtex-modal" style="padding-left:10px;">[BibTeX]</a><div class="modal" id="f5a36193-a1f7-405f-b314-62f8e7a47399"><div class="modal-content"><pre style="line-height:1.25;"><code class="language-latex">@article{weller2014non,
+    author = "Weller, Hilary",
+    title = "Non-orthogonal version of the arbitrary polygonal C-grid and a new diamond grid",
+    journal = "Geoscientific Model Development",
+    volume = "7",
+    number = "3",
+    pages = "779--797",
+    year = "2014",
+    publisher = "Copernicus GmbH"
+}
+</code></pre></div></div></li></ol></div></section></section><div class="moose-modal modal" id="0940bd8d-4546-42bf-bfd9-63416a52b0ca"><div class="modal-content"><h4>(moose/modules/navier_stokes/test/tests/finite_volume/ins/lid-driven/lid-driven-with-energy.i)</h4><pre class="moose-pre"><code class="language-text">mu = 1
+rho = 1
+k = .01
+cp = 1
+velocity_interp_method = &#x27;rc&#x27;
+advected_interp_method = &#x27;average&#x27;
+
+[GlobalParams]
+  rhie_chow_user_object = &#x27;rc&#x27;
+[]
+
+[UserObjects]
+  [rc]
+    type = INSFVRhieChowInterpolator
+    u = vel_x
+    v = vel_y
+    pressure = pressure
+  []
+[]
+
+[Mesh]
+  [gen]
+    type = GeneratedMeshGenerator
+    dim = 2
+    xmin = 0
+    xmax = 1
+    ymin = 0
+    ymax = 1
+    nx = 32
+    ny = 32
+  []
+[]
+
+[Variables]
+  [vel_x]
+    type = INSFVVelocityVariable
+  []
+  [vel_y]
+    type = INSFVVelocityVariable
+  []
+  [pressure]
+    type = INSFVPressureVariable
+  []
+  [T_fluid]
+    type = INSFVEnergyVariable
+  []
+  [lambda]
+    family = SCALAR
+    order = FIRST
+  []
+[]
+
+[AuxVariables]
+  [U]
+    order = CONSTANT
+    family = MONOMIAL
+    fv = true
+  []
+[]
+
+[AuxKernels]
+  [mag]
+    type = VectorMagnitudeAux
+    variable = U
+    x = vel_x
+    y = vel_y
+  []
+[]
+
+[FVKernels]
+  [mass]
+    type = INSFVMassAdvection
+    variable = pressure
+    advected_interp_method = ${advected_interp_method}
+    velocity_interp_method = ${velocity_interp_method}
+    rho = ${rho}
+  []
+  [mean_zero_pressure]
+    type = FVIntegralValueConstraint
+    variable = pressure
+    lambda = lambda
+  []
+
+  [u_advection]
+    type = INSFVMomentumAdvection
+    variable = vel_x
+    velocity_interp_method = ${velocity_interp_method}
+    advected_interp_method = ${advected_interp_method}
+    rho = ${rho}
+    momentum_component = &#x27;x&#x27;
+  []
+
+  [u_viscosity]
+    type = INSFVMomentumDiffusion
+    variable = vel_x
+    mu = ${mu}
+    momentum_component = &#x27;x&#x27;
+  []
+
+  [u_pressure]
+    type = INSFVMomentumPressure
+    variable = vel_x
+    momentum_component = &#x27;x&#x27;
+    pressure = pressure
+  []
+
+  [v_advection]
+    type = INSFVMomentumAdvection
+    variable = vel_y
+    velocity_interp_method = ${velocity_interp_method}
+    advected_interp_method = ${advected_interp_method}
+    rho = ${rho}
+    momentum_component = &#x27;y&#x27;
+  []
+
+  [v_viscosity]
+    type = INSFVMomentumDiffusion
+    variable = vel_y
+    mu = ${mu}
+    momentum_component = &#x27;y&#x27;
+  []
+
+  [v_pressure]
+    type = INSFVMomentumPressure
+    variable = vel_y
+    momentum_component = &#x27;y&#x27;
+    pressure = pressure
+  []
+
+  [temp_conduction]
+    type = FVDiffusion
+    coeff = &#x27;k&#x27;
+    variable = T_fluid
+  []
+
+  [temp_advection]
+    type = INSFVEnergyAdvection
+    variable = T_fluid
+    velocity_interp_method = ${velocity_interp_method}
+    advected_interp_method = ${advected_interp_method}
+  []
+[]
+
+[FVBCs]
+  [top_x]
+    type = INSFVNoSlipWallBC
+    variable = vel_x
+    boundary = &#x27;top&#x27;
+    function = &#x27;lid_function&#x27;
+  []
+
+  [no_slip_x]
+    type = INSFVNoSlipWallBC
+    variable = vel_x
+    boundary = &#x27;left right bottom&#x27;
+    function = 0
+  []
+
+  [no_slip_y]
+    type = INSFVNoSlipWallBC
+    variable = vel_y
+    boundary = &#x27;left right top bottom&#x27;
+    function = 0
+  []
+
+  [T_hot]
+    type = FVDirichletBC
+    variable = T_fluid
+    boundary = &#x27;bottom&#x27;
+    value = 1
+  []
+
+  [T_cold]
+    type = FVDirichletBC
+    variable = T_fluid
+    boundary = &#x27;top&#x27;
+    value = 0
+  []
+[]
+
+[Materials]
+  [functor_constants]
+    type = ADGenericFunctorMaterial
+    prop_names = &#x27;cp k&#x27;
+    prop_values = &#x27;${cp} ${k}&#x27;
+  []
+  [ins_fv]
+    type = INSFVEnthalpyMaterial
+    temperature = &#x27;T_fluid&#x27;
+    rho = ${rho}
+  []
+[]
+
+[Functions]
+  [lid_function]
+    type = ParsedFunction
+    expression = &#x27;4*x*(1-x)&#x27;
+  []
+[]
+
+[Executioner]
+  type = Steady
+  solve_type = &#x27;NEWTON&#x27;
+  petsc_options_iname = &#x27;-pc_type -pc_factor_shift_type&#x27;
+  petsc_options_value = &#x27;lu NONZERO&#x27;
+  nl_rel_tol = 1e-12
+[]
+
+[Outputs]
+  exodus = true
+[]
+</code></pre></div><div class="modal-footer"><a class="modal-close btn-flat">Close</a></div></div><div class="moose-modal modal" id="29443d76-2dce-455b-bcd9-a5ffa65ed840"><div class="modal-content"><h4>(moose/modules/navier_stokes/test/tests/finite_volume/ins/channel-flow/2d-rc-no-slip.i)</h4><pre class="moose-pre"><code class="language-text">mu = 1.1
+rho = 1.1
+l = 2
+U = 1
+advected_interp_method = &#x27;average&#x27;
+velocity_interp_method = &#x27;rc&#x27;
+
+[GlobalParams]
+  rhie_chow_user_object = &#x27;rc&#x27;
+[]
+
+[UserObjects]
+  [rc]
+    type = INSFVRhieChowInterpolator
+    u = vel_x
+    v = vel_y
+    pressure = pressure
+  []
+[]
+
+[Mesh]
+  [gen]
+    type = GeneratedMeshGenerator
+    dim = 2
+    xmin = 0
+    xmax = 10
+    ymin = ${fparse -l / 2}
+    ymax = ${fparse l / 2}
+    nx = 100
+    ny = 20
+  []
+  uniform_refine = 0
+[]
+
+[Variables]
+  [vel_x]
+    type = INSFVVelocityVariable
+    initial_condition = 1
+  []
+  [vel_y]
+    type = INSFVVelocityVariable
+    initial_condition = 1
+  []
+  [pressure]
+    type = INSFVPressureVariable
+  []
+[]
+
+[FVKernels]
+  [mass]
+    type = INSFVMassAdvection
+    variable = pressure
+    advected_interp_method = ${advected_interp_method}
+    velocity_interp_method = ${velocity_interp_method}
+    rho = ${rho}
+  []
+
+  [u_advection]
+    type = INSFVMomentumAdvection
+    variable = vel_x
+    advected_interp_method = ${advected_interp_method}
+    velocity_interp_method = ${velocity_interp_method}
+    rho = ${rho}
+    momentum_component = &#x27;x&#x27;
+  []
+  [u_viscosity]
+    type = INSFVMomentumDiffusion
+    variable = vel_x
+    mu = ${mu}
+    momentum_component = &#x27;x&#x27;
+  []
+  [u_pressure]
+    type = INSFVMomentumPressure
+    variable = vel_x
+    momentum_component = &#x27;x&#x27;
+    pressure = pressure
+  []
+
+  [v_advection]
+    type = INSFVMomentumAdvection
+    variable = vel_y
+    advected_interp_method = ${advected_interp_method}
+    velocity_interp_method = ${velocity_interp_method}
+    rho = ${rho}
+    momentum_component = &#x27;y&#x27;
+  []
+  [v_viscosity]
+    type = INSFVMomentumDiffusion
+    variable = vel_y
+    mu = ${mu}
+    momentum_component = &#x27;y&#x27;
+  []
+  [v_pressure]
+    type = INSFVMomentumPressure
+    variable = vel_y
+    momentum_component = &#x27;y&#x27;
+    pressure = pressure
+  []
+[]
+
+[FVBCs]
+  [inlet-u]
+    type = INSFVInletVelocityBC
+    boundary = &#x27;left&#x27;
+    variable = vel_x
+    function = &#x27;${U}&#x27;
+  []
+  [inlet-v]
+    type = INSFVInletVelocityBC
+    boundary = &#x27;left&#x27;
+    variable = vel_y
+    function = &#x27;0&#x27;
+  []
+  [walls-u]
+    type = INSFVNoSlipWallBC
+    boundary = &#x27;top bottom&#x27;
+    variable = vel_x
+    function = 0
+  []
+  [walls-v]
+    type = INSFVNoSlipWallBC
+    boundary = &#x27;top bottom&#x27;
+    variable = vel_y
+    function = 0
+  []
+  [outlet_p]
+    type = INSFVOutletPressureBC
+    boundary = &#x27;right&#x27;
+    variable = pressure
+    function = &#x27;0&#x27;
+  []
+[]
+
+[Executioner]
+  type = Steady
+  solve_type = &#x27;NEWTON&#x27;
+  nl_rel_tol = 1e-12
+[]
+
+[Preconditioning]
+  active = FSP
+  [FSP]
+    type = FSP
+    # It is the starting point of splitting
+    topsplit = &#x27;up&#x27; # &#x27;up&#x27; should match the following block name
+    [up]
+      splitting = &#x27;u p&#x27; # &#x27;u&#x27; and &#x27;p&#x27; are the names of subsolvers
+      splitting_type  = schur
+      # Splitting type is set as schur, because the pressure part of Stokes-like systems
+      # is not diagonally dominant. CAN NOT use additive, multiplicative and etc.
+      #
+      # Original system:
+      #
+      # | Auu Aup | | u | = | f_u |
+      # | Apu 0   | | p |   | f_p |
+      #
+      # is factorized into
+      #
+      # |I             0 | | Auu  0|  | I  Auu^{-1}*Aup | | u | = | f_u |
+      # |Apu*Auu^{-1}  I | | 0   -S|  | 0  I            | | p |   | f_p |
+      #
+      # where
+      #
+      # S = Apu*Auu^{-1}*Aup
+      #
+      # The preconditioning is accomplished via the following steps
+      #
+      # (1) p* = f_p - Apu*Auu^{-1}f_u,
+      # (2) p = (-S)^{-1} p*
+      # (3) u = Auu^{-1}(f_u-Aup*p)
+
+      petsc_options_iname = &#x27;-pc_fieldsplit_schur_fact_type  -pc_fieldsplit_schur_precondition -ksp_gmres_restart -ksp_rtol -ksp_type&#x27;
+      petsc_options_value = &#x27;full                            selfp                             300                1e-4      fgmres&#x27;
+    []
+    [u]
+      vars = &#x27;vel_x vel_y&#x27;
+      petsc_options_iname = &#x27;-pc_type -pc_hypre_type -ksp_type -ksp_rtol -ksp_gmres_restart -ksp_pc_side&#x27;
+      petsc_options_value = &#x27;hypre    boomeramg      gmres    5e-1      300                 right&#x27;
+    []
+    [p]
+      vars = &#x27;pressure&#x27;
+      petsc_options_iname = &#x27;-ksp_type -ksp_gmres_restart -ksp_rtol -pc_type -ksp_pc_side&#x27;
+      petsc_options_value = &#x27;gmres    300                5e-1      jacobi    right&#x27;
+    []
+  []
+  [SMP]
+    type = SMP
+    full = true
+    petsc_options_iname = &#x27;-pc_type -pc_factor_shift_type&#x27;
+    petsc_options_value = &#x27;lu       NONZERO&#x27;
+  []
+[]
+
+[Outputs]
+  print_linear_residuals = true
+  print_nonlinear_residuals = true
+  [out]
+    type = Exodus
+    hide = &#x27;Re lin cum_lin&#x27;
+  []
+  [perf]
+    type = PerfGraphOutput
+  []
+[]
+
+[Postprocessors]
+  [Re]
+    type = ParsedPostprocessor
+    function = &#x27;${rho} * ${l} * ${U}&#x27;
+    pp_names = &#x27;&#x27;
+  []
+  [lin]
+    type = NumLinearIterations
+  []
+  [cum_lin]
+    type = CumulativeValuePostprocessor
+    postprocessor = lin
+  []
+[]
+</code></pre></div><div class="modal-footer"><a class="modal-close btn-flat">Close</a></div></div><div class="moose-modal modal" id="07034d66-13be-4a30-a40a-eec9ce7b4d72"><div class="modal-content"><h4>(moose/modules/navier_stokes/test/tests/finite_volume/ins/channel-flow/2d-rc.i)</h4><pre class="moose-pre"><code class="language-text">mu = 1.1
+rho = 1.1
+advected_interp_method = &#x27;average&#x27;
+velocity_interp_method = &#x27;rc&#x27;
+
+[Mesh]
+  [gen]
+    type = GeneratedMeshGenerator
+    dim = 2
+    xmin = 0
+    xmax = 10
+    ymin = -1
+    ymax = 1
+    nx = 100
+    ny = 20
+  []
+[]
+
+[GlobalParams]
+  rhie_chow_user_object = &#x27;rc&#x27;
+[]
+
+[UserObjects]
+  [rc]
+    type = INSFVRhieChowInterpolator
+    u = vel_x
+    v = vel_y
+    pressure = pressure
+  []
+[]
+
+[Variables]
+  [vel_x]
+    type = INSFVVelocityVariable
+    initial_condition = 1
+  []
+  [vel_y]
+    type = INSFVVelocityVariable
+    initial_condition = 1
+  []
+  [pressure]
+    type = INSFVPressureVariable
+  []
+[]
+
+[FVKernels]
+  [mass]
+    type = INSFVMassAdvection
+    variable = pressure
+    advected_interp_method = ${advected_interp_method}
+    velocity_interp_method = ${velocity_interp_method}
+    rho = ${rho}
+  []
+
+  [u_advection]
+    type = INSFVMomentumAdvection
+    variable = vel_x
+    advected_interp_method = ${advected_interp_method}
+    velocity_interp_method = ${velocity_interp_method}
+    rho = ${rho}
+    momentum_component = &#x27;x&#x27;
+  []
+  [u_viscosity]
+    type = INSFVMomentumDiffusion
+    variable = vel_x
+    mu = ${mu}
+    momentum_component = &#x27;x&#x27;
+  []
+  [u_pressure]
+    type = INSFVMomentumPressure
+    variable = vel_x
+    momentum_component = &#x27;x&#x27;
+    pressure = pressure
+  []
+
+  [v_advection]
+    type = INSFVMomentumAdvection
+    variable = vel_y
+    advected_interp_method = ${advected_interp_method}
+    velocity_interp_method = ${velocity_interp_method}
+    rho = ${rho}
+    momentum_component = &#x27;y&#x27;
+  []
+  [v_viscosity]
+    type = INSFVMomentumDiffusion
+    variable = vel_y
+    mu = ${mu}
+    momentum_component = &#x27;y&#x27;
+  []
+  [v_pressure]
+    type = INSFVMomentumPressure
+    variable = vel_y
+    momentum_component = &#x27;y&#x27;
+    pressure = pressure
+  []
+[]
+
+[FVBCs]
+  [inlet-u]
+    type = INSFVInletVelocityBC
+    boundary = &#x27;left&#x27;
+    variable = vel_x
+    function = &#x27;1&#x27;
+  []
+  [inlet-v]
+    type = INSFVInletVelocityBC
+    boundary = &#x27;left&#x27;
+    variable = vel_y
+    function = 0
+  []
+  [walls-u]
+    type = INSFVNaturalFreeSlipBC
+    boundary = &#x27;top bottom&#x27;
+    variable = vel_x
+    momentum_component = &#x27;x&#x27;
+  []
+  [walls-v]
+    type = INSFVNaturalFreeSlipBC
+    boundary = &#x27;top bottom&#x27;
+    variable = vel_y
+    momentum_component = &#x27;y&#x27;
+  []
+  [outlet_p]
+    type = INSFVOutletPressureBC
+    boundary = &#x27;right&#x27;
+    variable = pressure
+    function = 0
+  []
+[]
+
+[Executioner]
+  type = Steady
+  solve_type = &#x27;NEWTON&#x27;
+  petsc_options_iname = &#x27;-pc_type -pc_factor_shift_type&#x27;
+  petsc_options_value = &#x27;lu NONZERO&#x27;
+  nl_rel_tol = 1e-12
+[]
+
+[Outputs]
+  exodus = true
+  csv = true
+[]
+</code></pre></div><div class="modal-footer"><a class="modal-close btn-flat">Close</a></div></div><div class="moose-modal modal" id="0ba51be4-4f72-47c1-8239-df7400c392b2"><div class="modal-content"><h4>(moose/modules/navier_stokes/test/tests/finite_volume/ins/channel-flow/cylindrical/2d-average-no-slip.i)</h4><pre class="moose-pre"><code class="language-text">mu = 1
+rho = 1
+advected_interp_method = &#x27;average&#x27;
+velocity_interp_method = &#x27;average&#x27;
+
+[GlobalParams]
+  rhie_chow_user_object = &#x27;rc&#x27;
+[]
+
+[UserObjects]
+  [rc]
+    type = INSFVRhieChowInterpolator
+    u = u
+    v = v
+    pressure = pressure
+  []
+[]
+
+[Mesh]
+  [gen]
+    type = GeneratedMeshGenerator
+    dim = 2
+    xmin = 0
+    xmax = 1
+    ymin = 0
+    ymax = 4
+    nx = 10
+    ny = 40
+  []
+[]
+
+[Problem]
+  coord_type = &#x27;RZ&#x27;
+[]
+
+[Variables]
+  [u]
+    type = INSFVVelocityVariable
+    initial_condition = 1
+  []
+  [v]
+    type = INSFVVelocityVariable
+    initial_condition = 1
+  []
+  [pressure]
+    type = INSFVPressureVariable
+  []
+[]
+
+[FVKernels]
+  [mass]
+    type = INSFVMassAdvection
+    variable = pressure
+    advected_interp_method = ${advected_interp_method}
+    velocity_interp_method = ${velocity_interp_method}
+    rho = ${rho}
+  []
+
+  [u_advection]
+    type = INSFVMomentumAdvection
+    variable = u
+    advected_interp_method = ${advected_interp_method}
+    velocity_interp_method = ${velocity_interp_method}
+    rho = ${rho}
+    momentum_component = &#x27;x&#x27;
+  []
+  [u_viscosity]
+    type = INSFVMomentumDiffusion
+    variable = u
+    mu = ${mu}
+    momentum_component = &#x27;x&#x27;
+  []
+  [u_pressure]
+    type = INSFVMomentumPressure
+    variable = u
+    momentum_component = &#x27;x&#x27;
+    pressure = pressure
+  []
+
+  [v_advection]
+    type = INSFVMomentumAdvection
+    variable = v
+    advected_interp_method = ${advected_interp_method}
+    velocity_interp_method = ${velocity_interp_method}
+    rho = ${rho}
+    momentum_component = &#x27;y&#x27;
+  []
+  [v_viscosity]
+    type = INSFVMomentumDiffusion
+    variable = v
+    mu = ${mu}
+    momentum_component = &#x27;y&#x27;
+  []
+  [v_pressure]
+    type = INSFVMomentumPressure
+    variable = v
+    momentum_component = &#x27;y&#x27;
+    pressure = pressure
+  []
+[]
+
+[FVBCs]
+  [inlet-u]
+    type = INSFVInletVelocityBC
+    boundary = &#x27;bottom&#x27;
+    variable = u
+    function = 0
+  []
+  [inlet-v]
+    type = INSFVInletVelocityBC
+    boundary = &#x27;bottom&#x27;
+    variable = v
+    function = 1
+  []
+  [no-slip-wall-u]
+    type = INSFVNoSlipWallBC
+    boundary = &#x27;right&#x27;
+    variable = u
+    function = 0
+  []
+  [no-slip-wall-v]
+    type = INSFVNoSlipWallBC
+    boundary = &#x27;right&#x27;
+    variable = v
+    function = 0
+  []
+  [outlet-p]
+    type = INSFVOutletPressureBC
+    boundary = &#x27;top&#x27;
+    variable = pressure
+    function = 0
+  []
+  [axis-u]
+    type = INSFVSymmetryVelocityBC
+    boundary = &#x27;left&#x27;
+    variable = u
+    u = u
+    v = v
+    mu = ${mu}
+    momentum_component = x
+  []
+  [axis-v]
+    type = INSFVSymmetryVelocityBC
+    boundary = &#x27;left&#x27;
+    variable = v
+    u = u
+    v = v
+    mu = ${mu}
+    momentum_component = y
+  []
+  [axis-p]
+    type = INSFVSymmetryPressureBC
+    boundary = &#x27;left&#x27;
+    variable = pressure
+  []
+[]
+
+[Postprocessors]
+  [in]
+    type = SideIntegralVariablePostprocessor
+    variable = v
+    boundary = &#x27;bottom&#x27;
+  []
+  [out]
+    type = SideIntegralVariablePostprocessor
+    variable = v
+    boundary = &#x27;top&#x27;
+  []
+[]
+
+[Executioner]
+  type = Steady
+  solve_type = &#x27;NEWTON&#x27;
+  petsc_options_iname = &#x27;-pc_type -pc_factor_shift_type&#x27;
+  petsc_options_value = &#x27;lu NONZERO&#x27;
+  nl_rel_tol = 1e-12
+[]
+
+[Outputs]
+  exodus = true
+  csv = true
+[]
+</code></pre></div><div class="modal-footer"><a class="modal-close btn-flat">Close</a></div></div><div class="moose-modal modal" id="dc7b7b9d-4a7b-4f2f-b53e-c24599e99acb"><div class="modal-content"><h4>(moose/modules/navier_stokes/test/tests/finite_volume/ins/channel-flow/cylindrical/2d-rc-slip.i)</h4><pre class="moose-pre"><code class="language-text">mu = 1.1
+rho = 1.1
+advected_interp_method = &#x27;average&#x27;
+velocity_interp_method = &#x27;rc&#x27;
+
+[Mesh]
+  [gen]
+    type = GeneratedMeshGenerator
+    dim = 2
+    xmin = 0
+    xmax = 2
+    ymin = 0
+    ymax = 10
+    nx = 10
+    ny = 50
+  []
+[]
+
+[Problem]
+  coord_type = &#x27;RZ&#x27;
+[]
+
+[GlobalParams]
+  rhie_chow_user_object = &#x27;rc&#x27;
+[]
+
+[UserObjects]
+  [rc]
+    type = INSFVRhieChowInterpolator
+    u = u
+    v = v
+    pressure = pressure
+  []
+[]
+
+[Variables]
+  [u]
+    type = INSFVVelocityVariable
+    initial_condition = 1
+  []
+  [v]
+    type = INSFVVelocityVariable
+    initial_condition = 1
+  []
+  [pressure]
+    type = INSFVPressureVariable
+  []
+[]
+
+[FVKernels]
+  [mass]
+    type = INSFVMassAdvection
+    variable = pressure
+    advected_interp_method = ${advected_interp_method}
+    velocity_interp_method = ${velocity_interp_method}
+    rho = ${rho}
+  []
+
+  [u_advection]
+    type = INSFVMomentumAdvection
+    variable = u
+    advected_interp_method = ${advected_interp_method}
+    velocity_interp_method = ${velocity_interp_method}
+    rho = ${rho}
+    momentum_component = &#x27;x&#x27;
+  []
+  [u_viscosity]
+    type = INSFVMomentumDiffusion
+    variable = u
+    mu = ${mu}
+    momentum_component = &#x27;x&#x27;
+  []
+  [u_pressure]
+    type = INSFVMomentumPressure
+    variable = u
+    momentum_component = &#x27;x&#x27;
+    pressure = pressure
+  []
+
+  [v_advection]
+    type = INSFVMomentumAdvection
+    variable = v
+    advected_interp_method = ${advected_interp_method}
+    velocity_interp_method = ${velocity_interp_method}
+    rho = ${rho}
+    momentum_component = &#x27;y&#x27;
+  []
+  [v_viscosity]
+    type = INSFVMomentumDiffusion
+    variable = v
+    mu = ${mu}
+    momentum_component = &#x27;y&#x27;
+  []
+  [v_pressure]
+    type = INSFVMomentumPressure
+    variable = v
+    momentum_component = &#x27;y&#x27;
+    pressure = pressure
+  []
+[]
+
+[FVBCs]
+  [inlet-u]
+    type = INSFVInletVelocityBC
+    boundary = &#x27;bottom&#x27;
+    variable = u
+    function = 0
+  []
+  [inlet-v]
+    type = INSFVInletVelocityBC
+    boundary = &#x27;bottom&#x27;
+    variable = v
+    function = 1
+  []
+  [free-slip-wall-u]
+    type = INSFVNaturalFreeSlipBC
+    boundary = &#x27;right&#x27;
+    variable = u
+    momentum_component = &#x27;x&#x27;
+  []
+  [free-slip-wall-v]
+    type = INSFVNaturalFreeSlipBC
+    boundary = &#x27;right&#x27;
+    variable = v
+    momentum_component = &#x27;y&#x27;
+  []
+  [outlet-p]
+    type = INSFVOutletPressureBC
+    boundary = &#x27;top&#x27;
+    variable = pressure
+    function = 0
+  []
+  [axis-u]
+    type = INSFVSymmetryVelocityBC
+    boundary = &#x27;left&#x27;
+    variable = u
+    u = u
+    v = v
+    mu = ${mu}
+    momentum_component = x
+  []
+  [axis-v]
+    type = INSFVSymmetryVelocityBC
+    boundary = &#x27;left&#x27;
+    variable = v
+    u = u
+    v = v
+    mu = ${mu}
+    momentum_component = y
+  []
+  [axis-p]
+    type = INSFVSymmetryPressureBC
+    boundary = &#x27;left&#x27;
+    variable = pressure
+  []
+[]
+
+[Postprocessors]
+  [in]
+    type = SideIntegralVariablePostprocessor
+    variable = v
+    boundary = &#x27;bottom&#x27;
+    outputs = &#x27;csv&#x27;
+  []
+  [out]
+    type = SideIntegralVariablePostprocessor
+    variable = v
+    boundary = &#x27;top&#x27;
+    outputs = &#x27;csv&#x27;
+  []
+[]
+
+[Executioner]
+  type = Steady
+  solve_type = &#x27;NEWTON&#x27;
+  petsc_options_iname = &#x27;-pc_type -pc_factor_shift_type&#x27;
+  petsc_options_value = &#x27;lu NONZERO&#x27;
+  nl_rel_tol = 1e-12
+[]
+
+[Outputs]
+  exodus = true
+  csv = true
+[]
+</code></pre></div><div class="modal-footer"><a class="modal-close btn-flat">Close</a></div></div><div class="moose-modal modal" id="c7995af1-f898-474b-ab3c-cec28eb48333"><div class="modal-content"><h4>(moose/modules/navier_stokes/test/tests/finite_volume/ins/mms/skew-correction/skewed-vortex.i)</h4><pre class="moose-pre"><code class="language-text">mu = 1.0
+rho = 1.0
+
+[Problem]
+  error_on_jacobian_nonzero_reallocation = true
+[]
+
+[Mesh]
+  [gen_mesh]
+    type = FileMeshGenerator
+    file = skewed.msh
+  []
+  coord_type = &#x27;XYZ&#x27;
+[]
+
+[GlobalParams]
+  rhie_chow_user_object = &#x27;rc&#x27;
+[]
+
+[UserObjects]
+  [rc]
+    type = INSFVRhieChowInterpolator
+    u = vel_x
+    v = vel_y
+    pressure = pressure
+  []
+[]
+
+[Variables]
+  [vel_x]
+    type = INSFVVelocityVariable
+    initial_condition = 1
+    face_interp_method = &#x27;skewness-corrected&#x27;
+  []
+  [vel_y]
+    type = INSFVVelocityVariable
+    initial_condition = 1
+    face_interp_method = &#x27;skewness-corrected&#x27;
+  []
+  [pressure]
+    type = INSFVPressureVariable
+    face_interp_method = &#x27;skewness-corrected&#x27;
+  []
+  [lambda]
+    family = SCALAR
+    order = FIRST
+  []
+[]
+
+[FVKernels]
+  [mass]
+    type = INSFVMassAdvection
+    variable = pressure
+    advected_interp_method = &#x27;skewness-corrected&#x27;
+    velocity_interp_method = &#x27;rc&#x27;
+    rho = ${rho}
+  []
+  [mean_zero_pressure]
+    type = FVIntegralValueConstraint
+    variable = pressure
+    lambda = lambda
+  []
+
+  [u_advection]
+    type = INSFVMomentumAdvection
+    variable = vel_x
+    advected_interp_method = &#x27;skewness-corrected&#x27;
+    velocity_interp_method = &#x27;rc&#x27;
+    rho = ${rho}
+    momentum_component = &#x27;x&#x27;
+  []
+  [u_viscosity]
+    type = INSFVMomentumDiffusion
+    variable = vel_x
+    mu = ${mu}
+    momentum_component = &#x27;x&#x27;
+  []
+  [u_pressure]
+    type = INSFVMomentumPressure
+    variable = vel_x
+    momentum_component = &#x27;x&#x27;
+    pressure = pressure
+  []
+  [u_forcing]
+    type = INSFVBodyForce
+    variable = vel_x
+    functor = forcing_u
+    momentum_component = &#x27;x&#x27;
+  []
+
+  [v_advection]
+    type = INSFVMomentumAdvection
+    variable = vel_y
+    advected_interp_method = &#x27;skewness-corrected&#x27;
+    velocity_interp_method = &#x27;rc&#x27;
+    rho = ${rho}
+    momentum_component = &#x27;y&#x27;
+  []
+  [v_viscosity]
+    type = INSFVMomentumDiffusion
+    variable = vel_y
+    mu = ${mu}
+    momentum_component = &#x27;y&#x27;
+  []
+  [v_pressure]
+    type = INSFVMomentumPressure
+    variable = vel_y
+    momentum_component = &#x27;y&#x27;
+    pressure = pressure
+  []
+  [v_forcing]
+    type = INSFVBodyForce
+    variable = vel_y
+    functor = forcing_v
+    momentum_component = &#x27;y&#x27;
+  []
+[]
+
+[FVBCs]
+  [no-slip-wall-u]
+    type = INSFVNoSlipWallBC
+    boundary = &#x27;left right top bottom&#x27;
+    variable = vel_x
+    function = &#x27;0&#x27;
+  []
+  [no-slip-wall-v]
+    type = INSFVNoSlipWallBC
+    boundary = &#x27;left right top bottom&#x27;
+    variable = vel_y
+    function = &#x27;0&#x27;
+  []
+[]
+
+[Functions]
+  [exact_u]
+    type = ParsedFunction
+    expression = &#x27;x^2*(1-x)^2*(2*y-6*y^2+4*y^3)&#x27;
+  []
+  [exact_v]
+    type = ParsedFunction
+    expression = &#x27;-y^2*(1-y)^2*(2*x-6*x^2+4*x^3)&#x27;
+  []
+  [exact_p]
+    type = ParsedFunction
+    expression = &#x27;x*(1-x)-2/12&#x27;
+  []
+  [forcing_u]
+    type = ParsedFunction
+    expression = &#x27;-4*mu/rho*(-1+2*y)*(y^2-6*x*y^2+6*x^2*y^2-y+6*x*y-6*x^2*y+3*x^2-6*x^3+3*x^4)+1-2*x+4*x^3&#x27;
+            &#x27;*y^2*(2*y^2-2*y+1)*(y-1)^2*(-1+2*x)*(x-1)^3&#x27;
+    symbol_names = &#x27;mu rho&#x27;
+    symbol_values = &#x27;${mu} ${rho}&#x27;
+  []
+  [forcing_v]
+    type = ParsedFunction
+    expression = &#x27;4*mu/rho*(-1+2*x)*(x^2-6*y*x^2+6*x^2*y^2-x+6*x*y-6*x*y^2+3*y^2-6*y^3+3*y^4)+4*y^3*x^2*(2&#x27;
+            &#x27;*x^2-2*x+1)*(x-1)^2*(-1+2*y)*(y-1)^3&#x27;
+    symbol_names = &#x27;mu rho&#x27;
+    symbol_values = &#x27;${mu} ${rho}&#x27;
+  []
+[]
+
+[Executioner]
+  type = Steady
+  solve_type = &#x27;NEWTON&#x27;
+  petsc_options_iname = &#x27;-pc_type -pc_factor_shift_type&#x27;
+  petsc_options_value = &#x27;lu NONZERO&#x27;
+  nl_rel_tol = 1e-8
+[]
+
+[Outputs]
+  [out]
+    type = Exodus
+    hide = lambda
+  []
+  csv = true
+[]
+
+[Postprocessors]
+  [h]
+    type = AverageElementSize
+    outputs = &#x27;console csv&#x27;
+    execute_on = &#x27;timestep_end&#x27;
+  []
+  [L2u]
+    type = ElementL2FunctorError
+    approximate = vel_x
+    exact = exact_u
+    outputs = &#x27;console csv&#x27;
+    execute_on = &#x27;timestep_end&#x27;
+  []
+  [L2v]
+    type = ElementL2FunctorError
+    approximate = vel_y
+    exact = exact_v
+    outputs = &#x27;console csv&#x27;
+    execute_on = &#x27;timestep_end&#x27;
+  []
+  [L2p]
+    approximate = pressure
+    exact = exact_p
+    type = ElementL2FunctorError
+    outputs = &#x27;console csv&#x27;
+    execute_on = &#x27;timestep_end&#x27;
+  []
+[]
+</code></pre></div><div class="modal-footer"><a class="modal-close btn-flat">Close</a></div></div></div><div class="col hide-on-med-and-down l2"><div class="toc-wrapper pin-top"><ul class="section table-of-contents"><li><a href="#405b3c85-4171-4f85-bad5-ce51f29d8958" class="tooltipped" data-position="left" data-tooltip="Lid Driven Cavity Flow">Lid Driven Cavity Flow</a></li><li><a href="#e325f301-9574-4e8e-986c-cdae88d4a097" class="tooltipped" data-position="left" data-tooltip="Channel Flow">Channel Flow</a></li><li><a href="#5b494ea7-2a06-4891-9350-2a5ead68e5d2" class="tooltipped" data-position="left" data-tooltip="Axisymmetric Channel Flow">Axisymmetric Channel Flow</a></li><li><a href="#7650f9d9-6eb0-4cfe-80c0-8d20ed2d4387" class="tooltipped" data-position="left" data-tooltip="Skewness - correction">Skewness - correction</a></li><li><a href="#4b30401e-3d3a-4299-8351-59a6e6575217" class="tooltipped" data-position="left" data-tooltip="Cell - centered vector field reconstruction using face fluxes">Cell - centered vector field reconstruction using face fluxes</a></li><li><a href="#00d91a59-57b8-460d-a087-5f23e889a7d3" class="tooltipped" data-position="left" data-tooltip="References">References</a></li></ul></div></div></div></div></main></div></body><script type="text/javascript" src="../../contrib/materialize/materialize.min.js"></script><script type="text/javascript" src="../../contrib/clipboard/clipboard.min.js"></script><script type="text/javascript" src="../../contrib/prism/prism.min.js"></script><script type="text/javascript" src="../../js/init.js"></script><script type="text/javascript" src="../../js/navigation.js"></script><script type="text/javascript" src="../../contrib/fuse/fuse.min.js"></script><script type="text/javascript" src="../../js/search_index.js"></script><script type="text/javascript" src="../../js/sqa_moose.js"></script>

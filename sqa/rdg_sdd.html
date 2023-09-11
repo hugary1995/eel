@@ -1,0 +1,58 @@
+<!DOCTYPE html><head><meta charset="UTF-8"><title>rdg_sdd.md | Eel</title><link href="../contrib/materialize/materialize.min.css" type="text/css" rel="stylesheet" media="screen,projection"></link><link href="../contrib/prism/prism.min.css" type="text/css" rel="stylesheet"></link><link href="../css/moose.css" type="text/css" rel="stylesheet"></link><link href="../css/devel_moose.css" type="text/css" rel="stylesheet"></link><link href="../css/alert_moose.css" type="text/css" rel="stylesheet"></link><link href="../css/content_moose.css" type="text/css" rel="stylesheet"></link><link href="../css/sqa_moose.css" type="text/css" rel="stylesheet"></link><link href="../css/civet_moose.css" type="text/css" rel="stylesheet"></link><script type="text/javascript" src="../contrib/jquery/jquery.min.js"></script></head><body><div class="page-wrap"><header><nav><div class="nav-wrapper container"><a href="../index.html" class="left moose-logo hide-on-med-and-down" id="home-button">Eel</a><a href="https://github.com/hugary1995/eel" class="right"><img src="../media/framework/github-logo.png" class="github-mark"></img><img src="../media/framework/github-mark.png" class="github-logo"></img></a><ul class="right hide-on-med-and-down"><li><a href="../eel.html">Documentation</a></li></ul><a href="#" class="sidenav-trigger" data-target="61618474-eeda-4ac6-9d7e-071e019a00bf"><i class="material-icons">menu</i></a><ul class="sidenav" id="61618474-eeda-4ac6-9d7e-071e019a00bf"><li><a href="../eel.html">Documentation</a></li></ul><a href="#moose-search" class="modal-trigger"><i class="material-icons">search</i></a></div></nav><div class="modal modal-fixed-footer moose-search-modal" id="moose-search"><div class="modal-content container moose-search-modal-content"><div class="row"><div class="col l12"><div class="input-field"><input type_="text" onkeyup="mooseSearch()" placeholder="/index.md" id="moose-search-box"></input></div></div><div><div class="col s12" id="moose-search-results"></div></div></div></div><div class="modal-footer"><a href="#!" class="modal-close btn-flat">Close</a></div></div></header><main class="main"><div class="container"><div class="row"><div class="col hide-on-med-and-down l12"><nav class="breadcrumb-nav"><div class="nav-wrapper"><a href="." class="breadcrumb">sqa</a><a href="#" class="breadcrumb">rdg_sdd</a></div></nav></div></div><div class="row"><div class="moose-content col s12 m12 l10"><p class="moose-disabled">!template load file=sqa/module_sdd.md.template module=Reconstructed Discontinuous Galerkin category=rdg</p><p class="moose-disabled">
+
+!template! item key=introduction
+The [!ac](MOOSE) {{module}} module is based on the MOOSE framework and thus inherits
+the unique features and base characteristics of the framework, as outlined in the [framework_sdd.md].
+Specific details unique to the module are outlined in this document.
+!template-end!</p><p class="moose-disabled">
+
+!template! item key=system-scope
+!include rdg_srs.md start=system-scope-begin end=system-scope-finish
+!template-end!</p><p class="moose-disabled">
+
+!template! item key=dependencies-and-limitations
+The {{module}} module inherits the
+[software dependencies of the MOOSE framework](framework_sdd.md#dependencies-and-limitations),
+with no additional dependencies. The design of this module is motivated by the
+needs of its client applications.
+!template-end!</p><p class="moose-disabled">
+
+!template! item key=design-stakeholders
+!include framework_sdd.md start=design-stakeholders-begin end=design-stakeholders-finish
+!template-end!</p><p class="moose-disabled">
+
+!template! item key=system-design
+The {{module}} module inherits the wide range of pluggable systems from MOOSE. More
+information regarding MOOSE system design can be found in the framework [framework_sdd.md#system-design]
+section. The [rDG module home page](modules/rdg/index.md) provides an overview
+of the various systems used by this module.
+Documentation for each object, data structure, and process specific to the
+module are kept up-to-date alongside the MOOSE documentation. Expected failure
+modes and error conditions are accounted for via regression testing, and error
+conditions are noted in object documentation where applicable.
+!template-end!</p><p class="moose-disabled">
+
+!template! item key=system-structure
+The architecture of the {{module}} module consists of a core and several pluggable systems (both
+inherited from the MOOSE framework). The core of MOOSE consists of a number of key objects responsible
+for setting up and managing the user-defined objects of a finite element simulation. This core set of
+objects has limited extendability and exists for every simulation configuration that the module is
+capable of running.
+
+!syntax complete subsystems=False actions=False objects=False groups=RdgApp
+
+!style halign=left
+The MooseApp is the top-level object used to hold all of the other objects in a simulation. In a
+normal simulation a single MooseApp object is created and &quot;run()&quot;. This object uses its Factory
+objects to build user-defined objects which are stored in a series of Warehouse objects and
+executed. The Finite Element data is stored in the Systems and Assembly object while the domain
+information (the Mesh) is stored in the Mesh object. A series of threaded loops are used to run
+parallel calculations on the objects created and stored within the warehouses.
+
+MOOSE&#x27;s pluggable systems are documented on the [MOOSE website](https://mooseframework.inl.gov), and those
+for the {{module}} module are on this webpage, accessible through the high-level system links above.
+Each of these systems has a set of defined polymorphic interfaces and are designed to accomplish a
+specific task within the simulation. The design of these systems is solid and is managed through agile
+methods and ticket request system either on GitHub (for MOOSE) or on the defined software repository
+for this application.
+!template-end!</p></div><div class="col hide-on-med-and-down l2"><div class="toc-wrapper pin-top"><ul class="section table-of-contents"></ul></div></div></div></div></main></div></body><script type="text/javascript" src="../contrib/materialize/materialize.min.js"></script><script type="text/javascript" src="../contrib/clipboard/clipboard.min.js"></script><script type="text/javascript" src="../contrib/prism/prism.min.js"></script><script type="text/javascript" src="../js/init.js"></script><script type="text/javascript" src="../js/navigation.js"></script><script type="text/javascript" src="../contrib/fuse/fuse.min.js"></script><script type="text/javascript" src="../js/search_index.js"></script><script type="text/javascript" src="../js/sqa_moose.js"></script>

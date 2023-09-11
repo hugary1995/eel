@@ -1,0 +1,290 @@
+<!DOCTYPE html><head><meta charset="UTF-8"><title>FVConvectionCorrelationInterface | Eel</title><link href="../../contrib/materialize/materialize.min.css" type="text/css" rel="stylesheet" media="screen,projection"></link><link href="../../contrib/prism/prism.min.css" type="text/css" rel="stylesheet"></link><link href="../../css/moose.css" type="text/css" rel="stylesheet"></link><link href="../../css/devel_moose.css" type="text/css" rel="stylesheet"></link><link href="../../css/alert_moose.css" type="text/css" rel="stylesheet"></link><link href="../../css/content_moose.css" type="text/css" rel="stylesheet"></link><link href="../../css/sqa_moose.css" type="text/css" rel="stylesheet"></link><link href="../../css/civet_moose.css" type="text/css" rel="stylesheet"></link><link href="../../contrib/katex/katex.min.css" type="text/css" rel="stylesheet"></link><link href="../../css/katex_moose.css" type="text/css" rel="stylesheet"></link><script type="text/javascript" src="../../contrib/jquery/jquery.min.js"></script><script type="text/javascript" src="../../contrib/katex/katex.min.js"></script></head><body><div class="page-wrap"><header><nav><div class="nav-wrapper container"><a href="../../index.html" class="left moose-logo hide-on-med-and-down" id="home-button">Eel</a><a href="https://github.com/hugary1995/eel" class="right"><img src="../../media/framework/github-logo.png" class="github-mark"></img><img src="../../media/framework/github-mark.png" class="github-logo"></img></a><ul class="right hide-on-med-and-down"><li><a href="../../eel.html">Documentation</a></li></ul><a href="#" class="sidenav-trigger" data-target="9ae0d21b-5ef8-4224-871a-ac0c47ba44c5"><i class="material-icons">menu</i></a><ul class="sidenav" id="9ae0d21b-5ef8-4224-871a-ac0c47ba44c5"><li><a href="../../eel.html">Documentation</a></li></ul><a href="#moose-search" class="modal-trigger"><i class="material-icons">search</i></a></div></nav><div class="modal modal-fixed-footer moose-search-modal" id="moose-search"><div class="modal-content container moose-search-modal-content"><div class="row"><div class="col l12"><div class="input-field"><input type_="text" onkeyup="mooseSearch()" placeholder="/index.md" id="moose-search-box"></input></div></div><div><div class="col s12" id="moose-search-results"></div></div></div></div><div class="modal-footer"><a href="#!" class="modal-close btn-flat">Close</a></div></div></header><main class="main"><div class="container"><div class="row"><div class="col hide-on-med-and-down l12"><nav class="breadcrumb-nav"><div class="nav-wrapper"><a href=".." class="breadcrumb">source</a><span class="breadcrumb">fviks</span><a href="#" class="breadcrumb">FVConvectionCorrelationInterface</a></div></nav></div></div><div class="row"><div class="moose-content col s12 m12 l10"><section id="ca54869b-b132-4c37-9eed-61dda17d5b47" data-section-level="1" data-section-text="FVConvectionCorrelationInterface"><h1 id="fvconvectioncorrelationinterface">FVConvectionCorrelationInterface</h1><p>Computes the residual for a convective heat transfer across an interface for the finite volume method, using a correlation for the heat transfer coefficient.</p><p>The surface convective flux to the fluid is then: <span class="moose-katex-block-equation"><span class="moose-katex-equation table-cell" id="moose-equation-f32d4f4f-87a8-49d1-8dcd-5910f89dd525"></span><script>var element = document.getElementById("moose-equation-f32d4f4f-87a8-49d1-8dcd-5910f89dd525");katex.render("q_s = h_{correlation} (T_{solid} - T_{fluid})", element, {displayMode:true,throwOnError:false,macros:{"\\bs":"\\boldsymbol{#1}","\\grad":"\\bs{\\nabla}","\\divergence":"\\grad \\cdot","\\norm":"\\left\\lVert#1\\right\\rVert","\\abs":"\\left\\lvert#1\\right\\rvert","\\diff":"\\text{ d}#1","\\bfa":"\\boldsymbol{a}","\\bfb":"\\boldsymbol{b}","\\bfc":"\\boldsymbol{c}","\\bfd":"\\boldsymbol{d}","\\bfe":"\\boldsymbol{e}","\\bff":"\\boldsymbol{f}","\\bfg":"\\boldsymbol{g}","\\bfh":"\\boldsymbol{h}","\\bfi":"\\boldsymbol{i}","\\bfj":"\\boldsymbol{j}","\\bfk":"\\boldsymbol{k}","\\bfl":"\\boldsymbol{l}","\\bfm":"\\boldsymbol{m}","\\bfn":"\\boldsymbol{n}","\\bfo":"\\boldsymbol{o}","\\bfp":"\\boldsymbol{p}","\\bfq":"\\boldsymbol{q}","\\bfr":"\\boldsymbol{r}","\\bfs":"\\boldsymbol{s}","\\bft":"\\boldsymbol{t}","\\bfu":"\\boldsymbol{u}","\\bfv":"\\boldsymbol{v}","\\bfw":"\\boldsymbol{w}","\\bfx":"\\boldsymbol{x}","\\bfy":"\\boldsymbol{y}","\\bfz":"\\boldsymbol{z}","\\bfA":"\\boldsymbol{A}","\\bfB":"\\boldsymbol{B}","\\bfC":"\\boldsymbol{C}","\\bfD":"\\boldsymbol{D}","\\bfE":"\\boldsymbol{E}","\\bfF":"\\boldsymbol{F}","\\bfG":"\\boldsymbol{G}","\\bfH":"\\boldsymbol{H}","\\bfI":"\\boldsymbol{I}","\\bfJ":"\\boldsymbol{J}","\\bfK":"\\boldsymbol{K}","\\bfL":"\\boldsymbol{L}","\\bfM":"\\boldsymbol{M}","\\bfN":"\\boldsymbol{N}","\\bfO":"\\boldsymbol{O}","\\bfP":"\\boldsymbol{P}","\\bfQ":"\\boldsymbol{Q}","\\bfR":"\\boldsymbol{R}","\\bfS":"\\boldsymbol{S}","\\bfT":"\\boldsymbol{T}","\\bfU":"\\boldsymbol{U}","\\bfV":"\\boldsymbol{V}","\\bfW":"\\boldsymbol{W}","\\bfX":"\\boldsymbol{X}","\\bfY":"\\boldsymbol{Y}","\\bfZ":"\\boldsymbol{Z}"}});</script></span> with <span class="moose-katex-inline-equation" id="moose-equation-93eebc77-fc2c-45e7-a448-db10d1c01bf1"><script>var element = document.getElementById("moose-equation-93eebc77-fc2c-45e7-a448-db10d1c01bf1");katex.render("q_s", element, {displayMode:false,throwOnError:false,macros:{"\\bs":"\\boldsymbol{#1}","\\grad":"\\bs{\\nabla}","\\divergence":"\\grad \\cdot","\\norm":"\\left\\lVert#1\\right\\rVert","\\abs":"\\left\\lvert#1\\right\\rvert","\\diff":"\\text{ d}#1","\\bfa":"\\boldsymbol{a}","\\bfb":"\\boldsymbol{b}","\\bfc":"\\boldsymbol{c}","\\bfd":"\\boldsymbol{d}","\\bfe":"\\boldsymbol{e}","\\bff":"\\boldsymbol{f}","\\bfg":"\\boldsymbol{g}","\\bfh":"\\boldsymbol{h}","\\bfi":"\\boldsymbol{i}","\\bfj":"\\boldsymbol{j}","\\bfk":"\\boldsymbol{k}","\\bfl":"\\boldsymbol{l}","\\bfm":"\\boldsymbol{m}","\\bfn":"\\boldsymbol{n}","\\bfo":"\\boldsymbol{o}","\\bfp":"\\boldsymbol{p}","\\bfq":"\\boldsymbol{q}","\\bfr":"\\boldsymbol{r}","\\bfs":"\\boldsymbol{s}","\\bft":"\\boldsymbol{t}","\\bfu":"\\boldsymbol{u}","\\bfv":"\\boldsymbol{v}","\\bfw":"\\boldsymbol{w}","\\bfx":"\\boldsymbol{x}","\\bfy":"\\boldsymbol{y}","\\bfz":"\\boldsymbol{z}","\\bfA":"\\boldsymbol{A}","\\bfB":"\\boldsymbol{B}","\\bfC":"\\boldsymbol{C}","\\bfD":"\\boldsymbol{D}","\\bfE":"\\boldsymbol{E}","\\bfF":"\\boldsymbol{F}","\\bfG":"\\boldsymbol{G}","\\bfH":"\\boldsymbol{H}","\\bfI":"\\boldsymbol{I}","\\bfJ":"\\boldsymbol{J}","\\bfK":"\\boldsymbol{K}","\\bfL":"\\boldsymbol{L}","\\bfM":"\\boldsymbol{M}","\\bfN":"\\boldsymbol{N}","\\bfO":"\\boldsymbol{O}","\\bfP":"\\boldsymbol{P}","\\bfQ":"\\boldsymbol{Q}","\\bfR":"\\boldsymbol{R}","\\bfS":"\\boldsymbol{S}","\\bfT":"\\boldsymbol{T}","\\bfU":"\\boldsymbol{U}","\\bfV":"\\boldsymbol{V}","\\bfW":"\\boldsymbol{W}","\\bfX":"\\boldsymbol{X}","\\bfY":"\\boldsymbol{Y}","\\bfZ":"\\boldsymbol{Z}"}});</script></span> the surface convective heat flux, <span class="moose-katex-inline-equation" id="moose-equation-8079f4c1-2961-4858-9e83-3140e1112ef8"><script>var element = document.getElementById("moose-equation-8079f4c1-2961-4858-9e83-3140e1112ef8");katex.render("h_{correlation}", element, {displayMode:false,throwOnError:false,macros:{"\\bs":"\\boldsymbol{#1}","\\grad":"\\bs{\\nabla}","\\divergence":"\\grad \\cdot","\\norm":"\\left\\lVert#1\\right\\rVert","\\abs":"\\left\\lvert#1\\right\\rvert","\\diff":"\\text{ d}#1","\\bfa":"\\boldsymbol{a}","\\bfb":"\\boldsymbol{b}","\\bfc":"\\boldsymbol{c}","\\bfd":"\\boldsymbol{d}","\\bfe":"\\boldsymbol{e}","\\bff":"\\boldsymbol{f}","\\bfg":"\\boldsymbol{g}","\\bfh":"\\boldsymbol{h}","\\bfi":"\\boldsymbol{i}","\\bfj":"\\boldsymbol{j}","\\bfk":"\\boldsymbol{k}","\\bfl":"\\boldsymbol{l}","\\bfm":"\\boldsymbol{m}","\\bfn":"\\boldsymbol{n}","\\bfo":"\\boldsymbol{o}","\\bfp":"\\boldsymbol{p}","\\bfq":"\\boldsymbol{q}","\\bfr":"\\boldsymbol{r}","\\bfs":"\\boldsymbol{s}","\\bft":"\\boldsymbol{t}","\\bfu":"\\boldsymbol{u}","\\bfv":"\\boldsymbol{v}","\\bfw":"\\boldsymbol{w}","\\bfx":"\\boldsymbol{x}","\\bfy":"\\boldsymbol{y}","\\bfz":"\\boldsymbol{z}","\\bfA":"\\boldsymbol{A}","\\bfB":"\\boldsymbol{B}","\\bfC":"\\boldsymbol{C}","\\bfD":"\\boldsymbol{D}","\\bfE":"\\boldsymbol{E}","\\bfF":"\\boldsymbol{F}","\\bfG":"\\boldsymbol{G}","\\bfH":"\\boldsymbol{H}","\\bfI":"\\boldsymbol{I}","\\bfJ":"\\boldsymbol{J}","\\bfK":"\\boldsymbol{K}","\\bfL":"\\boldsymbol{L}","\\bfM":"\\boldsymbol{M}","\\bfN":"\\boldsymbol{N}","\\bfO":"\\boldsymbol{O}","\\bfP":"\\boldsymbol{P}","\\bfQ":"\\boldsymbol{Q}","\\bfR":"\\boldsymbol{R}","\\bfS":"\\boldsymbol{S}","\\bfT":"\\boldsymbol{T}","\\bfU":"\\boldsymbol{U}","\\bfV":"\\boldsymbol{V}","\\bfW":"\\boldsymbol{W}","\\bfX":"\\boldsymbol{X}","\\bfY":"\\boldsymbol{Y}","\\bfZ":"\\boldsymbol{Z}"}});</script></span> the heat transfer coefficient defined by the correlation as a material property and <span class="moose-katex-inline-equation" id="moose-equation-6cef5f82-f56d-4e68-81dc-c4a15cfb2514"><script>var element = document.getElementById("moose-equation-6cef5f82-f56d-4e68-81dc-c4a15cfb2514");katex.render("T_{solid/fluid}", element, {displayMode:false,throwOnError:false,macros:{"\\bs":"\\boldsymbol{#1}","\\grad":"\\bs{\\nabla}","\\divergence":"\\grad \\cdot","\\norm":"\\left\\lVert#1\\right\\rVert","\\abs":"\\left\\lvert#1\\right\\rvert","\\diff":"\\text{ d}#1","\\bfa":"\\boldsymbol{a}","\\bfb":"\\boldsymbol{b}","\\bfc":"\\boldsymbol{c}","\\bfd":"\\boldsymbol{d}","\\bfe":"\\boldsymbol{e}","\\bff":"\\boldsymbol{f}","\\bfg":"\\boldsymbol{g}","\\bfh":"\\boldsymbol{h}","\\bfi":"\\boldsymbol{i}","\\bfj":"\\boldsymbol{j}","\\bfk":"\\boldsymbol{k}","\\bfl":"\\boldsymbol{l}","\\bfm":"\\boldsymbol{m}","\\bfn":"\\boldsymbol{n}","\\bfo":"\\boldsymbol{o}","\\bfp":"\\boldsymbol{p}","\\bfq":"\\boldsymbol{q}","\\bfr":"\\boldsymbol{r}","\\bfs":"\\boldsymbol{s}","\\bft":"\\boldsymbol{t}","\\bfu":"\\boldsymbol{u}","\\bfv":"\\boldsymbol{v}","\\bfw":"\\boldsymbol{w}","\\bfx":"\\boldsymbol{x}","\\bfy":"\\boldsymbol{y}","\\bfz":"\\boldsymbol{z}","\\bfA":"\\boldsymbol{A}","\\bfB":"\\boldsymbol{B}","\\bfC":"\\boldsymbol{C}","\\bfD":"\\boldsymbol{D}","\\bfE":"\\boldsymbol{E}","\\bfF":"\\boldsymbol{F}","\\bfG":"\\boldsymbol{G}","\\bfH":"\\boldsymbol{H}","\\bfI":"\\boldsymbol{I}","\\bfJ":"\\boldsymbol{J}","\\bfK":"\\boldsymbol{K}","\\bfL":"\\boldsymbol{L}","\\bfM":"\\boldsymbol{M}","\\bfN":"\\boldsymbol{N}","\\bfO":"\\boldsymbol{O}","\\bfP":"\\boldsymbol{P}","\\bfQ":"\\boldsymbol{Q}","\\bfR":"\\boldsymbol{R}","\\bfS":"\\boldsymbol{S}","\\bfT":"\\boldsymbol{T}","\\bfU":"\\boldsymbol{U}","\\bfV":"\\boldsymbol{V}","\\bfW":"\\boldsymbol{W}","\\bfX":"\\boldsymbol{X}","\\bfY":"\\boldsymbol{Y}","\\bfZ":"\\boldsymbol{Z}"}});</script></span> the temperature of the adjacent solid and fluid.</p><section class="scrollspy" id="070f5701-cdfd-4e41-a437-5025ecf84f06" data-section-level="2" data-section-text="Example input file syntax"><h2 id="example-input-file-syntax">Example input file syntax</h2><p>In this example, a cold fluid is flowing next to a centrally-heated solid region. The heat diffuses through the solid region, and convection at the interface transfers the heat to the fluid.</p><pre class="moose-pre" style="max-height:350px;"><code class="language-text">[FVInterfaceKernels]
+  [convection]
+    type = FVConvectionCorrelationInterface
+    variable1 = T
+    variable2 = Ts
+    boundary = &#x27;interface&#x27;
+    h = 5
+    T_solid = Ts
+    T_fluid = T
+    subdomain1 = 0
+    subdomain2 = 1
+    wall_cell_is_bulk = true
+  []
+[]
+</code></pre><a class="moose-source-filename tooltipped modal-trigger" href="#aa066535-a0f7-48e1-9cbd-aee8c76d5f72">(moose/modules/navier_stokes/test/tests/finite_volume/fviks/convection/convection_channel.i)</a></section><section class="scrollspy" id="bb6980e9-b270-4f9a-aaff-0b06bfceeb24" data-section-level="2" data-section-text="Input Parameters"><h2 id="input-parameters">Input Parameters</h2><section id="f59af9f9-9852-4da0-8fe0-f753737495e7" data-section-level="3" data-section-text="Required Parameters" data-details-open="open"><details class="moose-section-content" open="open"><ul class="collapsible" data-collapsible="expandable"><li><div class="collapsible-header"><span class="moose-parameter-name">T_fluid</span><span class="moose-parameter-header-description">The fluid temperature variable</span></div><div class="collapsible-body"><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>MooseFunctorName</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>No</p><p class="moose-parameter-description"><span>Description:</span>The fluid temperature variable</p></div></li><li><div class="collapsible-header"><span class="moose-parameter-name">T_solid</span><span class="moose-parameter-header-description">The solid/wall temperature variable</span></div><div class="collapsible-body"><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>MooseFunctorName</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>No</p><p class="moose-parameter-description"><span>Description:</span>The solid/wall temperature variable</p></div></li><li><div class="collapsible-header"><span class="moose-parameter-name">boundary</span><span class="moose-parameter-header-description">The list of boundary IDs from the mesh where this object applies</span></div><div class="collapsible-body"><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>std::vector&lt;BoundaryName&gt;</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>No</p><p class="moose-parameter-description"><span>Description:</span>The list of boundary IDs from the mesh where this object applies</p></div></li><li><div class="collapsible-header"><span class="moose-parameter-name">h</span><span class="moose-parameter-header-description">The convective heat transfer coefficient</span></div><div class="collapsible-body"><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>MooseFunctorName</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>No</p><p class="moose-parameter-description"><span>Description:</span>The convective heat transfer coefficient</p></div></li><li><div class="collapsible-header"><span class="moose-parameter-name">subdomain1</span><span class="moose-parameter-header-description">The subdomains on the 1st side of the boundary.</span></div><div class="collapsible-body"><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>std::vector&lt;SubdomainName&gt;</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>No</p><p class="moose-parameter-description"><span>Description:</span>The subdomains on the 1st side of the boundary.</p></div></li><li><div class="collapsible-header"><span class="moose-parameter-name">subdomain2</span><span class="moose-parameter-header-description">The subdomains on the 2nd side of the boundary.</span></div><div class="collapsible-body"><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>std::vector&lt;SubdomainName&gt;</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>No</p><p class="moose-parameter-description"><span>Description:</span>The subdomains on the 2nd side of the boundary.</p></div></li><li><div class="collapsible-header"><span class="moose-parameter-name">variable1</span><span class="moose-parameter-header-description">The name of the first variable that this interface kernel applies to</span></div><div class="collapsible-body"><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>NonlinearVariableName</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>No</p><p class="moose-parameter-description"><span>Description:</span>The name of the first variable that this interface kernel applies to</p></div></li></ul><summary><h3 data-details-open="open"><span class="moose-section-icon"></span>Required Parameters</h3></summary></details></section><section id="7b17675c-9d75-4581-aa05-49c38b661f68" data-section-level="3" data-section-text="Optional Parameters" data-details-open="open"><details class="moose-section-content" open="open"><ul class="collapsible" data-collapsible="expandable"><li><div class="collapsible-header"><span class="moose-parameter-name">bulk_distance</span><span class="moose-parameter-header-default">-1</span><span class="moose-parameter-header-description">The distance to the bulk for evaluating the fluid bulk temperature</span></div><div class="collapsible-body"><p class="moose-parameter-description-default"><span>Default:</span>-1</p><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>double</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>No</p><p class="moose-parameter-description"><span>Description:</span>The distance to the bulk for evaluating the fluid bulk temperature</p></div></li><li><div class="collapsible-header"><span class="moose-parameter-name">displacements</span><span class="moose-parameter-header-description">The displacements</span></div><div class="collapsible-body"><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>std::vector&lt;VariableName&gt;</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>No</p><p class="moose-parameter-description"><span>Description:</span>The displacements</p></div></li><li><div class="collapsible-header"><span class="moose-parameter-name">execute_on</span><span class="moose-parameter-header-default">LINEAR</span><span class="moose-parameter-header-description">The list of flag(s) indicating when this object should be executed, the available options include NONE, INITIAL, LINEAR, NONLINEAR, TIMESTEP_END, TIMESTEP_BEGIN, MULTIAPP_FIXED_POINT_END, MULTIAPP_FIXED_POINT_BEGIN, FINAL, CUSTOM, ALWAYS.</span></div><div class="collapsible-body"><p class="moose-parameter-description-default"><span>Default:</span>LINEAR</p><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>ExecFlagEnum</p><p class="moose-parameter-description-options"><span>Options:</span>NONE, INITIAL, LINEAR, NONLINEAR, TIMESTEP_END, TIMESTEP_BEGIN, MULTIAPP_FIXED_POINT_END, MULTIAPP_FIXED_POINT_BEGIN, FINAL, CUSTOM, ALWAYS</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>No</p><p class="moose-parameter-description"><span>Description:</span>The list of flag(s) indicating when this object should be executed, the available options include NONE, INITIAL, LINEAR, NONLINEAR, TIMESTEP_END, TIMESTEP_BEGIN, MULTIAPP_FIXED_POINT_END, MULTIAPP_FIXED_POINT_BEGIN, FINAL, CUSTOM, ALWAYS.</p></div></li><li><div class="collapsible-header"><span class="moose-parameter-name">prop_getter_suffix</span><span class="moose-parameter-header-description">An optional suffix parameter that can be appended to any attempt to retrieve/get material properties. The suffix will be prepended with a '_' character.</span></div><div class="collapsible-body"><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>MaterialPropertyName</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>No</p><p class="moose-parameter-description"><span>Description:</span>An optional suffix parameter that can be appended to any attempt to retrieve/get material properties. The suffix will be prepended with a '_' character.</p></div></li><li><div class="collapsible-header"><span class="moose-parameter-name">variable2</span><span class="moose-parameter-header-description">The name of the second variable that this interface kernel applies to. If not supplied, variable1 will be used.</span></div><div class="collapsible-body"><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>NonlinearVariableName</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>No</p><p class="moose-parameter-description"><span>Description:</span>The name of the second variable that this interface kernel applies to. If not supplied, variable1 will be used.</p></div></li><li><div class="collapsible-header"><span class="moose-parameter-name">wall_cell_is_bulk</span><span class="moose-parameter-header-default">False</span><span class="moose-parameter-header-description">Use the wall cell centroid temperature for the fluid bulk temperature</span></div><div class="collapsible-body"><p class="moose-parameter-description-default"><span>Default:</span>False</p><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>bool</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>No</p><p class="moose-parameter-description"><span>Description:</span>Use the wall cell centroid temperature for the fluid bulk temperature</p></div></li></ul><summary><h3 data-details-open="open"><span class="moose-section-icon"></span>Optional Parameters</h3></summary></details></section><section id="5c8e44c4-f1a3-451f-a8e0-9de5226ad798" data-section-level="3" data-section-text="Tagging Parameters" data-details-open="close"><details class="moose-section-content"><ul class="collapsible" data-collapsible="expandable"><li><div class="collapsible-header"><span class="moose-parameter-name">absolute_value_vector_tags</span><span class="moose-parameter-header-description">The tags for the vectors this residual object should fill with the absolute value of the residual contribution</span></div><div class="collapsible-body"><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>std::vector&lt;TagName&gt;</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>No</p><p class="moose-parameter-description"><span>Description:</span>The tags for the vectors this residual object should fill with the absolute value of the residual contribution</p></div></li><li><div class="collapsible-header"><span class="moose-parameter-name">extra_matrix_tags</span><span class="moose-parameter-header-description">The extra tags for the matrices this Kernel should fill</span></div><div class="collapsible-body"><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>std::vector&lt;TagName&gt;</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>No</p><p class="moose-parameter-description"><span>Description:</span>The extra tags for the matrices this Kernel should fill</p></div></li><li><div class="collapsible-header"><span class="moose-parameter-name">extra_vector_tags</span><span class="moose-parameter-header-description">The extra tags for the vectors this Kernel should fill</span></div><div class="collapsible-body"><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>std::vector&lt;TagName&gt;</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>No</p><p class="moose-parameter-description"><span>Description:</span>The extra tags for the vectors this Kernel should fill</p></div></li><li><div class="collapsible-header"><span class="moose-parameter-name">matrix_tags</span><span class="moose-parameter-header-default">system</span><span class="moose-parameter-header-description">The tag for the matrices this Kernel should fill</span></div><div class="collapsible-body"><p class="moose-parameter-description-default"><span>Default:</span>system</p><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>MultiMooseEnum</p><p class="moose-parameter-description-options"><span>Options:</span>nontime, system</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>No</p><p class="moose-parameter-description"><span>Description:</span>The tag for the matrices this Kernel should fill</p></div></li><li><div class="collapsible-header"><span class="moose-parameter-name">vector_tags</span><span class="moose-parameter-header-default">nontime</span><span class="moose-parameter-header-description">The tag for the vectors this Kernel should fill</span></div><div class="collapsible-body"><p class="moose-parameter-description-default"><span>Default:</span>nontime</p><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>MultiMooseEnum</p><p class="moose-parameter-description-options"><span>Options:</span>nontime, time</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>No</p><p class="moose-parameter-description"><span>Description:</span>The tag for the vectors this Kernel should fill</p></div></li></ul><summary><h3 data-details-open="close"><span class="moose-section-icon"></span>Tagging Parameters</h3></summary></details></section><section id="6792bda0-3c46-4bcf-8878-b9756c4ff8a9" data-section-level="3" data-section-text="Advanced Parameters" data-details-open="close"><details class="moose-section-content"><ul class="collapsible" data-collapsible="expandable"><li><div class="collapsible-header"><span class="moose-parameter-name">control_tags</span><span class="moose-parameter-header-description">Adds user-defined labels for accessing object parameters via control logic.</span></div><div class="collapsible-body"><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>std::vector&lt;std::string&gt;</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>No</p><p class="moose-parameter-description"><span>Description:</span>Adds user-defined labels for accessing object parameters via control logic.</p></div></li><li><div class="collapsible-header"><span class="moose-parameter-name">enable</span><span class="moose-parameter-header-default">True</span><span class="moose-parameter-header-description">Set the enabled status of the MooseObject.</span></div><div class="collapsible-body"><p class="moose-parameter-description-default"><span>Default:</span>True</p><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>bool</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>Yes</p><p class="moose-parameter-description"><span>Description:</span>Set the enabled status of the MooseObject.</p></div></li><li><div class="collapsible-header"><span class="moose-parameter-name">implicit</span><span class="moose-parameter-header-default">True</span><span class="moose-parameter-header-description">Determines whether this object is calculated using an implicit or explicit form</span></div><div class="collapsible-body"><p class="moose-parameter-description-default"><span>Default:</span>True</p><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>bool</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>No</p><p class="moose-parameter-description"><span>Description:</span>Determines whether this object is calculated using an implicit or explicit form</p></div></li><li><div class="collapsible-header"><span class="moose-parameter-name">use_displaced_mesh</span><span class="moose-parameter-header-default">False</span><span class="moose-parameter-header-description">Whether or not this object should use the displaced mesh for computation.  Note that in the case this is true but no displacements are provided in the Mesh block the undisplaced mesh will still be used.</span></div><div class="collapsible-body"><p class="moose-parameter-description-default"><span>Default:</span>False</p><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>bool</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>No</p><p class="moose-parameter-description"><span>Description:</span>Whether or not this object should use the displaced mesh for computation.  Note that in the case this is true but no displacements are provided in the Mesh block the undisplaced mesh will still be used.</p></div></li></ul><summary><h3 data-details-open="close"><span class="moose-section-icon"></span>Advanced Parameters</h3></summary></details></section><section id="d0932136-b57f-4554-810c-a10e1aeba745" data-section-level="3" data-section-text="Parallel Ghosting Parameters" data-details-open="close"><details class="moose-section-content"><ul class="collapsible" data-collapsible="expandable"><li><div class="collapsible-header"><span class="moose-parameter-name">ghost_layers</span><span class="moose-parameter-header-default">1</span><span class="moose-parameter-header-description">The number of layers of elements to ghost.</span></div><div class="collapsible-body"><p class="moose-parameter-description-default"><span>Default:</span>1</p><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>unsigned short</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>No</p><p class="moose-parameter-description"><span>Description:</span>The number of layers of elements to ghost.</p></div></li><li><div class="collapsible-header"><span class="moose-parameter-name">use_point_neighbors</span><span class="moose-parameter-header-default">False</span><span class="moose-parameter-header-description">Whether to use point neighbors, which introduces additional ghosting to that used for simple face neighbors.</span></div><div class="collapsible-body"><p class="moose-parameter-description-default"><span>Default:</span>False</p><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>bool</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>No</p><p class="moose-parameter-description"><span>Description:</span>Whether to use point neighbors, which introduces additional ghosting to that used for simple face neighbors.</p></div></li></ul><summary><h3 data-details-open="close"><span class="moose-section-icon"></span>Parallel Ghosting Parameters</h3></summary></details></section></section></section><div class="moose-modal modal" id="aa066535-a0f7-48e1-9cbd-aee8c76d5f72"><div class="modal-content"><h4>(moose/modules/navier_stokes/test/tests/finite_volume/fviks/convection/convection_channel.i)</h4><pre class="moose-pre"><code class="language-text">mu = 1
+rho = 1
+k = .01
+cp = 1
+
+[Mesh]
+  [cmg]
+    type = CartesianMeshGenerator
+    dim = 2
+    dx = &#x27;1 0.5&#x27;
+    dy = &#x27;1&#x27;
+    ix = &#x27;8 5&#x27;
+    iy = &#x27;8&#x27;
+    subdomain_id = &#x27;0 1&#x27;
+  []
+  [interface]
+    type = SideSetsBetweenSubdomainsGenerator
+    input = &#x27;cmg&#x27;
+    primary_block = 0
+    paired_block = 1
+    new_boundary = &#x27;interface&#x27;
+  []
+  [fluid_side]
+    type = BreakBoundaryOnSubdomainGenerator
+    input = &#x27;interface&#x27;
+    boundaries = &#x27;top bottom&#x27;
+  []
+[]
+
+[GlobalParams]
+  # retain behavior at time of test creation
+  two_term_boundary_expansion = false
+  rhie_chow_user_object = &#x27;rc&#x27;
+  advected_interp_method = &#x27;average&#x27;
+  velocity_interp_method = &#x27;rc&#x27;
+[]
+
+[UserObjects]
+  [rc]
+    type = INSFVRhieChowInterpolator
+    u = u
+    v = v
+    block = 0
+    pressure = pressure
+  []
+[]
+
+[Variables]
+  [u]
+    type = INSFVVelocityVariable
+    block = 0
+    initial_condition = 1e-6
+  []
+  [v]
+    type = INSFVVelocityVariable
+    block = 0
+    initial_condition = 1e-6
+  []
+  [pressure]
+    type = INSFVPressureVariable
+    block = 0
+  []
+  [T]
+    type = INSFVEnergyVariable
+    block = 0
+    initial_condition = 1
+  []
+  [Ts]
+    type = INSFVEnergyVariable
+    block = 1
+  []
+  [lambda]
+    family = SCALAR
+    order = FIRST
+  []
+[]
+
+[FVKernels]
+  [mass]
+    type = INSFVMassAdvection
+    variable = pressure
+    rho = ${rho}
+  []
+  [mean_zero_pressure]
+    type = FVIntegralValueConstraint
+    variable = pressure
+    lambda = lambda
+  []
+
+  [u_advection]
+    type = INSFVMomentumAdvection
+    variable = u
+    rho = ${rho}
+    momentum_component = &#x27;x&#x27;
+  []
+  [u_viscosity]
+    type = INSFVMomentumDiffusion
+    variable = u
+    mu = ${mu}
+    momentum_component = &#x27;x&#x27;
+  []
+  [u_pressure]
+    type = INSFVMomentumPressure
+    variable = u
+    momentum_component = &#x27;x&#x27;
+    pressure = pressure
+  []
+
+  [v_advection]
+    type = INSFVMomentumAdvection
+    variable = v
+    rho = ${rho}
+    momentum_component = &#x27;y&#x27;
+  []
+  [v_viscosity]
+    type = INSFVMomentumDiffusion
+    variable = v
+    mu = ${mu}
+    momentum_component = &#x27;y&#x27;
+  []
+  [v_pressure]
+    type = INSFVMomentumPressure
+    variable = v
+    momentum_component = &#x27;y&#x27;
+    pressure = pressure
+  []
+
+  [temp_conduction]
+    type = FVDiffusion
+    coeff = &#x27;k&#x27;
+    variable = T
+  []
+  [temp_advection]
+    type = INSFVEnergyAdvection
+    variable = T
+  []
+
+  [solid_temp_conduction]
+    type = FVDiffusion
+    coeff = &#x27;k&#x27;
+    variable = Ts
+  []
+[]
+
+[FVInterfaceKernels]
+  [convection]
+    type = FVConvectionCorrelationInterface
+    variable1 = T
+    variable2 = Ts
+    boundary = &#x27;interface&#x27;
+    h = 5
+    T_solid = Ts
+    T_fluid = T
+    subdomain1 = 0
+    subdomain2 = 1
+    wall_cell_is_bulk = true
+  []
+[]
+
+[FVBCs]
+  [walls_u]
+    type = INSFVNoSlipWallBC
+    variable = u
+    boundary = &#x27;interface left&#x27;
+    function = 0
+  []
+  [walls_v]
+    type = INSFVNoSlipWallBC
+    variable = v
+    boundary = &#x27;interface left&#x27;
+    function = 0
+  []
+
+  [inlet_u]
+    type = INSFVInletVelocityBC
+    variable = u
+    boundary = &#x27;bottom_to_0&#x27;
+    function = 0
+  []
+  [inlet_v]
+    type = INSFVInletVelocityBC
+    variable = v
+    boundary = &#x27;bottom_to_0&#x27;
+    function = 1
+  []
+
+  [inlet_T]
+    type = FVDirichletBC
+    variable = T
+    boundary = &#x27;bottom_to_0&#x27;
+    value = 0.5
+  []
+
+  [outlet]
+    type = INSFVMassAdvectionOutflowBC
+    variable = pressure
+    boundary = &#x27;top_to_0&#x27;
+    u = u
+    v = v
+    rho = ${rho}
+  []
+  [outlet_u]
+    type = INSFVMomentumAdvectionOutflowBC
+    variable = u
+    boundary = &#x27;top_to_0&#x27;
+    u = u
+    v = v
+    momentum_component = &#x27;x&#x27;
+    rho = ${rho}
+  []
+  [outlet_v]
+    type = INSFVMomentumAdvectionOutflowBC
+    variable = v
+    boundary = &#x27;top_to_0&#x27;
+    u = u
+    v = v
+    momentum_component = &#x27;y&#x27;
+    rho = ${rho}
+  []
+
+  [heater]
+    type = FVDirichletBC
+    variable = &#x27;Ts&#x27;
+    boundary = &#x27;right&#x27;
+    value = 10
+  []
+[]
+
+[Materials]
+  [functor_constants]
+    type = ADGenericFunctorMaterial
+    prop_names = &#x27;cp k&#x27;
+    prop_values = &#x27;${cp} ${k}&#x27;
+  []
+  [ins_fv]
+    type = INSFVEnthalpyMaterial
+    temperature = &#x27;T&#x27;
+    rho = ${rho}
+    block = 0
+  []
+[]
+
+[Executioner]
+  type = Steady
+  solve_type = NEWTON
+  petsc_options_iname = &#x27;-pc_type -sub_pc_type -sub_pc_factor_shift_type -ksp_gmres_restart&#x27;
+  petsc_options_value = &#x27;asm      lu           NONZERO                   200&#x27;
+  line_search = &#x27;none&#x27;
+
+  nl_abs_tol = 1e-14
+[]
+
+[Postprocessors]
+  [max_T]
+    type = ADElementExtremeFunctorValue
+    functor = T
+    block = 0
+  []
+  [max_Ts]
+    type = ADElementExtremeFunctorValue
+    functor = Ts
+    block = 1
+  []
+  [mdot_out]
+    type = VolumetricFlowRate
+    boundary = &#x27;top_to_0&#x27;
+    vel_x = u
+    vel_y = v
+    advected_quantity = ${rho}
+  []
+[]
+
+[Outputs]
+  exodus = true
+[]
+</code></pre></div><div class="modal-footer"><a class="modal-close btn-flat">Close</a></div></div></div><div class="col hide-on-med-and-down l2"><div class="toc-wrapper pin-top"><ul class="section table-of-contents"><li><a href="#070f5701-cdfd-4e41-a437-5025ecf84f06" class="tooltipped" data-position="left" data-tooltip="Example input file syntax">Example input file syntax</a></li><li><a href="#bb6980e9-b270-4f9a-aaff-0b06bfceeb24" class="tooltipped" data-position="left" data-tooltip="Input Parameters">Input Parameters</a></li></ul></div></div></div></div></main></div></body><script type="text/javascript" src="../../contrib/materialize/materialize.min.js"></script><script type="text/javascript" src="../../contrib/clipboard/clipboard.min.js"></script><script type="text/javascript" src="../../contrib/prism/prism.min.js"></script><script type="text/javascript" src="../../js/init.js"></script><script type="text/javascript" src="../../js/navigation.js"></script><script type="text/javascript" src="../../contrib/fuse/fuse.min.js"></script><script type="text/javascript" src="../../js/search_index.js"></script><script type="text/javascript" src="../../js/sqa_moose.js"></script>

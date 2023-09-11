@@ -1,0 +1,624 @@
+<!DOCTYPE html><head><meta charset="UTF-8"><title>SEIGrowth | Eel</title><link href="../../../contrib/materialize/materialize.min.css" type="text/css" rel="stylesheet" media="screen,projection"></link><link href="../../../contrib/prism/prism.min.css" type="text/css" rel="stylesheet"></link><link href="../../../css/moose.css" type="text/css" rel="stylesheet"></link><link href="../../../css/devel_moose.css" type="text/css" rel="stylesheet"></link><link href="../../../css/alert_moose.css" type="text/css" rel="stylesheet"></link><link href="../../../css/content_moose.css" type="text/css" rel="stylesheet"></link><link href="../../../css/sqa_moose.css" type="text/css" rel="stylesheet"></link><link href="../../../css/civet_moose.css" type="text/css" rel="stylesheet"></link><script type="text/javascript" src="../../../contrib/jquery/jquery.min.js"></script></head><body><div class="page-wrap"><header><nav><div class="nav-wrapper container"><a href="../../../index.html" class="left moose-logo hide-on-med-and-down" id="home-button">Eel</a><a href="https://github.com/hugary1995/eel" class="right"><img src="../../../media/framework/github-logo.png" class="github-mark"></img><img src="../../../media/framework/github-mark.png" class="github-logo"></img></a><ul class="right hide-on-med-and-down"><li><a href="../../../eel.html">Documentation</a></li></ul><a href="#" class="sidenav-trigger" data-target="a1a622ee-01ef-4b4e-9e72-382a2d7cbb9a"><i class="material-icons">menu</i></a><ul class="sidenav" id="a1a622ee-01ef-4b4e-9e72-382a2d7cbb9a"><li><a href="../../../eel.html">Documentation</a></li></ul><a href="#moose-search" class="modal-trigger"><i class="material-icons">search</i></a></div></nav><div class="modal modal-fixed-footer moose-search-modal" id="moose-search"><div class="modal-content container moose-search-modal-content"><div class="row"><div class="col l12"><div class="input-field"><input type_="text" onkeyup="mooseSearch()" placeholder="/index.md" id="moose-search-box"></input></div></div><div><div class="col s12" id="moose-search-results"></div></div></div></div><div class="modal-footer"><a href="#!" class="modal-close btn-flat">Close</a></div></div></header><main class="main"><div class="container"><div class="row"><div class="col hide-on-med-and-down l12"><nav class="breadcrumb-nav"><div class="nav-wrapper"><a href="../.." class="breadcrumb">source</a><span class="breadcrumb">materials</span><span class="breadcrumb">chemistry</span><a href="#" class="breadcrumb">SEIGrowth</a></div></nav></div></div><div class="row"><div class="moose-content col s12 m12 l10"><section id="e356c0dd-7bb6-475b-ba75-f3ba05e6208c" data-section-level="1" data-section-text="SEIGrowth"><h1 id="seigrowth">SEIGrowth</h1><div class="card moose-alert moose-alert-construction"><div class="card-title moose-alert-title"><i class="material-icons moose-inline-icon">build</i><span class="moose-alert-title-brand">construction:</span>Undocumented Class</div><div class="card-content"><div class="moose-alert-content"><p>The SEIGrowth has not been documented. The content listed below should be used as a starting point for documenting the class, which includes the typical automatic documentation associated with a MooseObject; however, what is contained is ultimately determined by what is necessary to make the documentation clear for users.</p></div></div></div><p>This object models the growth of solid electrolyte interphase (SEI).</p><section class="scrollspy" id="c6850b59-2298-4798-9dac-0956fbcd2872" data-section-level="2" data-section-text="Overview"><h2 id="overview">Overview</h2><p></p></section><section class="scrollspy" id="e5f6bd31-16df-4205-8ee5-f711e39d941a" data-section-level="2" data-section-text="Example Input File Syntax"><h2 id="example-input-file-syntax">Example Input File Syntax</h2><p></p></section><section class="scrollspy" id="4a7d8396-f7ea-4bcb-8be3-f95b66d6fb93" data-section-level="2" data-section-text="Input Parameters"><h2 id="input-parameters">Input Parameters</h2><section id="33666052-a142-4a95-8d46-10cffa3f9478" data-section-level="3" data-section-text="Required Parameters" data-details-open="open"><details class="moose-section-content" open="open"><ul class="collapsible" data-collapsible="expandable"><li><div class="collapsible-header"><span class="moose-parameter-name">activation_energy</span><span class="moose-parameter-header-description">The activation energy for SEI growth</span></div><div class="collapsible-body"><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>double</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>No</p><p class="moose-parameter-description"><span>Description:</span>The activation energy for SEI growth</p></div></li><li><div class="collapsible-header"><span class="moose-parameter-name">characteristic_thickness</span><span class="moose-parameter-header-description">The characteristic thickness of the SEI</span></div><div class="collapsible-body"><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>double</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>No</p><p class="moose-parameter-description"><span>Description:</span>The characteristic thickness of the SEI</p></div></li><li><div class="collapsible-header"><span class="moose-parameter-name">charge_transfer_mass_flux</span><span class="moose-parameter-header-description">The charge transfer mass flux</span></div><div class="collapsible-body"><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>MaterialPropertyName</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>No</p><p class="moose-parameter-description"><span>Description:</span>The charge transfer mass flux</p></div></li><li><div class="collapsible-header"><span class="moose-parameter-name">correction</span><span class="moose-parameter-header-description">The correction coefficient depending on interphase geometry, porosity, etc.</span></div><div class="collapsible-body"><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>MaterialPropertyName</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>No</p><p class="moose-parameter-description"><span>Description:</span>The correction coefficient depending on interphase geometry, porosity, etc.</p></div></li><li><div class="collapsible-header"><span class="moose-parameter-name">ideal_gas_constant</span><span class="moose-parameter-header-description">The ideal gas constant</span></div><div class="collapsible-body"><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>double</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>No</p><p class="moose-parameter-description"><span>Description:</span>The ideal gas constant</p></div></li><li><div class="collapsible-header"><span class="moose-parameter-name">initial_thickness</span><span class="moose-parameter-header-description">The initial thickness</span></div><div class="collapsible-body"><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>MaterialPropertyName</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>No</p><p class="moose-parameter-description"><span>Description:</span>The initial thickness</p></div></li><li><div class="collapsible-header"><span class="moose-parameter-name">molar_volume</span><span class="moose-parameter-header-description">Molar volume of the interphase</span></div><div class="collapsible-body"><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>double</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>No</p><p class="moose-parameter-description"><span>Description:</span>Molar volume of the interphase</p></div></li><li><div class="collapsible-header"><span class="moose-parameter-name">temperature</span><span class="moose-parameter-header-description">The temperature</span></div><div class="collapsible-body"><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>std::vector&lt;VariableName&gt;</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>No</p><p class="moose-parameter-description"><span>Description:</span>The temperature</p></div></li><li><div class="collapsible-header"><span class="moose-parameter-name">thickness</span><span class="moose-parameter-header-description">Give the SEI layer thickness a name</span></div><div class="collapsible-body"><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>MaterialPropertyName</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>No</p><p class="moose-parameter-description"><span>Description:</span>Give the SEI layer thickness a name</p></div></li></ul><summary><h3 data-details-open="open"><span class="moose-section-icon"></span>Required Parameters</h3></summary></details></section><section id="848963af-7e25-49bd-b549-8a388ce1cfad" data-section-level="3" data-section-text="Optional Parameters" data-details-open="open"><details class="moose-section-content" open="open"><ul class="collapsible" data-collapsible="expandable"><li><div class="collapsible-header"><span class="moose-parameter-name">absolute_tolerance</span><span class="moose-parameter-header-default">1e-11</span><span class="moose-parameter-header-description">Absolute convergence tolerance for Newton iteration</span></div><div class="collapsible-body"><p class="moose-parameter-description-default"><span>Default:</span>1e-11</p><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>double</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>No</p><p class="moose-parameter-description"><span>Description:</span>Absolute convergence tolerance for Newton iteration</p></div></li><li><div class="collapsible-header"><span class="moose-parameter-name">acceptable_multiplier</span><span class="moose-parameter-header-default">10</span><span class="moose-parameter-header-description">Factor applied to relative and absolute tolerance for acceptable convergence if iterations are no longer making progress</span></div><div class="collapsible-body"><p class="moose-parameter-description-default"><span>Default:</span>10</p><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>double</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>No</p><p class="moose-parameter-description"><span>Description:</span>Factor applied to relative and absolute tolerance for acceptable convergence if iterations are no longer making progress</p></div></li><li><div class="collapsible-header"><span class="moose-parameter-name">automatic_differentiation_return_mapping</span><span class="moose-parameter-header-default">False</span><span class="moose-parameter-header-description">Whether to use automatic differentiation to compute the derivative.</span></div><div class="collapsible-body"><p class="moose-parameter-description-default"><span>Default:</span>False</p><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>bool</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>No</p><p class="moose-parameter-description"><span>Description:</span>Whether to use automatic differentiation to compute the derivative.</p></div></li><li><div class="collapsible-header"><span class="moose-parameter-name">block</span><span class="moose-parameter-header-description">The list of blocks (ids or names) that this object will be applied</span></div><div class="collapsible-body"><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>std::vector&lt;SubdomainName&gt;</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>No</p><p class="moose-parameter-description"><span>Description:</span>The list of blocks (ids or names) that this object will be applied</p></div></li><li><div class="collapsible-header"><span class="moose-parameter-name">boundary</span><span class="moose-parameter-header-description">The list of boundaries (ids or names) from the mesh where this object applies</span></div><div class="collapsible-body"><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>std::vector&lt;BoundaryName&gt;</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>No</p><p class="moose-parameter-description"><span>Description:</span>The list of boundaries (ids or names) from the mesh where this object applies</p></div></li><li><div class="collapsible-header"><span class="moose-parameter-name">compute</span><span class="moose-parameter-header-default">True</span><span class="moose-parameter-header-description">When false, MOOSE will not call compute methods on this material. The user must call computeProperties() after retrieving the MaterialBase via MaterialBasePropertyInterface::getMaterialBase(). Non-computed MaterialBases are not sorted for dependencies.</span></div><div class="collapsible-body"><p class="moose-parameter-description-default"><span>Default:</span>True</p><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>bool</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>No</p><p class="moose-parameter-description"><span>Description:</span>When false, MOOSE will not call compute methods on this material. The user must call computeProperties() after retrieving the MaterialBase via MaterialBasePropertyInterface::getMaterialBase(). Non-computed MaterialBases are not sorted for dependencies.</p></div></li><li><div class="collapsible-header"><span class="moose-parameter-name">declare_suffix</span><span class="moose-parameter-header-description">An optional suffix parameter that can be appended to any declared properties. The suffix will be prepended with a '_' character.</span></div><div class="collapsible-body"><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>MaterialPropertyName</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>No</p><p class="moose-parameter-description"><span>Description:</span>An optional suffix parameter that can be appended to any declared properties. The suffix will be prepended with a '_' character.</p></div></li><li><div class="collapsible-header"><span class="moose-parameter-name">prop_getter_suffix</span><span class="moose-parameter-header-description">An optional suffix parameter that can be appended to any attempt to retrieve/get material properties. The suffix will be prepended with a '_' character.</span></div><div class="collapsible-body"><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>MaterialPropertyName</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>No</p><p class="moose-parameter-description"><span>Description:</span>An optional suffix parameter that can be appended to any attempt to retrieve/get material properties. The suffix will be prepended with a '_' character.</p></div></li><li><div class="collapsible-header"><span class="moose-parameter-name">relative_tolerance</span><span class="moose-parameter-header-default">1e-08</span><span class="moose-parameter-header-description">Relative convergence tolerance for Newton iteration</span></div><div class="collapsible-body"><p class="moose-parameter-description-default"><span>Default:</span>1e-08</p><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>double</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>No</p><p class="moose-parameter-description"><span>Description:</span>Relative convergence tolerance for Newton iteration</p></div></li></ul><summary><h3 data-details-open="open"><span class="moose-section-icon"></span>Optional Parameters</h3></summary></details></section><section id="73ab5f45-ca81-43ac-8e99-2047a9a799be" data-section-level="3" data-section-text="Advanced Parameters" data-details-open="close"><details class="moose-section-content"><ul class="collapsible" data-collapsible="expandable"><li><div class="collapsible-header"><span class="moose-parameter-name">control_tags</span><span class="moose-parameter-header-description">Adds user-defined labels for accessing object parameters via control logic.</span></div><div class="collapsible-body"><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>std::vector&lt;std::string&gt;</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>No</p><p class="moose-parameter-description"><span>Description:</span>Adds user-defined labels for accessing object parameters via control logic.</p></div></li><li><div class="collapsible-header"><span class="moose-parameter-name">enable</span><span class="moose-parameter-header-default">True</span><span class="moose-parameter-header-description">Set the enabled status of the MooseObject.</span></div><div class="collapsible-body"><p class="moose-parameter-description-default"><span>Default:</span>True</p><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>bool</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>Yes</p><p class="moose-parameter-description"><span>Description:</span>Set the enabled status of the MooseObject.</p></div></li><li><div class="collapsible-header"><span class="moose-parameter-name">implicit</span><span class="moose-parameter-header-default">True</span><span class="moose-parameter-header-description">Determines whether this object is calculated using an implicit or explicit form</span></div><div class="collapsible-body"><p class="moose-parameter-description-default"><span>Default:</span>True</p><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>bool</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>No</p><p class="moose-parameter-description"><span>Description:</span>Determines whether this object is calculated using an implicit or explicit form</p></div></li><li><div class="collapsible-header"><span class="moose-parameter-name">seed</span><span class="moose-parameter-header-default">0</span><span class="moose-parameter-header-description">The seed for the master random number generator</span></div><div class="collapsible-body"><p class="moose-parameter-description-default"><span>Default:</span>0</p><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>unsigned int</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>No</p><p class="moose-parameter-description"><span>Description:</span>The seed for the master random number generator</p></div></li><li><div class="collapsible-header"><span class="moose-parameter-name">use_displaced_mesh</span><span class="moose-parameter-header-default">False</span><span class="moose-parameter-header-description">Whether or not this object should use the displaced mesh for computation.  Note that in the case this is true but no displacements are provided in the Mesh block the undisplaced mesh will still be used.</span></div><div class="collapsible-body"><p class="moose-parameter-description-default"><span>Default:</span>False</p><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>bool</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>No</p><p class="moose-parameter-description"><span>Description:</span>Whether or not this object should use the displaced mesh for computation.  Note that in the case this is true but no displacements are provided in the Mesh block the undisplaced mesh will still be used.</p></div></li></ul><summary><h3 data-details-open="close"><span class="moose-section-icon"></span>Advanced Parameters</h3></summary></details></section><section id="863ddd4d-bfe9-4de4-8f20-dded5645bf39" data-section-level="3" data-section-text="Debug Parameters" data-details-open="close"><details class="moose-section-content"><ul class="collapsible" data-collapsible="expandable"><li><div class="collapsible-header"><span class="moose-parameter-name">internal_solve_full_iteration_history</span><span class="moose-parameter-header-default">False</span><span class="moose-parameter-header-description">Set true to output full internal Newton iteration history at times determined by `internal_solve_output_on`. If false, only a summary is output.</span></div><div class="collapsible-body"><p class="moose-parameter-description-default"><span>Default:</span>False</p><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>bool</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>No</p><p class="moose-parameter-description"><span>Description:</span>Set true to output full internal Newton iteration history at times determined by `internal_solve_output_on`. If false, only a summary is output.</p></div></li><li><div class="collapsible-header"><span class="moose-parameter-name">internal_solve_output_on</span><span class="moose-parameter-header-default">on_error</span><span class="moose-parameter-header-description">When to output internal Newton solve information</span></div><div class="collapsible-body"><p class="moose-parameter-description-default"><span>Default:</span>on_error</p><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>MooseEnum</p><p class="moose-parameter-description-options"><span>Options:</span>never, on_error, always</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>No</p><p class="moose-parameter-description"><span>Description:</span>When to output internal Newton solve information</p></div></li></ul><summary><h3 data-details-open="close"><span class="moose-section-icon"></span>Debug Parameters</h3></summary></details></section><section id="709b6659-a942-457b-82fd-049de61f6b1f" data-section-level="3" data-section-text="Outputs Parameters" data-details-open="close"><details class="moose-section-content"><ul class="collapsible" data-collapsible="expandable"><li><div class="collapsible-header"><span class="moose-parameter-name">output_properties</span><span class="moose-parameter-header-description">List of material properties, from this material, to output (outputs must also be defined to an output type)</span></div><div class="collapsible-body"><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>std::vector&lt;std::string&gt;</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>No</p><p class="moose-parameter-description"><span>Description:</span>List of material properties, from this material, to output (outputs must also be defined to an output type)</p></div></li><li><div class="collapsible-header"><span class="moose-parameter-name">outputs</span><span class="moose-parameter-header-default">none </span><span class="moose-parameter-header-description">Vector of output names where you would like to restrict the output of variables(s) associated with this object</span></div><div class="collapsible-body"><p class="moose-parameter-description-default"><span>Default:</span>none </p><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>std::vector&lt;OutputName&gt;</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>No</p><p class="moose-parameter-description"><span>Description:</span>Vector of output names where you would like to restrict the output of variables(s) associated with this object</p></div></li></ul><summary><h3 data-details-open="close"><span class="moose-section-icon"></span>Outputs Parameters</h3></summary></details></section></section><section class="scrollspy" id="63f60a2b-37e1-4db5-9576-2002c985b2ff" data-section-level="2" data-section-text="Input Files"><h2 id="input-files">Input Files</h2><ul class="moose-list-inputs browser-default"><li><a class="moose-source-filename tooltipped modal-trigger" href="#d415b411-9322-41fd-abdd-6fb5164bab0a">(examples/degradation/base.i)</a></li></ul></section></section><div class="moose-modal modal" id="d415b411-9322-41fd-abdd-6fb5164bab0a"><div class="modal-content"><h4>(examples/degradation/base.i)</h4><pre class="moose-pre"><code class="language-text">I = 5e-4 #mA
+width = 0.03 #mm
+in = &#x27;${fparse -I/width}&#x27;
+t0 = &#x27;${fparse -1e-2/in}&#x27;
+dt = &#x27;${fparse t0/50}&#x27;
+
+sigma_a = 1e0 #mS/mm
+sigma_e = 1e-1 #mS/mm
+sigma_c = 1e-2 #mS/mm
+
+l0 = 0
+l1 = 0.04
+l2 = 0.07
+l3 = 0.12
+
+cmin = 1e-4 #mmol/mm^3
+cmax = 1e-3 #mmol/mm^3
+D_a = 1e-3 #mm^2/s
+D_e = 1e-4 #mm^2/s
+D_c = 5e-5 #mm^2/s
+mu0 = 1e3
+
+h0 = 1e-9
+hc = 1e-3
+Omega_sei = 100
+A_sei = 0.8
+Q_sei = 5e3
+rho0_sei = 5e2
+
+R = 8.3145 #mJ/mmol/K
+T0 = 300 #K
+F = 96485 #mC/mmol
+
+i0_a = 1e-4 #mA/mm^2
+i0_c = 1e-4 #mA/mm^2
+
+E_c = 1e5
+E_e = 1e4
+E_a = 2e5
+nu_c = 0.3
+nu_e = 0.25
+nu_a = 0.3
+
+Ei = 1e7
+Gi = 5e6
+Acr = 1e-5
+Qcr = 4e3
+ncr = 5
+Tn0 = 10
+Gc = 2.06e-5
+
+u_penalty = 1e8
+
+Omega = 60
+beta = 1e-3
+CTE = 1e-5
+
+[GlobalParams]
+  energy_densities = &#x27;dot(psi_m) dot(psi_c) q zeta&#x27;
+  displacements = &#x27;disp_x disp_y&#x27;
+  deformation_gradient = F
+  mechanical_deformation_gradient = Fm
+  eigen_deformation_gradient = Fg
+  swelling_deformation_gradient = Fs
+  thermal_deformation_gradient = Ft
+[]
+
+[Mesh]
+  [battery]
+    type = GeneratedMeshGenerator
+    dim = 2
+    xmin = ${l0}
+    xmax = ${l3}
+    ymin = 0
+    ymax = ${width}
+    nx = 60
+    ny = 1
+  []
+  [anode]
+    type = SubdomainBoundingBoxGenerator
+    input = battery
+    block_id = 1
+    block_name = anode
+    bottom_left = &#x27;${l0} 0 0&#x27;
+    top_right = &#x27;${l1} ${width} 0&#x27;
+  []
+  [elyte]
+    type = SubdomainBoundingBoxGenerator
+    input = anode
+    block_id = 2
+    block_name = elyte
+    bottom_left = &#x27;${l1} 0 0&#x27;
+    top_right = &#x27;${l2} ${width} 0&#x27;
+  []
+  [cathode]
+    type = SubdomainBoundingBoxGenerator
+    input = elyte
+    block_id = 3
+    block_name = cathode
+    bottom_left = &#x27;${l2} 0 0&#x27;
+    top_right = &#x27;${l3} ${width} 0&#x27;
+  []
+  [interfaces]
+    type = BreakMeshByBlockGenerator
+    input = cathode
+    add_interface_on_two_sides = true
+    split_interface = true
+  []
+  use_displaced_mesh = false
+[]
+
+[Variables]
+  [Phi]
+  []
+  [c]
+  []
+  [disp_x]
+  []
+  [disp_y]
+  []
+[]
+
+[AuxVariables]
+  [c_ref]
+  []
+  [Phi0]
+  []
+  [T]
+    initial_condition = ${T0}
+  []
+  [T_ref]
+    initial_condition = ${T0}
+  []
+[]
+
+[ICs]
+  [c_ref_min]
+    type = ConstantIC
+    variable = c_ref
+    value = ${cmin}
+    block = &#x27;anode&#x27;
+  []
+  [c_ref_mid]
+    type = ConstantIC
+    variable = c_ref
+    value = &#x27;${fparse (cmax+cmin)/2}&#x27;
+    block = &#x27;elyte&#x27;
+  []
+  [c_ref_max]
+    type = ConstantIC
+    variable = c_ref
+    value = ${cmax}
+    block = &#x27;cathode&#x27;
+  []
+[]
+
+[AuxKernels]
+  [Phi0]
+    type = ParsedAux
+    variable = Phi0
+    expression = &#x27;Phi&#x27;
+    coupled_variables = &#x27;Phi&#x27;
+    execute_on = &#x27;INITIAL&#x27;
+  []
+[]
+
+[Kernels]
+  # Charge balance
+  [charge_balance]
+    type = RankOneDivergence
+    variable = Phi
+    vector = i
+  []
+  # Mass balance
+  [mass_balance_1]
+    type = TimeDerivative
+    variable = c
+  []
+  [mass_balance_2]
+    type = RankOneDivergence
+    variable = c
+    vector = j
+  []
+  # Momentum balance
+  [momentum_balance_x]
+    type = RankTwoDivergence
+    variable = disp_x
+    component = 0
+    tensor = pk1
+    factor = -1
+  []
+  [momentum_balance_y]
+    type = RankTwoDivergence
+    variable = disp_y
+    component = 1
+    tensor = pk1
+    factor = -1
+  []
+[]
+
+[Modules]
+  [TensorMechanics]
+    [CohesiveZoneMaster]
+      [interface]
+        boundary = &#x27;anode_elyte&#x27;
+        strain = SMALL
+        use_automatic_differentiation = true
+      []
+    []
+  []
+[]
+
+[InterfaceKernels]
+  [negative_current]
+    type = MaterialInterfaceNeumannBC
+    variable = Phi
+    neighbor_var = Phi
+    prop = ie
+    factor = -1
+    boundary = &#x27;cathode_elyte&#x27;
+  []
+  [positive_current]
+    type = MaterialInterfaceNeumannBC
+    variable = Phi
+    neighbor_var = Phi
+    prop = ie
+    boundary = &#x27;anode_elyte&#x27;
+  []
+  [negative_mass]
+    type = MaterialInterfaceNeumannBC
+    variable = c
+    neighbor_var = c
+    prop = je
+    factor = -1
+    boundary = &#x27;cathode_elyte&#x27;
+  []
+  [positive_mass]
+    type = MaterialInterfaceNeumannBC
+    variable = c
+    neighbor_var = c
+    prop = je
+    boundary = &#x27;anode_elyte&#x27;
+  []
+  [continuity_disp_x]
+    type = InterfaceContinuity
+    variable = disp_x
+    neighbor_var = disp_x
+    penalty = ${u_penalty}
+    boundary = &#x27;cathode_elyte&#x27;
+  []
+  [continuity_disp_y]
+    type = InterfaceContinuity
+    variable = disp_y
+    neighbor_var = disp_y
+    penalty = ${u_penalty}
+    boundary = &#x27;cathode_elyte&#x27;
+  []
+[]
+
+[BCs]
+  [pull_x]
+    type = NeumannBC
+    variable = disp_x
+    value = 1
+    boundary = &#x27;right&#x27;
+  []
+  [fix_x]
+    type = DirichletBC
+    variable = disp_x
+    value = 0
+    boundary = &#x27;left&#x27;
+  []
+  [fix_y]
+    type = DirichletBC
+    variable = disp_y
+    value = 0
+    boundary = &#x27;bottom&#x27;
+  []
+[]
+
+[Functions]
+  [in]
+    type = PiecewiseLinear
+    x = &#x27;0 ${t0}&#x27;
+    y = &#x27;0 ${in}&#x27;
+  []
+  [in_discharging]
+    type = PiecewiseLinear
+    x = &#x27;0 ${t0}&#x27;
+    y = &#x27;0 ${fparse -in}&#x27;
+  []
+[]
+
+[Materials]
+  # Electrodynamics
+  [conductivity]
+    type = ADPiecewiseConstantByBlockMaterial
+    prop_name = &#x27;sigma&#x27;
+    subdomain_to_prop_value = &#x27;anode ${sigma_a} elyte ${sigma_e} cathode ${sigma_c}&#x27;
+  []
+  [charge_transport]
+    type = BulkChargeTransport
+    electrical_energy_density = q
+    electric_potential = Phi
+    electric_conductivity = sigma
+    temperature = T
+  []
+  [current_density]
+    type = CurrentDensity
+    current_density = i
+    electric_potential = Phi
+  []
+
+  # Chemical reactions
+  [diffusivity]
+    type = ADPiecewiseConstantByBlockMaterial
+    prop_name = &#x27;D&#x27;
+    subdomain_to_prop_value = &#x27;anode ${D_a} elyte ${D_e} cathode ${D_c}&#x27;
+  []
+  [mobility]
+    type = ADParsedMaterial
+    property_name = M
+    coupled_variables = &#x27;c_ref T_ref&#x27;
+    material_property_names = &#x27;D&#x27;
+    expression = &#x27;D*c_ref/${R}/T_ref&#x27;
+  []
+  [chemical_energy]
+    type = EntropicChemicalEnergyDensity
+    chemical_energy_density = psi_c
+    concentration = c
+    ideal_gas_constant = ${R}
+    temperature = T
+    reference_concentration = c_ref
+    reference_chemical_potential = ${mu0}
+  []
+  [chemical_potential]
+    type = ChemicalPotential
+    chemical_potential = mu
+    concentration = c
+  []
+  [diffusion]
+    type = MassDiffusion
+    dual_chemical_energy_density = zeta
+    chemical_potential = mu
+    mobility = M
+  []
+  [mass_flux]
+    type = MassFlux
+    mass_flux = j
+    chemical_potential = mu
+  []
+
+  # Redox
+  [OCP_anode_graphite]
+    type = ADParsedMaterial
+    f_name = U
+    function = &#x27;x:=c/${cmax}; (2.77e-4*x^2-0.0069*x+0.0785)&#x27;
+    args = c
+    material_property_names = &#x27;ramp&#x27;
+    boundary = &#x27;anode_elyte&#x27;
+  []
+  [OCP_cathode_NMC111]
+    type = ADParsedMaterial
+    f_name = U
+    function = &#x27;x:=c/${cmax}; (6.0826-6.9922*x+7.1062*x^2-5.4549e-5*exp(124.23*x-114.2593)-2.5947*x^3)*ramp&#x27;
+    args = c
+    material_property_names = &#x27;ramp&#x27;
+    boundary = &#x27;cathode_elyte&#x27;
+  []
+  [charge_transfer_anode_elyte]
+    type = ChargeTransferReaction
+    charge_transfer_current_density = ie
+    charge_transfer_mass_flux = je
+    charge_transfer_heat_flux = he
+    electric_potential = Phi
+    neighbor_electric_potential = Phi
+    charge_transfer_coefficient = 0.5
+    exchange_current_density = ${i0_a}
+    faraday_constant = ${F}
+    ideal_gas_constant = ${R}
+    temperature = T
+    open_circuit_potential = U
+    interface_resistance = rho_sei
+    degradation = g
+    boundary = &#x27;anode_elyte&#x27;
+  []
+  [charge_transfer_cathode_elyte]
+    type = ChargeTransferReaction
+    charge_transfer_current_density = ie
+    charge_transfer_mass_flux = je
+    charge_transfer_heat_flux = he
+    electric_potential = Phi
+    neighbor_electric_potential = Phi
+    charge_transfer_coefficient = 0.5
+    exchange_current_density = ${i0_c}
+    faraday_constant = ${F}
+    ideal_gas_constant = ${R}
+    temperature = T
+    open_circuit_potential = U
+    boundary = &#x27;cathode_elyte&#x27;
+  []
+  [SEI]
+    type = SEIGrowth
+    thickness = h_sei
+    initial_thickness = ${h0}
+    charge_transfer_mass_flux = je
+    characteristic_thickness = ${hc}
+    molar_volume = ${Omega_sei}
+    correction = ${A_sei}
+    activation_energy = ${Q_sei}
+    ideal_gas_constant = ${R}
+    temperature = T
+    boundary = &#x27;anode_elyte&#x27;
+  []
+  [SEI_resistance]
+    type = ADParsedMaterial
+    property_name = rho_sei
+    expression = &#x27;${rho0_sei} * h_sei&#x27;
+    material_property_names = &#x27;h_sei&#x27;
+    boundary = &#x27;anode_elyte&#x27;
+  []
+
+  # Mechanical
+  [stiffness_c]
+    type = ADGenericConstantMaterial
+    prop_names = &#x27;lambda G&#x27;
+    prop_values = &#x27;${fparse E_c*nu_c/(1+nu_c)/(1-2*nu_c)} ${fparse E_c/2/(1+nu_c)}&#x27;
+    block = cathode
+  []
+  [stiffness_e]
+    type = ADGenericConstantMaterial
+    prop_names = &#x27;lambda G&#x27;
+    prop_values = &#x27;${fparse E_e*nu_e/(1+nu_e)/(1-2*nu_e)} ${fparse E_e/2/(1+nu_e)}&#x27;
+    block = elyte
+  []
+  [stiffness_a]
+    type = ADGenericConstantMaterial
+    prop_names = &#x27;lambda G&#x27;
+    prop_values = &#x27;${fparse E_a*nu_a/(1+nu_a)/(1-2*nu_a)} ${fparse E_a/2/(1+nu_a)}&#x27;
+    block = anode
+  []
+  [swelling_coefficient]
+    type = ADGenericConstantMaterial
+    prop_names = &#x27;beta&#x27;
+    prop_values = &#x27;${beta}&#x27;
+  []
+  [swelling]
+    type = SwellingDeformationGradient
+    concentration = c
+    reference_concentration = c_ref
+    molar_volume = ${Omega}
+    swelling_coefficient = beta
+  []
+  [thermal_expansion]
+    type = ThermalDeformationGradient
+    temperature = T
+    reference_temperature = T_ref
+    CTE = ${CTE}
+  []
+  [defgrad]
+    type = MechanicalDeformationGradient
+  []
+  [neohookean]
+    type = NeoHookeanSolid
+    elastic_energy_density = psi_m
+    lambda = lambda
+    shear_modulus = G
+    concentration = c
+    temperature = T
+  []
+  [pk1]
+    type = FirstPiolaKirchhoffStress
+    first_piola_kirchhoff_stress = pk1
+    deformation_gradient_rate = dot(F)
+  []
+  [traction]
+    type = InterfaceTractionWithCreepDegradation
+    normal_stiffness = ${Ei}
+    tangential_stiffness = ${Gi}
+    normal_traction = Tn
+    activation_energy = ${Qcr}
+    ideal_gas_constant = ${R}
+    temperature = T
+    damage = Di
+    degradation = g
+    creep_displacement_jump = juc
+    fracture_driving_energy = psi_f
+    energy_release_rate = ${Gc}
+    reference_normal_traction = ${Tn0}
+    creep_coefficient = ${Acr}
+    creep_exponent = ${ncr}
+    residual_stiffness = 1e-4
+    boundary = &#x27;anode_elyte&#x27;
+  []
+[]
+
+[Postprocessors]
+  [V_l]
+    type = SideAverageValue
+    variable = Phi
+    boundary = left
+    outputs = none
+    execute_on = &#x27;INITIAL TIMESTEP_END&#x27;
+  []
+  [V_r]
+    type = SideAverageValue
+    variable = Phi
+    boundary = right
+    outputs = none
+    execute_on = &#x27;INITIAL TIMESTEP_END&#x27;
+  []
+  [V]
+    type = ParsedPostprocessor
+    function = &#x27;V_r - V_l&#x27;
+    pp_names = &#x27;V_l V_r&#x27;
+    execute_on = &#x27;INITIAL TIMESTEP_END&#x27;
+  []
+  [I]
+    type = ADSideIntegralMaterialProperty
+    property = i
+    component = 0
+    boundary = right
+    execute_on = &#x27;INITIAL TIMESTEP_END&#x27;
+  []
+  [dt]
+    type = TimestepSize
+    outputs = none
+    execute_on = &#x27;INITIAL TIMESTEP_END&#x27;
+  []
+  [dC]
+    type = ParsedPostprocessor
+    function = &#x27;-dt*I&#x27;
+    pp_names = &#x27;dt I&#x27;
+    outputs = none
+    execute_on = &#x27;INITIAL TIMESTEP_END&#x27;
+  []
+  [C]
+    type = CumulativeValuePostprocessor
+    postprocessor = dC
+    execute_on = &#x27;INITIAL TIMESTEP_END&#x27;
+  []
+  [c_a_max]
+    type = NodalExtremeValue
+    variable = c
+    value_type = max
+    block = anode
+    outputs = none
+    execute_on = &#x27;INITIAL TIMESTEP_END&#x27;
+  []
+  [c_c_min]
+    type = NodalExtremeValue
+    variable = c
+    value_type = min
+    block = cathode
+    outputs = none
+    execute_on = &#x27;INITIAL TIMESTEP_END&#x27;
+  []
+  [c_a_min]
+    type = NodalExtremeValue
+    variable = c
+    value_type = min
+    block = anode
+    outputs = none
+    execute_on = &#x27;INITIAL TIMESTEP_END&#x27;
+  []
+  [c_c_max]
+    type = NodalExtremeValue
+    variable = c
+    value_type = max
+    block = cathode
+    outputs = none
+    execute_on = &#x27;INITIAL TIMESTEP_END&#x27;
+  []
+  [mass_a]
+    type = ElementIntegralVariablePostprocessor
+    variable = c
+    block = anode
+    execute_on = &#x27;INITIAL TIMESTEP_END&#x27;
+  []
+  [mass_e]
+    type = ElementIntegralVariablePostprocessor
+    variable = c
+    block = elyte
+    execute_on = &#x27;INITIAL TIMESTEP_END&#x27;
+  []
+  [mass_c]
+    type = ElementIntegralVariablePostprocessor
+    variable = c
+    block = cathode
+    execute_on = &#x27;INITIAL TIMESTEP_END&#x27;
+  []
+  [SEI_thickness]
+    type = ADSideAverageMaterialProperty
+    property = h_sei
+    boundary = &#x27;anode_elyte&#x27;
+    execute_on = &#x27;INITIAL TIMESTEP_END&#x27;
+  []
+  [Di]
+    type = ADSideAverageMaterialProperty
+    property = Di
+    boundary = &#x27;anode_elyte&#x27;
+    execute_on = &#x27;INITIAL TIMESTEP_END&#x27;
+  []
+  [psi_f]
+    type = ADSideAverageMaterialProperty
+    property = psi_f
+    boundary = &#x27;anode_elyte&#x27;
+    execute_on = &#x27;INITIAL TIMESTEP_END&#x27;
+  []
+  [dV]
+    type = ChangeOverTimePostprocessor
+    postprocessor = V
+    outputs = none
+    execute_on = &#x27;INITIAL TIMESTEP_END&#x27;
+  []
+  [target_V_dt]
+    type = ParsedPostprocessor
+    function = &#x27;if(abs(dV)&gt;0.01,${dt},1e6)&#x27;
+    pp_names = &#x27;dV&#x27;
+    outputs = none
+    execute_on = &#x27;TIMESTEP_END&#x27;
+  []
+[]
+</code></pre></div><div class="modal-footer"><a class="modal-close btn-flat">Close</a></div></div></div><div class="col hide-on-med-and-down l2"><div class="toc-wrapper pin-top"><ul class="section table-of-contents"><li><a href="#c6850b59-2298-4798-9dac-0956fbcd2872" class="tooltipped" data-position="left" data-tooltip="Overview">Overview</a></li><li><a href="#e5f6bd31-16df-4205-8ee5-f711e39d941a" class="tooltipped" data-position="left" data-tooltip="Example Input File Syntax">Example Input File Syntax</a></li><li><a href="#4a7d8396-f7ea-4bcb-8be3-f95b66d6fb93" class="tooltipped" data-position="left" data-tooltip="Input Parameters">Input Parameters</a></li><li><a href="#63f60a2b-37e1-4db5-9576-2002c985b2ff" class="tooltipped" data-position="left" data-tooltip="Input Files">Input Files</a></li></ul></div></div></div></div></main></div></body><script type="text/javascript" src="../../../contrib/materialize/materialize.min.js"></script><script type="text/javascript" src="../../../contrib/clipboard/clipboard.min.js"></script><script type="text/javascript" src="../../../contrib/prism/prism.min.js"></script><script type="text/javascript" src="../../../js/init.js"></script><script type="text/javascript" src="../../../js/navigation.js"></script><script type="text/javascript" src="../../../contrib/fuse/fuse.min.js"></script><script type="text/javascript" src="../../../js/search_index.js"></script><script type="text/javascript" src="../../../js/sqa_moose.js"></script>

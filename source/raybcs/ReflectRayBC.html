@@ -1,0 +1,192 @@
+<!DOCTYPE html><head><meta charset="UTF-8"><title>ReflectRayBC | Eel</title><link href="../../contrib/materialize/materialize.min.css" type="text/css" rel="stylesheet" media="screen,projection"></link><link href="../../contrib/prism/prism.min.css" type="text/css" rel="stylesheet"></link><link href="../../css/moose.css" type="text/css" rel="stylesheet"></link><link href="../../css/devel_moose.css" type="text/css" rel="stylesheet"></link><link href="../../css/alert_moose.css" type="text/css" rel="stylesheet"></link><link href="../../css/content_moose.css" type="text/css" rel="stylesheet"></link><link href="../../css/sqa_moose.css" type="text/css" rel="stylesheet"></link><link href="../../css/civet_moose.css" type="text/css" rel="stylesheet"></link><script type="text/javascript" src="../../contrib/jquery/jquery.min.js"></script></head><body><div class="page-wrap"><header><nav><div class="nav-wrapper container"><a href="../../index.html" class="left moose-logo hide-on-med-and-down" id="home-button">Eel</a><a href="https://github.com/hugary1995/eel" class="right"><img src="../../media/framework/github-logo.png" class="github-mark"></img><img src="../../media/framework/github-mark.png" class="github-logo"></img></a><ul class="right hide-on-med-and-down"><li><a href="../../eel.html">Documentation</a></li></ul><a href="#" class="sidenav-trigger" data-target="468757ed-c13e-42fb-b426-61e50b44a6dd"><i class="material-icons">menu</i></a><ul class="sidenav" id="468757ed-c13e-42fb-b426-61e50b44a6dd"><li><a href="../../eel.html">Documentation</a></li></ul><a href="#moose-search" class="modal-trigger"><i class="material-icons">search</i></a></div></nav><div class="modal modal-fixed-footer moose-search-modal" id="moose-search"><div class="modal-content container moose-search-modal-content"><div class="row"><div class="col l12"><div class="input-field"><input type_="text" onkeyup="mooseSearch()" placeholder="/index.md" id="moose-search-box"></input></div></div><div><div class="col s12" id="moose-search-results"></div></div></div></div><div class="modal-footer"><a href="#!" class="modal-close btn-flat">Close</a></div></div></header><main class="main"><div class="container"><div class="row"><div class="col hide-on-med-and-down l12"><nav class="breadcrumb-nav"><div class="nav-wrapper"><a href=".." class="breadcrumb">source</a><span class="breadcrumb">raybcs</span><a href="#" class="breadcrumb">ReflectRayBC</a></div></nav></div></div><div class="row"><div class="moose-content col s12 m12 l10"><section id="8125f426-e7fc-44d7-b63b-23376a8b06e3" data-section-level="1" data-section-text="ReflectRayBC"><h1 id="reflectraybc">ReflectRayBC</h1><p>A RayBC that reflects a Ray in a specular manner on a boundary.</p><p>It can properly handle reflections at domain corners/edges that are reflecting on all boundaries at the corner/edge (see <a href="../../syntax/RayBCs/index.html#hitting-multiple-boundaries">Hitting Multiple Boundaries</a> for more information).</p><p>It achieves the reflection by changing the direction of the <a href="../raytracing/Ray.html">Ray</a>:</p><pre class="moose-pre" style="max-height:350px;"><code class="language-cpp">void
+ReflectRayBC::onBoundary(const unsigned int num_applying)
+{
+  if (_warn_non_planar &amp;&amp; _study.sideIsNonPlanar(_current_elem, _current_intersected_side))
+    mooseWarning(&quot;A Ray is being reflected on a non-planar side.\n\n&quot;,
+                 &quot;Ray tracing on elements with non-planar faces is an approximation.\n\n&quot;,
+                 &quot;The normal used to compute the reflected direction is computed at\n&quot;,
+                 &quot;the side centroid and may not be valid for a non-planar side.\n\n&quot;,
+                 &quot;To disable this warning, set RayKernels/&quot;,
+                 name(),
+                 &quot;/warn_non_planar=false.\n\n&quot;,
+                 currentRay()-&gt;getInfo());
+
+  // No need to do anything if the Ray&#x27;s gonna die anyway
+  if (!currentRay()-&gt;shouldContinue())
+    return;
+
+  // The direction this Ray reflects off this boundary
+  const auto &amp; normal = _study.getSideNormal(_current_elem, _current_intersected_side, _tid);
+  const auto reflected_direction = reflectedDirection(currentRay()-&gt;direction(), normal);
+
+  // Change it! Note here the usage of num_applying: if we are at a corner with a reflecting
+  // boundary condition on both sides, we want to allow both boundary conditions to reflect the Ray.
+  // Therefore, we skip the check that another RayBC has changed the Ray&#x27;s trajectory when we are
+  // applying multiple of the same ReflectRayBC at different boundaries at the same point to allow
+  // this. Note that this double (or triple in 3D) reflection will only be allowed when the same
+  // ReflectRayBC object is on both boundaries.
+  changeRayDirection(reflected_direction, /* skip_changed_check = */ num_applying &gt; 1);
+}
+</code></pre><a class="moose-source-filename tooltipped modal-trigger" href="#83e7d348-cf95-4a77-9a2c-3544439c941c">(moose/modules/ray_tracing/src/raybcs/ReflectRayBC.C)</a><p>Per the specularly reflected direction (static and available for other <a href="../../syntax/RayBCs/index.html">RayBCs</a> to use):</p><pre class="moose-pre" style="max-height:350px;"><code class="language-cpp">Point
+ReflectRayBC::reflectedDirection(const Point &amp; direction, const Point &amp; normal)
+{
+  mooseAssert(MooseUtils::absoluteFuzzyEqual(direction.norm(), 1.), &quot;Direction not normalized&quot;);
+  mooseAssert(MooseUtils::absoluteFuzzyEqual(normal.norm(), 1.), &quot;Normal not normalized&quot;);
+
+  Point reflected_direction = direction;
+  reflected_direction -= 2.0 * (reflected_direction * normal) * normal;
+  return reflected_direction / reflected_direction.norm();
+}
+</code></pre><a class="moose-source-filename tooltipped modal-trigger" href="#485d5def-9532-4529-ac41-570399001563">(moose/modules/ray_tracing/src/raybcs/ReflectRayBC.C)</a><section class="scrollspy" id="7f9c8aee-32bf-4cb2-9c69-f3dd7f23e53f" data-section-level="2" data-section-text="Input Parameters"><h2 id="input-parameters">Input Parameters</h2><section id="9bf8b371-1a68-438f-a864-60c439c6fc2a" data-section-level="3" data-section-text="Required Parameters" data-details-open="open"><details class="moose-section-content" open="open"><ul class="collapsible" data-collapsible="expandable"><li><div class="collapsible-header"><span class="moose-parameter-name">boundary</span><span class="moose-parameter-header-description">The list of boundary IDs from the mesh where this object applies</span></div><div class="collapsible-body"><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>std::vector&lt;BoundaryName&gt;</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>No</p><p class="moose-parameter-description"><span>Description:</span>The list of boundary IDs from the mesh where this object applies</p></div></li></ul><summary><h3 data-details-open="open"><span class="moose-section-icon"></span>Required Parameters</h3></summary></details></section><section id="09d80801-1345-486e-b805-2e14c1d100a0" data-section-level="3" data-section-text="Optional Parameters" data-details-open="open"><details class="moose-section-content" open="open"><ul class="collapsible" data-collapsible="expandable"><li><div class="collapsible-header"><span class="moose-parameter-name">depends_on</span><span class="moose-parameter-header-description">Other RayBCs that this RayBC depends on</span></div><div class="collapsible-body"><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>std::vector&lt;std::string&gt;</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>No</p><p class="moose-parameter-description"><span>Description:</span>Other RayBCs that this RayBC depends on</p></div></li><li><div class="collapsible-header"><span class="moose-parameter-name">rays</span><span class="moose-parameter-header-description">The name of the Rays associated with this object; only used if Ray registration is enabled within the study. If no Rays are supplied, this object will be applied to all Rays.</span></div><div class="collapsible-body"><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>std::vector&lt;std::string&gt;</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>No</p><p class="moose-parameter-description"><span>Description:</span>The name of the Rays associated with this object; only used if Ray registration is enabled within the study. If no Rays are supplied, this object will be applied to all Rays.</p></div></li><li><div class="collapsible-header"><span class="moose-parameter-name">study</span><span class="moose-parameter-header-description">The RayTracingStudy associated with this object. If none provided, this will default to the one study that exists.</span></div><div class="collapsible-body"><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>UserObjectName</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>No</p><p class="moose-parameter-description"><span>Description:</span>The RayTracingStudy associated with this object. If none provided, this will default to the one study that exists.</p></div></li><li><div class="collapsible-header"><span class="moose-parameter-name">warn_non_planar</span><span class="moose-parameter-header-default">True</span><span class="moose-parameter-header-description">Whether or not to emit a warning if a Ray is being reflected on a non-planar side</span></div><div class="collapsible-body"><p class="moose-parameter-description-default"><span>Default:</span>True</p><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>bool</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>No</p><p class="moose-parameter-description"><span>Description:</span>Whether or not to emit a warning if a Ray is being reflected on a non-planar side</p></div></li></ul><summary><h3 data-details-open="open"><span class="moose-section-icon"></span>Optional Parameters</h3></summary></details></section><section id="8f9e5559-b092-4037-9b94-a473f704b1c6" data-section-level="3" data-section-text="Advanced Parameters" data-details-open="close"><details class="moose-section-content"><ul class="collapsible" data-collapsible="expandable"><li><div class="collapsible-header"><span class="moose-parameter-name">control_tags</span><span class="moose-parameter-header-description">Adds user-defined labels for accessing object parameters via control logic.</span></div><div class="collapsible-body"><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>std::vector&lt;std::string&gt;</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>No</p><p class="moose-parameter-description"><span>Description:</span>Adds user-defined labels for accessing object parameters via control logic.</p></div></li><li><div class="collapsible-header"><span class="moose-parameter-name">enable</span><span class="moose-parameter-header-default">True</span><span class="moose-parameter-header-description">Set the enabled status of the MooseObject.</span></div><div class="collapsible-body"><p class="moose-parameter-description-default"><span>Default:</span>True</p><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>bool</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>No</p><p class="moose-parameter-description"><span>Description:</span>Set the enabled status of the MooseObject.</p></div></li></ul><summary><h3 data-details-open="close"><span class="moose-section-icon"></span>Advanced Parameters</h3></summary></details></section></section></section><div class="moose-modal modal" id="83e7d348-cf95-4a77-9a2c-3544439c941c"><div class="modal-content"><h4>(moose/modules/ray_tracing/src/raybcs/ReflectRayBC.C)</h4><pre class="moose-pre"><code class="language-cpp">// This file is part of the MOOSE framework
+// https://www.mooseframework.org
+//
+// All rights reserved, see COPYRIGHT for full restrictions
+// https://github.com/idaholab/moose/blob/master/COPYRIGHT
+//
+// Licensed under LGPL 2.1, please see LICENSE for details
+// https://www.gnu.org/licenses/lgpl-2.1.html
+
+#include &quot;ReflectRayBC.h&quot;
+
+// Local includes
+#include &quot;RayTracingStudy.h&quot;
+
+registerMooseObject(&quot;RayTracingApp&quot;, ReflectRayBC);
+
+InputParameters
+ReflectRayBC::validParams()
+{
+  auto params = GeneralRayBC::validParams();
+
+  params.addParam&lt;bool&gt;(
+      &quot;warn_non_planar&quot;,
+      true,
+      &quot;Whether or not to emit a warning if a Ray is being reflected on a non-planar side&quot;);
+
+  params.addClassDescription(&quot;A RayBC that reflects a Ray in a specular manner on a boundary.&quot;);
+
+  return params;
+}
+
+ReflectRayBC::ReflectRayBC(const InputParameters &amp; params)
+  : GeneralRayBC(params), _warn_non_planar(getParam&lt;bool&gt;(&quot;warn_non_planar&quot;))
+{
+}
+
+void
+ReflectRayBC::onBoundary(const unsigned int num_applying)
+{
+  if (_warn_non_planar &amp;&amp; _study.sideIsNonPlanar(_current_elem, _current_intersected_side))
+    mooseWarning(&quot;A Ray is being reflected on a non-planar side.\n\n&quot;,
+                 &quot;Ray tracing on elements with non-planar faces is an approximation.\n\n&quot;,
+                 &quot;The normal used to compute the reflected direction is computed at\n&quot;,
+                 &quot;the side centroid and may not be valid for a non-planar side.\n\n&quot;,
+                 &quot;To disable this warning, set RayKernels/&quot;,
+                 name(),
+                 &quot;/warn_non_planar=false.\n\n&quot;,
+                 currentRay()-&gt;getInfo());
+
+  // No need to do anything if the Ray&#x27;s gonna die anyway
+  if (!currentRay()-&gt;shouldContinue())
+    return;
+
+  // The direction this Ray reflects off this boundary
+  const auto &amp; normal = _study.getSideNormal(_current_elem, _current_intersected_side, _tid);
+  const auto reflected_direction = reflectedDirection(currentRay()-&gt;direction(), normal);
+
+  // Change it! Note here the usage of num_applying: if we are at a corner with a reflecting
+  // boundary condition on both sides, we want to allow both boundary conditions to reflect the Ray.
+  // Therefore, we skip the check that another RayBC has changed the Ray&#x27;s trajectory when we are
+  // applying multiple of the same ReflectRayBC at different boundaries at the same point to allow
+  // this. Note that this double (or triple in 3D) reflection will only be allowed when the same
+  // ReflectRayBC object is on both boundaries.
+  changeRayDirection(reflected_direction, /* skip_changed_check = */ num_applying &gt; 1);
+}
+
+Point
+ReflectRayBC::reflectedDirection(const Point &amp; direction, const Point &amp; normal)
+{
+  mooseAssert(MooseUtils::absoluteFuzzyEqual(direction.norm(), 1.), &quot;Direction not normalized&quot;);
+  mooseAssert(MooseUtils::absoluteFuzzyEqual(normal.norm(), 1.), &quot;Normal not normalized&quot;);
+
+  Point reflected_direction = direction;
+  reflected_direction -= 2.0 * (reflected_direction * normal) * normal;
+  return reflected_direction / reflected_direction.norm();
+}
+</code></pre></div><div class="modal-footer"><a class="modal-close btn-flat">Close</a></div></div><div class="moose-modal modal" id="485d5def-9532-4529-ac41-570399001563"><div class="modal-content"><h4>(moose/modules/ray_tracing/src/raybcs/ReflectRayBC.C)</h4><pre class="moose-pre"><code class="language-cpp">// This file is part of the MOOSE framework
+// https://www.mooseframework.org
+//
+// All rights reserved, see COPYRIGHT for full restrictions
+// https://github.com/idaholab/moose/blob/master/COPYRIGHT
+//
+// Licensed under LGPL 2.1, please see LICENSE for details
+// https://www.gnu.org/licenses/lgpl-2.1.html
+
+#include &quot;ReflectRayBC.h&quot;
+
+// Local includes
+#include &quot;RayTracingStudy.h&quot;
+
+registerMooseObject(&quot;RayTracingApp&quot;, ReflectRayBC);
+
+InputParameters
+ReflectRayBC::validParams()
+{
+  auto params = GeneralRayBC::validParams();
+
+  params.addParam&lt;bool&gt;(
+      &quot;warn_non_planar&quot;,
+      true,
+      &quot;Whether or not to emit a warning if a Ray is being reflected on a non-planar side&quot;);
+
+  params.addClassDescription(&quot;A RayBC that reflects a Ray in a specular manner on a boundary.&quot;);
+
+  return params;
+}
+
+ReflectRayBC::ReflectRayBC(const InputParameters &amp; params)
+  : GeneralRayBC(params), _warn_non_planar(getParam&lt;bool&gt;(&quot;warn_non_planar&quot;))
+{
+}
+
+void
+ReflectRayBC::onBoundary(const unsigned int num_applying)
+{
+  if (_warn_non_planar &amp;&amp; _study.sideIsNonPlanar(_current_elem, _current_intersected_side))
+    mooseWarning(&quot;A Ray is being reflected on a non-planar side.\n\n&quot;,
+                 &quot;Ray tracing on elements with non-planar faces is an approximation.\n\n&quot;,
+                 &quot;The normal used to compute the reflected direction is computed at\n&quot;,
+                 &quot;the side centroid and may not be valid for a non-planar side.\n\n&quot;,
+                 &quot;To disable this warning, set RayKernels/&quot;,
+                 name(),
+                 &quot;/warn_non_planar=false.\n\n&quot;,
+                 currentRay()-&gt;getInfo());
+
+  // No need to do anything if the Ray&#x27;s gonna die anyway
+  if (!currentRay()-&gt;shouldContinue())
+    return;
+
+  // The direction this Ray reflects off this boundary
+  const auto &amp; normal = _study.getSideNormal(_current_elem, _current_intersected_side, _tid);
+  const auto reflected_direction = reflectedDirection(currentRay()-&gt;direction(), normal);
+
+  // Change it! Note here the usage of num_applying: if we are at a corner with a reflecting
+  // boundary condition on both sides, we want to allow both boundary conditions to reflect the Ray.
+  // Therefore, we skip the check that another RayBC has changed the Ray&#x27;s trajectory when we are
+  // applying multiple of the same ReflectRayBC at different boundaries at the same point to allow
+  // this. Note that this double (or triple in 3D) reflection will only be allowed when the same
+  // ReflectRayBC object is on both boundaries.
+  changeRayDirection(reflected_direction, /* skip_changed_check = */ num_applying &gt; 1);
+}
+
+Point
+ReflectRayBC::reflectedDirection(const Point &amp; direction, const Point &amp; normal)
+{
+  mooseAssert(MooseUtils::absoluteFuzzyEqual(direction.norm(), 1.), &quot;Direction not normalized&quot;);
+  mooseAssert(MooseUtils::absoluteFuzzyEqual(normal.norm(), 1.), &quot;Normal not normalized&quot;);
+
+  Point reflected_direction = direction;
+  reflected_direction -= 2.0 * (reflected_direction * normal) * normal;
+  return reflected_direction / reflected_direction.norm();
+}
+</code></pre></div><div class="modal-footer"><a class="modal-close btn-flat">Close</a></div></div></div><div class="col hide-on-med-and-down l2"><div class="toc-wrapper pin-top"><ul class="section table-of-contents"><li><a href="#7f9c8aee-32bf-4cb2-9c69-f3dd7f23e53f" class="tooltipped" data-position="left" data-tooltip="Input Parameters">Input Parameters</a></li></ul></div></div></div></div></main></div></body><script type="text/javascript" src="../../contrib/materialize/materialize.min.js"></script><script type="text/javascript" src="../../contrib/clipboard/clipboard.min.js"></script><script type="text/javascript" src="../../contrib/prism/prism.min.js"></script><script type="text/javascript" src="../../js/init.js"></script><script type="text/javascript" src="../../js/navigation.js"></script><script type="text/javascript" src="../../contrib/fuse/fuse.min.js"></script><script type="text/javascript" src="../../js/search_index.js"></script><script type="text/javascript" src="../../js/sqa_moose.js"></script>

@@ -1,0 +1,149 @@
+<!DOCTYPE html><head><meta charset="UTF-8"><title>Thermal Contact | Eel</title><link href="../../contrib/materialize/materialize.min.css" type="text/css" rel="stylesheet" media="screen,projection"></link><link href="../../contrib/prism/prism.min.css" type="text/css" rel="stylesheet"></link><link href="../../css/moose.css" type="text/css" rel="stylesheet"></link><link href="../../css/devel_moose.css" type="text/css" rel="stylesheet"></link><link href="../../css/alert_moose.css" type="text/css" rel="stylesheet"></link><link href="../../css/content_moose.css" type="text/css" rel="stylesheet"></link><link href="../../css/sqa_moose.css" type="text/css" rel="stylesheet"></link><link href="../../css/civet_moose.css" type="text/css" rel="stylesheet"></link><script type="text/javascript" src="../../contrib/jquery/jquery.min.js"></script></head><body><div class="page-wrap"><header><nav><div class="nav-wrapper container"><a href="../../index.html" class="left moose-logo hide-on-med-and-down" id="home-button">Eel</a><a href="https://github.com/hugary1995/eel" class="right"><img src="../../media/framework/github-logo.png" class="github-mark"></img><img src="../../media/framework/github-mark.png" class="github-logo"></img></a><ul class="right hide-on-med-and-down"><li><a href="../../eel.html">Documentation</a></li></ul><a href="#" class="sidenav-trigger" data-target="84304ec7-3919-4e5e-a46c-15172c491864"><i class="material-icons">menu</i></a><ul class="sidenav" id="84304ec7-3919-4e5e-a46c-15172c491864"><li><a href="../../eel.html">Documentation</a></li></ul><a href="#moose-search" class="modal-trigger"><i class="material-icons">search</i></a></div></nav><div class="modal modal-fixed-footer moose-search-modal" id="moose-search"><div class="modal-content container moose-search-modal-content"><div class="row"><div class="col l12"><div class="input-field"><input type_="text" onkeyup="mooseSearch()" placeholder="/index.md" id="moose-search-box"></input></div></div><div><div class="col s12" id="moose-search-results"></div></div></div></div><div class="modal-footer"><a href="#!" class="modal-close btn-flat">Close</a></div></div></header><main class="main"><div class="container"><div class="row"><div class="col hide-on-med-and-down l12"><nav class="breadcrumb-nav"><div class="nav-wrapper"><a href=".." class="breadcrumb">syntax</a><a href="." class="breadcrumb">ThermalContact</a></div></nav></div></div><div class="row"><div class="moose-content col s12 m12 l10"><section id="8560ef61-bae6-49cd-ad54-7cd9c82ef5b7" data-section-level="1" data-section-text="Thermal Contact"><h1 id="thermal-contact">Thermal Contact</h1><p>This syntax is used to model thermal contact between surfaces using a node-on-face approach.</p><section id="01c33734-d7bf-4191-99f2-d3b6db1bd65a" data-section-level="3" data-section-text="Gap offset parameters"><h3 id="gap-offset-parameters">Gap offset parameters</h3><p>Gap offset can be provided to the current contact formulation via the <code>PenetrationAux</code>. It can be either <code>secondary_gap_offset</code> (gap offset from secondary side) or <code>mapped_primary_gap_offset</code> (gap offset from primary side but mapped to secondary side). Use of these gap offset parameters treats the surfaces as if they were virtually extended (positive offset value) or narrowed (negative offset value) by the specified amount, so that the surfaces are treated as if they are closer or further away than they actually are. There is no  resistance to heat transfer within the material in this gap offset region.</p></section><section id="4b4c3d2e-f1c1-4cb1-a597-b202b06f41f8" data-section-level="3" data-section-text="Multiple contact pairs ( node / face )"><h3 id="multiple-contact-pairs-node-face">Multiple contact pairs (node/face)</h3><p>Users may need to set up thermal contact between multiple contact pairs. For that application, users can provide arrays of primary and secondary boundary names which will match consecutively to define thermal contact pairs. The same thermal contact-related input parameters will be applied to all contact pairs defined in the action input.</p><pre class="moose-pre" style="max-height:350px;"><code class="language-text">[ThermalContact]
+  [thermal_contact]
+    type = GapHeatTransfer
+    variable = temperature
+    primary = &#x27;101 201&#x27;
+    secondary = &#x27;100 200&#x27;
+    emissivity_primary = 0
+    emissivity_secondary = 0
+    gap_conductance = 1.0e9
+  []
+[]
+</code></pre><a class="moose-source-filename tooltipped modal-trigger" href="#72692f6e-c364-41ba-809c-7a9b58d9e080">(moose/modules/heat_conduction/test/tests/multiple_contact_pairs/multiple_contact_pairs.i)</a></section></section><div class="moose-modal modal" id="72692f6e-c364-41ba-809c-7a9b58d9e080"><div class="modal-content"><h4>(moose/modules/heat_conduction/test/tests/multiple_contact_pairs/multiple_contact_pairs.i)</h4><pre class="moose-pre"><code class="language-text">[Mesh]
+  file = 3blk.e
+[]
+
+[Functions]
+  [temperature]
+    type = PiecewiseLinear
+    x = &#x27;0   1   2&#x27;
+    y = &#x27;100 300 300&#x27;
+  []
+[]
+
+[ThermalContact]
+  [thermal_contact]
+    type = GapHeatTransfer
+    variable = temperature
+    primary = &#x27;101 201&#x27;
+    secondary = &#x27;100 200&#x27;
+    emissivity_primary = 0
+    emissivity_secondary = 0
+    gap_conductance = 1.0e9
+  []
+[]
+
+[Variables]
+  [temperature]
+    order = FIRST
+    family = LAGRANGE
+    initial_condition = 100
+  []
+[]
+
+[AuxVariables]
+  [gap_cond]
+    order = CONSTANT
+    family = MONOMIAL
+  []
+[]
+
+[Kernels]
+  [heat]
+    type = HeatConduction
+    variable = temperature
+  []
+[]
+
+[BCs]
+  [temp_far_left]
+    type = FunctionDirichletBC
+    boundary = &#x27;101 201&#x27;
+    variable = temperature
+    function = temperature
+  []
+  [temp_far_right]
+    type = DirichletBC
+    boundary = &#x27;left right&#x27;
+    variable = temperature
+    value = 100
+  []
+[]
+
+[AuxKernels]
+  [conductance]
+    type = MaterialRealAux
+    property = gap_conductance
+    variable = gap_cond
+    boundary = 100
+  []
+[]
+
+[Materials]
+  [heat1]
+    type = HeatConductionMaterial
+    block = &#x27;1 2 3&#x27;
+    specific_heat = 1.0
+    thermal_conductivity = 100000000.0
+  []
+  [density]
+    type = GenericConstantMaterial
+    block = &#x27;1 2 3&#x27;
+    prop_names = &#x27;density&#x27;
+    prop_values = &#x27;1.0&#x27;
+  []
+[]
+
+[Executioner]
+  type = Transient
+
+  solve_type = &#x27;PJFNK&#x27;
+  petsc_options_iname = &#x27;-ksp_gmres_restart -pc_type -pc_hypre_type -pc_hypre_boomeramg_max_iter&#x27;
+  petsc_options_value = &#x27;201                hypre    boomeramg      4&#x27;
+
+  line_search = &#x27;none&#x27;
+  nl_rel_tol = 1e-8
+  l_tol = 1e-3
+  l_max_its = 100
+
+  dt = 1e-1
+  end_time = 1.0
+[]
+
+[Postprocessors]
+  [temp_left]
+    type = SideAverageValue
+    boundary = 100
+    variable = temperature
+    execute_on = &#x27;initial timestep_end&#x27;
+  []
+
+  [temp_right]
+    type = SideAverageValue
+    boundary = 200
+    variable = temperature
+    execute_on = &#x27;initial timestep_end&#x27;
+  []
+
+  [flux_left]
+    type = SideDiffusiveFluxIntegral
+    variable = temperature
+    boundary = 100
+    diffusivity = thermal_conductivity
+    execute_on = &#x27;initial timestep_end&#x27;
+  []
+
+  [flux_right]
+    type = SideDiffusiveFluxIntegral
+    variable = temperature
+    boundary = 200
+    diffusivity = thermal_conductivity
+    execute_on = &#x27;initial timestep_end&#x27;
+  []
+[]
+
+[Outputs]
+  exodus = false
+  csv = true
+[]
+</code></pre></div><div class="modal-footer"><a class="modal-close btn-flat">Close</a></div></div></div><div class="col hide-on-med-and-down l2"><div class="toc-wrapper pin-top"><ul class="section table-of-contents"></ul></div></div></div></div></main></div></body><script type="text/javascript" src="../../contrib/materialize/materialize.min.js"></script><script type="text/javascript" src="../../contrib/clipboard/clipboard.min.js"></script><script type="text/javascript" src="../../contrib/prism/prism.min.js"></script><script type="text/javascript" src="../../js/init.js"></script><script type="text/javascript" src="../../js/navigation.js"></script><script type="text/javascript" src="../../contrib/fuse/fuse.min.js"></script><script type="text/javascript" src="../../js/search_index.js"></script><script type="text/javascript" src="../../js/sqa_moose.js"></script>

@@ -1,0 +1,5397 @@
+<!DOCTYPE html><head><meta charset="UTF-8"><title>Finite Volume Incompressible Porous media Navier Stokes | Eel</title><link href="../../contrib/materialize/materialize.min.css" type="text/css" rel="stylesheet" media="screen,projection"></link><link href="../../contrib/prism/prism.min.css" type="text/css" rel="stylesheet"></link><link href="../../css/moose.css" type="text/css" rel="stylesheet"></link><link href="../../css/devel_moose.css" type="text/css" rel="stylesheet"></link><link href="../../css/alert_moose.css" type="text/css" rel="stylesheet"></link><link href="../../css/content_moose.css" type="text/css" rel="stylesheet"></link><link href="../../css/sqa_moose.css" type="text/css" rel="stylesheet"></link><link href="../../css/civet_moose.css" type="text/css" rel="stylesheet"></link><link href="../../contrib/katex/katex.min.css" type="text/css" rel="stylesheet"></link><link href="../../css/katex_moose.css" type="text/css" rel="stylesheet"></link><script type="text/javascript" src="../../contrib/jquery/jquery.min.js"></script><script type="text/javascript" src="../../contrib/katex/katex.min.js"></script></head><body><div class="page-wrap"><header><nav><div class="nav-wrapper container"><a href="../../index.html" class="left moose-logo hide-on-med-and-down" id="home-button">Eel</a><a href="https://github.com/hugary1995/eel" class="right"><img src="../../media/framework/github-logo.png" class="github-mark"></img><img src="../../media/framework/github-mark.png" class="github-logo"></img></a><ul class="right hide-on-med-and-down"><li><a href="../../eel.html">Documentation</a></li></ul><a href="#" class="sidenav-trigger" data-target="98cea5c5-8699-4719-85a6-9718b7bc1ddf"><i class="material-icons">menu</i></a><ul class="sidenav" id="98cea5c5-8699-4719-85a6-9718b7bc1ddf"><li><a href="../../eel.html">Documentation</a></li></ul><a href="#moose-search" class="modal-trigger"><i class="material-icons">search</i></a></div></nav><div class="modal modal-fixed-footer moose-search-modal" id="moose-search"><div class="modal-content container moose-search-modal-content"><div class="row"><div class="col l12"><div class="input-field"><input type_="text" onkeyup="mooseSearch()" placeholder="/index.md" id="moose-search-box"></input></div></div><div><div class="col s12" id="moose-search-results"></div></div></div></div><div class="modal-footer"><a href="#!" class="modal-close btn-flat">Close</a></div></div></header><main class="main"><div class="container"><div class="row"><div class="col hide-on-med-and-down l12"><nav class="breadcrumb-nav"><div class="nav-wrapper"><span class="breadcrumb">modules</span><a href="." class="breadcrumb">navier_stokes</a><a href="#" class="breadcrumb">pinsfv</a></div></nav></div></div><div class="row"><div class="moose-content col s12 m12 l10"><section id="f53fb74b-81ec-4c2e-8ce8-77a74e91040b" data-section-level="1" data-section-text="Finite Volume Incompressible Porous media Navier Stokes"><h1 id="finite-volume-incompressible-porous-media-navier-stokes">Finite Volume Incompressible Porous media Navier Stokes</h1><section class="scrollspy" id="fdebb615-2246-43f6-9ff2-489c0567f348" data-section-level="2" data-section-text="Equations"><h2 id="equations">Equations</h2><p>This module implements the porous media Navier Stokes equations. They are expressed in terms of the superficial velocity <span class="moose-katex-inline-equation" id="moose-equation-01bbe196-23a2-488d-b14a-a4201bc10b9f"><script>var element = document.getElementById("moose-equation-01bbe196-23a2-488d-b14a-a4201bc10b9f");katex.render("\\vec{v}_d = \\epsilon \\vec{V}", element, {displayMode:false,throwOnError:false,macros:{"\\bs":"\\boldsymbol{#1}","\\grad":"\\bs{\\nabla}","\\divergence":"\\grad \\cdot","\\norm":"\\left\\lVert#1\\right\\rVert","\\abs":"\\left\\lvert#1\\right\\rvert","\\diff":"\\text{ d}#1","\\bfa":"\\boldsymbol{a}","\\bfb":"\\boldsymbol{b}","\\bfc":"\\boldsymbol{c}","\\bfd":"\\boldsymbol{d}","\\bfe":"\\boldsymbol{e}","\\bff":"\\boldsymbol{f}","\\bfg":"\\boldsymbol{g}","\\bfh":"\\boldsymbol{h}","\\bfi":"\\boldsymbol{i}","\\bfj":"\\boldsymbol{j}","\\bfk":"\\boldsymbol{k}","\\bfl":"\\boldsymbol{l}","\\bfm":"\\boldsymbol{m}","\\bfn":"\\boldsymbol{n}","\\bfo":"\\boldsymbol{o}","\\bfp":"\\boldsymbol{p}","\\bfq":"\\boldsymbol{q}","\\bfr":"\\boldsymbol{r}","\\bfs":"\\boldsymbol{s}","\\bft":"\\boldsymbol{t}","\\bfu":"\\boldsymbol{u}","\\bfv":"\\boldsymbol{v}","\\bfw":"\\boldsymbol{w}","\\bfx":"\\boldsymbol{x}","\\bfy":"\\boldsymbol{y}","\\bfz":"\\boldsymbol{z}","\\bfA":"\\boldsymbol{A}","\\bfB":"\\boldsymbol{B}","\\bfC":"\\boldsymbol{C}","\\bfD":"\\boldsymbol{D}","\\bfE":"\\boldsymbol{E}","\\bfF":"\\boldsymbol{F}","\\bfG":"\\boldsymbol{G}","\\bfH":"\\boldsymbol{H}","\\bfI":"\\boldsymbol{I}","\\bfJ":"\\boldsymbol{J}","\\bfK":"\\boldsymbol{K}","\\bfL":"\\boldsymbol{L}","\\bfM":"\\boldsymbol{M}","\\bfN":"\\boldsymbol{N}","\\bfO":"\\boldsymbol{O}","\\bfP":"\\boldsymbol{P}","\\bfQ":"\\boldsymbol{Q}","\\bfR":"\\boldsymbol{R}","\\bfS":"\\boldsymbol{S}","\\bfT":"\\boldsymbol{T}","\\bfU":"\\boldsymbol{U}","\\bfV":"\\boldsymbol{V}","\\bfW":"\\boldsymbol{W}","\\bfX":"\\boldsymbol{X}","\\bfY":"\\boldsymbol{Y}","\\bfZ":"\\boldsymbol{Z}"}});</script></span> where <span class="moose-katex-inline-equation" id="moose-equation-9a4685e0-a0a6-46db-897e-cbcb8e21e56e"><script>var element = document.getElementById("moose-equation-9a4685e0-a0a6-46db-897e-cbcb8e21e56e");katex.render("\\epsilon", element, {displayMode:false,throwOnError:false,macros:{"\\bs":"\\boldsymbol{#1}","\\grad":"\\bs{\\nabla}","\\divergence":"\\grad \\cdot","\\norm":"\\left\\lVert#1\\right\\rVert","\\abs":"\\left\\lvert#1\\right\\rvert","\\diff":"\\text{ d}#1","\\bfa":"\\boldsymbol{a}","\\bfb":"\\boldsymbol{b}","\\bfc":"\\boldsymbol{c}","\\bfd":"\\boldsymbol{d}","\\bfe":"\\boldsymbol{e}","\\bff":"\\boldsymbol{f}","\\bfg":"\\boldsymbol{g}","\\bfh":"\\boldsymbol{h}","\\bfi":"\\boldsymbol{i}","\\bfj":"\\boldsymbol{j}","\\bfk":"\\boldsymbol{k}","\\bfl":"\\boldsymbol{l}","\\bfm":"\\boldsymbol{m}","\\bfn":"\\boldsymbol{n}","\\bfo":"\\boldsymbol{o}","\\bfp":"\\boldsymbol{p}","\\bfq":"\\boldsymbol{q}","\\bfr":"\\boldsymbol{r}","\\bfs":"\\boldsymbol{s}","\\bft":"\\boldsymbol{t}","\\bfu":"\\boldsymbol{u}","\\bfv":"\\boldsymbol{v}","\\bfw":"\\boldsymbol{w}","\\bfx":"\\boldsymbol{x}","\\bfy":"\\boldsymbol{y}","\\bfz":"\\boldsymbol{z}","\\bfA":"\\boldsymbol{A}","\\bfB":"\\boldsymbol{B}","\\bfC":"\\boldsymbol{C}","\\bfD":"\\boldsymbol{D}","\\bfE":"\\boldsymbol{E}","\\bfF":"\\boldsymbol{F}","\\bfG":"\\boldsymbol{G}","\\bfH":"\\boldsymbol{H}","\\bfI":"\\boldsymbol{I}","\\bfJ":"\\boldsymbol{J}","\\bfK":"\\boldsymbol{K}","\\bfL":"\\boldsymbol{L}","\\bfM":"\\boldsymbol{M}","\\bfN":"\\boldsymbol{N}","\\bfO":"\\boldsymbol{O}","\\bfP":"\\boldsymbol{P}","\\bfQ":"\\boldsymbol{Q}","\\bfR":"\\boldsymbol{R}","\\bfS":"\\boldsymbol{S}","\\bfT":"\\boldsymbol{T}","\\bfU":"\\boldsymbol{U}","\\bfV":"\\boldsymbol{V}","\\bfW":"\\boldsymbol{W}","\\bfX":"\\boldsymbol{X}","\\bfY":"\\boldsymbol{Y}","\\bfZ":"\\boldsymbol{Z}"}});</script></span> is the porosity and <span class="moose-katex-inline-equation" id="moose-equation-4760ac39-3c41-4780-82dd-1b1601f898e1"><script>var element = document.getElementById("moose-equation-4760ac39-3c41-4780-82dd-1b1601f898e1");katex.render("\\vec{V}", element, {displayMode:false,throwOnError:false,macros:{"\\bs":"\\boldsymbol{#1}","\\grad":"\\bs{\\nabla}","\\divergence":"\\grad \\cdot","\\norm":"\\left\\lVert#1\\right\\rVert","\\abs":"\\left\\lvert#1\\right\\rvert","\\diff":"\\text{ d}#1","\\bfa":"\\boldsymbol{a}","\\bfb":"\\boldsymbol{b}","\\bfc":"\\boldsymbol{c}","\\bfd":"\\boldsymbol{d}","\\bfe":"\\boldsymbol{e}","\\bff":"\\boldsymbol{f}","\\bfg":"\\boldsymbol{g}","\\bfh":"\\boldsymbol{h}","\\bfi":"\\boldsymbol{i}","\\bfj":"\\boldsymbol{j}","\\bfk":"\\boldsymbol{k}","\\bfl":"\\boldsymbol{l}","\\bfm":"\\boldsymbol{m}","\\bfn":"\\boldsymbol{n}","\\bfo":"\\boldsymbol{o}","\\bfp":"\\boldsymbol{p}","\\bfq":"\\boldsymbol{q}","\\bfr":"\\boldsymbol{r}","\\bfs":"\\boldsymbol{s}","\\bft":"\\boldsymbol{t}","\\bfu":"\\boldsymbol{u}","\\bfv":"\\boldsymbol{v}","\\bfw":"\\boldsymbol{w}","\\bfx":"\\boldsymbol{x}","\\bfy":"\\boldsymbol{y}","\\bfz":"\\boldsymbol{z}","\\bfA":"\\boldsymbol{A}","\\bfB":"\\boldsymbol{B}","\\bfC":"\\boldsymbol{C}","\\bfD":"\\boldsymbol{D}","\\bfE":"\\boldsymbol{E}","\\bfF":"\\boldsymbol{F}","\\bfG":"\\boldsymbol{G}","\\bfH":"\\boldsymbol{H}","\\bfI":"\\boldsymbol{I}","\\bfJ":"\\boldsymbol{J}","\\bfK":"\\boldsymbol{K}","\\bfL":"\\boldsymbol{L}","\\bfM":"\\boldsymbol{M}","\\bfN":"\\boldsymbol{N}","\\bfO":"\\boldsymbol{O}","\\bfP":"\\boldsymbol{P}","\\bfQ":"\\boldsymbol{Q}","\\bfR":"\\boldsymbol{R}","\\bfS":"\\boldsymbol{S}","\\bfT":"\\boldsymbol{T}","\\bfU":"\\boldsymbol{U}","\\bfV":"\\boldsymbol{V}","\\bfW":"\\boldsymbol{W}","\\bfX":"\\boldsymbol{X}","\\bfY":"\\boldsymbol{Y}","\\bfZ":"\\boldsymbol{Z}"}});</script></span> the interstitial velocity. The superficial velocity is also known as the extrinsic or Darcy velocity. The other non-linear variables used are pressure and temperature. This is known as the primitive superficial set of variables.</p><p>Mass equation: <span class="moose-katex-block-equation"><span class="moose-katex-equation table-cell" id="moose-equation-5e253d7c-4cf8-495c-879c-3fd1ed9dc63f"></span><script>var element = document.getElementById("moose-equation-5e253d7c-4cf8-495c-879c-3fd1ed9dc63f");katex.render("\\nabla \\cdot \\rho \\vec{v}_d = 0", element, {displayMode:true,throwOnError:false,macros:{"\\bs":"\\boldsymbol{#1}","\\grad":"\\bs{\\nabla}","\\divergence":"\\grad \\cdot","\\norm":"\\left\\lVert#1\\right\\rVert","\\abs":"\\left\\lvert#1\\right\\rvert","\\diff":"\\text{ d}#1","\\bfa":"\\boldsymbol{a}","\\bfb":"\\boldsymbol{b}","\\bfc":"\\boldsymbol{c}","\\bfd":"\\boldsymbol{d}","\\bfe":"\\boldsymbol{e}","\\bff":"\\boldsymbol{f}","\\bfg":"\\boldsymbol{g}","\\bfh":"\\boldsymbol{h}","\\bfi":"\\boldsymbol{i}","\\bfj":"\\boldsymbol{j}","\\bfk":"\\boldsymbol{k}","\\bfl":"\\boldsymbol{l}","\\bfm":"\\boldsymbol{m}","\\bfn":"\\boldsymbol{n}","\\bfo":"\\boldsymbol{o}","\\bfp":"\\boldsymbol{p}","\\bfq":"\\boldsymbol{q}","\\bfr":"\\boldsymbol{r}","\\bfs":"\\boldsymbol{s}","\\bft":"\\boldsymbol{t}","\\bfu":"\\boldsymbol{u}","\\bfv":"\\boldsymbol{v}","\\bfw":"\\boldsymbol{w}","\\bfx":"\\boldsymbol{x}","\\bfy":"\\boldsymbol{y}","\\bfz":"\\boldsymbol{z}","\\bfA":"\\boldsymbol{A}","\\bfB":"\\boldsymbol{B}","\\bfC":"\\boldsymbol{C}","\\bfD":"\\boldsymbol{D}","\\bfE":"\\boldsymbol{E}","\\bfF":"\\boldsymbol{F}","\\bfG":"\\boldsymbol{G}","\\bfH":"\\boldsymbol{H}","\\bfI":"\\boldsymbol{I}","\\bfJ":"\\boldsymbol{J}","\\bfK":"\\boldsymbol{K}","\\bfL":"\\boldsymbol{L}","\\bfM":"\\boldsymbol{M}","\\bfN":"\\boldsymbol{N}","\\bfO":"\\boldsymbol{O}","\\bfP":"\\boldsymbol{P}","\\bfQ":"\\boldsymbol{Q}","\\bfR":"\\boldsymbol{R}","\\bfS":"\\boldsymbol{S}","\\bfT":"\\boldsymbol{T}","\\bfU":"\\boldsymbol{U}","\\bfV":"\\boldsymbol{V}","\\bfW":"\\boldsymbol{W}","\\bfX":"\\boldsymbol{X}","\\bfY":"\\boldsymbol{Y}","\\bfZ":"\\boldsymbol{Z}"}});</script></span></p><p>Momentum equation, with friction and gravity force as example forces: <span class="moose-katex-block-equation"><span class="moose-katex-equation table-cell" id="moose-equation-7585a178-14d9-42c9-973c-50fd8113d2c3"></span><script>var element = document.getElementById("moose-equation-7585a178-14d9-42c9-973c-50fd8113d2c3");katex.render("\\dfrac{\\partial \\rho \\mathbf{v}_D}{\\partial t} + \\nabla \\cdot (\\dfrac{\\rho}{\\epsilon} \\mathbf{v}_D \\otimes \\mathbf{v}_D) = \\nabla \\cdot (\\mu \\nabla \\dfrac{\\mathbf{v}_D}{\\epsilon}) - \\epsilon \\nabla p + \\epsilon (\\mathbf{F}_g + \\mathbf{F}_f)", element, {displayMode:true,throwOnError:false,macros:{"\\bs":"\\boldsymbol{#1}","\\grad":"\\bs{\\nabla}","\\divergence":"\\grad \\cdot","\\norm":"\\left\\lVert#1\\right\\rVert","\\abs":"\\left\\lvert#1\\right\\rvert","\\diff":"\\text{ d}#1","\\bfa":"\\boldsymbol{a}","\\bfb":"\\boldsymbol{b}","\\bfc":"\\boldsymbol{c}","\\bfd":"\\boldsymbol{d}","\\bfe":"\\boldsymbol{e}","\\bff":"\\boldsymbol{f}","\\bfg":"\\boldsymbol{g}","\\bfh":"\\boldsymbol{h}","\\bfi":"\\boldsymbol{i}","\\bfj":"\\boldsymbol{j}","\\bfk":"\\boldsymbol{k}","\\bfl":"\\boldsymbol{l}","\\bfm":"\\boldsymbol{m}","\\bfn":"\\boldsymbol{n}","\\bfo":"\\boldsymbol{o}","\\bfp":"\\boldsymbol{p}","\\bfq":"\\boldsymbol{q}","\\bfr":"\\boldsymbol{r}","\\bfs":"\\boldsymbol{s}","\\bft":"\\boldsymbol{t}","\\bfu":"\\boldsymbol{u}","\\bfv":"\\boldsymbol{v}","\\bfw":"\\boldsymbol{w}","\\bfx":"\\boldsymbol{x}","\\bfy":"\\boldsymbol{y}","\\bfz":"\\boldsymbol{z}","\\bfA":"\\boldsymbol{A}","\\bfB":"\\boldsymbol{B}","\\bfC":"\\boldsymbol{C}","\\bfD":"\\boldsymbol{D}","\\bfE":"\\boldsymbol{E}","\\bfF":"\\boldsymbol{F}","\\bfG":"\\boldsymbol{G}","\\bfH":"\\boldsymbol{H}","\\bfI":"\\boldsymbol{I}","\\bfJ":"\\boldsymbol{J}","\\bfK":"\\boldsymbol{K}","\\bfL":"\\boldsymbol{L}","\\bfM":"\\boldsymbol{M}","\\bfN":"\\boldsymbol{N}","\\bfO":"\\boldsymbol{O}","\\bfP":"\\boldsymbol{P}","\\bfQ":"\\boldsymbol{Q}","\\bfR":"\\boldsymbol{R}","\\bfS":"\\boldsymbol{S}","\\bfT":"\\boldsymbol{T}","\\bfU":"\\boldsymbol{U}","\\bfV":"\\boldsymbol{V}","\\bfW":"\\boldsymbol{W}","\\bfX":"\\boldsymbol{X}","\\bfY":"\\boldsymbol{Y}","\\bfZ":"\\boldsymbol{Z}"}});</script></span></p><p>Fluid phase energy equation, with a convective heat transfer term: <span class="moose-katex-block-equation"><span class="moose-katex-equation table-cell" id="moose-equation-a770e630-7a01-4f32-8acf-a68dc6869462"></span><script>var element = document.getElementById("moose-equation-a770e630-7a01-4f32-8acf-a68dc6869462");katex.render("\\dfrac{\\partial \\epsilon \\rho c_p T_f}{\\partial t} + \\nabla \\cdot (\\mathbf{v}_D \\rho c_{pf} T_f) = \\nabla \\cdot (\\kappa_f \\nabla T_f) - \\alpha (T_f - T_s)", element, {displayMode:true,throwOnError:false,macros:{"\\bs":"\\boldsymbol{#1}","\\grad":"\\bs{\\nabla}","\\divergence":"\\grad \\cdot","\\norm":"\\left\\lVert#1\\right\\rVert","\\abs":"\\left\\lvert#1\\right\\rvert","\\diff":"\\text{ d}#1","\\bfa":"\\boldsymbol{a}","\\bfb":"\\boldsymbol{b}","\\bfc":"\\boldsymbol{c}","\\bfd":"\\boldsymbol{d}","\\bfe":"\\boldsymbol{e}","\\bff":"\\boldsymbol{f}","\\bfg":"\\boldsymbol{g}","\\bfh":"\\boldsymbol{h}","\\bfi":"\\boldsymbol{i}","\\bfj":"\\boldsymbol{j}","\\bfk":"\\boldsymbol{k}","\\bfl":"\\boldsymbol{l}","\\bfm":"\\boldsymbol{m}","\\bfn":"\\boldsymbol{n}","\\bfo":"\\boldsymbol{o}","\\bfp":"\\boldsymbol{p}","\\bfq":"\\boldsymbol{q}","\\bfr":"\\boldsymbol{r}","\\bfs":"\\boldsymbol{s}","\\bft":"\\boldsymbol{t}","\\bfu":"\\boldsymbol{u}","\\bfv":"\\boldsymbol{v}","\\bfw":"\\boldsymbol{w}","\\bfx":"\\boldsymbol{x}","\\bfy":"\\boldsymbol{y}","\\bfz":"\\boldsymbol{z}","\\bfA":"\\boldsymbol{A}","\\bfB":"\\boldsymbol{B}","\\bfC":"\\boldsymbol{C}","\\bfD":"\\boldsymbol{D}","\\bfE":"\\boldsymbol{E}","\\bfF":"\\boldsymbol{F}","\\bfG":"\\boldsymbol{G}","\\bfH":"\\boldsymbol{H}","\\bfI":"\\boldsymbol{I}","\\bfJ":"\\boldsymbol{J}","\\bfK":"\\boldsymbol{K}","\\bfL":"\\boldsymbol{L}","\\bfM":"\\boldsymbol{M}","\\bfN":"\\boldsymbol{N}","\\bfO":"\\boldsymbol{O}","\\bfP":"\\boldsymbol{P}","\\bfQ":"\\boldsymbol{Q}","\\bfR":"\\boldsymbol{R}","\\bfS":"\\boldsymbol{S}","\\bfT":"\\boldsymbol{T}","\\bfU":"\\boldsymbol{U}","\\bfV":"\\boldsymbol{V}","\\bfW":"\\boldsymbol{W}","\\bfX":"\\boldsymbol{X}","\\bfY":"\\boldsymbol{Y}","\\bfZ":"\\boldsymbol{Z}"}});</script></span></p><p>Solid phase energy equation, with convective heat transfer and an energy source <span class="moose-katex-inline-equation" id="moose-equation-d6947e91-9722-4d61-b3b7-e989c2b5a158"><script>var element = document.getElementById("moose-equation-d6947e91-9722-4d61-b3b7-e989c2b5a158");katex.render("\\dot{Q}", element, {displayMode:false,throwOnError:false,macros:{"\\bs":"\\boldsymbol{#1}","\\grad":"\\bs{\\nabla}","\\divergence":"\\grad \\cdot","\\norm":"\\left\\lVert#1\\right\\rVert","\\abs":"\\left\\lvert#1\\right\\rvert","\\diff":"\\text{ d}#1","\\bfa":"\\boldsymbol{a}","\\bfb":"\\boldsymbol{b}","\\bfc":"\\boldsymbol{c}","\\bfd":"\\boldsymbol{d}","\\bfe":"\\boldsymbol{e}","\\bff":"\\boldsymbol{f}","\\bfg":"\\boldsymbol{g}","\\bfh":"\\boldsymbol{h}","\\bfi":"\\boldsymbol{i}","\\bfj":"\\boldsymbol{j}","\\bfk":"\\boldsymbol{k}","\\bfl":"\\boldsymbol{l}","\\bfm":"\\boldsymbol{m}","\\bfn":"\\boldsymbol{n}","\\bfo":"\\boldsymbol{o}","\\bfp":"\\boldsymbol{p}","\\bfq":"\\boldsymbol{q}","\\bfr":"\\boldsymbol{r}","\\bfs":"\\boldsymbol{s}","\\bft":"\\boldsymbol{t}","\\bfu":"\\boldsymbol{u}","\\bfv":"\\boldsymbol{v}","\\bfw":"\\boldsymbol{w}","\\bfx":"\\boldsymbol{x}","\\bfy":"\\boldsymbol{y}","\\bfz":"\\boldsymbol{z}","\\bfA":"\\boldsymbol{A}","\\bfB":"\\boldsymbol{B}","\\bfC":"\\boldsymbol{C}","\\bfD":"\\boldsymbol{D}","\\bfE":"\\boldsymbol{E}","\\bfF":"\\boldsymbol{F}","\\bfG":"\\boldsymbol{G}","\\bfH":"\\boldsymbol{H}","\\bfI":"\\boldsymbol{I}","\\bfJ":"\\boldsymbol{J}","\\bfK":"\\boldsymbol{K}","\\bfL":"\\boldsymbol{L}","\\bfM":"\\boldsymbol{M}","\\bfN":"\\boldsymbol{N}","\\bfO":"\\boldsymbol{O}","\\bfP":"\\boldsymbol{P}","\\bfQ":"\\boldsymbol{Q}","\\bfR":"\\boldsymbol{R}","\\bfS":"\\boldsymbol{S}","\\bfT":"\\boldsymbol{T}","\\bfU":"\\boldsymbol{U}","\\bfV":"\\boldsymbol{V}","\\bfW":"\\boldsymbol{W}","\\bfX":"\\boldsymbol{X}","\\bfY":"\\boldsymbol{Y}","\\bfZ":"\\boldsymbol{Z}"}});</script></span>: <span class="moose-katex-block-equation"><span class="moose-katex-equation table-cell" id="moose-equation-8a411269-36f9-482b-9efb-05f4ac15ef45"></span><script>var element = document.getElementById("moose-equation-8a411269-36f9-482b-9efb-05f4ac15ef45");katex.render("\\dfrac{\\partial (1-\\epsilon) \\rho c_{ps} T_s}{\\partial t} = \\nabla \\cdot (\\kappa_s \\nabla T_s) + \\alpha (T_f - T_s) + (1-\\epsilon) \\dot{Q}", element, {displayMode:true,throwOnError:false,macros:{"\\bs":"\\boldsymbol{#1}","\\grad":"\\bs{\\nabla}","\\divergence":"\\grad \\cdot","\\norm":"\\left\\lVert#1\\right\\rVert","\\abs":"\\left\\lvert#1\\right\\rvert","\\diff":"\\text{ d}#1","\\bfa":"\\boldsymbol{a}","\\bfb":"\\boldsymbol{b}","\\bfc":"\\boldsymbol{c}","\\bfd":"\\boldsymbol{d}","\\bfe":"\\boldsymbol{e}","\\bff":"\\boldsymbol{f}","\\bfg":"\\boldsymbol{g}","\\bfh":"\\boldsymbol{h}","\\bfi":"\\boldsymbol{i}","\\bfj":"\\boldsymbol{j}","\\bfk":"\\boldsymbol{k}","\\bfl":"\\boldsymbol{l}","\\bfm":"\\boldsymbol{m}","\\bfn":"\\boldsymbol{n}","\\bfo":"\\boldsymbol{o}","\\bfp":"\\boldsymbol{p}","\\bfq":"\\boldsymbol{q}","\\bfr":"\\boldsymbol{r}","\\bfs":"\\boldsymbol{s}","\\bft":"\\boldsymbol{t}","\\bfu":"\\boldsymbol{u}","\\bfv":"\\boldsymbol{v}","\\bfw":"\\boldsymbol{w}","\\bfx":"\\boldsymbol{x}","\\bfy":"\\boldsymbol{y}","\\bfz":"\\boldsymbol{z}","\\bfA":"\\boldsymbol{A}","\\bfB":"\\boldsymbol{B}","\\bfC":"\\boldsymbol{C}","\\bfD":"\\boldsymbol{D}","\\bfE":"\\boldsymbol{E}","\\bfF":"\\boldsymbol{F}","\\bfG":"\\boldsymbol{G}","\\bfH":"\\boldsymbol{H}","\\bfI":"\\boldsymbol{I}","\\bfJ":"\\boldsymbol{J}","\\bfK":"\\boldsymbol{K}","\\bfL":"\\boldsymbol{L}","\\bfM":"\\boldsymbol{M}","\\bfN":"\\boldsymbol{N}","\\bfO":"\\boldsymbol{O}","\\bfP":"\\boldsymbol{P}","\\bfQ":"\\boldsymbol{Q}","\\bfR":"\\boldsymbol{R}","\\bfS":"\\boldsymbol{S}","\\bfT":"\\boldsymbol{T}","\\bfU":"\\boldsymbol{U}","\\bfV":"\\boldsymbol{V}","\\bfW":"\\boldsymbol{W}","\\bfX":"\\boldsymbol{X}","\\bfY":"\\boldsymbol{Y}","\\bfZ":"\\boldsymbol{Z}"}});</script></span></p><p>where <span class="moose-katex-inline-equation" id="moose-equation-f486ab3c-fa5c-4795-9c1c-a9433490f083"><script>var element = document.getElementById("moose-equation-f486ab3c-fa5c-4795-9c1c-a9433490f083");katex.render("\\rho", element, {displayMode:false,throwOnError:false,macros:{"\\bs":"\\boldsymbol{#1}","\\grad":"\\bs{\\nabla}","\\divergence":"\\grad \\cdot","\\norm":"\\left\\lVert#1\\right\\rVert","\\abs":"\\left\\lvert#1\\right\\rvert","\\diff":"\\text{ d}#1","\\bfa":"\\boldsymbol{a}","\\bfb":"\\boldsymbol{b}","\\bfc":"\\boldsymbol{c}","\\bfd":"\\boldsymbol{d}","\\bfe":"\\boldsymbol{e}","\\bff":"\\boldsymbol{f}","\\bfg":"\\boldsymbol{g}","\\bfh":"\\boldsymbol{h}","\\bfi":"\\boldsymbol{i}","\\bfj":"\\boldsymbol{j}","\\bfk":"\\boldsymbol{k}","\\bfl":"\\boldsymbol{l}","\\bfm":"\\boldsymbol{m}","\\bfn":"\\boldsymbol{n}","\\bfo":"\\boldsymbol{o}","\\bfp":"\\boldsymbol{p}","\\bfq":"\\boldsymbol{q}","\\bfr":"\\boldsymbol{r}","\\bfs":"\\boldsymbol{s}","\\bft":"\\boldsymbol{t}","\\bfu":"\\boldsymbol{u}","\\bfv":"\\boldsymbol{v}","\\bfw":"\\boldsymbol{w}","\\bfx":"\\boldsymbol{x}","\\bfy":"\\boldsymbol{y}","\\bfz":"\\boldsymbol{z}","\\bfA":"\\boldsymbol{A}","\\bfB":"\\boldsymbol{B}","\\bfC":"\\boldsymbol{C}","\\bfD":"\\boldsymbol{D}","\\bfE":"\\boldsymbol{E}","\\bfF":"\\boldsymbol{F}","\\bfG":"\\boldsymbol{G}","\\bfH":"\\boldsymbol{H}","\\bfI":"\\boldsymbol{I}","\\bfJ":"\\boldsymbol{J}","\\bfK":"\\boldsymbol{K}","\\bfL":"\\boldsymbol{L}","\\bfM":"\\boldsymbol{M}","\\bfN":"\\boldsymbol{N}","\\bfO":"\\boldsymbol{O}","\\bfP":"\\boldsymbol{P}","\\bfQ":"\\boldsymbol{Q}","\\bfR":"\\boldsymbol{R}","\\bfS":"\\boldsymbol{S}","\\bfT":"\\boldsymbol{T}","\\bfU":"\\boldsymbol{U}","\\bfV":"\\boldsymbol{V}","\\bfW":"\\boldsymbol{W}","\\bfX":"\\boldsymbol{X}","\\bfY":"\\boldsymbol{Y}","\\bfZ":"\\boldsymbol{Z}"}});</script></span> is the fluid density, <span class="moose-katex-inline-equation" id="moose-equation-2fdbe182-8900-4e25-b01d-707d680ab80c"><script>var element = document.getElementById("moose-equation-2fdbe182-8900-4e25-b01d-707d680ab80c");katex.render("\\mu", element, {displayMode:false,throwOnError:false,macros:{"\\bs":"\\boldsymbol{#1}","\\grad":"\\bs{\\nabla}","\\divergence":"\\grad \\cdot","\\norm":"\\left\\lVert#1\\right\\rVert","\\abs":"\\left\\lvert#1\\right\\rvert","\\diff":"\\text{ d}#1","\\bfa":"\\boldsymbol{a}","\\bfb":"\\boldsymbol{b}","\\bfc":"\\boldsymbol{c}","\\bfd":"\\boldsymbol{d}","\\bfe":"\\boldsymbol{e}","\\bff":"\\boldsymbol{f}","\\bfg":"\\boldsymbol{g}","\\bfh":"\\boldsymbol{h}","\\bfi":"\\boldsymbol{i}","\\bfj":"\\boldsymbol{j}","\\bfk":"\\boldsymbol{k}","\\bfl":"\\boldsymbol{l}","\\bfm":"\\boldsymbol{m}","\\bfn":"\\boldsymbol{n}","\\bfo":"\\boldsymbol{o}","\\bfp":"\\boldsymbol{p}","\\bfq":"\\boldsymbol{q}","\\bfr":"\\boldsymbol{r}","\\bfs":"\\boldsymbol{s}","\\bft":"\\boldsymbol{t}","\\bfu":"\\boldsymbol{u}","\\bfv":"\\boldsymbol{v}","\\bfw":"\\boldsymbol{w}","\\bfx":"\\boldsymbol{x}","\\bfy":"\\boldsymbol{y}","\\bfz":"\\boldsymbol{z}","\\bfA":"\\boldsymbol{A}","\\bfB":"\\boldsymbol{B}","\\bfC":"\\boldsymbol{C}","\\bfD":"\\boldsymbol{D}","\\bfE":"\\boldsymbol{E}","\\bfF":"\\boldsymbol{F}","\\bfG":"\\boldsymbol{G}","\\bfH":"\\boldsymbol{H}","\\bfI":"\\boldsymbol{I}","\\bfJ":"\\boldsymbol{J}","\\bfK":"\\boldsymbol{K}","\\bfL":"\\boldsymbol{L}","\\bfM":"\\boldsymbol{M}","\\bfN":"\\boldsymbol{N}","\\bfO":"\\boldsymbol{O}","\\bfP":"\\boldsymbol{P}","\\bfQ":"\\boldsymbol{Q}","\\bfR":"\\boldsymbol{R}","\\bfS":"\\boldsymbol{S}","\\bfT":"\\boldsymbol{T}","\\bfU":"\\boldsymbol{U}","\\bfV":"\\boldsymbol{V}","\\bfW":"\\boldsymbol{W}","\\bfX":"\\boldsymbol{X}","\\bfY":"\\boldsymbol{Y}","\\bfZ":"\\boldsymbol{Z}"}});</script></span> the viscosity, <span class="moose-katex-inline-equation" id="moose-equation-18e32ef0-7b1c-4f56-815c-3d3d2ea02563"><script>var element = document.getElementById("moose-equation-18e32ef0-7b1c-4f56-815c-3d3d2ea02563");katex.render("c_p", element, {displayMode:false,throwOnError:false,macros:{"\\bs":"\\boldsymbol{#1}","\\grad":"\\bs{\\nabla}","\\divergence":"\\grad \\cdot","\\norm":"\\left\\lVert#1\\right\\rVert","\\abs":"\\left\\lvert#1\\right\\rvert","\\diff":"\\text{ d}#1","\\bfa":"\\boldsymbol{a}","\\bfb":"\\boldsymbol{b}","\\bfc":"\\boldsymbol{c}","\\bfd":"\\boldsymbol{d}","\\bfe":"\\boldsymbol{e}","\\bff":"\\boldsymbol{f}","\\bfg":"\\boldsymbol{g}","\\bfh":"\\boldsymbol{h}","\\bfi":"\\boldsymbol{i}","\\bfj":"\\boldsymbol{j}","\\bfk":"\\boldsymbol{k}","\\bfl":"\\boldsymbol{l}","\\bfm":"\\boldsymbol{m}","\\bfn":"\\boldsymbol{n}","\\bfo":"\\boldsymbol{o}","\\bfp":"\\boldsymbol{p}","\\bfq":"\\boldsymbol{q}","\\bfr":"\\boldsymbol{r}","\\bfs":"\\boldsymbol{s}","\\bft":"\\boldsymbol{t}","\\bfu":"\\boldsymbol{u}","\\bfv":"\\boldsymbol{v}","\\bfw":"\\boldsymbol{w}","\\bfx":"\\boldsymbol{x}","\\bfy":"\\boldsymbol{y}","\\bfz":"\\boldsymbol{z}","\\bfA":"\\boldsymbol{A}","\\bfB":"\\boldsymbol{B}","\\bfC":"\\boldsymbol{C}","\\bfD":"\\boldsymbol{D}","\\bfE":"\\boldsymbol{E}","\\bfF":"\\boldsymbol{F}","\\bfG":"\\boldsymbol{G}","\\bfH":"\\boldsymbol{H}","\\bfI":"\\boldsymbol{I}","\\bfJ":"\\boldsymbol{J}","\\bfK":"\\boldsymbol{K}","\\bfL":"\\boldsymbol{L}","\\bfM":"\\boldsymbol{M}","\\bfN":"\\boldsymbol{N}","\\bfO":"\\boldsymbol{O}","\\bfP":"\\boldsymbol{P}","\\bfQ":"\\boldsymbol{Q}","\\bfR":"\\boldsymbol{R}","\\bfS":"\\boldsymbol{S}","\\bfT":"\\boldsymbol{T}","\\bfU":"\\boldsymbol{U}","\\bfV":"\\boldsymbol{V}","\\bfW":"\\boldsymbol{W}","\\bfX":"\\boldsymbol{X}","\\bfY":"\\boldsymbol{Y}","\\bfZ":"\\boldsymbol{Z}"}});</script></span> the specific heat capacity <span class="moose-katex-inline-equation" id="moose-equation-e0098022-b9c1-425f-b1fb-513214ff167a"><script>var element = document.getElementById("moose-equation-e0098022-b9c1-425f-b1fb-513214ff167a");katex.render("\\alpha", element, {displayMode:false,throwOnError:false,macros:{"\\bs":"\\boldsymbol{#1}","\\grad":"\\bs{\\nabla}","\\divergence":"\\grad \\cdot","\\norm":"\\left\\lVert#1\\right\\rVert","\\abs":"\\left\\lvert#1\\right\\rvert","\\diff":"\\text{ d}#1","\\bfa":"\\boldsymbol{a}","\\bfb":"\\boldsymbol{b}","\\bfc":"\\boldsymbol{c}","\\bfd":"\\boldsymbol{d}","\\bfe":"\\boldsymbol{e}","\\bff":"\\boldsymbol{f}","\\bfg":"\\boldsymbol{g}","\\bfh":"\\boldsymbol{h}","\\bfi":"\\boldsymbol{i}","\\bfj":"\\boldsymbol{j}","\\bfk":"\\boldsymbol{k}","\\bfl":"\\boldsymbol{l}","\\bfm":"\\boldsymbol{m}","\\bfn":"\\boldsymbol{n}","\\bfo":"\\boldsymbol{o}","\\bfp":"\\boldsymbol{p}","\\bfq":"\\boldsymbol{q}","\\bfr":"\\boldsymbol{r}","\\bfs":"\\boldsymbol{s}","\\bft":"\\boldsymbol{t}","\\bfu":"\\boldsymbol{u}","\\bfv":"\\boldsymbol{v}","\\bfw":"\\boldsymbol{w}","\\bfx":"\\boldsymbol{x}","\\bfy":"\\boldsymbol{y}","\\bfz":"\\boldsymbol{z}","\\bfA":"\\boldsymbol{A}","\\bfB":"\\boldsymbol{B}","\\bfC":"\\boldsymbol{C}","\\bfD":"\\boldsymbol{D}","\\bfE":"\\boldsymbol{E}","\\bfF":"\\boldsymbol{F}","\\bfG":"\\boldsymbol{G}","\\bfH":"\\boldsymbol{H}","\\bfI":"\\boldsymbol{I}","\\bfJ":"\\boldsymbol{J}","\\bfK":"\\boldsymbol{K}","\\bfL":"\\boldsymbol{L}","\\bfM":"\\boldsymbol{M}","\\bfN":"\\boldsymbol{N}","\\bfO":"\\boldsymbol{O}","\\bfP":"\\boldsymbol{P}","\\bfQ":"\\boldsymbol{Q}","\\bfR":"\\boldsymbol{R}","\\bfS":"\\boldsymbol{S}","\\bfT":"\\boldsymbol{T}","\\bfU":"\\boldsymbol{U}","\\bfV":"\\boldsymbol{V}","\\bfW":"\\boldsymbol{W}","\\bfX":"\\boldsymbol{X}","\\bfY":"\\boldsymbol{Y}","\\bfZ":"\\boldsymbol{Z}"}});</script></span> the convective heat transfer coefficient.</p></section><section class="scrollspy" id="fd850905-c752-4d8e-b782-195142027724" data-section-level="2" data-section-text="Implementation for a straight channel"><h2 id="implementation-for-a-straight-channel">Implementation for a straight channel</h2><p>We define a straight channel using a simple Cartesian mesh.</p><pre class="moose-pre" style="max-height:350px;"><code class="language-text">[Mesh]
+  [gen]
+    type = GeneratedMeshGenerator
+    dim = 2
+    xmin = 0
+    xmax = 5
+    ymin = 0
+    ymax = 1
+    nx = 20
+    ny = 10
+  []
+[]
+</code></pre><a class="moose-source-filename tooltipped modal-trigger" href="#e5dab0f2-1ea3-4519-af63-cd6002164073">(moose/modules/navier_stokes/test/tests/finite_volume/pins/channel-flow/2d-rc.i)</a><p>The non linear variables are specified among the <code>INSFV</code> and <code>PINSFV</code> sets of variables as their evaluation and the computation of their gradients on faces is specific to the treatment of the Navier Stokes equations.</p><pre class="moose-pre" style="max-height:350px;"><code class="language-text">[Variables]
+  inactive = &#x27;lambda&#x27;
+  [superficial_vel_x]
+    type = PINSFVSuperficialVelocityVariable
+    initial_condition = 1
+  []
+  [superficial_vel_y]
+    type = PINSFVSuperficialVelocityVariable
+    initial_condition = 1e-6
+  []
+  [pressure]
+    type = INSFVPressureVariable
+  []
+  [lambda]
+    family = SCALAR
+    order = FIRST
+  []
+[]
+</code></pre><a class="moose-source-filename tooltipped modal-trigger" href="#32e4a3ab-6ec6-4eaa-9309-ea237236ddd6">(moose/modules/navier_stokes/test/tests/finite_volume/pins/channel-flow/2d-rc.i)</a><p>The porous media Navier Stokes equation are implemented by using <code>FVKernels</code> which correspond to each term of the equations. In the following example, the first kernel is the mass advection kernel. This kernel corresponds to the conservation of mass. It acts on the pressure non-linear variable which appears in the mass equation through the Rhie Chow interpolation of the mass fluxes on the element faces, and through its action on the velocity in the momentum equation.</p><pre class="moose-pre" style="max-height:350px;"><code class="language-text">[mass]
+  type = PINSFVMassAdvection
+  variable = pressure
+  rho = ${rho}
+[]
+</code></pre><a class="moose-source-filename tooltipped modal-trigger" href="#c3feb5ed-5361-4445-b476-1143c5d54df8">(moose/modules/navier_stokes/test/tests/finite_volume/pins/channel-flow/2d-rc.i)</a><p>Then we add the kernels acting on the &#x27;x&#x27; component of the momentum, so essentially transcribing the first component of the momentum equation into MOOSE.</p><p>The momentum advection term is defined by a <code>PINSFVMomentumAdvection</code> kernel. The momentum equation requires a velocity and an advected quantity interpolation method. This is because this kernel is a <code>FVFlux</code> kernel, it uses the divergence theorem to compute the divergence based on face fluxes rather than on the volumetric divergence value. The velocity interpolation method may be <code>average</code> or <code>rc</code> (Rhie Chow). The latter is preferred to avoid oscillations in pressure due to the grid collocation.</p><pre class="moose-pre" style="max-height:350px;"><code class="language-text">[u_advection]
+  type = PINSFVMomentumAdvection
+  variable = superficial_vel_x
+  rho = ${rho}
+  porosity = porosity
+  momentum_component = &#x27;x&#x27;
+[]
+</code></pre><a class="moose-source-filename tooltipped modal-trigger" href="#f0068541-0a48-46dd-b74b-a1d6030540d6">(moose/modules/navier_stokes/test/tests/finite_volume/pins/channel-flow/2d-rc.i)</a><p>The next term is the momentum diffusion. This term arises from viscous stress in the fluid. The incompressible approximation simplifies its treatment. This term is also evaluated using the divergence theorem.</p><pre class="moose-pre" style="max-height:350px;"><code class="language-text">[u_viscosity]
+  type = PINSFVMomentumDiffusion
+  variable = superficial_vel_x
+  mu = ${mu}
+  porosity = porosity
+  momentum_component = &#x27;x&#x27;
+[]
+</code></pre><a class="moose-source-filename tooltipped modal-trigger" href="#e73c0bc0-2d62-44f7-8112-b422f8c1226b">(moose/modules/navier_stokes/test/tests/finite_volume/pins/channel-flow/2d-rc.i)</a><p>The pressure gradient term in the momentum equation is expressed using a <code>PINSFVMomentumPressure</code> term.</p><pre class="moose-pre" style="max-height:350px;"><code class="language-text">[u_pressure]
+  type = PINSFVMomentumPressure
+  variable = superficial_vel_x
+  momentum_component = &#x27;x&#x27;
+  pressure = pressure
+  porosity = porosity
+[]
+</code></pre><a class="moose-source-filename tooltipped modal-trigger" href="#21783c4e-5e5d-49f4-b178-d3889c5bdecb">(moose/modules/navier_stokes/test/tests/finite_volume/pins/channel-flow/2d-rc.i)</a><p>The same set of kernels are defined for the &#x27;y&#x27; component of the superficial velocity to transcribe the &#x27;y&#x27; component of the momentum equation.</p><p>This test features a variety of boundary conditions listed in the <code>FVBCs</code> block. They may not all be used at the same time, the user has to selectively activate the desired one. We list the following example boundary conditions, for the first component of the superficial velocity:</p><ul class="browser-default"><li><p>no slip walls</p><pre class="moose-pre" style="max-height:350px;"><code class="language-text">[no-slip-u]
+  type = INSFVNoSlipWallBC
+  boundary = &#x27;top bottom&#x27;
+  variable = superficial_vel_x
+  function = 0
+[]
+</code></pre><a class="moose-source-filename tooltipped modal-trigger" href="#081ae99b-2c8c-40b6-81fc-8f0c06970c27">(moose/modules/navier_stokes/test/tests/finite_volume/pins/channel-flow/2d-rc.i)</a><p></p></li><li><p>free slip walls</p><pre class="moose-pre" style="max-height:350px;"><code class="language-text">[free-slip-u]
+  type = INSFVNaturalFreeSlipBC
+  boundary = &#x27;top bottom&#x27;
+  variable = superficial_vel_x
+  momentum_component = &#x27;x&#x27;
+[]
+</code></pre><a class="moose-source-filename tooltipped modal-trigger" href="#9e7e206a-6f04-4a3c-8a8c-d2c36940dfc8">(moose/modules/navier_stokes/test/tests/finite_volume/pins/channel-flow/2d-rc.i)</a><p></p></li><li><p>symmetry axis. This symmetry condition should also be indicated for the pressure variable.</p><pre class="moose-pre" style="max-height:350px;"><code class="language-text">[symmetry-u]
+  type = PINSFVSymmetryVelocityBC
+  boundary = &#x27;bottom&#x27;
+  variable = superficial_vel_x
+  u = superficial_vel_x
+  v = superficial_vel_y
+  mu = ${mu}
+  momentum_component = &#x27;x&#x27;
+[]
+</code></pre><a class="moose-source-filename tooltipped modal-trigger" href="#edb8a1a7-b735-4dd9-a4a6-e68264291d97">(moose/modules/navier_stokes/test/tests/finite_volume/pins/channel-flow/2d-rc.i)</a><pre class="moose-pre" style="max-height:350px;"><code class="language-text">[symmetry-p]
+  type = INSFVSymmetryPressureBC
+  boundary = &#x27;bottom&#x27;
+  variable = pressure
+[]
+</code></pre><a class="moose-source-filename tooltipped modal-trigger" href="#723761a3-03a8-4ce1-8ca4-fa85d953a836">(moose/modules/navier_stokes/test/tests/finite_volume/pins/channel-flow/2d-rc.i)</a><p></p></li><li><p>inlet velocity, to specify mass flux given that density is constant</p><pre class="moose-pre" style="max-height:350px;"><code class="language-text">[inlet-u]
+  type = INSFVInletVelocityBC
+  boundary = &#x27;left&#x27;
+  variable = superficial_vel_x
+  function = &#x27;1&#x27;
+[]
+</code></pre><a class="moose-source-filename tooltipped modal-trigger" href="#5e2435b5-8546-4292-904b-8d21f4dc2321">(moose/modules/navier_stokes/test/tests/finite_volume/pins/channel-flow/2d-rc.i)</a><p></p></li><li><p>momentum advection outflow (only for a mean-pressure approach, equivalent to executing the momentum advection kernel on the boundary)</p><pre class="moose-pre" style="max-height:350px;"><code class="language-text">[outlet-u]
+  type = PINSFVMomentumAdvectionOutflowBC
+  boundary = &#x27;right&#x27;
+  variable = superficial_vel_x
+  u = superficial_vel_x
+  v = superficial_vel_y
+  porosity = porosity
+  momentum_component = &#x27;x&#x27;
+  rho = ${rho}
+[]
+</code></pre><a class="moose-source-filename tooltipped modal-trigger" href="#06e09fd5-a725-41bc-abd1-411decd32dcb">(moose/modules/navier_stokes/test/tests/finite_volume/pins/channel-flow/2d-rc.i)</a></li></ul><div class="card moose-alert moose-alert-note"><div class="card-title moose-alert-title"><i class="material-icons moose-inline-icon">comment</i><span class="moose-alert-title-brand">note</span></div><div class="card-content"><div class="moose-alert-content"><p>If the PINSFV version of a boundary condition does not exist, it may be because the INSFV version is valid to use, replacing velocity by superficial velocity.</p></div></div></div><p>The pressure boundary condition is usually only set at the outlet:</p><pre class="moose-pre" style="max-height:350px;"><code class="language-text">[outlet-p]
+  type = INSFVOutletPressureBC
+  boundary = &#x27;right&#x27;
+  variable = pressure
+  function = 0
+[]
+</code></pre><a class="moose-source-filename tooltipped modal-trigger" href="#02e3e266-5306-434a-abb0-3c815a4abb0b">(moose/modules/navier_stokes/test/tests/finite_volume/pins/channel-flow/2d-rc.i)</a><p>For a mean-pressure approach, usually for cavity problems, the user may specify a mass advection boundary condition. This is equivalent to executing the mass advection kernel on boundaries.</p><pre class="moose-pre" style="max-height:350px;"><code class="language-text">[outlet-p-novalue]
+  type = INSFVMassAdvectionOutflowBC
+  boundary = &#x27;right&#x27;
+  variable = pressure
+  u = superficial_vel_x
+  v = superficial_vel_y
+  rho = ${rho}
+[]
+</code></pre><a class="moose-source-filename tooltipped modal-trigger" href="#60507dd0-fcfc-49d9-b623-c8488050ea33">(moose/modules/navier_stokes/test/tests/finite_volume/pins/channel-flow/2d-rc.i)</a></section><section class="scrollspy" id="69de39dd-04b5-4bbe-86b0-a7a8b47f11c2" data-section-level="2" data-section-text="Example inputs : heated straight channel"><h2 id="example-inputs-heated-straight-channel">Example inputs : heated straight channel</h2><p>This channel features a porous media with temperature exchanged by convection between the fluid and the solid phase. The fluid temperature obeys the porous media Navier Stokes energy equation with both advection and diffusion of the fluid energy. The inlet boundary condition is set to a <code>FVNeumannBC</code> to specify an incoming flux. An alternative would be to use a <code>FVDirichletBC</code> to specify an inlet temperature, but depending on the numerical scheme for the computation of advected quantities on faces, this is not as exact.</p><p>The solid temperature is by default constant in this input file, however by activating the relevant non-linear <code>Variable</code>, <code>FVKernels</code> and <code>FVBCs</code>, this input also allows solving for the solid phase temperature.</p><pre class="moose-pre" style="max-height:350px;"><code class="language-text">mu = 1
+rho = 1
+k = 1e-3
+cp = 1
+u_inlet = 1
+T_inlet = 200
+advected_interp_method = &#x27;average&#x27;
+velocity_interp_method = &#x27;rc&#x27;
+
+[Mesh]
+  [mesh]
+    type = CartesianMeshGenerator
+    dim = 2
+    dx = &#x27;5 5&#x27;
+    dy = &#x27;1.0&#x27;
+    ix = &#x27;50 50&#x27;
+    iy = &#x27;20&#x27;
+    subdomain_id = &#x27;1 2&#x27;
+  []
+[]
+
+[GlobalParams]
+  rhie_chow_user_object = &#x27;rc&#x27;
+[]
+
+[UserObjects]
+  [rc]
+    type = PINSFVRhieChowInterpolator
+    u = superficial_vel_x
+    v = superficial_vel_y
+    pressure = pressure
+    porosity = porosity
+  []
+[]
+
+[Variables]
+  inactive = &#x27;T_solid&#x27;
+  [superficial_vel_x]
+    type = PINSFVSuperficialVelocityVariable
+    initial_condition = ${u_inlet}
+  []
+  [superficial_vel_y]
+    type = PINSFVSuperficialVelocityVariable
+    initial_condition = 1e-6
+  []
+  [pressure]
+    type = INSFVPressureVariable
+  []
+  [T_fluid]
+    type = INSFVEnergyVariable
+  []
+  [T_solid]
+    family = &#x27;MONOMIAL&#x27;
+    order = &#x27;CONSTANT&#x27;
+    fv = true
+  []
+[]
+
+[AuxVariables]
+  [T_solid]
+    family = &#x27;MONOMIAL&#x27;
+    order = &#x27;CONSTANT&#x27;
+    fv = true
+    initial_condition = 100
+  []
+  [porosity]
+    family = MONOMIAL
+    order = CONSTANT
+    fv = true
+    initial_condition = 0.5
+  []
+[]
+
+[FVKernels]
+  inactive = &#x27;solid_energy_diffusion solid_energy_convection&#x27;
+  [mass]
+    type = PINSFVMassAdvection
+    variable = pressure
+    advected_interp_method = ${advected_interp_method}
+    velocity_interp_method = ${velocity_interp_method}
+    rho = ${rho}
+  []
+
+  [u_advection]
+    type = PINSFVMomentumAdvection
+    variable = superficial_vel_x
+    advected_interp_method = ${advected_interp_method}
+    velocity_interp_method = ${velocity_interp_method}
+    rho = ${rho}
+    porosity = porosity
+    momentum_component = &#x27;x&#x27;
+  []
+  [u_viscosity]
+    type = PINSFVMomentumDiffusion
+    variable = superficial_vel_x
+    mu = ${mu}
+    porosity = porosity
+    momentum_component = &#x27;x&#x27;
+  []
+  [u_pressure]
+    type = PINSFVMomentumPressure
+    variable = superficial_vel_x
+    momentum_component = &#x27;x&#x27;
+    pressure = pressure
+    porosity = porosity
+  []
+
+  [v_advection]
+    type = PINSFVMomentumAdvection
+    variable = superficial_vel_y
+    advected_interp_method = ${advected_interp_method}
+    velocity_interp_method = ${velocity_interp_method}
+    rho = ${rho}
+    porosity = porosity
+    momentum_component = &#x27;y&#x27;
+  []
+  [v_viscosity]
+    type = PINSFVMomentumDiffusion
+    variable = superficial_vel_y
+    mu = ${mu}
+    porosity = porosity
+    momentum_component = &#x27;y&#x27;
+  []
+  [v_pressure]
+    type = PINSFVMomentumPressure
+    variable = superficial_vel_y
+    momentum_component = &#x27;y&#x27;
+    pressure = pressure
+    porosity = porosity
+  []
+
+  [energy_advection]
+    type = PINSFVEnergyAdvection
+    variable = T_fluid
+    velocity_interp_method = ${velocity_interp_method}
+    advected_interp_method = ${advected_interp_method}
+  []
+  [energy_diffusion]
+    type = PINSFVEnergyDiffusion
+    k = ${k}
+    variable = T_fluid
+    porosity = porosity
+  []
+  [energy_convection]
+    type = PINSFVEnergyAmbientConvection
+    variable = T_fluid
+    is_solid = false
+    T_fluid = &#x27;T_fluid&#x27;
+    T_solid = &#x27;T_solid&#x27;
+    h_solid_fluid = &#x27;h_cv&#x27;
+  []
+
+  [solid_energy_diffusion]
+    type = FVDiffusion
+    coeff = ${k}
+    variable = T_solid
+  []
+  [solid_energy_convection]
+    type = PINSFVEnergyAmbientConvection
+    variable = T_solid
+    is_solid = true
+    T_fluid = &#x27;T_fluid&#x27;
+    T_solid = &#x27;T_solid&#x27;
+    h_solid_fluid = &#x27;h_cv&#x27;
+  []
+[]
+
+[FVBCs]
+  inactive = &#x27;heated-side&#x27;
+  [inlet-u]
+    type = INSFVInletVelocityBC
+    boundary = &#x27;left&#x27;
+    variable = superficial_vel_x
+    function = ${u_inlet}
+  []
+  [inlet-v]
+    type = INSFVInletVelocityBC
+    boundary = &#x27;left&#x27;
+    variable = superficial_vel_y
+    function = 0
+  []
+  [inlet-T]
+    type = FVNeumannBC
+    variable = T_fluid
+    value = &#x27;${fparse u_inlet * rho * cp * T_inlet}&#x27;
+    boundary = &#x27;left&#x27;
+  []
+
+  [no-slip-u]
+    type = INSFVNoSlipWallBC
+    boundary = &#x27;top&#x27;
+    variable = superficial_vel_x
+    function = 0
+  []
+  [no-slip-v]
+    type = INSFVNoSlipWallBC
+    boundary = &#x27;top&#x27;
+    variable = superficial_vel_y
+    function = 0
+  []
+  [heated-side]
+    type = FVDirichletBC
+    boundary = &#x27;top&#x27;
+    variable = &#x27;T_solid&#x27;
+    value = 150
+  []
+
+  [symmetry-u]
+    type = PINSFVSymmetryVelocityBC
+    boundary = &#x27;bottom&#x27;
+    variable = superficial_vel_x
+    u = superficial_vel_x
+    v = superficial_vel_y
+    mu = ${mu}
+    momentum_component = &#x27;x&#x27;
+  []
+  [symmetry-v]
+    type = PINSFVSymmetryVelocityBC
+    boundary = &#x27;bottom&#x27;
+    variable = superficial_vel_y
+    u = superficial_vel_x
+    v = superficial_vel_y
+    mu = ${mu}
+    momentum_component = &#x27;y&#x27;
+  []
+  [symmetry-p]
+    type = INSFVSymmetryPressureBC
+    boundary = &#x27;bottom&#x27;
+    variable = pressure
+  []
+
+  [outlet-p]
+    type = INSFVOutletPressureBC
+    boundary = &#x27;right&#x27;
+    variable = pressure
+    function = 0.1
+  []
+[]
+
+[Materials]
+  [constants]
+    type = ADGenericFunctorMaterial
+    prop_names = &#x27;h_cv&#x27;
+    prop_values = &#x27;1&#x27;
+  []
+  [functor_constants]
+    type = ADGenericFunctorMaterial
+    prop_names = &#x27;cp&#x27;
+    prop_values = &#x27;${cp}&#x27;
+  []
+  [ins_fv]
+    type = INSFVEnthalpyMaterial
+    rho = ${rho}
+    temperature = &#x27;T_fluid&#x27;
+  []
+[]
+
+[Executioner]
+  type = Steady
+  solve_type = &#x27;NEWTON&#x27;
+  petsc_options_iname = &#x27;-pc_type -pc_factor_shift_type&#x27;
+  petsc_options_value = &#x27;lu NONZERO&#x27;
+  nl_rel_tol = 1e-14
+[]
+
+# Some basic Postprocessors to examine the solution
+[Postprocessors]
+  [inlet-p]
+    type = SideAverageValue
+    variable = pressure
+    boundary = &#x27;left&#x27;
+  []
+  [outlet-u]
+    type = SideAverageValue
+    variable = superficial_vel_x
+    boundary = &#x27;right&#x27;
+  []
+  [outlet-temp]
+    type = SideAverageValue
+    variable = T_fluid
+    boundary = &#x27;right&#x27;
+  []
+  [solid-temp]
+    type = ElementAverageValue
+    variable = T_solid
+  []
+[]
+
+[Outputs]
+  exodus = true
+  csv = false
+[]
+</code></pre><a class="moose-source-filename tooltipped modal-trigger" href="#245a42f9-3906-4b7c-a94d-a21b9d8abd33">(moose/modules/navier_stokes/test/tests/finite_volume/pins/channel-flow/heated/2d-rc-heated.i)</a></section><section class="scrollspy" id="6e84a241-8cca-4872-95b8-3301a9857332" data-section-level="2" data-section-text="Example inputs : straight channel with a porosity change"><h2 id="example-inputs-straight-channel-with-a-porosity-change">Example inputs : straight channel with a porosity change</h2><p>This channel features a change in porosity between 1 and 0.5 with either a sharp discontinuity or a continuous variation between the two regions, depending on the porosity initial condition (<code>ICs</code> block).</p><p>Both Rhie Chow interpolation and the momentum equation feature a pressure gradient, and the superficial momentum advection and diffusion terms feature a porosity or inverse porosity gradient. These are ill-defined near the discontinuity. To deal with this issue, the discontinuous case uses a flux-based formulation of the pressure gradient, <code>PINSFVMomentumPressureFlux</code>.</p><p>To study cases with continuous porosity gradients, the <code>smooth_porosity</code> boolean parameter may be provided to the kernels, which will enable the full treatment of pressure and porosity gradients.</p><pre class="moose-pre" style="max-height:350px;"><code class="language-text">mu=1.1
+rho=1.1
+advected_interp_method=&#x27;upwind&#x27;
+velocity_interp_method=&#x27;rc&#x27;
+
+[Mesh]
+  [mesh]
+    type = CartesianMeshGenerator
+    dim = 2
+    dx = &#x27;1 1&#x27;
+    dy = &#x27;0.5&#x27;
+    ix = &#x27;30 30&#x27;
+    iy = &#x27;20&#x27;
+    subdomain_id = &#x27;1 2&#x27;
+  []
+[]
+
+[GlobalParams]
+  rhie_chow_user_object = &#x27;rc&#x27;
+  porosity = porosity
+[]
+
+[UserObjects]
+  [rc]
+    type = PINSFVRhieChowInterpolator
+    u = u
+    v = v
+    porosity = porosity
+    pressure = pressure
+  []
+[]
+
+[Variables]
+  [u]
+    type = PINSFVSuperficialVelocityVariable
+    initial_condition = 1
+  []
+  [v]
+    type = PINSFVSuperficialVelocityVariable
+    initial_condition = 1e-6
+  []
+  [pressure]
+    type = INSFVPressureVariable
+  []
+[]
+
+[AuxVariables]
+  [porosity]
+    type = MooseVariableFVReal
+  []
+[]
+
+[ICs]
+  inactive = &#x27;porosity_continuous&#x27;
+  [porosity_1]
+    type = ConstantIC
+    variable = porosity
+    block = 1
+    value = 1
+  []
+  [porosity_2]
+    type = ConstantIC
+    variable = porosity
+    block = 2
+    value = 0.5
+  []
+  [porosity_continuous]
+    type = FunctionIC
+    variable = porosity
+    block = &#x27;1 2&#x27;
+    function = smooth_jump
+  []
+[]
+
+[Functions]
+  [smooth_jump]
+    type = ParsedFunction
+    expression = &#x27;1 - 0.5 * 1 / (1 + exp(-30*(x-1)))&#x27;
+  []
+[]
+
+[FVKernels]
+  [mass]
+    type = PINSFVMassAdvection
+    variable = pressure
+    advected_interp_method = ${advected_interp_method}
+    velocity_interp_method = ${velocity_interp_method}
+    rho = ${rho}
+  []
+
+  [u_advection]
+    type = PINSFVMomentumAdvection
+    variable = u
+    advected_interp_method = ${advected_interp_method}
+    velocity_interp_method = ${velocity_interp_method}
+    rho = ${rho}
+    momentum_component = &#x27;x&#x27;
+  []
+  [u_viscosity]
+    type = PINSFVMomentumDiffusion
+    variable = u
+    mu = ${mu}
+    momentum_component = &#x27;x&#x27;
+  []
+  [u_pressure]
+    type = PINSFVMomentumPressure
+    variable = u
+    pressure = pressure
+    momentum_component = &#x27;x&#x27;
+  []
+
+  [v_advection]
+    type = PINSFVMomentumAdvection
+    variable = v
+    advected_interp_method = ${advected_interp_method}
+    velocity_interp_method = ${velocity_interp_method}
+    rho = ${rho}
+    momentum_component = &#x27;y&#x27;
+  []
+  [v_viscosity]
+    type = PINSFVMomentumDiffusion
+    variable = v
+    mu = ${mu}
+    momentum_component = &#x27;y&#x27;
+  []
+  [v_pressure]
+    type = PINSFVMomentumPressure
+    variable = v
+    pressure = pressure
+    momentum_component = &#x27;y&#x27;
+  []
+[]
+
+[FVBCs]
+  [inlet-u]
+    type = INSFVInletVelocityBC
+    boundary = &#x27;left&#x27;
+    variable = u
+    function = &#x27;1&#x27;
+  []
+  [inlet-v]
+    type = INSFVInletVelocityBC
+    boundary = &#x27;left&#x27;
+    variable = v
+    function = 0
+  []
+
+  [walls-u]
+    type = INSFVNaturalFreeSlipBC
+    boundary = &#x27;top bottom&#x27;
+    variable = u
+    momentum_component = &#x27;x&#x27;
+  []
+  [walls-v]
+    type = INSFVNaturalFreeSlipBC
+    boundary = &#x27;top bottom&#x27;
+    variable = v
+    momentum_component = &#x27;y&#x27;
+  []
+
+  [outlet_p]
+    type = INSFVOutletPressureBC
+    boundary = &#x27;right&#x27;
+    variable = pressure
+    function = 0.4
+  []
+[]
+
+[Materials]
+  inactive = &#x27;smooth&#x27;
+  [jump]
+    type = ADPiecewiseByBlockFunctorMaterial
+    prop_name = &#x27;porosity&#x27;
+    subdomain_to_prop_value = &#x27;1 1
+                               2 0.5&#x27;
+  []
+  [smooth]
+    type = ADGenericFunctionFunctorMaterial
+    prop_names = &#x27;porosity&#x27;
+    prop_values = &#x27;smooth_jump&#x27;
+  []
+[]
+
+[Executioner]
+  type = Steady
+  solve_type = &#x27;NEWTON&#x27;
+  petsc_options_iname = &#x27;-pc_type -pc_factor_shift_type&#x27;
+  petsc_options_value = &#x27;lu       NONZERO&#x27;
+  line_search = &#x27;none&#x27;
+  nl_rel_tol = 1e-10
+[]
+
+[Postprocessors]
+  [inlet_p]
+    type = SideAverageValue
+    variable = &#x27;pressure&#x27;
+    boundary = &#x27;left&#x27;
+  []
+  [outlet-u]
+    type = SideIntegralVariablePostprocessor
+    variable = u
+    boundary = &#x27;right&#x27;
+  []
+[]
+
+[Outputs]
+  exodus = true
+  csv = false
+[]
+</code></pre><a class="moose-source-filename tooltipped modal-trigger" href="#78254604-d89a-4be6-a48d-287a8e28fd1e">(moose/modules/navier_stokes/test/tests/finite_volume/pins/channel-flow/porosity_jump/2d-rc-epsjump.i)</a></section><section class="scrollspy" id="50cca65a-88d0-4e00-8998-badae0269ccb" data-section-level="2" data-section-text="Other inputs"><h2 id="other-inputs">Other inputs</h2><p>One of the tests to verify the conservation of mass, momentum and energy, features both a straight and a diverging channel. The test also features postprocessors to measure the flow of the conserved quantities on both internal and external boundaries. The geometry can be switched using the <code>inactive</code> parameter of the <code>Mesh</code> block.</p><pre class="moose-pre" style="max-height:350px;"><code class="language-text">mu=1
+rho=1
+advected_interp_method=&#x27;average&#x27;
+velocity_interp_method=&#x27;rc&#x27;
+
+[Mesh]
+  inactive = &#x27;mesh internal_boundary_bot internal_boundary_top&#x27;
+  [mesh]
+    type = CartesianMeshGenerator
+    dim = 2
+    dx = &#x27;1&#x27;
+    dy = &#x27;1 1 1&#x27;
+    ix = &#x27;5&#x27;
+    iy = &#x27;5 5 5&#x27;
+    subdomain_id = &#x27;1
+                    2
+                    3&#x27;
+  []
+  [internal_boundary_bot]
+    type = SideSetsBetweenSubdomainsGenerator
+    input = mesh
+    new_boundary = &#x27;internal_bot&#x27;
+    primary_block = 1
+    paired_block = 2
+  []
+  [internal_boundary_top]
+    type = SideSetsBetweenSubdomainsGenerator
+    input = internal_boundary_bot
+    new_boundary = &#x27;internal_top&#x27;
+    primary_block = 2
+    paired_block = 3
+  []
+  [diverging_mesh]
+    type = FileMeshGenerator
+    file = &#x27;expansion_quad.e&#x27;
+  []
+[]
+
+[Problem]
+  fv_bcs_integrity_check = true
+[]
+
+[GlobalParams]
+  rhie_chow_user_object = &#x27;rc&#x27;
+  advected_interp_method = ${advected_interp_method}
+  velocity_interp_method = ${velocity_interp_method}
+[]
+
+[UserObjects]
+  [rc]
+    type = PINSFVRhieChowInterpolator
+    u = u
+    v = v
+    pressure = pressure
+    porosity = porosity
+  []
+[]
+
+[Variables]
+  [u]
+    type = PINSFVSuperficialVelocityVariable
+    initial_condition = 0
+  []
+  [v]
+    type = PINSFVSuperficialVelocityVariable
+    initial_condition = 1
+  []
+  [pressure]
+    type = INSFVPressureVariable
+  []
+  [temperature]
+    type = INSFVEnergyVariable
+  []
+[]
+
+[AuxVariables]
+  [advected_density]
+    order = CONSTANT
+    family = MONOMIAL
+    fv = true
+    initial_condition = ${rho}
+  []
+  [porosity]
+    order = CONSTANT
+    family = MONOMIAL
+    fv = true
+    initial_condition = 0.5
+  []
+[]
+
+[FVKernels]
+  [mass]
+    type = PINSFVMassAdvection
+    variable = pressure
+    rho = ${rho}
+  []
+
+  [u_advection]
+    type = PINSFVMomentumAdvection
+    variable = u
+    rho = ${rho}
+    porosity = porosity
+    momentum_component = &#x27;x&#x27;
+  []
+  [u_viscosity]
+    type = PINSFVMomentumDiffusion
+    variable = u
+    force_boundary_execution = true
+    porosity = porosity
+    mu = ${mu}
+    momentum_component = &#x27;x&#x27;
+  []
+  [u_pressure]
+    type = PINSFVMomentumPressure
+    variable = u
+    momentum_component = &#x27;x&#x27;
+    pressure = pressure
+    porosity = porosity
+  []
+
+  [v_advection]
+    type = PINSFVMomentumAdvection
+    variable = v
+    rho = ${rho}
+    porosity = porosity
+    momentum_component = &#x27;y&#x27;
+  []
+  [v_viscosity]
+    type = PINSFVMomentumDiffusion
+    variable = v
+    force_boundary_execution = true
+    porosity = porosity
+    mu = ${mu}
+    momentum_component = &#x27;y&#x27;
+  []
+  [v_pressure]
+    type = PINSFVMomentumPressure
+    variable = v
+    momentum_component = &#x27;y&#x27;
+    pressure = pressure
+    porosity = porosity
+  []
+
+  [temp_advection]
+    type = PINSFVEnergyAdvection
+    variable = temperature
+    advected_interp_method = &#x27;upwind&#x27;
+  []
+  [temp_source]
+    type = FVBodyForce
+    variable = temperature
+    function = 10
+    block = 1
+  []
+[]
+
+[FVBCs]
+  inactive = &#x27;noslip-u noslip-v&#x27;
+  [inlet-u]
+    type = INSFVInletVelocityBC
+    boundary = &#x27;bottom&#x27;
+    variable = u
+    function = 0
+  []
+  [inlet-v]
+    type = INSFVInletVelocityBC
+    boundary = &#x27;bottom&#x27;
+    variable = v
+    function = 1
+  []
+  [noslip-u]
+    type = INSFVNoSlipWallBC
+    boundary = &#x27;right&#x27;
+    variable = u
+    function = 0
+  []
+  [noslip-v]
+    type = INSFVNoSlipWallBC
+    boundary = &#x27;right&#x27;
+    variable = v
+    function = 0
+  []
+  [free-slip-u]
+    type = INSFVNaturalFreeSlipBC
+    boundary = &#x27;right&#x27;
+    variable = u
+    momentum_component = &#x27;x&#x27;
+  []
+  [free-slip-v]
+    type = INSFVNaturalFreeSlipBC
+    boundary = &#x27;right&#x27;
+    variable = v
+    momentum_component = &#x27;y&#x27;
+  []
+  [axis-u]
+    type = PINSFVSymmetryVelocityBC
+    boundary = &#x27;left&#x27;
+    variable = u
+    u = u
+    v = v
+    mu = ${mu}
+    momentum_component = x
+  []
+  [axis-v]
+    type = PINSFVSymmetryVelocityBC
+    boundary = &#x27;left&#x27;
+    variable = v
+    u = u
+    v = v
+    mu = ${mu}
+    momentum_component = y
+  []
+  [axis-p]
+    type = INSFVSymmetryPressureBC
+    boundary = &#x27;left&#x27;
+    variable = pressure
+  []
+  [outlet_p]
+    type = INSFVOutletPressureBC
+    boundary = &#x27;top&#x27;
+    variable = pressure
+    function = 0
+  []
+  [inlet_temp]
+    type = FVNeumannBC
+    boundary = &#x27;bottom&#x27;
+    variable = temperature
+    value = 300
+  []
+[]
+
+[Materials]
+  [ins_fv]
+    type = INSFVEnthalpyMaterial
+    temperature = &#x27;temperature&#x27;
+    rho = ${rho}
+  []
+  [advected_material_property]
+    type = ADGenericFunctorMaterial
+    prop_names = &#x27;advected_rho cp&#x27;
+    prop_values =&#x27;${rho} 1&#x27;
+  []
+[]
+
+[Executioner]
+  type = Steady
+  solve_type = &#x27;NEWTON&#x27;
+  petsc_options_iname = &#x27;-pc_type -ksp_gmres_restart -sub_pc_type -sub_pc_factor_shift_type&#x27;
+  petsc_options_value = &#x27;asm      200                lu           NONZERO&#x27;
+  line_search = &#x27;none&#x27;
+  nl_rel_tol = 1e-12
+[]
+
+[Postprocessors]
+  [inlet_mass_variable]
+    type = VolumetricFlowRate
+    boundary = bottom
+    vel_x = u
+    vel_y = v
+    advected_quantity = advected_density
+  []
+  [inlet_mass_constant]
+    type = VolumetricFlowRate
+    boundary = bottom
+    vel_x = u
+    vel_y = v
+    advected_quantity = ${rho}
+  []
+  [inlet_mass_matprop]
+    type = VolumetricFlowRate
+    boundary = bottom
+    vel_x = u
+    vel_y = v
+    advected_quantity = &#x27;advected_rho&#x27;
+  []
+  [mid1_mass]
+    type = VolumetricFlowRate
+    boundary = internal_bot
+    vel_x = u
+    vel_y = v
+    advected_quantity = ${rho}
+  []
+  [mid2_mass]
+    type = VolumetricFlowRate
+    boundary = internal_top
+    vel_x = u
+    vel_y = v
+    advected_quantity = ${rho}
+  []
+  [outlet_mass]
+    type = VolumetricFlowRate
+    boundary = top
+    vel_x = u
+    vel_y = v
+    advected_quantity = ${rho}
+  []
+
+  [inlet_momentum_x]
+    type = VolumetricFlowRate
+    boundary = bottom
+    vel_x = u
+    vel_y = v
+    advected_quantity = u
+  []
+
+  [inlet_momentum_y]
+    type = VolumetricFlowRate
+    boundary = bottom
+    vel_x = u
+    vel_y = v
+    advected_quantity = v
+  []
+
+  [mid1_advected_energy]
+    type = VolumetricFlowRate
+    boundary = internal_bot
+    vel_x = u
+    vel_y = v
+    advected_quantity = &#x27;rho_cp_temp&#x27;
+    advected_interp_method = &#x27;upwind&#x27;
+  []
+  [mid2_advected_energy]
+    type = VolumetricFlowRate
+    boundary = internal_top
+    vel_x = u
+    vel_y = v
+    advected_quantity = &#x27;rho_cp_temp&#x27;
+    advected_interp_method = &#x27;upwind&#x27;
+  []
+  [outlet_advected_energy]
+    type = VolumetricFlowRate
+    boundary = top
+    vel_x = u
+    vel_y = v
+    advected_quantity = &#x27;rho_cp_temp&#x27;
+    advected_interp_method = &#x27;upwind&#x27;
+  []
+[]
+
+[Outputs]
+  csv = true
+[]
+</code></pre><a class="moose-source-filename tooltipped modal-trigger" href="#b0b1ddd4-3f8f-41d3-b803-d640f0e3e899">(moose/modules/navier_stokes/test/tests/postprocessors/flow_rates/conservation_PINSFV.i)</a></section><section class="scrollspy" id="654a6a32-1ae7-4a8a-ad97-eab766c55940" data-section-level="2" data-section-text="Action syntax"><h2 id="action-syntax">Action syntax</h2><p>To ease the burden of preparing long input files, the <a href="../../syntax/Modules/NavierStokesFV/index.html">NavierStokesFV</a> action syntax can also be used to set up porous medium INSFV simulations.</p></section><section class="scrollspy" id="decb2570-5c0b-4363-bc09-5f71d32cab10" data-section-level="2" data-section-text="Pronghorn"><h2 id="pronghorn">Pronghorn</h2><p>Predefined temperature and pressure dependent material properties, closure relations for the effective viscosity, thermal conductivity, drag models and other models required for the modeling of nuclear reactors can be found in the Pronghorn application. Access to Pronghorn may be requested <a href="https://inl.gov/ncrc">here</a> by creating a software request. </p></section></section><div class="moose-modal modal" id="e5dab0f2-1ea3-4519-af63-cd6002164073"><div class="modal-content"><h4>(moose/modules/navier_stokes/test/tests/finite_volume/pins/channel-flow/2d-rc.i)</h4><pre class="moose-pre"><code class="language-text">mu = 1.1
+rho = 1.1
+
+[Mesh]
+  [gen]
+    type = GeneratedMeshGenerator
+    dim = 2
+    xmin = 0
+    xmax = 5
+    ymin = 0
+    ymax = 1
+    nx = 20
+    ny = 10
+  []
+[]
+
+[GlobalParams]
+  advected_interp_method = &#x27;average&#x27;
+  velocity_interp_method = &#x27;rc&#x27;
+  rhie_chow_user_object = &#x27;rc&#x27;
+[]
+
+[UserObjects]
+  [rc]
+    type = PINSFVRhieChowInterpolator
+    u = superficial_vel_x
+    v = superficial_vel_y
+    pressure = pressure
+    porosity = porosity
+  []
+[]
+
+[Variables]
+  inactive = &#x27;lambda&#x27;
+  [superficial_vel_x]
+    type = PINSFVSuperficialVelocityVariable
+    initial_condition = 1
+  []
+  [superficial_vel_y]
+    type = PINSFVSuperficialVelocityVariable
+    initial_condition = 1e-6
+  []
+  [pressure]
+    type = INSFVPressureVariable
+  []
+  [lambda]
+    family = SCALAR
+    order = FIRST
+  []
+[]
+
+[AuxVariables]
+  [porosity]
+    family = MONOMIAL
+    order = CONSTANT
+    fv = true
+    initial_condition = 0.5
+  []
+[]
+
+[FVKernels]
+  inactive = &#x27;mean-pressure&#x27;
+  [mass]
+    type = PINSFVMassAdvection
+    variable = pressure
+    rho = ${rho}
+  []
+
+  [u_advection]
+    type = PINSFVMomentumAdvection
+    variable = superficial_vel_x
+    rho = ${rho}
+    porosity = porosity
+    momentum_component = &#x27;x&#x27;
+  []
+  [u_viscosity]
+    type = PINSFVMomentumDiffusion
+    variable = superficial_vel_x
+    mu = ${mu}
+    porosity = porosity
+    momentum_component = &#x27;x&#x27;
+  []
+  [u_pressure]
+    type = PINSFVMomentumPressure
+    variable = superficial_vel_x
+    momentum_component = &#x27;x&#x27;
+    pressure = pressure
+    porosity = porosity
+  []
+
+  [v_advection]
+    type = PINSFVMomentumAdvection
+    variable = superficial_vel_y
+    rho = ${rho}
+    porosity = porosity
+    momentum_component = &#x27;y&#x27;
+  []
+  [v_viscosity]
+    type = PINSFVMomentumDiffusion
+    variable = superficial_vel_y
+    mu = ${mu}
+    porosity = porosity
+    momentum_component = &#x27;y&#x27;
+  []
+  [v_pressure]
+    type = PINSFVMomentumPressure
+    variable = superficial_vel_y
+    momentum_component = &#x27;y&#x27;
+    pressure = pressure
+    porosity = porosity
+  []
+
+  [mean-pressure]
+    type = FVIntegralValueConstraint
+    variable = pressure
+    lambda = lambda
+    phi0 = 0.01
+  []
+[]
+
+[FVBCs]
+  # Select desired boundary conditions
+  active = &#x27;inlet-u inlet-v outlet-p free-slip-u free-slip-v&#x27;
+
+  # Possible inlet boundary conditions
+  [inlet-u]
+    type = INSFVInletVelocityBC
+    boundary = &#x27;left&#x27;
+    variable = superficial_vel_x
+    function = &#x27;1&#x27;
+  []
+  [inlet-v]
+    type = INSFVInletVelocityBC
+    boundary = &#x27;left&#x27;
+    variable = superficial_vel_y
+    function = 0
+  []
+  [inlet-p]
+    type = INSFVOutletPressureBC
+    boundary = &#x27;left&#x27;
+    variable = pressure
+    function = 1
+  []
+
+  # Possible wall boundary conditions
+  [free-slip-u]
+    type = INSFVNaturalFreeSlipBC
+    boundary = &#x27;top bottom&#x27;
+    variable = superficial_vel_x
+    momentum_component = &#x27;x&#x27;
+  []
+  [free-slip-v]
+    type = INSFVNaturalFreeSlipBC
+    boundary = &#x27;top bottom&#x27;
+    variable = superficial_vel_y
+    momentum_component = &#x27;y&#x27;
+  []
+  [no-slip-u]
+    type = INSFVNoSlipWallBC
+    boundary = &#x27;top bottom&#x27;
+    variable = superficial_vel_x
+    function = 0
+  []
+  [no-slip-v]
+    type = INSFVNoSlipWallBC
+    boundary = &#x27;top bottom&#x27;
+    variable = superficial_vel_y
+    function = 0
+  []
+  [symmetry-u]
+    type = PINSFVSymmetryVelocityBC
+    boundary = &#x27;bottom&#x27;
+    variable = superficial_vel_x
+    u = superficial_vel_x
+    v = superficial_vel_y
+    mu = ${mu}
+    momentum_component = &#x27;x&#x27;
+  []
+  [symmetry-v]
+    type = PINSFVSymmetryVelocityBC
+    boundary = &#x27;bottom&#x27;
+    variable = superficial_vel_y
+    u = superficial_vel_x
+    v = superficial_vel_y
+    mu = ${mu}
+    momentum_component = &#x27;y&#x27;
+  []
+  [symmetry-p]
+    type = INSFVSymmetryPressureBC
+    boundary = &#x27;bottom&#x27;
+    variable = pressure
+  []
+
+  # Possible outlet boundary conditions
+  [outlet-p]
+    type = INSFVOutletPressureBC
+    boundary = &#x27;right&#x27;
+    variable = pressure
+    function = 0
+  []
+  [outlet-p-novalue]
+    type = INSFVMassAdvectionOutflowBC
+    boundary = &#x27;right&#x27;
+    variable = pressure
+    u = superficial_vel_x
+    v = superficial_vel_y
+    rho = ${rho}
+  []
+  [outlet-u]
+    type = PINSFVMomentumAdvectionOutflowBC
+    boundary = &#x27;right&#x27;
+    variable = superficial_vel_x
+    u = superficial_vel_x
+    v = superficial_vel_y
+    porosity = porosity
+    momentum_component = &#x27;x&#x27;
+    rho = ${rho}
+  []
+  [outlet-v]
+    type = PINSFVMomentumAdvectionOutflowBC
+    boundary = &#x27;right&#x27;
+    variable = superficial_vel_y
+    u = superficial_vel_x
+    v = superficial_vel_y
+    porosity = porosity
+    momentum_component = &#x27;y&#x27;
+    rho = ${rho}
+  []
+[]
+
+[Executioner]
+  type = Steady
+  solve_type = &#x27;NEWTON&#x27;
+  petsc_options_iname = &#x27;-pc_type -ksp_gmres_restart -sub_pc_type -sub_pc_factor_shift_type&#x27;
+  petsc_options_value = &#x27;asm      300                lu           NONZERO&#x27;
+  line_search = &#x27;none&#x27;
+  nl_rel_tol = 1e-11
+  nl_abs_tol = 1e-14
+[]
+
+# Some basic Postprocessors to visually examine the solution
+[Postprocessors]
+  [inlet-p]
+    type = SideIntegralVariablePostprocessor
+    variable = pressure
+    boundary = &#x27;left&#x27;
+  []
+  [outlet-u]
+    type = SideIntegralVariablePostprocessor
+    variable = superficial_vel_x
+    boundary = &#x27;right&#x27;
+  []
+[]
+
+[Outputs]
+  exodus = true
+[]
+</code></pre></div><div class="modal-footer"><a class="modal-close btn-flat">Close</a></div></div><div class="moose-modal modal" id="32e4a3ab-6ec6-4eaa-9309-ea237236ddd6"><div class="modal-content"><h4>(moose/modules/navier_stokes/test/tests/finite_volume/pins/channel-flow/2d-rc.i)</h4><pre class="moose-pre"><code class="language-text">mu = 1.1
+rho = 1.1
+
+[Mesh]
+  [gen]
+    type = GeneratedMeshGenerator
+    dim = 2
+    xmin = 0
+    xmax = 5
+    ymin = 0
+    ymax = 1
+    nx = 20
+    ny = 10
+  []
+[]
+
+[GlobalParams]
+  advected_interp_method = &#x27;average&#x27;
+  velocity_interp_method = &#x27;rc&#x27;
+  rhie_chow_user_object = &#x27;rc&#x27;
+[]
+
+[UserObjects]
+  [rc]
+    type = PINSFVRhieChowInterpolator
+    u = superficial_vel_x
+    v = superficial_vel_y
+    pressure = pressure
+    porosity = porosity
+  []
+[]
+
+[Variables]
+  inactive = &#x27;lambda&#x27;
+  [superficial_vel_x]
+    type = PINSFVSuperficialVelocityVariable
+    initial_condition = 1
+  []
+  [superficial_vel_y]
+    type = PINSFVSuperficialVelocityVariable
+    initial_condition = 1e-6
+  []
+  [pressure]
+    type = INSFVPressureVariable
+  []
+  [lambda]
+    family = SCALAR
+    order = FIRST
+  []
+[]
+
+[AuxVariables]
+  [porosity]
+    family = MONOMIAL
+    order = CONSTANT
+    fv = true
+    initial_condition = 0.5
+  []
+[]
+
+[FVKernels]
+  inactive = &#x27;mean-pressure&#x27;
+  [mass]
+    type = PINSFVMassAdvection
+    variable = pressure
+    rho = ${rho}
+  []
+
+  [u_advection]
+    type = PINSFVMomentumAdvection
+    variable = superficial_vel_x
+    rho = ${rho}
+    porosity = porosity
+    momentum_component = &#x27;x&#x27;
+  []
+  [u_viscosity]
+    type = PINSFVMomentumDiffusion
+    variable = superficial_vel_x
+    mu = ${mu}
+    porosity = porosity
+    momentum_component = &#x27;x&#x27;
+  []
+  [u_pressure]
+    type = PINSFVMomentumPressure
+    variable = superficial_vel_x
+    momentum_component = &#x27;x&#x27;
+    pressure = pressure
+    porosity = porosity
+  []
+
+  [v_advection]
+    type = PINSFVMomentumAdvection
+    variable = superficial_vel_y
+    rho = ${rho}
+    porosity = porosity
+    momentum_component = &#x27;y&#x27;
+  []
+  [v_viscosity]
+    type = PINSFVMomentumDiffusion
+    variable = superficial_vel_y
+    mu = ${mu}
+    porosity = porosity
+    momentum_component = &#x27;y&#x27;
+  []
+  [v_pressure]
+    type = PINSFVMomentumPressure
+    variable = superficial_vel_y
+    momentum_component = &#x27;y&#x27;
+    pressure = pressure
+    porosity = porosity
+  []
+
+  [mean-pressure]
+    type = FVIntegralValueConstraint
+    variable = pressure
+    lambda = lambda
+    phi0 = 0.01
+  []
+[]
+
+[FVBCs]
+  # Select desired boundary conditions
+  active = &#x27;inlet-u inlet-v outlet-p free-slip-u free-slip-v&#x27;
+
+  # Possible inlet boundary conditions
+  [inlet-u]
+    type = INSFVInletVelocityBC
+    boundary = &#x27;left&#x27;
+    variable = superficial_vel_x
+    function = &#x27;1&#x27;
+  []
+  [inlet-v]
+    type = INSFVInletVelocityBC
+    boundary = &#x27;left&#x27;
+    variable = superficial_vel_y
+    function = 0
+  []
+  [inlet-p]
+    type = INSFVOutletPressureBC
+    boundary = &#x27;left&#x27;
+    variable = pressure
+    function = 1
+  []
+
+  # Possible wall boundary conditions
+  [free-slip-u]
+    type = INSFVNaturalFreeSlipBC
+    boundary = &#x27;top bottom&#x27;
+    variable = superficial_vel_x
+    momentum_component = &#x27;x&#x27;
+  []
+  [free-slip-v]
+    type = INSFVNaturalFreeSlipBC
+    boundary = &#x27;top bottom&#x27;
+    variable = superficial_vel_y
+    momentum_component = &#x27;y&#x27;
+  []
+  [no-slip-u]
+    type = INSFVNoSlipWallBC
+    boundary = &#x27;top bottom&#x27;
+    variable = superficial_vel_x
+    function = 0
+  []
+  [no-slip-v]
+    type = INSFVNoSlipWallBC
+    boundary = &#x27;top bottom&#x27;
+    variable = superficial_vel_y
+    function = 0
+  []
+  [symmetry-u]
+    type = PINSFVSymmetryVelocityBC
+    boundary = &#x27;bottom&#x27;
+    variable = superficial_vel_x
+    u = superficial_vel_x
+    v = superficial_vel_y
+    mu = ${mu}
+    momentum_component = &#x27;x&#x27;
+  []
+  [symmetry-v]
+    type = PINSFVSymmetryVelocityBC
+    boundary = &#x27;bottom&#x27;
+    variable = superficial_vel_y
+    u = superficial_vel_x
+    v = superficial_vel_y
+    mu = ${mu}
+    momentum_component = &#x27;y&#x27;
+  []
+  [symmetry-p]
+    type = INSFVSymmetryPressureBC
+    boundary = &#x27;bottom&#x27;
+    variable = pressure
+  []
+
+  # Possible outlet boundary conditions
+  [outlet-p]
+    type = INSFVOutletPressureBC
+    boundary = &#x27;right&#x27;
+    variable = pressure
+    function = 0
+  []
+  [outlet-p-novalue]
+    type = INSFVMassAdvectionOutflowBC
+    boundary = &#x27;right&#x27;
+    variable = pressure
+    u = superficial_vel_x
+    v = superficial_vel_y
+    rho = ${rho}
+  []
+  [outlet-u]
+    type = PINSFVMomentumAdvectionOutflowBC
+    boundary = &#x27;right&#x27;
+    variable = superficial_vel_x
+    u = superficial_vel_x
+    v = superficial_vel_y
+    porosity = porosity
+    momentum_component = &#x27;x&#x27;
+    rho = ${rho}
+  []
+  [outlet-v]
+    type = PINSFVMomentumAdvectionOutflowBC
+    boundary = &#x27;right&#x27;
+    variable = superficial_vel_y
+    u = superficial_vel_x
+    v = superficial_vel_y
+    porosity = porosity
+    momentum_component = &#x27;y&#x27;
+    rho = ${rho}
+  []
+[]
+
+[Executioner]
+  type = Steady
+  solve_type = &#x27;NEWTON&#x27;
+  petsc_options_iname = &#x27;-pc_type -ksp_gmres_restart -sub_pc_type -sub_pc_factor_shift_type&#x27;
+  petsc_options_value = &#x27;asm      300                lu           NONZERO&#x27;
+  line_search = &#x27;none&#x27;
+  nl_rel_tol = 1e-11
+  nl_abs_tol = 1e-14
+[]
+
+# Some basic Postprocessors to visually examine the solution
+[Postprocessors]
+  [inlet-p]
+    type = SideIntegralVariablePostprocessor
+    variable = pressure
+    boundary = &#x27;left&#x27;
+  []
+  [outlet-u]
+    type = SideIntegralVariablePostprocessor
+    variable = superficial_vel_x
+    boundary = &#x27;right&#x27;
+  []
+[]
+
+[Outputs]
+  exodus = true
+[]
+</code></pre></div><div class="modal-footer"><a class="modal-close btn-flat">Close</a></div></div><div class="moose-modal modal" id="c3feb5ed-5361-4445-b476-1143c5d54df8"><div class="modal-content"><h4>(moose/modules/navier_stokes/test/tests/finite_volume/pins/channel-flow/2d-rc.i)</h4><pre class="moose-pre"><code class="language-text">mu = 1.1
+rho = 1.1
+
+[Mesh]
+  [gen]
+    type = GeneratedMeshGenerator
+    dim = 2
+    xmin = 0
+    xmax = 5
+    ymin = 0
+    ymax = 1
+    nx = 20
+    ny = 10
+  []
+[]
+
+[GlobalParams]
+  advected_interp_method = &#x27;average&#x27;
+  velocity_interp_method = &#x27;rc&#x27;
+  rhie_chow_user_object = &#x27;rc&#x27;
+[]
+
+[UserObjects]
+  [rc]
+    type = PINSFVRhieChowInterpolator
+    u = superficial_vel_x
+    v = superficial_vel_y
+    pressure = pressure
+    porosity = porosity
+  []
+[]
+
+[Variables]
+  inactive = &#x27;lambda&#x27;
+  [superficial_vel_x]
+    type = PINSFVSuperficialVelocityVariable
+    initial_condition = 1
+  []
+  [superficial_vel_y]
+    type = PINSFVSuperficialVelocityVariable
+    initial_condition = 1e-6
+  []
+  [pressure]
+    type = INSFVPressureVariable
+  []
+  [lambda]
+    family = SCALAR
+    order = FIRST
+  []
+[]
+
+[AuxVariables]
+  [porosity]
+    family = MONOMIAL
+    order = CONSTANT
+    fv = true
+    initial_condition = 0.5
+  []
+[]
+
+[FVKernels]
+  inactive = &#x27;mean-pressure&#x27;
+  [mass]
+    type = PINSFVMassAdvection
+    variable = pressure
+    rho = ${rho}
+  []
+
+  [u_advection]
+    type = PINSFVMomentumAdvection
+    variable = superficial_vel_x
+    rho = ${rho}
+    porosity = porosity
+    momentum_component = &#x27;x&#x27;
+  []
+  [u_viscosity]
+    type = PINSFVMomentumDiffusion
+    variable = superficial_vel_x
+    mu = ${mu}
+    porosity = porosity
+    momentum_component = &#x27;x&#x27;
+  []
+  [u_pressure]
+    type = PINSFVMomentumPressure
+    variable = superficial_vel_x
+    momentum_component = &#x27;x&#x27;
+    pressure = pressure
+    porosity = porosity
+  []
+
+  [v_advection]
+    type = PINSFVMomentumAdvection
+    variable = superficial_vel_y
+    rho = ${rho}
+    porosity = porosity
+    momentum_component = &#x27;y&#x27;
+  []
+  [v_viscosity]
+    type = PINSFVMomentumDiffusion
+    variable = superficial_vel_y
+    mu = ${mu}
+    porosity = porosity
+    momentum_component = &#x27;y&#x27;
+  []
+  [v_pressure]
+    type = PINSFVMomentumPressure
+    variable = superficial_vel_y
+    momentum_component = &#x27;y&#x27;
+    pressure = pressure
+    porosity = porosity
+  []
+
+  [mean-pressure]
+    type = FVIntegralValueConstraint
+    variable = pressure
+    lambda = lambda
+    phi0 = 0.01
+  []
+[]
+
+[FVBCs]
+  # Select desired boundary conditions
+  active = &#x27;inlet-u inlet-v outlet-p free-slip-u free-slip-v&#x27;
+
+  # Possible inlet boundary conditions
+  [inlet-u]
+    type = INSFVInletVelocityBC
+    boundary = &#x27;left&#x27;
+    variable = superficial_vel_x
+    function = &#x27;1&#x27;
+  []
+  [inlet-v]
+    type = INSFVInletVelocityBC
+    boundary = &#x27;left&#x27;
+    variable = superficial_vel_y
+    function = 0
+  []
+  [inlet-p]
+    type = INSFVOutletPressureBC
+    boundary = &#x27;left&#x27;
+    variable = pressure
+    function = 1
+  []
+
+  # Possible wall boundary conditions
+  [free-slip-u]
+    type = INSFVNaturalFreeSlipBC
+    boundary = &#x27;top bottom&#x27;
+    variable = superficial_vel_x
+    momentum_component = &#x27;x&#x27;
+  []
+  [free-slip-v]
+    type = INSFVNaturalFreeSlipBC
+    boundary = &#x27;top bottom&#x27;
+    variable = superficial_vel_y
+    momentum_component = &#x27;y&#x27;
+  []
+  [no-slip-u]
+    type = INSFVNoSlipWallBC
+    boundary = &#x27;top bottom&#x27;
+    variable = superficial_vel_x
+    function = 0
+  []
+  [no-slip-v]
+    type = INSFVNoSlipWallBC
+    boundary = &#x27;top bottom&#x27;
+    variable = superficial_vel_y
+    function = 0
+  []
+  [symmetry-u]
+    type = PINSFVSymmetryVelocityBC
+    boundary = &#x27;bottom&#x27;
+    variable = superficial_vel_x
+    u = superficial_vel_x
+    v = superficial_vel_y
+    mu = ${mu}
+    momentum_component = &#x27;x&#x27;
+  []
+  [symmetry-v]
+    type = PINSFVSymmetryVelocityBC
+    boundary = &#x27;bottom&#x27;
+    variable = superficial_vel_y
+    u = superficial_vel_x
+    v = superficial_vel_y
+    mu = ${mu}
+    momentum_component = &#x27;y&#x27;
+  []
+  [symmetry-p]
+    type = INSFVSymmetryPressureBC
+    boundary = &#x27;bottom&#x27;
+    variable = pressure
+  []
+
+  # Possible outlet boundary conditions
+  [outlet-p]
+    type = INSFVOutletPressureBC
+    boundary = &#x27;right&#x27;
+    variable = pressure
+    function = 0
+  []
+  [outlet-p-novalue]
+    type = INSFVMassAdvectionOutflowBC
+    boundary = &#x27;right&#x27;
+    variable = pressure
+    u = superficial_vel_x
+    v = superficial_vel_y
+    rho = ${rho}
+  []
+  [outlet-u]
+    type = PINSFVMomentumAdvectionOutflowBC
+    boundary = &#x27;right&#x27;
+    variable = superficial_vel_x
+    u = superficial_vel_x
+    v = superficial_vel_y
+    porosity = porosity
+    momentum_component = &#x27;x&#x27;
+    rho = ${rho}
+  []
+  [outlet-v]
+    type = PINSFVMomentumAdvectionOutflowBC
+    boundary = &#x27;right&#x27;
+    variable = superficial_vel_y
+    u = superficial_vel_x
+    v = superficial_vel_y
+    porosity = porosity
+    momentum_component = &#x27;y&#x27;
+    rho = ${rho}
+  []
+[]
+
+[Executioner]
+  type = Steady
+  solve_type = &#x27;NEWTON&#x27;
+  petsc_options_iname = &#x27;-pc_type -ksp_gmres_restart -sub_pc_type -sub_pc_factor_shift_type&#x27;
+  petsc_options_value = &#x27;asm      300                lu           NONZERO&#x27;
+  line_search = &#x27;none&#x27;
+  nl_rel_tol = 1e-11
+  nl_abs_tol = 1e-14
+[]
+
+# Some basic Postprocessors to visually examine the solution
+[Postprocessors]
+  [inlet-p]
+    type = SideIntegralVariablePostprocessor
+    variable = pressure
+    boundary = &#x27;left&#x27;
+  []
+  [outlet-u]
+    type = SideIntegralVariablePostprocessor
+    variable = superficial_vel_x
+    boundary = &#x27;right&#x27;
+  []
+[]
+
+[Outputs]
+  exodus = true
+[]
+</code></pre></div><div class="modal-footer"><a class="modal-close btn-flat">Close</a></div></div><div class="moose-modal modal" id="f0068541-0a48-46dd-b74b-a1d6030540d6"><div class="modal-content"><h4>(moose/modules/navier_stokes/test/tests/finite_volume/pins/channel-flow/2d-rc.i)</h4><pre class="moose-pre"><code class="language-text">mu = 1.1
+rho = 1.1
+
+[Mesh]
+  [gen]
+    type = GeneratedMeshGenerator
+    dim = 2
+    xmin = 0
+    xmax = 5
+    ymin = 0
+    ymax = 1
+    nx = 20
+    ny = 10
+  []
+[]
+
+[GlobalParams]
+  advected_interp_method = &#x27;average&#x27;
+  velocity_interp_method = &#x27;rc&#x27;
+  rhie_chow_user_object = &#x27;rc&#x27;
+[]
+
+[UserObjects]
+  [rc]
+    type = PINSFVRhieChowInterpolator
+    u = superficial_vel_x
+    v = superficial_vel_y
+    pressure = pressure
+    porosity = porosity
+  []
+[]
+
+[Variables]
+  inactive = &#x27;lambda&#x27;
+  [superficial_vel_x]
+    type = PINSFVSuperficialVelocityVariable
+    initial_condition = 1
+  []
+  [superficial_vel_y]
+    type = PINSFVSuperficialVelocityVariable
+    initial_condition = 1e-6
+  []
+  [pressure]
+    type = INSFVPressureVariable
+  []
+  [lambda]
+    family = SCALAR
+    order = FIRST
+  []
+[]
+
+[AuxVariables]
+  [porosity]
+    family = MONOMIAL
+    order = CONSTANT
+    fv = true
+    initial_condition = 0.5
+  []
+[]
+
+[FVKernels]
+  inactive = &#x27;mean-pressure&#x27;
+  [mass]
+    type = PINSFVMassAdvection
+    variable = pressure
+    rho = ${rho}
+  []
+
+  [u_advection]
+    type = PINSFVMomentumAdvection
+    variable = superficial_vel_x
+    rho = ${rho}
+    porosity = porosity
+    momentum_component = &#x27;x&#x27;
+  []
+  [u_viscosity]
+    type = PINSFVMomentumDiffusion
+    variable = superficial_vel_x
+    mu = ${mu}
+    porosity = porosity
+    momentum_component = &#x27;x&#x27;
+  []
+  [u_pressure]
+    type = PINSFVMomentumPressure
+    variable = superficial_vel_x
+    momentum_component = &#x27;x&#x27;
+    pressure = pressure
+    porosity = porosity
+  []
+
+  [v_advection]
+    type = PINSFVMomentumAdvection
+    variable = superficial_vel_y
+    rho = ${rho}
+    porosity = porosity
+    momentum_component = &#x27;y&#x27;
+  []
+  [v_viscosity]
+    type = PINSFVMomentumDiffusion
+    variable = superficial_vel_y
+    mu = ${mu}
+    porosity = porosity
+    momentum_component = &#x27;y&#x27;
+  []
+  [v_pressure]
+    type = PINSFVMomentumPressure
+    variable = superficial_vel_y
+    momentum_component = &#x27;y&#x27;
+    pressure = pressure
+    porosity = porosity
+  []
+
+  [mean-pressure]
+    type = FVIntegralValueConstraint
+    variable = pressure
+    lambda = lambda
+    phi0 = 0.01
+  []
+[]
+
+[FVBCs]
+  # Select desired boundary conditions
+  active = &#x27;inlet-u inlet-v outlet-p free-slip-u free-slip-v&#x27;
+
+  # Possible inlet boundary conditions
+  [inlet-u]
+    type = INSFVInletVelocityBC
+    boundary = &#x27;left&#x27;
+    variable = superficial_vel_x
+    function = &#x27;1&#x27;
+  []
+  [inlet-v]
+    type = INSFVInletVelocityBC
+    boundary = &#x27;left&#x27;
+    variable = superficial_vel_y
+    function = 0
+  []
+  [inlet-p]
+    type = INSFVOutletPressureBC
+    boundary = &#x27;left&#x27;
+    variable = pressure
+    function = 1
+  []
+
+  # Possible wall boundary conditions
+  [free-slip-u]
+    type = INSFVNaturalFreeSlipBC
+    boundary = &#x27;top bottom&#x27;
+    variable = superficial_vel_x
+    momentum_component = &#x27;x&#x27;
+  []
+  [free-slip-v]
+    type = INSFVNaturalFreeSlipBC
+    boundary = &#x27;top bottom&#x27;
+    variable = superficial_vel_y
+    momentum_component = &#x27;y&#x27;
+  []
+  [no-slip-u]
+    type = INSFVNoSlipWallBC
+    boundary = &#x27;top bottom&#x27;
+    variable = superficial_vel_x
+    function = 0
+  []
+  [no-slip-v]
+    type = INSFVNoSlipWallBC
+    boundary = &#x27;top bottom&#x27;
+    variable = superficial_vel_y
+    function = 0
+  []
+  [symmetry-u]
+    type = PINSFVSymmetryVelocityBC
+    boundary = &#x27;bottom&#x27;
+    variable = superficial_vel_x
+    u = superficial_vel_x
+    v = superficial_vel_y
+    mu = ${mu}
+    momentum_component = &#x27;x&#x27;
+  []
+  [symmetry-v]
+    type = PINSFVSymmetryVelocityBC
+    boundary = &#x27;bottom&#x27;
+    variable = superficial_vel_y
+    u = superficial_vel_x
+    v = superficial_vel_y
+    mu = ${mu}
+    momentum_component = &#x27;y&#x27;
+  []
+  [symmetry-p]
+    type = INSFVSymmetryPressureBC
+    boundary = &#x27;bottom&#x27;
+    variable = pressure
+  []
+
+  # Possible outlet boundary conditions
+  [outlet-p]
+    type = INSFVOutletPressureBC
+    boundary = &#x27;right&#x27;
+    variable = pressure
+    function = 0
+  []
+  [outlet-p-novalue]
+    type = INSFVMassAdvectionOutflowBC
+    boundary = &#x27;right&#x27;
+    variable = pressure
+    u = superficial_vel_x
+    v = superficial_vel_y
+    rho = ${rho}
+  []
+  [outlet-u]
+    type = PINSFVMomentumAdvectionOutflowBC
+    boundary = &#x27;right&#x27;
+    variable = superficial_vel_x
+    u = superficial_vel_x
+    v = superficial_vel_y
+    porosity = porosity
+    momentum_component = &#x27;x&#x27;
+    rho = ${rho}
+  []
+  [outlet-v]
+    type = PINSFVMomentumAdvectionOutflowBC
+    boundary = &#x27;right&#x27;
+    variable = superficial_vel_y
+    u = superficial_vel_x
+    v = superficial_vel_y
+    porosity = porosity
+    momentum_component = &#x27;y&#x27;
+    rho = ${rho}
+  []
+[]
+
+[Executioner]
+  type = Steady
+  solve_type = &#x27;NEWTON&#x27;
+  petsc_options_iname = &#x27;-pc_type -ksp_gmres_restart -sub_pc_type -sub_pc_factor_shift_type&#x27;
+  petsc_options_value = &#x27;asm      300                lu           NONZERO&#x27;
+  line_search = &#x27;none&#x27;
+  nl_rel_tol = 1e-11
+  nl_abs_tol = 1e-14
+[]
+
+# Some basic Postprocessors to visually examine the solution
+[Postprocessors]
+  [inlet-p]
+    type = SideIntegralVariablePostprocessor
+    variable = pressure
+    boundary = &#x27;left&#x27;
+  []
+  [outlet-u]
+    type = SideIntegralVariablePostprocessor
+    variable = superficial_vel_x
+    boundary = &#x27;right&#x27;
+  []
+[]
+
+[Outputs]
+  exodus = true
+[]
+</code></pre></div><div class="modal-footer"><a class="modal-close btn-flat">Close</a></div></div><div class="moose-modal modal" id="e73c0bc0-2d62-44f7-8112-b422f8c1226b"><div class="modal-content"><h4>(moose/modules/navier_stokes/test/tests/finite_volume/pins/channel-flow/2d-rc.i)</h4><pre class="moose-pre"><code class="language-text">mu = 1.1
+rho = 1.1
+
+[Mesh]
+  [gen]
+    type = GeneratedMeshGenerator
+    dim = 2
+    xmin = 0
+    xmax = 5
+    ymin = 0
+    ymax = 1
+    nx = 20
+    ny = 10
+  []
+[]
+
+[GlobalParams]
+  advected_interp_method = &#x27;average&#x27;
+  velocity_interp_method = &#x27;rc&#x27;
+  rhie_chow_user_object = &#x27;rc&#x27;
+[]
+
+[UserObjects]
+  [rc]
+    type = PINSFVRhieChowInterpolator
+    u = superficial_vel_x
+    v = superficial_vel_y
+    pressure = pressure
+    porosity = porosity
+  []
+[]
+
+[Variables]
+  inactive = &#x27;lambda&#x27;
+  [superficial_vel_x]
+    type = PINSFVSuperficialVelocityVariable
+    initial_condition = 1
+  []
+  [superficial_vel_y]
+    type = PINSFVSuperficialVelocityVariable
+    initial_condition = 1e-6
+  []
+  [pressure]
+    type = INSFVPressureVariable
+  []
+  [lambda]
+    family = SCALAR
+    order = FIRST
+  []
+[]
+
+[AuxVariables]
+  [porosity]
+    family = MONOMIAL
+    order = CONSTANT
+    fv = true
+    initial_condition = 0.5
+  []
+[]
+
+[FVKernels]
+  inactive = &#x27;mean-pressure&#x27;
+  [mass]
+    type = PINSFVMassAdvection
+    variable = pressure
+    rho = ${rho}
+  []
+
+  [u_advection]
+    type = PINSFVMomentumAdvection
+    variable = superficial_vel_x
+    rho = ${rho}
+    porosity = porosity
+    momentum_component = &#x27;x&#x27;
+  []
+  [u_viscosity]
+    type = PINSFVMomentumDiffusion
+    variable = superficial_vel_x
+    mu = ${mu}
+    porosity = porosity
+    momentum_component = &#x27;x&#x27;
+  []
+  [u_pressure]
+    type = PINSFVMomentumPressure
+    variable = superficial_vel_x
+    momentum_component = &#x27;x&#x27;
+    pressure = pressure
+    porosity = porosity
+  []
+
+  [v_advection]
+    type = PINSFVMomentumAdvection
+    variable = superficial_vel_y
+    rho = ${rho}
+    porosity = porosity
+    momentum_component = &#x27;y&#x27;
+  []
+  [v_viscosity]
+    type = PINSFVMomentumDiffusion
+    variable = superficial_vel_y
+    mu = ${mu}
+    porosity = porosity
+    momentum_component = &#x27;y&#x27;
+  []
+  [v_pressure]
+    type = PINSFVMomentumPressure
+    variable = superficial_vel_y
+    momentum_component = &#x27;y&#x27;
+    pressure = pressure
+    porosity = porosity
+  []
+
+  [mean-pressure]
+    type = FVIntegralValueConstraint
+    variable = pressure
+    lambda = lambda
+    phi0 = 0.01
+  []
+[]
+
+[FVBCs]
+  # Select desired boundary conditions
+  active = &#x27;inlet-u inlet-v outlet-p free-slip-u free-slip-v&#x27;
+
+  # Possible inlet boundary conditions
+  [inlet-u]
+    type = INSFVInletVelocityBC
+    boundary = &#x27;left&#x27;
+    variable = superficial_vel_x
+    function = &#x27;1&#x27;
+  []
+  [inlet-v]
+    type = INSFVInletVelocityBC
+    boundary = &#x27;left&#x27;
+    variable = superficial_vel_y
+    function = 0
+  []
+  [inlet-p]
+    type = INSFVOutletPressureBC
+    boundary = &#x27;left&#x27;
+    variable = pressure
+    function = 1
+  []
+
+  # Possible wall boundary conditions
+  [free-slip-u]
+    type = INSFVNaturalFreeSlipBC
+    boundary = &#x27;top bottom&#x27;
+    variable = superficial_vel_x
+    momentum_component = &#x27;x&#x27;
+  []
+  [free-slip-v]
+    type = INSFVNaturalFreeSlipBC
+    boundary = &#x27;top bottom&#x27;
+    variable = superficial_vel_y
+    momentum_component = &#x27;y&#x27;
+  []
+  [no-slip-u]
+    type = INSFVNoSlipWallBC
+    boundary = &#x27;top bottom&#x27;
+    variable = superficial_vel_x
+    function = 0
+  []
+  [no-slip-v]
+    type = INSFVNoSlipWallBC
+    boundary = &#x27;top bottom&#x27;
+    variable = superficial_vel_y
+    function = 0
+  []
+  [symmetry-u]
+    type = PINSFVSymmetryVelocityBC
+    boundary = &#x27;bottom&#x27;
+    variable = superficial_vel_x
+    u = superficial_vel_x
+    v = superficial_vel_y
+    mu = ${mu}
+    momentum_component = &#x27;x&#x27;
+  []
+  [symmetry-v]
+    type = PINSFVSymmetryVelocityBC
+    boundary = &#x27;bottom&#x27;
+    variable = superficial_vel_y
+    u = superficial_vel_x
+    v = superficial_vel_y
+    mu = ${mu}
+    momentum_component = &#x27;y&#x27;
+  []
+  [symmetry-p]
+    type = INSFVSymmetryPressureBC
+    boundary = &#x27;bottom&#x27;
+    variable = pressure
+  []
+
+  # Possible outlet boundary conditions
+  [outlet-p]
+    type = INSFVOutletPressureBC
+    boundary = &#x27;right&#x27;
+    variable = pressure
+    function = 0
+  []
+  [outlet-p-novalue]
+    type = INSFVMassAdvectionOutflowBC
+    boundary = &#x27;right&#x27;
+    variable = pressure
+    u = superficial_vel_x
+    v = superficial_vel_y
+    rho = ${rho}
+  []
+  [outlet-u]
+    type = PINSFVMomentumAdvectionOutflowBC
+    boundary = &#x27;right&#x27;
+    variable = superficial_vel_x
+    u = superficial_vel_x
+    v = superficial_vel_y
+    porosity = porosity
+    momentum_component = &#x27;x&#x27;
+    rho = ${rho}
+  []
+  [outlet-v]
+    type = PINSFVMomentumAdvectionOutflowBC
+    boundary = &#x27;right&#x27;
+    variable = superficial_vel_y
+    u = superficial_vel_x
+    v = superficial_vel_y
+    porosity = porosity
+    momentum_component = &#x27;y&#x27;
+    rho = ${rho}
+  []
+[]
+
+[Executioner]
+  type = Steady
+  solve_type = &#x27;NEWTON&#x27;
+  petsc_options_iname = &#x27;-pc_type -ksp_gmres_restart -sub_pc_type -sub_pc_factor_shift_type&#x27;
+  petsc_options_value = &#x27;asm      300                lu           NONZERO&#x27;
+  line_search = &#x27;none&#x27;
+  nl_rel_tol = 1e-11
+  nl_abs_tol = 1e-14
+[]
+
+# Some basic Postprocessors to visually examine the solution
+[Postprocessors]
+  [inlet-p]
+    type = SideIntegralVariablePostprocessor
+    variable = pressure
+    boundary = &#x27;left&#x27;
+  []
+  [outlet-u]
+    type = SideIntegralVariablePostprocessor
+    variable = superficial_vel_x
+    boundary = &#x27;right&#x27;
+  []
+[]
+
+[Outputs]
+  exodus = true
+[]
+</code></pre></div><div class="modal-footer"><a class="modal-close btn-flat">Close</a></div></div><div class="moose-modal modal" id="21783c4e-5e5d-49f4-b178-d3889c5bdecb"><div class="modal-content"><h4>(moose/modules/navier_stokes/test/tests/finite_volume/pins/channel-flow/2d-rc.i)</h4><pre class="moose-pre"><code class="language-text">mu = 1.1
+rho = 1.1
+
+[Mesh]
+  [gen]
+    type = GeneratedMeshGenerator
+    dim = 2
+    xmin = 0
+    xmax = 5
+    ymin = 0
+    ymax = 1
+    nx = 20
+    ny = 10
+  []
+[]
+
+[GlobalParams]
+  advected_interp_method = &#x27;average&#x27;
+  velocity_interp_method = &#x27;rc&#x27;
+  rhie_chow_user_object = &#x27;rc&#x27;
+[]
+
+[UserObjects]
+  [rc]
+    type = PINSFVRhieChowInterpolator
+    u = superficial_vel_x
+    v = superficial_vel_y
+    pressure = pressure
+    porosity = porosity
+  []
+[]
+
+[Variables]
+  inactive = &#x27;lambda&#x27;
+  [superficial_vel_x]
+    type = PINSFVSuperficialVelocityVariable
+    initial_condition = 1
+  []
+  [superficial_vel_y]
+    type = PINSFVSuperficialVelocityVariable
+    initial_condition = 1e-6
+  []
+  [pressure]
+    type = INSFVPressureVariable
+  []
+  [lambda]
+    family = SCALAR
+    order = FIRST
+  []
+[]
+
+[AuxVariables]
+  [porosity]
+    family = MONOMIAL
+    order = CONSTANT
+    fv = true
+    initial_condition = 0.5
+  []
+[]
+
+[FVKernels]
+  inactive = &#x27;mean-pressure&#x27;
+  [mass]
+    type = PINSFVMassAdvection
+    variable = pressure
+    rho = ${rho}
+  []
+
+  [u_advection]
+    type = PINSFVMomentumAdvection
+    variable = superficial_vel_x
+    rho = ${rho}
+    porosity = porosity
+    momentum_component = &#x27;x&#x27;
+  []
+  [u_viscosity]
+    type = PINSFVMomentumDiffusion
+    variable = superficial_vel_x
+    mu = ${mu}
+    porosity = porosity
+    momentum_component = &#x27;x&#x27;
+  []
+  [u_pressure]
+    type = PINSFVMomentumPressure
+    variable = superficial_vel_x
+    momentum_component = &#x27;x&#x27;
+    pressure = pressure
+    porosity = porosity
+  []
+
+  [v_advection]
+    type = PINSFVMomentumAdvection
+    variable = superficial_vel_y
+    rho = ${rho}
+    porosity = porosity
+    momentum_component = &#x27;y&#x27;
+  []
+  [v_viscosity]
+    type = PINSFVMomentumDiffusion
+    variable = superficial_vel_y
+    mu = ${mu}
+    porosity = porosity
+    momentum_component = &#x27;y&#x27;
+  []
+  [v_pressure]
+    type = PINSFVMomentumPressure
+    variable = superficial_vel_y
+    momentum_component = &#x27;y&#x27;
+    pressure = pressure
+    porosity = porosity
+  []
+
+  [mean-pressure]
+    type = FVIntegralValueConstraint
+    variable = pressure
+    lambda = lambda
+    phi0 = 0.01
+  []
+[]
+
+[FVBCs]
+  # Select desired boundary conditions
+  active = &#x27;inlet-u inlet-v outlet-p free-slip-u free-slip-v&#x27;
+
+  # Possible inlet boundary conditions
+  [inlet-u]
+    type = INSFVInletVelocityBC
+    boundary = &#x27;left&#x27;
+    variable = superficial_vel_x
+    function = &#x27;1&#x27;
+  []
+  [inlet-v]
+    type = INSFVInletVelocityBC
+    boundary = &#x27;left&#x27;
+    variable = superficial_vel_y
+    function = 0
+  []
+  [inlet-p]
+    type = INSFVOutletPressureBC
+    boundary = &#x27;left&#x27;
+    variable = pressure
+    function = 1
+  []
+
+  # Possible wall boundary conditions
+  [free-slip-u]
+    type = INSFVNaturalFreeSlipBC
+    boundary = &#x27;top bottom&#x27;
+    variable = superficial_vel_x
+    momentum_component = &#x27;x&#x27;
+  []
+  [free-slip-v]
+    type = INSFVNaturalFreeSlipBC
+    boundary = &#x27;top bottom&#x27;
+    variable = superficial_vel_y
+    momentum_component = &#x27;y&#x27;
+  []
+  [no-slip-u]
+    type = INSFVNoSlipWallBC
+    boundary = &#x27;top bottom&#x27;
+    variable = superficial_vel_x
+    function = 0
+  []
+  [no-slip-v]
+    type = INSFVNoSlipWallBC
+    boundary = &#x27;top bottom&#x27;
+    variable = superficial_vel_y
+    function = 0
+  []
+  [symmetry-u]
+    type = PINSFVSymmetryVelocityBC
+    boundary = &#x27;bottom&#x27;
+    variable = superficial_vel_x
+    u = superficial_vel_x
+    v = superficial_vel_y
+    mu = ${mu}
+    momentum_component = &#x27;x&#x27;
+  []
+  [symmetry-v]
+    type = PINSFVSymmetryVelocityBC
+    boundary = &#x27;bottom&#x27;
+    variable = superficial_vel_y
+    u = superficial_vel_x
+    v = superficial_vel_y
+    mu = ${mu}
+    momentum_component = &#x27;y&#x27;
+  []
+  [symmetry-p]
+    type = INSFVSymmetryPressureBC
+    boundary = &#x27;bottom&#x27;
+    variable = pressure
+  []
+
+  # Possible outlet boundary conditions
+  [outlet-p]
+    type = INSFVOutletPressureBC
+    boundary = &#x27;right&#x27;
+    variable = pressure
+    function = 0
+  []
+  [outlet-p-novalue]
+    type = INSFVMassAdvectionOutflowBC
+    boundary = &#x27;right&#x27;
+    variable = pressure
+    u = superficial_vel_x
+    v = superficial_vel_y
+    rho = ${rho}
+  []
+  [outlet-u]
+    type = PINSFVMomentumAdvectionOutflowBC
+    boundary = &#x27;right&#x27;
+    variable = superficial_vel_x
+    u = superficial_vel_x
+    v = superficial_vel_y
+    porosity = porosity
+    momentum_component = &#x27;x&#x27;
+    rho = ${rho}
+  []
+  [outlet-v]
+    type = PINSFVMomentumAdvectionOutflowBC
+    boundary = &#x27;right&#x27;
+    variable = superficial_vel_y
+    u = superficial_vel_x
+    v = superficial_vel_y
+    porosity = porosity
+    momentum_component = &#x27;y&#x27;
+    rho = ${rho}
+  []
+[]
+
+[Executioner]
+  type = Steady
+  solve_type = &#x27;NEWTON&#x27;
+  petsc_options_iname = &#x27;-pc_type -ksp_gmres_restart -sub_pc_type -sub_pc_factor_shift_type&#x27;
+  petsc_options_value = &#x27;asm      300                lu           NONZERO&#x27;
+  line_search = &#x27;none&#x27;
+  nl_rel_tol = 1e-11
+  nl_abs_tol = 1e-14
+[]
+
+# Some basic Postprocessors to visually examine the solution
+[Postprocessors]
+  [inlet-p]
+    type = SideIntegralVariablePostprocessor
+    variable = pressure
+    boundary = &#x27;left&#x27;
+  []
+  [outlet-u]
+    type = SideIntegralVariablePostprocessor
+    variable = superficial_vel_x
+    boundary = &#x27;right&#x27;
+  []
+[]
+
+[Outputs]
+  exodus = true
+[]
+</code></pre></div><div class="modal-footer"><a class="modal-close btn-flat">Close</a></div></div><div class="moose-modal modal" id="081ae99b-2c8c-40b6-81fc-8f0c06970c27"><div class="modal-content"><h4>(moose/modules/navier_stokes/test/tests/finite_volume/pins/channel-flow/2d-rc.i)</h4><pre class="moose-pre"><code class="language-text">mu = 1.1
+rho = 1.1
+
+[Mesh]
+  [gen]
+    type = GeneratedMeshGenerator
+    dim = 2
+    xmin = 0
+    xmax = 5
+    ymin = 0
+    ymax = 1
+    nx = 20
+    ny = 10
+  []
+[]
+
+[GlobalParams]
+  advected_interp_method = &#x27;average&#x27;
+  velocity_interp_method = &#x27;rc&#x27;
+  rhie_chow_user_object = &#x27;rc&#x27;
+[]
+
+[UserObjects]
+  [rc]
+    type = PINSFVRhieChowInterpolator
+    u = superficial_vel_x
+    v = superficial_vel_y
+    pressure = pressure
+    porosity = porosity
+  []
+[]
+
+[Variables]
+  inactive = &#x27;lambda&#x27;
+  [superficial_vel_x]
+    type = PINSFVSuperficialVelocityVariable
+    initial_condition = 1
+  []
+  [superficial_vel_y]
+    type = PINSFVSuperficialVelocityVariable
+    initial_condition = 1e-6
+  []
+  [pressure]
+    type = INSFVPressureVariable
+  []
+  [lambda]
+    family = SCALAR
+    order = FIRST
+  []
+[]
+
+[AuxVariables]
+  [porosity]
+    family = MONOMIAL
+    order = CONSTANT
+    fv = true
+    initial_condition = 0.5
+  []
+[]
+
+[FVKernels]
+  inactive = &#x27;mean-pressure&#x27;
+  [mass]
+    type = PINSFVMassAdvection
+    variable = pressure
+    rho = ${rho}
+  []
+
+  [u_advection]
+    type = PINSFVMomentumAdvection
+    variable = superficial_vel_x
+    rho = ${rho}
+    porosity = porosity
+    momentum_component = &#x27;x&#x27;
+  []
+  [u_viscosity]
+    type = PINSFVMomentumDiffusion
+    variable = superficial_vel_x
+    mu = ${mu}
+    porosity = porosity
+    momentum_component = &#x27;x&#x27;
+  []
+  [u_pressure]
+    type = PINSFVMomentumPressure
+    variable = superficial_vel_x
+    momentum_component = &#x27;x&#x27;
+    pressure = pressure
+    porosity = porosity
+  []
+
+  [v_advection]
+    type = PINSFVMomentumAdvection
+    variable = superficial_vel_y
+    rho = ${rho}
+    porosity = porosity
+    momentum_component = &#x27;y&#x27;
+  []
+  [v_viscosity]
+    type = PINSFVMomentumDiffusion
+    variable = superficial_vel_y
+    mu = ${mu}
+    porosity = porosity
+    momentum_component = &#x27;y&#x27;
+  []
+  [v_pressure]
+    type = PINSFVMomentumPressure
+    variable = superficial_vel_y
+    momentum_component = &#x27;y&#x27;
+    pressure = pressure
+    porosity = porosity
+  []
+
+  [mean-pressure]
+    type = FVIntegralValueConstraint
+    variable = pressure
+    lambda = lambda
+    phi0 = 0.01
+  []
+[]
+
+[FVBCs]
+  # Select desired boundary conditions
+  active = &#x27;inlet-u inlet-v outlet-p free-slip-u free-slip-v&#x27;
+
+  # Possible inlet boundary conditions
+  [inlet-u]
+    type = INSFVInletVelocityBC
+    boundary = &#x27;left&#x27;
+    variable = superficial_vel_x
+    function = &#x27;1&#x27;
+  []
+  [inlet-v]
+    type = INSFVInletVelocityBC
+    boundary = &#x27;left&#x27;
+    variable = superficial_vel_y
+    function = 0
+  []
+  [inlet-p]
+    type = INSFVOutletPressureBC
+    boundary = &#x27;left&#x27;
+    variable = pressure
+    function = 1
+  []
+
+  # Possible wall boundary conditions
+  [free-slip-u]
+    type = INSFVNaturalFreeSlipBC
+    boundary = &#x27;top bottom&#x27;
+    variable = superficial_vel_x
+    momentum_component = &#x27;x&#x27;
+  []
+  [free-slip-v]
+    type = INSFVNaturalFreeSlipBC
+    boundary = &#x27;top bottom&#x27;
+    variable = superficial_vel_y
+    momentum_component = &#x27;y&#x27;
+  []
+  [no-slip-u]
+    type = INSFVNoSlipWallBC
+    boundary = &#x27;top bottom&#x27;
+    variable = superficial_vel_x
+    function = 0
+  []
+  [no-slip-v]
+    type = INSFVNoSlipWallBC
+    boundary = &#x27;top bottom&#x27;
+    variable = superficial_vel_y
+    function = 0
+  []
+  [symmetry-u]
+    type = PINSFVSymmetryVelocityBC
+    boundary = &#x27;bottom&#x27;
+    variable = superficial_vel_x
+    u = superficial_vel_x
+    v = superficial_vel_y
+    mu = ${mu}
+    momentum_component = &#x27;x&#x27;
+  []
+  [symmetry-v]
+    type = PINSFVSymmetryVelocityBC
+    boundary = &#x27;bottom&#x27;
+    variable = superficial_vel_y
+    u = superficial_vel_x
+    v = superficial_vel_y
+    mu = ${mu}
+    momentum_component = &#x27;y&#x27;
+  []
+  [symmetry-p]
+    type = INSFVSymmetryPressureBC
+    boundary = &#x27;bottom&#x27;
+    variable = pressure
+  []
+
+  # Possible outlet boundary conditions
+  [outlet-p]
+    type = INSFVOutletPressureBC
+    boundary = &#x27;right&#x27;
+    variable = pressure
+    function = 0
+  []
+  [outlet-p-novalue]
+    type = INSFVMassAdvectionOutflowBC
+    boundary = &#x27;right&#x27;
+    variable = pressure
+    u = superficial_vel_x
+    v = superficial_vel_y
+    rho = ${rho}
+  []
+  [outlet-u]
+    type = PINSFVMomentumAdvectionOutflowBC
+    boundary = &#x27;right&#x27;
+    variable = superficial_vel_x
+    u = superficial_vel_x
+    v = superficial_vel_y
+    porosity = porosity
+    momentum_component = &#x27;x&#x27;
+    rho = ${rho}
+  []
+  [outlet-v]
+    type = PINSFVMomentumAdvectionOutflowBC
+    boundary = &#x27;right&#x27;
+    variable = superficial_vel_y
+    u = superficial_vel_x
+    v = superficial_vel_y
+    porosity = porosity
+    momentum_component = &#x27;y&#x27;
+    rho = ${rho}
+  []
+[]
+
+[Executioner]
+  type = Steady
+  solve_type = &#x27;NEWTON&#x27;
+  petsc_options_iname = &#x27;-pc_type -ksp_gmres_restart -sub_pc_type -sub_pc_factor_shift_type&#x27;
+  petsc_options_value = &#x27;asm      300                lu           NONZERO&#x27;
+  line_search = &#x27;none&#x27;
+  nl_rel_tol = 1e-11
+  nl_abs_tol = 1e-14
+[]
+
+# Some basic Postprocessors to visually examine the solution
+[Postprocessors]
+  [inlet-p]
+    type = SideIntegralVariablePostprocessor
+    variable = pressure
+    boundary = &#x27;left&#x27;
+  []
+  [outlet-u]
+    type = SideIntegralVariablePostprocessor
+    variable = superficial_vel_x
+    boundary = &#x27;right&#x27;
+  []
+[]
+
+[Outputs]
+  exodus = true
+[]
+</code></pre></div><div class="modal-footer"><a class="modal-close btn-flat">Close</a></div></div><div class="moose-modal modal" id="9e7e206a-6f04-4a3c-8a8c-d2c36940dfc8"><div class="modal-content"><h4>(moose/modules/navier_stokes/test/tests/finite_volume/pins/channel-flow/2d-rc.i)</h4><pre class="moose-pre"><code class="language-text">mu = 1.1
+rho = 1.1
+
+[Mesh]
+  [gen]
+    type = GeneratedMeshGenerator
+    dim = 2
+    xmin = 0
+    xmax = 5
+    ymin = 0
+    ymax = 1
+    nx = 20
+    ny = 10
+  []
+[]
+
+[GlobalParams]
+  advected_interp_method = &#x27;average&#x27;
+  velocity_interp_method = &#x27;rc&#x27;
+  rhie_chow_user_object = &#x27;rc&#x27;
+[]
+
+[UserObjects]
+  [rc]
+    type = PINSFVRhieChowInterpolator
+    u = superficial_vel_x
+    v = superficial_vel_y
+    pressure = pressure
+    porosity = porosity
+  []
+[]
+
+[Variables]
+  inactive = &#x27;lambda&#x27;
+  [superficial_vel_x]
+    type = PINSFVSuperficialVelocityVariable
+    initial_condition = 1
+  []
+  [superficial_vel_y]
+    type = PINSFVSuperficialVelocityVariable
+    initial_condition = 1e-6
+  []
+  [pressure]
+    type = INSFVPressureVariable
+  []
+  [lambda]
+    family = SCALAR
+    order = FIRST
+  []
+[]
+
+[AuxVariables]
+  [porosity]
+    family = MONOMIAL
+    order = CONSTANT
+    fv = true
+    initial_condition = 0.5
+  []
+[]
+
+[FVKernels]
+  inactive = &#x27;mean-pressure&#x27;
+  [mass]
+    type = PINSFVMassAdvection
+    variable = pressure
+    rho = ${rho}
+  []
+
+  [u_advection]
+    type = PINSFVMomentumAdvection
+    variable = superficial_vel_x
+    rho = ${rho}
+    porosity = porosity
+    momentum_component = &#x27;x&#x27;
+  []
+  [u_viscosity]
+    type = PINSFVMomentumDiffusion
+    variable = superficial_vel_x
+    mu = ${mu}
+    porosity = porosity
+    momentum_component = &#x27;x&#x27;
+  []
+  [u_pressure]
+    type = PINSFVMomentumPressure
+    variable = superficial_vel_x
+    momentum_component = &#x27;x&#x27;
+    pressure = pressure
+    porosity = porosity
+  []
+
+  [v_advection]
+    type = PINSFVMomentumAdvection
+    variable = superficial_vel_y
+    rho = ${rho}
+    porosity = porosity
+    momentum_component = &#x27;y&#x27;
+  []
+  [v_viscosity]
+    type = PINSFVMomentumDiffusion
+    variable = superficial_vel_y
+    mu = ${mu}
+    porosity = porosity
+    momentum_component = &#x27;y&#x27;
+  []
+  [v_pressure]
+    type = PINSFVMomentumPressure
+    variable = superficial_vel_y
+    momentum_component = &#x27;y&#x27;
+    pressure = pressure
+    porosity = porosity
+  []
+
+  [mean-pressure]
+    type = FVIntegralValueConstraint
+    variable = pressure
+    lambda = lambda
+    phi0 = 0.01
+  []
+[]
+
+[FVBCs]
+  # Select desired boundary conditions
+  active = &#x27;inlet-u inlet-v outlet-p free-slip-u free-slip-v&#x27;
+
+  # Possible inlet boundary conditions
+  [inlet-u]
+    type = INSFVInletVelocityBC
+    boundary = &#x27;left&#x27;
+    variable = superficial_vel_x
+    function = &#x27;1&#x27;
+  []
+  [inlet-v]
+    type = INSFVInletVelocityBC
+    boundary = &#x27;left&#x27;
+    variable = superficial_vel_y
+    function = 0
+  []
+  [inlet-p]
+    type = INSFVOutletPressureBC
+    boundary = &#x27;left&#x27;
+    variable = pressure
+    function = 1
+  []
+
+  # Possible wall boundary conditions
+  [free-slip-u]
+    type = INSFVNaturalFreeSlipBC
+    boundary = &#x27;top bottom&#x27;
+    variable = superficial_vel_x
+    momentum_component = &#x27;x&#x27;
+  []
+  [free-slip-v]
+    type = INSFVNaturalFreeSlipBC
+    boundary = &#x27;top bottom&#x27;
+    variable = superficial_vel_y
+    momentum_component = &#x27;y&#x27;
+  []
+  [no-slip-u]
+    type = INSFVNoSlipWallBC
+    boundary = &#x27;top bottom&#x27;
+    variable = superficial_vel_x
+    function = 0
+  []
+  [no-slip-v]
+    type = INSFVNoSlipWallBC
+    boundary = &#x27;top bottom&#x27;
+    variable = superficial_vel_y
+    function = 0
+  []
+  [symmetry-u]
+    type = PINSFVSymmetryVelocityBC
+    boundary = &#x27;bottom&#x27;
+    variable = superficial_vel_x
+    u = superficial_vel_x
+    v = superficial_vel_y
+    mu = ${mu}
+    momentum_component = &#x27;x&#x27;
+  []
+  [symmetry-v]
+    type = PINSFVSymmetryVelocityBC
+    boundary = &#x27;bottom&#x27;
+    variable = superficial_vel_y
+    u = superficial_vel_x
+    v = superficial_vel_y
+    mu = ${mu}
+    momentum_component = &#x27;y&#x27;
+  []
+  [symmetry-p]
+    type = INSFVSymmetryPressureBC
+    boundary = &#x27;bottom&#x27;
+    variable = pressure
+  []
+
+  # Possible outlet boundary conditions
+  [outlet-p]
+    type = INSFVOutletPressureBC
+    boundary = &#x27;right&#x27;
+    variable = pressure
+    function = 0
+  []
+  [outlet-p-novalue]
+    type = INSFVMassAdvectionOutflowBC
+    boundary = &#x27;right&#x27;
+    variable = pressure
+    u = superficial_vel_x
+    v = superficial_vel_y
+    rho = ${rho}
+  []
+  [outlet-u]
+    type = PINSFVMomentumAdvectionOutflowBC
+    boundary = &#x27;right&#x27;
+    variable = superficial_vel_x
+    u = superficial_vel_x
+    v = superficial_vel_y
+    porosity = porosity
+    momentum_component = &#x27;x&#x27;
+    rho = ${rho}
+  []
+  [outlet-v]
+    type = PINSFVMomentumAdvectionOutflowBC
+    boundary = &#x27;right&#x27;
+    variable = superficial_vel_y
+    u = superficial_vel_x
+    v = superficial_vel_y
+    porosity = porosity
+    momentum_component = &#x27;y&#x27;
+    rho = ${rho}
+  []
+[]
+
+[Executioner]
+  type = Steady
+  solve_type = &#x27;NEWTON&#x27;
+  petsc_options_iname = &#x27;-pc_type -ksp_gmres_restart -sub_pc_type -sub_pc_factor_shift_type&#x27;
+  petsc_options_value = &#x27;asm      300                lu           NONZERO&#x27;
+  line_search = &#x27;none&#x27;
+  nl_rel_tol = 1e-11
+  nl_abs_tol = 1e-14
+[]
+
+# Some basic Postprocessors to visually examine the solution
+[Postprocessors]
+  [inlet-p]
+    type = SideIntegralVariablePostprocessor
+    variable = pressure
+    boundary = &#x27;left&#x27;
+  []
+  [outlet-u]
+    type = SideIntegralVariablePostprocessor
+    variable = superficial_vel_x
+    boundary = &#x27;right&#x27;
+  []
+[]
+
+[Outputs]
+  exodus = true
+[]
+</code></pre></div><div class="modal-footer"><a class="modal-close btn-flat">Close</a></div></div><div class="moose-modal modal" id="edb8a1a7-b735-4dd9-a4a6-e68264291d97"><div class="modal-content"><h4>(moose/modules/navier_stokes/test/tests/finite_volume/pins/channel-flow/2d-rc.i)</h4><pre class="moose-pre"><code class="language-text">mu = 1.1
+rho = 1.1
+
+[Mesh]
+  [gen]
+    type = GeneratedMeshGenerator
+    dim = 2
+    xmin = 0
+    xmax = 5
+    ymin = 0
+    ymax = 1
+    nx = 20
+    ny = 10
+  []
+[]
+
+[GlobalParams]
+  advected_interp_method = &#x27;average&#x27;
+  velocity_interp_method = &#x27;rc&#x27;
+  rhie_chow_user_object = &#x27;rc&#x27;
+[]
+
+[UserObjects]
+  [rc]
+    type = PINSFVRhieChowInterpolator
+    u = superficial_vel_x
+    v = superficial_vel_y
+    pressure = pressure
+    porosity = porosity
+  []
+[]
+
+[Variables]
+  inactive = &#x27;lambda&#x27;
+  [superficial_vel_x]
+    type = PINSFVSuperficialVelocityVariable
+    initial_condition = 1
+  []
+  [superficial_vel_y]
+    type = PINSFVSuperficialVelocityVariable
+    initial_condition = 1e-6
+  []
+  [pressure]
+    type = INSFVPressureVariable
+  []
+  [lambda]
+    family = SCALAR
+    order = FIRST
+  []
+[]
+
+[AuxVariables]
+  [porosity]
+    family = MONOMIAL
+    order = CONSTANT
+    fv = true
+    initial_condition = 0.5
+  []
+[]
+
+[FVKernels]
+  inactive = &#x27;mean-pressure&#x27;
+  [mass]
+    type = PINSFVMassAdvection
+    variable = pressure
+    rho = ${rho}
+  []
+
+  [u_advection]
+    type = PINSFVMomentumAdvection
+    variable = superficial_vel_x
+    rho = ${rho}
+    porosity = porosity
+    momentum_component = &#x27;x&#x27;
+  []
+  [u_viscosity]
+    type = PINSFVMomentumDiffusion
+    variable = superficial_vel_x
+    mu = ${mu}
+    porosity = porosity
+    momentum_component = &#x27;x&#x27;
+  []
+  [u_pressure]
+    type = PINSFVMomentumPressure
+    variable = superficial_vel_x
+    momentum_component = &#x27;x&#x27;
+    pressure = pressure
+    porosity = porosity
+  []
+
+  [v_advection]
+    type = PINSFVMomentumAdvection
+    variable = superficial_vel_y
+    rho = ${rho}
+    porosity = porosity
+    momentum_component = &#x27;y&#x27;
+  []
+  [v_viscosity]
+    type = PINSFVMomentumDiffusion
+    variable = superficial_vel_y
+    mu = ${mu}
+    porosity = porosity
+    momentum_component = &#x27;y&#x27;
+  []
+  [v_pressure]
+    type = PINSFVMomentumPressure
+    variable = superficial_vel_y
+    momentum_component = &#x27;y&#x27;
+    pressure = pressure
+    porosity = porosity
+  []
+
+  [mean-pressure]
+    type = FVIntegralValueConstraint
+    variable = pressure
+    lambda = lambda
+    phi0 = 0.01
+  []
+[]
+
+[FVBCs]
+  # Select desired boundary conditions
+  active = &#x27;inlet-u inlet-v outlet-p free-slip-u free-slip-v&#x27;
+
+  # Possible inlet boundary conditions
+  [inlet-u]
+    type = INSFVInletVelocityBC
+    boundary = &#x27;left&#x27;
+    variable = superficial_vel_x
+    function = &#x27;1&#x27;
+  []
+  [inlet-v]
+    type = INSFVInletVelocityBC
+    boundary = &#x27;left&#x27;
+    variable = superficial_vel_y
+    function = 0
+  []
+  [inlet-p]
+    type = INSFVOutletPressureBC
+    boundary = &#x27;left&#x27;
+    variable = pressure
+    function = 1
+  []
+
+  # Possible wall boundary conditions
+  [free-slip-u]
+    type = INSFVNaturalFreeSlipBC
+    boundary = &#x27;top bottom&#x27;
+    variable = superficial_vel_x
+    momentum_component = &#x27;x&#x27;
+  []
+  [free-slip-v]
+    type = INSFVNaturalFreeSlipBC
+    boundary = &#x27;top bottom&#x27;
+    variable = superficial_vel_y
+    momentum_component = &#x27;y&#x27;
+  []
+  [no-slip-u]
+    type = INSFVNoSlipWallBC
+    boundary = &#x27;top bottom&#x27;
+    variable = superficial_vel_x
+    function = 0
+  []
+  [no-slip-v]
+    type = INSFVNoSlipWallBC
+    boundary = &#x27;top bottom&#x27;
+    variable = superficial_vel_y
+    function = 0
+  []
+  [symmetry-u]
+    type = PINSFVSymmetryVelocityBC
+    boundary = &#x27;bottom&#x27;
+    variable = superficial_vel_x
+    u = superficial_vel_x
+    v = superficial_vel_y
+    mu = ${mu}
+    momentum_component = &#x27;x&#x27;
+  []
+  [symmetry-v]
+    type = PINSFVSymmetryVelocityBC
+    boundary = &#x27;bottom&#x27;
+    variable = superficial_vel_y
+    u = superficial_vel_x
+    v = superficial_vel_y
+    mu = ${mu}
+    momentum_component = &#x27;y&#x27;
+  []
+  [symmetry-p]
+    type = INSFVSymmetryPressureBC
+    boundary = &#x27;bottom&#x27;
+    variable = pressure
+  []
+
+  # Possible outlet boundary conditions
+  [outlet-p]
+    type = INSFVOutletPressureBC
+    boundary = &#x27;right&#x27;
+    variable = pressure
+    function = 0
+  []
+  [outlet-p-novalue]
+    type = INSFVMassAdvectionOutflowBC
+    boundary = &#x27;right&#x27;
+    variable = pressure
+    u = superficial_vel_x
+    v = superficial_vel_y
+    rho = ${rho}
+  []
+  [outlet-u]
+    type = PINSFVMomentumAdvectionOutflowBC
+    boundary = &#x27;right&#x27;
+    variable = superficial_vel_x
+    u = superficial_vel_x
+    v = superficial_vel_y
+    porosity = porosity
+    momentum_component = &#x27;x&#x27;
+    rho = ${rho}
+  []
+  [outlet-v]
+    type = PINSFVMomentumAdvectionOutflowBC
+    boundary = &#x27;right&#x27;
+    variable = superficial_vel_y
+    u = superficial_vel_x
+    v = superficial_vel_y
+    porosity = porosity
+    momentum_component = &#x27;y&#x27;
+    rho = ${rho}
+  []
+[]
+
+[Executioner]
+  type = Steady
+  solve_type = &#x27;NEWTON&#x27;
+  petsc_options_iname = &#x27;-pc_type -ksp_gmres_restart -sub_pc_type -sub_pc_factor_shift_type&#x27;
+  petsc_options_value = &#x27;asm      300                lu           NONZERO&#x27;
+  line_search = &#x27;none&#x27;
+  nl_rel_tol = 1e-11
+  nl_abs_tol = 1e-14
+[]
+
+# Some basic Postprocessors to visually examine the solution
+[Postprocessors]
+  [inlet-p]
+    type = SideIntegralVariablePostprocessor
+    variable = pressure
+    boundary = &#x27;left&#x27;
+  []
+  [outlet-u]
+    type = SideIntegralVariablePostprocessor
+    variable = superficial_vel_x
+    boundary = &#x27;right&#x27;
+  []
+[]
+
+[Outputs]
+  exodus = true
+[]
+</code></pre></div><div class="modal-footer"><a class="modal-close btn-flat">Close</a></div></div><div class="moose-modal modal" id="723761a3-03a8-4ce1-8ca4-fa85d953a836"><div class="modal-content"><h4>(moose/modules/navier_stokes/test/tests/finite_volume/pins/channel-flow/2d-rc.i)</h4><pre class="moose-pre"><code class="language-text">mu = 1.1
+rho = 1.1
+
+[Mesh]
+  [gen]
+    type = GeneratedMeshGenerator
+    dim = 2
+    xmin = 0
+    xmax = 5
+    ymin = 0
+    ymax = 1
+    nx = 20
+    ny = 10
+  []
+[]
+
+[GlobalParams]
+  advected_interp_method = &#x27;average&#x27;
+  velocity_interp_method = &#x27;rc&#x27;
+  rhie_chow_user_object = &#x27;rc&#x27;
+[]
+
+[UserObjects]
+  [rc]
+    type = PINSFVRhieChowInterpolator
+    u = superficial_vel_x
+    v = superficial_vel_y
+    pressure = pressure
+    porosity = porosity
+  []
+[]
+
+[Variables]
+  inactive = &#x27;lambda&#x27;
+  [superficial_vel_x]
+    type = PINSFVSuperficialVelocityVariable
+    initial_condition = 1
+  []
+  [superficial_vel_y]
+    type = PINSFVSuperficialVelocityVariable
+    initial_condition = 1e-6
+  []
+  [pressure]
+    type = INSFVPressureVariable
+  []
+  [lambda]
+    family = SCALAR
+    order = FIRST
+  []
+[]
+
+[AuxVariables]
+  [porosity]
+    family = MONOMIAL
+    order = CONSTANT
+    fv = true
+    initial_condition = 0.5
+  []
+[]
+
+[FVKernels]
+  inactive = &#x27;mean-pressure&#x27;
+  [mass]
+    type = PINSFVMassAdvection
+    variable = pressure
+    rho = ${rho}
+  []
+
+  [u_advection]
+    type = PINSFVMomentumAdvection
+    variable = superficial_vel_x
+    rho = ${rho}
+    porosity = porosity
+    momentum_component = &#x27;x&#x27;
+  []
+  [u_viscosity]
+    type = PINSFVMomentumDiffusion
+    variable = superficial_vel_x
+    mu = ${mu}
+    porosity = porosity
+    momentum_component = &#x27;x&#x27;
+  []
+  [u_pressure]
+    type = PINSFVMomentumPressure
+    variable = superficial_vel_x
+    momentum_component = &#x27;x&#x27;
+    pressure = pressure
+    porosity = porosity
+  []
+
+  [v_advection]
+    type = PINSFVMomentumAdvection
+    variable = superficial_vel_y
+    rho = ${rho}
+    porosity = porosity
+    momentum_component = &#x27;y&#x27;
+  []
+  [v_viscosity]
+    type = PINSFVMomentumDiffusion
+    variable = superficial_vel_y
+    mu = ${mu}
+    porosity = porosity
+    momentum_component = &#x27;y&#x27;
+  []
+  [v_pressure]
+    type = PINSFVMomentumPressure
+    variable = superficial_vel_y
+    momentum_component = &#x27;y&#x27;
+    pressure = pressure
+    porosity = porosity
+  []
+
+  [mean-pressure]
+    type = FVIntegralValueConstraint
+    variable = pressure
+    lambda = lambda
+    phi0 = 0.01
+  []
+[]
+
+[FVBCs]
+  # Select desired boundary conditions
+  active = &#x27;inlet-u inlet-v outlet-p free-slip-u free-slip-v&#x27;
+
+  # Possible inlet boundary conditions
+  [inlet-u]
+    type = INSFVInletVelocityBC
+    boundary = &#x27;left&#x27;
+    variable = superficial_vel_x
+    function = &#x27;1&#x27;
+  []
+  [inlet-v]
+    type = INSFVInletVelocityBC
+    boundary = &#x27;left&#x27;
+    variable = superficial_vel_y
+    function = 0
+  []
+  [inlet-p]
+    type = INSFVOutletPressureBC
+    boundary = &#x27;left&#x27;
+    variable = pressure
+    function = 1
+  []
+
+  # Possible wall boundary conditions
+  [free-slip-u]
+    type = INSFVNaturalFreeSlipBC
+    boundary = &#x27;top bottom&#x27;
+    variable = superficial_vel_x
+    momentum_component = &#x27;x&#x27;
+  []
+  [free-slip-v]
+    type = INSFVNaturalFreeSlipBC
+    boundary = &#x27;top bottom&#x27;
+    variable = superficial_vel_y
+    momentum_component = &#x27;y&#x27;
+  []
+  [no-slip-u]
+    type = INSFVNoSlipWallBC
+    boundary = &#x27;top bottom&#x27;
+    variable = superficial_vel_x
+    function = 0
+  []
+  [no-slip-v]
+    type = INSFVNoSlipWallBC
+    boundary = &#x27;top bottom&#x27;
+    variable = superficial_vel_y
+    function = 0
+  []
+  [symmetry-u]
+    type = PINSFVSymmetryVelocityBC
+    boundary = &#x27;bottom&#x27;
+    variable = superficial_vel_x
+    u = superficial_vel_x
+    v = superficial_vel_y
+    mu = ${mu}
+    momentum_component = &#x27;x&#x27;
+  []
+  [symmetry-v]
+    type = PINSFVSymmetryVelocityBC
+    boundary = &#x27;bottom&#x27;
+    variable = superficial_vel_y
+    u = superficial_vel_x
+    v = superficial_vel_y
+    mu = ${mu}
+    momentum_component = &#x27;y&#x27;
+  []
+  [symmetry-p]
+    type = INSFVSymmetryPressureBC
+    boundary = &#x27;bottom&#x27;
+    variable = pressure
+  []
+
+  # Possible outlet boundary conditions
+  [outlet-p]
+    type = INSFVOutletPressureBC
+    boundary = &#x27;right&#x27;
+    variable = pressure
+    function = 0
+  []
+  [outlet-p-novalue]
+    type = INSFVMassAdvectionOutflowBC
+    boundary = &#x27;right&#x27;
+    variable = pressure
+    u = superficial_vel_x
+    v = superficial_vel_y
+    rho = ${rho}
+  []
+  [outlet-u]
+    type = PINSFVMomentumAdvectionOutflowBC
+    boundary = &#x27;right&#x27;
+    variable = superficial_vel_x
+    u = superficial_vel_x
+    v = superficial_vel_y
+    porosity = porosity
+    momentum_component = &#x27;x&#x27;
+    rho = ${rho}
+  []
+  [outlet-v]
+    type = PINSFVMomentumAdvectionOutflowBC
+    boundary = &#x27;right&#x27;
+    variable = superficial_vel_y
+    u = superficial_vel_x
+    v = superficial_vel_y
+    porosity = porosity
+    momentum_component = &#x27;y&#x27;
+    rho = ${rho}
+  []
+[]
+
+[Executioner]
+  type = Steady
+  solve_type = &#x27;NEWTON&#x27;
+  petsc_options_iname = &#x27;-pc_type -ksp_gmres_restart -sub_pc_type -sub_pc_factor_shift_type&#x27;
+  petsc_options_value = &#x27;asm      300                lu           NONZERO&#x27;
+  line_search = &#x27;none&#x27;
+  nl_rel_tol = 1e-11
+  nl_abs_tol = 1e-14
+[]
+
+# Some basic Postprocessors to visually examine the solution
+[Postprocessors]
+  [inlet-p]
+    type = SideIntegralVariablePostprocessor
+    variable = pressure
+    boundary = &#x27;left&#x27;
+  []
+  [outlet-u]
+    type = SideIntegralVariablePostprocessor
+    variable = superficial_vel_x
+    boundary = &#x27;right&#x27;
+  []
+[]
+
+[Outputs]
+  exodus = true
+[]
+</code></pre></div><div class="modal-footer"><a class="modal-close btn-flat">Close</a></div></div><div class="moose-modal modal" id="5e2435b5-8546-4292-904b-8d21f4dc2321"><div class="modal-content"><h4>(moose/modules/navier_stokes/test/tests/finite_volume/pins/channel-flow/2d-rc.i)</h4><pre class="moose-pre"><code class="language-text">mu = 1.1
+rho = 1.1
+
+[Mesh]
+  [gen]
+    type = GeneratedMeshGenerator
+    dim = 2
+    xmin = 0
+    xmax = 5
+    ymin = 0
+    ymax = 1
+    nx = 20
+    ny = 10
+  []
+[]
+
+[GlobalParams]
+  advected_interp_method = &#x27;average&#x27;
+  velocity_interp_method = &#x27;rc&#x27;
+  rhie_chow_user_object = &#x27;rc&#x27;
+[]
+
+[UserObjects]
+  [rc]
+    type = PINSFVRhieChowInterpolator
+    u = superficial_vel_x
+    v = superficial_vel_y
+    pressure = pressure
+    porosity = porosity
+  []
+[]
+
+[Variables]
+  inactive = &#x27;lambda&#x27;
+  [superficial_vel_x]
+    type = PINSFVSuperficialVelocityVariable
+    initial_condition = 1
+  []
+  [superficial_vel_y]
+    type = PINSFVSuperficialVelocityVariable
+    initial_condition = 1e-6
+  []
+  [pressure]
+    type = INSFVPressureVariable
+  []
+  [lambda]
+    family = SCALAR
+    order = FIRST
+  []
+[]
+
+[AuxVariables]
+  [porosity]
+    family = MONOMIAL
+    order = CONSTANT
+    fv = true
+    initial_condition = 0.5
+  []
+[]
+
+[FVKernels]
+  inactive = &#x27;mean-pressure&#x27;
+  [mass]
+    type = PINSFVMassAdvection
+    variable = pressure
+    rho = ${rho}
+  []
+
+  [u_advection]
+    type = PINSFVMomentumAdvection
+    variable = superficial_vel_x
+    rho = ${rho}
+    porosity = porosity
+    momentum_component = &#x27;x&#x27;
+  []
+  [u_viscosity]
+    type = PINSFVMomentumDiffusion
+    variable = superficial_vel_x
+    mu = ${mu}
+    porosity = porosity
+    momentum_component = &#x27;x&#x27;
+  []
+  [u_pressure]
+    type = PINSFVMomentumPressure
+    variable = superficial_vel_x
+    momentum_component = &#x27;x&#x27;
+    pressure = pressure
+    porosity = porosity
+  []
+
+  [v_advection]
+    type = PINSFVMomentumAdvection
+    variable = superficial_vel_y
+    rho = ${rho}
+    porosity = porosity
+    momentum_component = &#x27;y&#x27;
+  []
+  [v_viscosity]
+    type = PINSFVMomentumDiffusion
+    variable = superficial_vel_y
+    mu = ${mu}
+    porosity = porosity
+    momentum_component = &#x27;y&#x27;
+  []
+  [v_pressure]
+    type = PINSFVMomentumPressure
+    variable = superficial_vel_y
+    momentum_component = &#x27;y&#x27;
+    pressure = pressure
+    porosity = porosity
+  []
+
+  [mean-pressure]
+    type = FVIntegralValueConstraint
+    variable = pressure
+    lambda = lambda
+    phi0 = 0.01
+  []
+[]
+
+[FVBCs]
+  # Select desired boundary conditions
+  active = &#x27;inlet-u inlet-v outlet-p free-slip-u free-slip-v&#x27;
+
+  # Possible inlet boundary conditions
+  [inlet-u]
+    type = INSFVInletVelocityBC
+    boundary = &#x27;left&#x27;
+    variable = superficial_vel_x
+    function = &#x27;1&#x27;
+  []
+  [inlet-v]
+    type = INSFVInletVelocityBC
+    boundary = &#x27;left&#x27;
+    variable = superficial_vel_y
+    function = 0
+  []
+  [inlet-p]
+    type = INSFVOutletPressureBC
+    boundary = &#x27;left&#x27;
+    variable = pressure
+    function = 1
+  []
+
+  # Possible wall boundary conditions
+  [free-slip-u]
+    type = INSFVNaturalFreeSlipBC
+    boundary = &#x27;top bottom&#x27;
+    variable = superficial_vel_x
+    momentum_component = &#x27;x&#x27;
+  []
+  [free-slip-v]
+    type = INSFVNaturalFreeSlipBC
+    boundary = &#x27;top bottom&#x27;
+    variable = superficial_vel_y
+    momentum_component = &#x27;y&#x27;
+  []
+  [no-slip-u]
+    type = INSFVNoSlipWallBC
+    boundary = &#x27;top bottom&#x27;
+    variable = superficial_vel_x
+    function = 0
+  []
+  [no-slip-v]
+    type = INSFVNoSlipWallBC
+    boundary = &#x27;top bottom&#x27;
+    variable = superficial_vel_y
+    function = 0
+  []
+  [symmetry-u]
+    type = PINSFVSymmetryVelocityBC
+    boundary = &#x27;bottom&#x27;
+    variable = superficial_vel_x
+    u = superficial_vel_x
+    v = superficial_vel_y
+    mu = ${mu}
+    momentum_component = &#x27;x&#x27;
+  []
+  [symmetry-v]
+    type = PINSFVSymmetryVelocityBC
+    boundary = &#x27;bottom&#x27;
+    variable = superficial_vel_y
+    u = superficial_vel_x
+    v = superficial_vel_y
+    mu = ${mu}
+    momentum_component = &#x27;y&#x27;
+  []
+  [symmetry-p]
+    type = INSFVSymmetryPressureBC
+    boundary = &#x27;bottom&#x27;
+    variable = pressure
+  []
+
+  # Possible outlet boundary conditions
+  [outlet-p]
+    type = INSFVOutletPressureBC
+    boundary = &#x27;right&#x27;
+    variable = pressure
+    function = 0
+  []
+  [outlet-p-novalue]
+    type = INSFVMassAdvectionOutflowBC
+    boundary = &#x27;right&#x27;
+    variable = pressure
+    u = superficial_vel_x
+    v = superficial_vel_y
+    rho = ${rho}
+  []
+  [outlet-u]
+    type = PINSFVMomentumAdvectionOutflowBC
+    boundary = &#x27;right&#x27;
+    variable = superficial_vel_x
+    u = superficial_vel_x
+    v = superficial_vel_y
+    porosity = porosity
+    momentum_component = &#x27;x&#x27;
+    rho = ${rho}
+  []
+  [outlet-v]
+    type = PINSFVMomentumAdvectionOutflowBC
+    boundary = &#x27;right&#x27;
+    variable = superficial_vel_y
+    u = superficial_vel_x
+    v = superficial_vel_y
+    porosity = porosity
+    momentum_component = &#x27;y&#x27;
+    rho = ${rho}
+  []
+[]
+
+[Executioner]
+  type = Steady
+  solve_type = &#x27;NEWTON&#x27;
+  petsc_options_iname = &#x27;-pc_type -ksp_gmres_restart -sub_pc_type -sub_pc_factor_shift_type&#x27;
+  petsc_options_value = &#x27;asm      300                lu           NONZERO&#x27;
+  line_search = &#x27;none&#x27;
+  nl_rel_tol = 1e-11
+  nl_abs_tol = 1e-14
+[]
+
+# Some basic Postprocessors to visually examine the solution
+[Postprocessors]
+  [inlet-p]
+    type = SideIntegralVariablePostprocessor
+    variable = pressure
+    boundary = &#x27;left&#x27;
+  []
+  [outlet-u]
+    type = SideIntegralVariablePostprocessor
+    variable = superficial_vel_x
+    boundary = &#x27;right&#x27;
+  []
+[]
+
+[Outputs]
+  exodus = true
+[]
+</code></pre></div><div class="modal-footer"><a class="modal-close btn-flat">Close</a></div></div><div class="moose-modal modal" id="06e09fd5-a725-41bc-abd1-411decd32dcb"><div class="modal-content"><h4>(moose/modules/navier_stokes/test/tests/finite_volume/pins/channel-flow/2d-rc.i)</h4><pre class="moose-pre"><code class="language-text">mu = 1.1
+rho = 1.1
+
+[Mesh]
+  [gen]
+    type = GeneratedMeshGenerator
+    dim = 2
+    xmin = 0
+    xmax = 5
+    ymin = 0
+    ymax = 1
+    nx = 20
+    ny = 10
+  []
+[]
+
+[GlobalParams]
+  advected_interp_method = &#x27;average&#x27;
+  velocity_interp_method = &#x27;rc&#x27;
+  rhie_chow_user_object = &#x27;rc&#x27;
+[]
+
+[UserObjects]
+  [rc]
+    type = PINSFVRhieChowInterpolator
+    u = superficial_vel_x
+    v = superficial_vel_y
+    pressure = pressure
+    porosity = porosity
+  []
+[]
+
+[Variables]
+  inactive = &#x27;lambda&#x27;
+  [superficial_vel_x]
+    type = PINSFVSuperficialVelocityVariable
+    initial_condition = 1
+  []
+  [superficial_vel_y]
+    type = PINSFVSuperficialVelocityVariable
+    initial_condition = 1e-6
+  []
+  [pressure]
+    type = INSFVPressureVariable
+  []
+  [lambda]
+    family = SCALAR
+    order = FIRST
+  []
+[]
+
+[AuxVariables]
+  [porosity]
+    family = MONOMIAL
+    order = CONSTANT
+    fv = true
+    initial_condition = 0.5
+  []
+[]
+
+[FVKernels]
+  inactive = &#x27;mean-pressure&#x27;
+  [mass]
+    type = PINSFVMassAdvection
+    variable = pressure
+    rho = ${rho}
+  []
+
+  [u_advection]
+    type = PINSFVMomentumAdvection
+    variable = superficial_vel_x
+    rho = ${rho}
+    porosity = porosity
+    momentum_component = &#x27;x&#x27;
+  []
+  [u_viscosity]
+    type = PINSFVMomentumDiffusion
+    variable = superficial_vel_x
+    mu = ${mu}
+    porosity = porosity
+    momentum_component = &#x27;x&#x27;
+  []
+  [u_pressure]
+    type = PINSFVMomentumPressure
+    variable = superficial_vel_x
+    momentum_component = &#x27;x&#x27;
+    pressure = pressure
+    porosity = porosity
+  []
+
+  [v_advection]
+    type = PINSFVMomentumAdvection
+    variable = superficial_vel_y
+    rho = ${rho}
+    porosity = porosity
+    momentum_component = &#x27;y&#x27;
+  []
+  [v_viscosity]
+    type = PINSFVMomentumDiffusion
+    variable = superficial_vel_y
+    mu = ${mu}
+    porosity = porosity
+    momentum_component = &#x27;y&#x27;
+  []
+  [v_pressure]
+    type = PINSFVMomentumPressure
+    variable = superficial_vel_y
+    momentum_component = &#x27;y&#x27;
+    pressure = pressure
+    porosity = porosity
+  []
+
+  [mean-pressure]
+    type = FVIntegralValueConstraint
+    variable = pressure
+    lambda = lambda
+    phi0 = 0.01
+  []
+[]
+
+[FVBCs]
+  # Select desired boundary conditions
+  active = &#x27;inlet-u inlet-v outlet-p free-slip-u free-slip-v&#x27;
+
+  # Possible inlet boundary conditions
+  [inlet-u]
+    type = INSFVInletVelocityBC
+    boundary = &#x27;left&#x27;
+    variable = superficial_vel_x
+    function = &#x27;1&#x27;
+  []
+  [inlet-v]
+    type = INSFVInletVelocityBC
+    boundary = &#x27;left&#x27;
+    variable = superficial_vel_y
+    function = 0
+  []
+  [inlet-p]
+    type = INSFVOutletPressureBC
+    boundary = &#x27;left&#x27;
+    variable = pressure
+    function = 1
+  []
+
+  # Possible wall boundary conditions
+  [free-slip-u]
+    type = INSFVNaturalFreeSlipBC
+    boundary = &#x27;top bottom&#x27;
+    variable = superficial_vel_x
+    momentum_component = &#x27;x&#x27;
+  []
+  [free-slip-v]
+    type = INSFVNaturalFreeSlipBC
+    boundary = &#x27;top bottom&#x27;
+    variable = superficial_vel_y
+    momentum_component = &#x27;y&#x27;
+  []
+  [no-slip-u]
+    type = INSFVNoSlipWallBC
+    boundary = &#x27;top bottom&#x27;
+    variable = superficial_vel_x
+    function = 0
+  []
+  [no-slip-v]
+    type = INSFVNoSlipWallBC
+    boundary = &#x27;top bottom&#x27;
+    variable = superficial_vel_y
+    function = 0
+  []
+  [symmetry-u]
+    type = PINSFVSymmetryVelocityBC
+    boundary = &#x27;bottom&#x27;
+    variable = superficial_vel_x
+    u = superficial_vel_x
+    v = superficial_vel_y
+    mu = ${mu}
+    momentum_component = &#x27;x&#x27;
+  []
+  [symmetry-v]
+    type = PINSFVSymmetryVelocityBC
+    boundary = &#x27;bottom&#x27;
+    variable = superficial_vel_y
+    u = superficial_vel_x
+    v = superficial_vel_y
+    mu = ${mu}
+    momentum_component = &#x27;y&#x27;
+  []
+  [symmetry-p]
+    type = INSFVSymmetryPressureBC
+    boundary = &#x27;bottom&#x27;
+    variable = pressure
+  []
+
+  # Possible outlet boundary conditions
+  [outlet-p]
+    type = INSFVOutletPressureBC
+    boundary = &#x27;right&#x27;
+    variable = pressure
+    function = 0
+  []
+  [outlet-p-novalue]
+    type = INSFVMassAdvectionOutflowBC
+    boundary = &#x27;right&#x27;
+    variable = pressure
+    u = superficial_vel_x
+    v = superficial_vel_y
+    rho = ${rho}
+  []
+  [outlet-u]
+    type = PINSFVMomentumAdvectionOutflowBC
+    boundary = &#x27;right&#x27;
+    variable = superficial_vel_x
+    u = superficial_vel_x
+    v = superficial_vel_y
+    porosity = porosity
+    momentum_component = &#x27;x&#x27;
+    rho = ${rho}
+  []
+  [outlet-v]
+    type = PINSFVMomentumAdvectionOutflowBC
+    boundary = &#x27;right&#x27;
+    variable = superficial_vel_y
+    u = superficial_vel_x
+    v = superficial_vel_y
+    porosity = porosity
+    momentum_component = &#x27;y&#x27;
+    rho = ${rho}
+  []
+[]
+
+[Executioner]
+  type = Steady
+  solve_type = &#x27;NEWTON&#x27;
+  petsc_options_iname = &#x27;-pc_type -ksp_gmres_restart -sub_pc_type -sub_pc_factor_shift_type&#x27;
+  petsc_options_value = &#x27;asm      300                lu           NONZERO&#x27;
+  line_search = &#x27;none&#x27;
+  nl_rel_tol = 1e-11
+  nl_abs_tol = 1e-14
+[]
+
+# Some basic Postprocessors to visually examine the solution
+[Postprocessors]
+  [inlet-p]
+    type = SideIntegralVariablePostprocessor
+    variable = pressure
+    boundary = &#x27;left&#x27;
+  []
+  [outlet-u]
+    type = SideIntegralVariablePostprocessor
+    variable = superficial_vel_x
+    boundary = &#x27;right&#x27;
+  []
+[]
+
+[Outputs]
+  exodus = true
+[]
+</code></pre></div><div class="modal-footer"><a class="modal-close btn-flat">Close</a></div></div><div class="moose-modal modal" id="02e3e266-5306-434a-abb0-3c815a4abb0b"><div class="modal-content"><h4>(moose/modules/navier_stokes/test/tests/finite_volume/pins/channel-flow/2d-rc.i)</h4><pre class="moose-pre"><code class="language-text">mu = 1.1
+rho = 1.1
+
+[Mesh]
+  [gen]
+    type = GeneratedMeshGenerator
+    dim = 2
+    xmin = 0
+    xmax = 5
+    ymin = 0
+    ymax = 1
+    nx = 20
+    ny = 10
+  []
+[]
+
+[GlobalParams]
+  advected_interp_method = &#x27;average&#x27;
+  velocity_interp_method = &#x27;rc&#x27;
+  rhie_chow_user_object = &#x27;rc&#x27;
+[]
+
+[UserObjects]
+  [rc]
+    type = PINSFVRhieChowInterpolator
+    u = superficial_vel_x
+    v = superficial_vel_y
+    pressure = pressure
+    porosity = porosity
+  []
+[]
+
+[Variables]
+  inactive = &#x27;lambda&#x27;
+  [superficial_vel_x]
+    type = PINSFVSuperficialVelocityVariable
+    initial_condition = 1
+  []
+  [superficial_vel_y]
+    type = PINSFVSuperficialVelocityVariable
+    initial_condition = 1e-6
+  []
+  [pressure]
+    type = INSFVPressureVariable
+  []
+  [lambda]
+    family = SCALAR
+    order = FIRST
+  []
+[]
+
+[AuxVariables]
+  [porosity]
+    family = MONOMIAL
+    order = CONSTANT
+    fv = true
+    initial_condition = 0.5
+  []
+[]
+
+[FVKernels]
+  inactive = &#x27;mean-pressure&#x27;
+  [mass]
+    type = PINSFVMassAdvection
+    variable = pressure
+    rho = ${rho}
+  []
+
+  [u_advection]
+    type = PINSFVMomentumAdvection
+    variable = superficial_vel_x
+    rho = ${rho}
+    porosity = porosity
+    momentum_component = &#x27;x&#x27;
+  []
+  [u_viscosity]
+    type = PINSFVMomentumDiffusion
+    variable = superficial_vel_x
+    mu = ${mu}
+    porosity = porosity
+    momentum_component = &#x27;x&#x27;
+  []
+  [u_pressure]
+    type = PINSFVMomentumPressure
+    variable = superficial_vel_x
+    momentum_component = &#x27;x&#x27;
+    pressure = pressure
+    porosity = porosity
+  []
+
+  [v_advection]
+    type = PINSFVMomentumAdvection
+    variable = superficial_vel_y
+    rho = ${rho}
+    porosity = porosity
+    momentum_component = &#x27;y&#x27;
+  []
+  [v_viscosity]
+    type = PINSFVMomentumDiffusion
+    variable = superficial_vel_y
+    mu = ${mu}
+    porosity = porosity
+    momentum_component = &#x27;y&#x27;
+  []
+  [v_pressure]
+    type = PINSFVMomentumPressure
+    variable = superficial_vel_y
+    momentum_component = &#x27;y&#x27;
+    pressure = pressure
+    porosity = porosity
+  []
+
+  [mean-pressure]
+    type = FVIntegralValueConstraint
+    variable = pressure
+    lambda = lambda
+    phi0 = 0.01
+  []
+[]
+
+[FVBCs]
+  # Select desired boundary conditions
+  active = &#x27;inlet-u inlet-v outlet-p free-slip-u free-slip-v&#x27;
+
+  # Possible inlet boundary conditions
+  [inlet-u]
+    type = INSFVInletVelocityBC
+    boundary = &#x27;left&#x27;
+    variable = superficial_vel_x
+    function = &#x27;1&#x27;
+  []
+  [inlet-v]
+    type = INSFVInletVelocityBC
+    boundary = &#x27;left&#x27;
+    variable = superficial_vel_y
+    function = 0
+  []
+  [inlet-p]
+    type = INSFVOutletPressureBC
+    boundary = &#x27;left&#x27;
+    variable = pressure
+    function = 1
+  []
+
+  # Possible wall boundary conditions
+  [free-slip-u]
+    type = INSFVNaturalFreeSlipBC
+    boundary = &#x27;top bottom&#x27;
+    variable = superficial_vel_x
+    momentum_component = &#x27;x&#x27;
+  []
+  [free-slip-v]
+    type = INSFVNaturalFreeSlipBC
+    boundary = &#x27;top bottom&#x27;
+    variable = superficial_vel_y
+    momentum_component = &#x27;y&#x27;
+  []
+  [no-slip-u]
+    type = INSFVNoSlipWallBC
+    boundary = &#x27;top bottom&#x27;
+    variable = superficial_vel_x
+    function = 0
+  []
+  [no-slip-v]
+    type = INSFVNoSlipWallBC
+    boundary = &#x27;top bottom&#x27;
+    variable = superficial_vel_y
+    function = 0
+  []
+  [symmetry-u]
+    type = PINSFVSymmetryVelocityBC
+    boundary = &#x27;bottom&#x27;
+    variable = superficial_vel_x
+    u = superficial_vel_x
+    v = superficial_vel_y
+    mu = ${mu}
+    momentum_component = &#x27;x&#x27;
+  []
+  [symmetry-v]
+    type = PINSFVSymmetryVelocityBC
+    boundary = &#x27;bottom&#x27;
+    variable = superficial_vel_y
+    u = superficial_vel_x
+    v = superficial_vel_y
+    mu = ${mu}
+    momentum_component = &#x27;y&#x27;
+  []
+  [symmetry-p]
+    type = INSFVSymmetryPressureBC
+    boundary = &#x27;bottom&#x27;
+    variable = pressure
+  []
+
+  # Possible outlet boundary conditions
+  [outlet-p]
+    type = INSFVOutletPressureBC
+    boundary = &#x27;right&#x27;
+    variable = pressure
+    function = 0
+  []
+  [outlet-p-novalue]
+    type = INSFVMassAdvectionOutflowBC
+    boundary = &#x27;right&#x27;
+    variable = pressure
+    u = superficial_vel_x
+    v = superficial_vel_y
+    rho = ${rho}
+  []
+  [outlet-u]
+    type = PINSFVMomentumAdvectionOutflowBC
+    boundary = &#x27;right&#x27;
+    variable = superficial_vel_x
+    u = superficial_vel_x
+    v = superficial_vel_y
+    porosity = porosity
+    momentum_component = &#x27;x&#x27;
+    rho = ${rho}
+  []
+  [outlet-v]
+    type = PINSFVMomentumAdvectionOutflowBC
+    boundary = &#x27;right&#x27;
+    variable = superficial_vel_y
+    u = superficial_vel_x
+    v = superficial_vel_y
+    porosity = porosity
+    momentum_component = &#x27;y&#x27;
+    rho = ${rho}
+  []
+[]
+
+[Executioner]
+  type = Steady
+  solve_type = &#x27;NEWTON&#x27;
+  petsc_options_iname = &#x27;-pc_type -ksp_gmres_restart -sub_pc_type -sub_pc_factor_shift_type&#x27;
+  petsc_options_value = &#x27;asm      300                lu           NONZERO&#x27;
+  line_search = &#x27;none&#x27;
+  nl_rel_tol = 1e-11
+  nl_abs_tol = 1e-14
+[]
+
+# Some basic Postprocessors to visually examine the solution
+[Postprocessors]
+  [inlet-p]
+    type = SideIntegralVariablePostprocessor
+    variable = pressure
+    boundary = &#x27;left&#x27;
+  []
+  [outlet-u]
+    type = SideIntegralVariablePostprocessor
+    variable = superficial_vel_x
+    boundary = &#x27;right&#x27;
+  []
+[]
+
+[Outputs]
+  exodus = true
+[]
+</code></pre></div><div class="modal-footer"><a class="modal-close btn-flat">Close</a></div></div><div class="moose-modal modal" id="60507dd0-fcfc-49d9-b623-c8488050ea33"><div class="modal-content"><h4>(moose/modules/navier_stokes/test/tests/finite_volume/pins/channel-flow/2d-rc.i)</h4><pre class="moose-pre"><code class="language-text">mu = 1.1
+rho = 1.1
+
+[Mesh]
+  [gen]
+    type = GeneratedMeshGenerator
+    dim = 2
+    xmin = 0
+    xmax = 5
+    ymin = 0
+    ymax = 1
+    nx = 20
+    ny = 10
+  []
+[]
+
+[GlobalParams]
+  advected_interp_method = &#x27;average&#x27;
+  velocity_interp_method = &#x27;rc&#x27;
+  rhie_chow_user_object = &#x27;rc&#x27;
+[]
+
+[UserObjects]
+  [rc]
+    type = PINSFVRhieChowInterpolator
+    u = superficial_vel_x
+    v = superficial_vel_y
+    pressure = pressure
+    porosity = porosity
+  []
+[]
+
+[Variables]
+  inactive = &#x27;lambda&#x27;
+  [superficial_vel_x]
+    type = PINSFVSuperficialVelocityVariable
+    initial_condition = 1
+  []
+  [superficial_vel_y]
+    type = PINSFVSuperficialVelocityVariable
+    initial_condition = 1e-6
+  []
+  [pressure]
+    type = INSFVPressureVariable
+  []
+  [lambda]
+    family = SCALAR
+    order = FIRST
+  []
+[]
+
+[AuxVariables]
+  [porosity]
+    family = MONOMIAL
+    order = CONSTANT
+    fv = true
+    initial_condition = 0.5
+  []
+[]
+
+[FVKernels]
+  inactive = &#x27;mean-pressure&#x27;
+  [mass]
+    type = PINSFVMassAdvection
+    variable = pressure
+    rho = ${rho}
+  []
+
+  [u_advection]
+    type = PINSFVMomentumAdvection
+    variable = superficial_vel_x
+    rho = ${rho}
+    porosity = porosity
+    momentum_component = &#x27;x&#x27;
+  []
+  [u_viscosity]
+    type = PINSFVMomentumDiffusion
+    variable = superficial_vel_x
+    mu = ${mu}
+    porosity = porosity
+    momentum_component = &#x27;x&#x27;
+  []
+  [u_pressure]
+    type = PINSFVMomentumPressure
+    variable = superficial_vel_x
+    momentum_component = &#x27;x&#x27;
+    pressure = pressure
+    porosity = porosity
+  []
+
+  [v_advection]
+    type = PINSFVMomentumAdvection
+    variable = superficial_vel_y
+    rho = ${rho}
+    porosity = porosity
+    momentum_component = &#x27;y&#x27;
+  []
+  [v_viscosity]
+    type = PINSFVMomentumDiffusion
+    variable = superficial_vel_y
+    mu = ${mu}
+    porosity = porosity
+    momentum_component = &#x27;y&#x27;
+  []
+  [v_pressure]
+    type = PINSFVMomentumPressure
+    variable = superficial_vel_y
+    momentum_component = &#x27;y&#x27;
+    pressure = pressure
+    porosity = porosity
+  []
+
+  [mean-pressure]
+    type = FVIntegralValueConstraint
+    variable = pressure
+    lambda = lambda
+    phi0 = 0.01
+  []
+[]
+
+[FVBCs]
+  # Select desired boundary conditions
+  active = &#x27;inlet-u inlet-v outlet-p free-slip-u free-slip-v&#x27;
+
+  # Possible inlet boundary conditions
+  [inlet-u]
+    type = INSFVInletVelocityBC
+    boundary = &#x27;left&#x27;
+    variable = superficial_vel_x
+    function = &#x27;1&#x27;
+  []
+  [inlet-v]
+    type = INSFVInletVelocityBC
+    boundary = &#x27;left&#x27;
+    variable = superficial_vel_y
+    function = 0
+  []
+  [inlet-p]
+    type = INSFVOutletPressureBC
+    boundary = &#x27;left&#x27;
+    variable = pressure
+    function = 1
+  []
+
+  # Possible wall boundary conditions
+  [free-slip-u]
+    type = INSFVNaturalFreeSlipBC
+    boundary = &#x27;top bottom&#x27;
+    variable = superficial_vel_x
+    momentum_component = &#x27;x&#x27;
+  []
+  [free-slip-v]
+    type = INSFVNaturalFreeSlipBC
+    boundary = &#x27;top bottom&#x27;
+    variable = superficial_vel_y
+    momentum_component = &#x27;y&#x27;
+  []
+  [no-slip-u]
+    type = INSFVNoSlipWallBC
+    boundary = &#x27;top bottom&#x27;
+    variable = superficial_vel_x
+    function = 0
+  []
+  [no-slip-v]
+    type = INSFVNoSlipWallBC
+    boundary = &#x27;top bottom&#x27;
+    variable = superficial_vel_y
+    function = 0
+  []
+  [symmetry-u]
+    type = PINSFVSymmetryVelocityBC
+    boundary = &#x27;bottom&#x27;
+    variable = superficial_vel_x
+    u = superficial_vel_x
+    v = superficial_vel_y
+    mu = ${mu}
+    momentum_component = &#x27;x&#x27;
+  []
+  [symmetry-v]
+    type = PINSFVSymmetryVelocityBC
+    boundary = &#x27;bottom&#x27;
+    variable = superficial_vel_y
+    u = superficial_vel_x
+    v = superficial_vel_y
+    mu = ${mu}
+    momentum_component = &#x27;y&#x27;
+  []
+  [symmetry-p]
+    type = INSFVSymmetryPressureBC
+    boundary = &#x27;bottom&#x27;
+    variable = pressure
+  []
+
+  # Possible outlet boundary conditions
+  [outlet-p]
+    type = INSFVOutletPressureBC
+    boundary = &#x27;right&#x27;
+    variable = pressure
+    function = 0
+  []
+  [outlet-p-novalue]
+    type = INSFVMassAdvectionOutflowBC
+    boundary = &#x27;right&#x27;
+    variable = pressure
+    u = superficial_vel_x
+    v = superficial_vel_y
+    rho = ${rho}
+  []
+  [outlet-u]
+    type = PINSFVMomentumAdvectionOutflowBC
+    boundary = &#x27;right&#x27;
+    variable = superficial_vel_x
+    u = superficial_vel_x
+    v = superficial_vel_y
+    porosity = porosity
+    momentum_component = &#x27;x&#x27;
+    rho = ${rho}
+  []
+  [outlet-v]
+    type = PINSFVMomentumAdvectionOutflowBC
+    boundary = &#x27;right&#x27;
+    variable = superficial_vel_y
+    u = superficial_vel_x
+    v = superficial_vel_y
+    porosity = porosity
+    momentum_component = &#x27;y&#x27;
+    rho = ${rho}
+  []
+[]
+
+[Executioner]
+  type = Steady
+  solve_type = &#x27;NEWTON&#x27;
+  petsc_options_iname = &#x27;-pc_type -ksp_gmres_restart -sub_pc_type -sub_pc_factor_shift_type&#x27;
+  petsc_options_value = &#x27;asm      300                lu           NONZERO&#x27;
+  line_search = &#x27;none&#x27;
+  nl_rel_tol = 1e-11
+  nl_abs_tol = 1e-14
+[]
+
+# Some basic Postprocessors to visually examine the solution
+[Postprocessors]
+  [inlet-p]
+    type = SideIntegralVariablePostprocessor
+    variable = pressure
+    boundary = &#x27;left&#x27;
+  []
+  [outlet-u]
+    type = SideIntegralVariablePostprocessor
+    variable = superficial_vel_x
+    boundary = &#x27;right&#x27;
+  []
+[]
+
+[Outputs]
+  exodus = true
+[]
+</code></pre></div><div class="modal-footer"><a class="modal-close btn-flat">Close</a></div></div><div class="moose-modal modal" id="245a42f9-3906-4b7c-a94d-a21b9d8abd33"><div class="modal-content"><h4>(moose/modules/navier_stokes/test/tests/finite_volume/pins/channel-flow/heated/2d-rc-heated.i)</h4><pre class="moose-pre"><code class="language-text">mu = 1
+rho = 1
+k = 1e-3
+cp = 1
+u_inlet = 1
+T_inlet = 200
+advected_interp_method = &#x27;average&#x27;
+velocity_interp_method = &#x27;rc&#x27;
+
+[Mesh]
+  [mesh]
+    type = CartesianMeshGenerator
+    dim = 2
+    dx = &#x27;5 5&#x27;
+    dy = &#x27;1.0&#x27;
+    ix = &#x27;50 50&#x27;
+    iy = &#x27;20&#x27;
+    subdomain_id = &#x27;1 2&#x27;
+  []
+[]
+
+[GlobalParams]
+  rhie_chow_user_object = &#x27;rc&#x27;
+[]
+
+[UserObjects]
+  [rc]
+    type = PINSFVRhieChowInterpolator
+    u = superficial_vel_x
+    v = superficial_vel_y
+    pressure = pressure
+    porosity = porosity
+  []
+[]
+
+[Variables]
+  inactive = &#x27;T_solid&#x27;
+  [superficial_vel_x]
+    type = PINSFVSuperficialVelocityVariable
+    initial_condition = ${u_inlet}
+  []
+  [superficial_vel_y]
+    type = PINSFVSuperficialVelocityVariable
+    initial_condition = 1e-6
+  []
+  [pressure]
+    type = INSFVPressureVariable
+  []
+  [T_fluid]
+    type = INSFVEnergyVariable
+  []
+  [T_solid]
+    family = &#x27;MONOMIAL&#x27;
+    order = &#x27;CONSTANT&#x27;
+    fv = true
+  []
+[]
+
+[AuxVariables]
+  [T_solid]
+    family = &#x27;MONOMIAL&#x27;
+    order = &#x27;CONSTANT&#x27;
+    fv = true
+    initial_condition = 100
+  []
+  [porosity]
+    family = MONOMIAL
+    order = CONSTANT
+    fv = true
+    initial_condition = 0.5
+  []
+[]
+
+[FVKernels]
+  inactive = &#x27;solid_energy_diffusion solid_energy_convection&#x27;
+  [mass]
+    type = PINSFVMassAdvection
+    variable = pressure
+    advected_interp_method = ${advected_interp_method}
+    velocity_interp_method = ${velocity_interp_method}
+    rho = ${rho}
+  []
+
+  [u_advection]
+    type = PINSFVMomentumAdvection
+    variable = superficial_vel_x
+    advected_interp_method = ${advected_interp_method}
+    velocity_interp_method = ${velocity_interp_method}
+    rho = ${rho}
+    porosity = porosity
+    momentum_component = &#x27;x&#x27;
+  []
+  [u_viscosity]
+    type = PINSFVMomentumDiffusion
+    variable = superficial_vel_x
+    mu = ${mu}
+    porosity = porosity
+    momentum_component = &#x27;x&#x27;
+  []
+  [u_pressure]
+    type = PINSFVMomentumPressure
+    variable = superficial_vel_x
+    momentum_component = &#x27;x&#x27;
+    pressure = pressure
+    porosity = porosity
+  []
+
+  [v_advection]
+    type = PINSFVMomentumAdvection
+    variable = superficial_vel_y
+    advected_interp_method = ${advected_interp_method}
+    velocity_interp_method = ${velocity_interp_method}
+    rho = ${rho}
+    porosity = porosity
+    momentum_component = &#x27;y&#x27;
+  []
+  [v_viscosity]
+    type = PINSFVMomentumDiffusion
+    variable = superficial_vel_y
+    mu = ${mu}
+    porosity = porosity
+    momentum_component = &#x27;y&#x27;
+  []
+  [v_pressure]
+    type = PINSFVMomentumPressure
+    variable = superficial_vel_y
+    momentum_component = &#x27;y&#x27;
+    pressure = pressure
+    porosity = porosity
+  []
+
+  [energy_advection]
+    type = PINSFVEnergyAdvection
+    variable = T_fluid
+    velocity_interp_method = ${velocity_interp_method}
+    advected_interp_method = ${advected_interp_method}
+  []
+  [energy_diffusion]
+    type = PINSFVEnergyDiffusion
+    k = ${k}
+    variable = T_fluid
+    porosity = porosity
+  []
+  [energy_convection]
+    type = PINSFVEnergyAmbientConvection
+    variable = T_fluid
+    is_solid = false
+    T_fluid = &#x27;T_fluid&#x27;
+    T_solid = &#x27;T_solid&#x27;
+    h_solid_fluid = &#x27;h_cv&#x27;
+  []
+
+  [solid_energy_diffusion]
+    type = FVDiffusion
+    coeff = ${k}
+    variable = T_solid
+  []
+  [solid_energy_convection]
+    type = PINSFVEnergyAmbientConvection
+    variable = T_solid
+    is_solid = true
+    T_fluid = &#x27;T_fluid&#x27;
+    T_solid = &#x27;T_solid&#x27;
+    h_solid_fluid = &#x27;h_cv&#x27;
+  []
+[]
+
+[FVBCs]
+  inactive = &#x27;heated-side&#x27;
+  [inlet-u]
+    type = INSFVInletVelocityBC
+    boundary = &#x27;left&#x27;
+    variable = superficial_vel_x
+    function = ${u_inlet}
+  []
+  [inlet-v]
+    type = INSFVInletVelocityBC
+    boundary = &#x27;left&#x27;
+    variable = superficial_vel_y
+    function = 0
+  []
+  [inlet-T]
+    type = FVNeumannBC
+    variable = T_fluid
+    value = &#x27;${fparse u_inlet * rho * cp * T_inlet}&#x27;
+    boundary = &#x27;left&#x27;
+  []
+
+  [no-slip-u]
+    type = INSFVNoSlipWallBC
+    boundary = &#x27;top&#x27;
+    variable = superficial_vel_x
+    function = 0
+  []
+  [no-slip-v]
+    type = INSFVNoSlipWallBC
+    boundary = &#x27;top&#x27;
+    variable = superficial_vel_y
+    function = 0
+  []
+  [heated-side]
+    type = FVDirichletBC
+    boundary = &#x27;top&#x27;
+    variable = &#x27;T_solid&#x27;
+    value = 150
+  []
+
+  [symmetry-u]
+    type = PINSFVSymmetryVelocityBC
+    boundary = &#x27;bottom&#x27;
+    variable = superficial_vel_x
+    u = superficial_vel_x
+    v = superficial_vel_y
+    mu = ${mu}
+    momentum_component = &#x27;x&#x27;
+  []
+  [symmetry-v]
+    type = PINSFVSymmetryVelocityBC
+    boundary = &#x27;bottom&#x27;
+    variable = superficial_vel_y
+    u = superficial_vel_x
+    v = superficial_vel_y
+    mu = ${mu}
+    momentum_component = &#x27;y&#x27;
+  []
+  [symmetry-p]
+    type = INSFVSymmetryPressureBC
+    boundary = &#x27;bottom&#x27;
+    variable = pressure
+  []
+
+  [outlet-p]
+    type = INSFVOutletPressureBC
+    boundary = &#x27;right&#x27;
+    variable = pressure
+    function = 0.1
+  []
+[]
+
+[Materials]
+  [constants]
+    type = ADGenericFunctorMaterial
+    prop_names = &#x27;h_cv&#x27;
+    prop_values = &#x27;1&#x27;
+  []
+  [functor_constants]
+    type = ADGenericFunctorMaterial
+    prop_names = &#x27;cp&#x27;
+    prop_values = &#x27;${cp}&#x27;
+  []
+  [ins_fv]
+    type = INSFVEnthalpyMaterial
+    rho = ${rho}
+    temperature = &#x27;T_fluid&#x27;
+  []
+[]
+
+[Executioner]
+  type = Steady
+  solve_type = &#x27;NEWTON&#x27;
+  petsc_options_iname = &#x27;-pc_type -pc_factor_shift_type&#x27;
+  petsc_options_value = &#x27;lu NONZERO&#x27;
+  nl_rel_tol = 1e-14
+[]
+
+# Some basic Postprocessors to examine the solution
+[Postprocessors]
+  [inlet-p]
+    type = SideAverageValue
+    variable = pressure
+    boundary = &#x27;left&#x27;
+  []
+  [outlet-u]
+    type = SideAverageValue
+    variable = superficial_vel_x
+    boundary = &#x27;right&#x27;
+  []
+  [outlet-temp]
+    type = SideAverageValue
+    variable = T_fluid
+    boundary = &#x27;right&#x27;
+  []
+  [solid-temp]
+    type = ElementAverageValue
+    variable = T_solid
+  []
+[]
+
+[Outputs]
+  exodus = true
+  csv = false
+[]
+</code></pre></div><div class="modal-footer"><a class="modal-close btn-flat">Close</a></div></div><div class="moose-modal modal" id="78254604-d89a-4be6-a48d-287a8e28fd1e"><div class="modal-content"><h4>(moose/modules/navier_stokes/test/tests/finite_volume/pins/channel-flow/porosity_jump/2d-rc-epsjump.i)</h4><pre class="moose-pre"><code class="language-text">mu=1.1
+rho=1.1
+advected_interp_method=&#x27;upwind&#x27;
+velocity_interp_method=&#x27;rc&#x27;
+
+[Mesh]
+  [mesh]
+    type = CartesianMeshGenerator
+    dim = 2
+    dx = &#x27;1 1&#x27;
+    dy = &#x27;0.5&#x27;
+    ix = &#x27;30 30&#x27;
+    iy = &#x27;20&#x27;
+    subdomain_id = &#x27;1 2&#x27;
+  []
+[]
+
+[GlobalParams]
+  rhie_chow_user_object = &#x27;rc&#x27;
+  porosity = porosity
+[]
+
+[UserObjects]
+  [rc]
+    type = PINSFVRhieChowInterpolator
+    u = u
+    v = v
+    porosity = porosity
+    pressure = pressure
+  []
+[]
+
+[Variables]
+  [u]
+    type = PINSFVSuperficialVelocityVariable
+    initial_condition = 1
+  []
+  [v]
+    type = PINSFVSuperficialVelocityVariable
+    initial_condition = 1e-6
+  []
+  [pressure]
+    type = INSFVPressureVariable
+  []
+[]
+
+[AuxVariables]
+  [porosity]
+    type = MooseVariableFVReal
+  []
+[]
+
+[ICs]
+  inactive = &#x27;porosity_continuous&#x27;
+  [porosity_1]
+    type = ConstantIC
+    variable = porosity
+    block = 1
+    value = 1
+  []
+  [porosity_2]
+    type = ConstantIC
+    variable = porosity
+    block = 2
+    value = 0.5
+  []
+  [porosity_continuous]
+    type = FunctionIC
+    variable = porosity
+    block = &#x27;1 2&#x27;
+    function = smooth_jump
+  []
+[]
+
+[Functions]
+  [smooth_jump]
+    type = ParsedFunction
+    expression = &#x27;1 - 0.5 * 1 / (1 + exp(-30*(x-1)))&#x27;
+  []
+[]
+
+[FVKernels]
+  [mass]
+    type = PINSFVMassAdvection
+    variable = pressure
+    advected_interp_method = ${advected_interp_method}
+    velocity_interp_method = ${velocity_interp_method}
+    rho = ${rho}
+  []
+
+  [u_advection]
+    type = PINSFVMomentumAdvection
+    variable = u
+    advected_interp_method = ${advected_interp_method}
+    velocity_interp_method = ${velocity_interp_method}
+    rho = ${rho}
+    momentum_component = &#x27;x&#x27;
+  []
+  [u_viscosity]
+    type = PINSFVMomentumDiffusion
+    variable = u
+    mu = ${mu}
+    momentum_component = &#x27;x&#x27;
+  []
+  [u_pressure]
+    type = PINSFVMomentumPressure
+    variable = u
+    pressure = pressure
+    momentum_component = &#x27;x&#x27;
+  []
+
+  [v_advection]
+    type = PINSFVMomentumAdvection
+    variable = v
+    advected_interp_method = ${advected_interp_method}
+    velocity_interp_method = ${velocity_interp_method}
+    rho = ${rho}
+    momentum_component = &#x27;y&#x27;
+  []
+  [v_viscosity]
+    type = PINSFVMomentumDiffusion
+    variable = v
+    mu = ${mu}
+    momentum_component = &#x27;y&#x27;
+  []
+  [v_pressure]
+    type = PINSFVMomentumPressure
+    variable = v
+    pressure = pressure
+    momentum_component = &#x27;y&#x27;
+  []
+[]
+
+[FVBCs]
+  [inlet-u]
+    type = INSFVInletVelocityBC
+    boundary = &#x27;left&#x27;
+    variable = u
+    function = &#x27;1&#x27;
+  []
+  [inlet-v]
+    type = INSFVInletVelocityBC
+    boundary = &#x27;left&#x27;
+    variable = v
+    function = 0
+  []
+
+  [walls-u]
+    type = INSFVNaturalFreeSlipBC
+    boundary = &#x27;top bottom&#x27;
+    variable = u
+    momentum_component = &#x27;x&#x27;
+  []
+  [walls-v]
+    type = INSFVNaturalFreeSlipBC
+    boundary = &#x27;top bottom&#x27;
+    variable = v
+    momentum_component = &#x27;y&#x27;
+  []
+
+  [outlet_p]
+    type = INSFVOutletPressureBC
+    boundary = &#x27;right&#x27;
+    variable = pressure
+    function = 0.4
+  []
+[]
+
+[Materials]
+  inactive = &#x27;smooth&#x27;
+  [jump]
+    type = ADPiecewiseByBlockFunctorMaterial
+    prop_name = &#x27;porosity&#x27;
+    subdomain_to_prop_value = &#x27;1 1
+                               2 0.5&#x27;
+  []
+  [smooth]
+    type = ADGenericFunctionFunctorMaterial
+    prop_names = &#x27;porosity&#x27;
+    prop_values = &#x27;smooth_jump&#x27;
+  []
+[]
+
+[Executioner]
+  type = Steady
+  solve_type = &#x27;NEWTON&#x27;
+  petsc_options_iname = &#x27;-pc_type -pc_factor_shift_type&#x27;
+  petsc_options_value = &#x27;lu       NONZERO&#x27;
+  line_search = &#x27;none&#x27;
+  nl_rel_tol = 1e-10
+[]
+
+[Postprocessors]
+  [inlet_p]
+    type = SideAverageValue
+    variable = &#x27;pressure&#x27;
+    boundary = &#x27;left&#x27;
+  []
+  [outlet-u]
+    type = SideIntegralVariablePostprocessor
+    variable = u
+    boundary = &#x27;right&#x27;
+  []
+[]
+
+[Outputs]
+  exodus = true
+  csv = false
+[]
+</code></pre></div><div class="modal-footer"><a class="modal-close btn-flat">Close</a></div></div><div class="moose-modal modal" id="b0b1ddd4-3f8f-41d3-b803-d640f0e3e899"><div class="modal-content"><h4>(moose/modules/navier_stokes/test/tests/postprocessors/flow_rates/conservation_PINSFV.i)</h4><pre class="moose-pre"><code class="language-text">mu=1
+rho=1
+advected_interp_method=&#x27;average&#x27;
+velocity_interp_method=&#x27;rc&#x27;
+
+[Mesh]
+  inactive = &#x27;mesh internal_boundary_bot internal_boundary_top&#x27;
+  [mesh]
+    type = CartesianMeshGenerator
+    dim = 2
+    dx = &#x27;1&#x27;
+    dy = &#x27;1 1 1&#x27;
+    ix = &#x27;5&#x27;
+    iy = &#x27;5 5 5&#x27;
+    subdomain_id = &#x27;1
+                    2
+                    3&#x27;
+  []
+  [internal_boundary_bot]
+    type = SideSetsBetweenSubdomainsGenerator
+    input = mesh
+    new_boundary = &#x27;internal_bot&#x27;
+    primary_block = 1
+    paired_block = 2
+  []
+  [internal_boundary_top]
+    type = SideSetsBetweenSubdomainsGenerator
+    input = internal_boundary_bot
+    new_boundary = &#x27;internal_top&#x27;
+    primary_block = 2
+    paired_block = 3
+  []
+  [diverging_mesh]
+    type = FileMeshGenerator
+    file = &#x27;expansion_quad.e&#x27;
+  []
+[]
+
+[Problem]
+  fv_bcs_integrity_check = true
+[]
+
+[GlobalParams]
+  rhie_chow_user_object = &#x27;rc&#x27;
+  advected_interp_method = ${advected_interp_method}
+  velocity_interp_method = ${velocity_interp_method}
+[]
+
+[UserObjects]
+  [rc]
+    type = PINSFVRhieChowInterpolator
+    u = u
+    v = v
+    pressure = pressure
+    porosity = porosity
+  []
+[]
+
+[Variables]
+  [u]
+    type = PINSFVSuperficialVelocityVariable
+    initial_condition = 0
+  []
+  [v]
+    type = PINSFVSuperficialVelocityVariable
+    initial_condition = 1
+  []
+  [pressure]
+    type = INSFVPressureVariable
+  []
+  [temperature]
+    type = INSFVEnergyVariable
+  []
+[]
+
+[AuxVariables]
+  [advected_density]
+    order = CONSTANT
+    family = MONOMIAL
+    fv = true
+    initial_condition = ${rho}
+  []
+  [porosity]
+    order = CONSTANT
+    family = MONOMIAL
+    fv = true
+    initial_condition = 0.5
+  []
+[]
+
+[FVKernels]
+  [mass]
+    type = PINSFVMassAdvection
+    variable = pressure
+    rho = ${rho}
+  []
+
+  [u_advection]
+    type = PINSFVMomentumAdvection
+    variable = u
+    rho = ${rho}
+    porosity = porosity
+    momentum_component = &#x27;x&#x27;
+  []
+  [u_viscosity]
+    type = PINSFVMomentumDiffusion
+    variable = u
+    force_boundary_execution = true
+    porosity = porosity
+    mu = ${mu}
+    momentum_component = &#x27;x&#x27;
+  []
+  [u_pressure]
+    type = PINSFVMomentumPressure
+    variable = u
+    momentum_component = &#x27;x&#x27;
+    pressure = pressure
+    porosity = porosity
+  []
+
+  [v_advection]
+    type = PINSFVMomentumAdvection
+    variable = v
+    rho = ${rho}
+    porosity = porosity
+    momentum_component = &#x27;y&#x27;
+  []
+  [v_viscosity]
+    type = PINSFVMomentumDiffusion
+    variable = v
+    force_boundary_execution = true
+    porosity = porosity
+    mu = ${mu}
+    momentum_component = &#x27;y&#x27;
+  []
+  [v_pressure]
+    type = PINSFVMomentumPressure
+    variable = v
+    momentum_component = &#x27;y&#x27;
+    pressure = pressure
+    porosity = porosity
+  []
+
+  [temp_advection]
+    type = PINSFVEnergyAdvection
+    variable = temperature
+    advected_interp_method = &#x27;upwind&#x27;
+  []
+  [temp_source]
+    type = FVBodyForce
+    variable = temperature
+    function = 10
+    block = 1
+  []
+[]
+
+[FVBCs]
+  inactive = &#x27;noslip-u noslip-v&#x27;
+  [inlet-u]
+    type = INSFVInletVelocityBC
+    boundary = &#x27;bottom&#x27;
+    variable = u
+    function = 0
+  []
+  [inlet-v]
+    type = INSFVInletVelocityBC
+    boundary = &#x27;bottom&#x27;
+    variable = v
+    function = 1
+  []
+  [noslip-u]
+    type = INSFVNoSlipWallBC
+    boundary = &#x27;right&#x27;
+    variable = u
+    function = 0
+  []
+  [noslip-v]
+    type = INSFVNoSlipWallBC
+    boundary = &#x27;right&#x27;
+    variable = v
+    function = 0
+  []
+  [free-slip-u]
+    type = INSFVNaturalFreeSlipBC
+    boundary = &#x27;right&#x27;
+    variable = u
+    momentum_component = &#x27;x&#x27;
+  []
+  [free-slip-v]
+    type = INSFVNaturalFreeSlipBC
+    boundary = &#x27;right&#x27;
+    variable = v
+    momentum_component = &#x27;y&#x27;
+  []
+  [axis-u]
+    type = PINSFVSymmetryVelocityBC
+    boundary = &#x27;left&#x27;
+    variable = u
+    u = u
+    v = v
+    mu = ${mu}
+    momentum_component = x
+  []
+  [axis-v]
+    type = PINSFVSymmetryVelocityBC
+    boundary = &#x27;left&#x27;
+    variable = v
+    u = u
+    v = v
+    mu = ${mu}
+    momentum_component = y
+  []
+  [axis-p]
+    type = INSFVSymmetryPressureBC
+    boundary = &#x27;left&#x27;
+    variable = pressure
+  []
+  [outlet_p]
+    type = INSFVOutletPressureBC
+    boundary = &#x27;top&#x27;
+    variable = pressure
+    function = 0
+  []
+  [inlet_temp]
+    type = FVNeumannBC
+    boundary = &#x27;bottom&#x27;
+    variable = temperature
+    value = 300
+  []
+[]
+
+[Materials]
+  [ins_fv]
+    type = INSFVEnthalpyMaterial
+    temperature = &#x27;temperature&#x27;
+    rho = ${rho}
+  []
+  [advected_material_property]
+    type = ADGenericFunctorMaterial
+    prop_names = &#x27;advected_rho cp&#x27;
+    prop_values =&#x27;${rho} 1&#x27;
+  []
+[]
+
+[Executioner]
+  type = Steady
+  solve_type = &#x27;NEWTON&#x27;
+  petsc_options_iname = &#x27;-pc_type -ksp_gmres_restart -sub_pc_type -sub_pc_factor_shift_type&#x27;
+  petsc_options_value = &#x27;asm      200                lu           NONZERO&#x27;
+  line_search = &#x27;none&#x27;
+  nl_rel_tol = 1e-12
+[]
+
+[Postprocessors]
+  [inlet_mass_variable]
+    type = VolumetricFlowRate
+    boundary = bottom
+    vel_x = u
+    vel_y = v
+    advected_quantity = advected_density
+  []
+  [inlet_mass_constant]
+    type = VolumetricFlowRate
+    boundary = bottom
+    vel_x = u
+    vel_y = v
+    advected_quantity = ${rho}
+  []
+  [inlet_mass_matprop]
+    type = VolumetricFlowRate
+    boundary = bottom
+    vel_x = u
+    vel_y = v
+    advected_quantity = &#x27;advected_rho&#x27;
+  []
+  [mid1_mass]
+    type = VolumetricFlowRate
+    boundary = internal_bot
+    vel_x = u
+    vel_y = v
+    advected_quantity = ${rho}
+  []
+  [mid2_mass]
+    type = VolumetricFlowRate
+    boundary = internal_top
+    vel_x = u
+    vel_y = v
+    advected_quantity = ${rho}
+  []
+  [outlet_mass]
+    type = VolumetricFlowRate
+    boundary = top
+    vel_x = u
+    vel_y = v
+    advected_quantity = ${rho}
+  []
+
+  [inlet_momentum_x]
+    type = VolumetricFlowRate
+    boundary = bottom
+    vel_x = u
+    vel_y = v
+    advected_quantity = u
+  []
+
+  [inlet_momentum_y]
+    type = VolumetricFlowRate
+    boundary = bottom
+    vel_x = u
+    vel_y = v
+    advected_quantity = v
+  []
+
+  [mid1_advected_energy]
+    type = VolumetricFlowRate
+    boundary = internal_bot
+    vel_x = u
+    vel_y = v
+    advected_quantity = &#x27;rho_cp_temp&#x27;
+    advected_interp_method = &#x27;upwind&#x27;
+  []
+  [mid2_advected_energy]
+    type = VolumetricFlowRate
+    boundary = internal_top
+    vel_x = u
+    vel_y = v
+    advected_quantity = &#x27;rho_cp_temp&#x27;
+    advected_interp_method = &#x27;upwind&#x27;
+  []
+  [outlet_advected_energy]
+    type = VolumetricFlowRate
+    boundary = top
+    vel_x = u
+    vel_y = v
+    advected_quantity = &#x27;rho_cp_temp&#x27;
+    advected_interp_method = &#x27;upwind&#x27;
+  []
+[]
+
+[Outputs]
+  csv = true
+[]
+</code></pre></div><div class="modal-footer"><a class="modal-close btn-flat">Close</a></div></div></div><div class="col hide-on-med-and-down l2"><div class="toc-wrapper pin-top"><ul class="section table-of-contents"><li><a href="#fdebb615-2246-43f6-9ff2-489c0567f348" class="tooltipped" data-position="left" data-tooltip="Equations">Equations</a></li><li><a href="#fd850905-c752-4d8e-b782-195142027724" class="tooltipped" data-position="left" data-tooltip="Implementation for a straight channel">Implementation for a straight channel</a></li><li><a href="#69de39dd-04b5-4bbe-86b0-a7a8b47f11c2" class="tooltipped" data-position="left" data-tooltip="Example inputs : heated straight channel">Example inputs : heated straight channel</a></li><li><a href="#6e84a241-8cca-4872-95b8-3301a9857332" class="tooltipped" data-position="left" data-tooltip="Example inputs : straight channel with a porosity change">Example inputs : straight channel with a porosity change</a></li><li><a href="#50cca65a-88d0-4e00-8998-badae0269ccb" class="tooltipped" data-position="left" data-tooltip="Other inputs">Other inputs</a></li><li><a href="#654a6a32-1ae7-4a8a-ad97-eab766c55940" class="tooltipped" data-position="left" data-tooltip="Action syntax">Action syntax</a></li><li><a href="#decb2570-5c0b-4363-bc09-5f71d32cab10" class="tooltipped" data-position="left" data-tooltip="Pronghorn">Pronghorn</a></li></ul></div></div></div></div></main></div></body><script type="text/javascript" src="../../contrib/materialize/materialize.min.js"></script><script type="text/javascript" src="../../contrib/clipboard/clipboard.min.js"></script><script type="text/javascript" src="../../contrib/prism/prism.min.js"></script><script type="text/javascript" src="../../js/init.js"></script><script type="text/javascript" src="../../js/navigation.js"></script><script type="text/javascript" src="../../contrib/fuse/fuse.min.js"></script><script type="text/javascript" src="../../js/search_index.js"></script><script type="text/javascript" src="../../js/sqa_moose.js"></script>

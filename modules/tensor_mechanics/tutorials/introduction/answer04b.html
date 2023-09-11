@@ -1,0 +1,33 @@
+<!DOCTYPE html><head><meta charset="UTF-8"><title>answer04b.md | Eel</title><link href="../../../../contrib/materialize/materialize.min.css" type="text/css" rel="stylesheet" media="screen,projection"></link><link href="../../../../contrib/prism/prism.min.css" type="text/css" rel="stylesheet"></link><link href="../../../../css/moose.css" type="text/css" rel="stylesheet"></link><link href="../../../../css/devel_moose.css" type="text/css" rel="stylesheet"></link><link href="../../../../css/alert_moose.css" type="text/css" rel="stylesheet"></link><link href="../../../../css/content_moose.css" type="text/css" rel="stylesheet"></link><link href="../../../../css/sqa_moose.css" type="text/css" rel="stylesheet"></link><link href="../../../../css/civet_moose.css" type="text/css" rel="stylesheet"></link><script type="text/javascript" src="../../../../contrib/jquery/jquery.min.js"></script><script type="text/javascript" src="../../../../contrib/plotly/plotly.min.js"></script></head><body><div class="page-wrap"><header><nav><div class="nav-wrapper container"><a href="../../../../index.html" class="left moose-logo hide-on-med-and-down" id="home-button">Eel</a><a href="https://github.com/hugary1995/eel" class="right"><img src="../../../../media/framework/github-logo.png" class="github-mark"></img><img src="../../../../media/framework/github-mark.png" class="github-logo"></img></a><ul class="right hide-on-med-and-down"><li><a href="../../../../eel.html">Documentation</a></li></ul><a href="#" class="sidenav-trigger" data-target="ebb65a2b-5d2f-4d43-8f29-eddc7cf95bd9"><i class="material-icons">menu</i></a><ul class="sidenav" id="ebb65a2b-5d2f-4d43-8f29-eddc7cf95bd9"><li><a href="../../../../eel.html">Documentation</a></li></ul><a href="#moose-search" class="modal-trigger"><i class="material-icons">search</i></a></div></nav><div class="modal modal-fixed-footer moose-search-modal" id="moose-search"><div class="modal-content container moose-search-modal-content"><div class="row"><div class="col l12"><div class="input-field"><input type_="text" onkeyup="mooseSearch()" placeholder="/index.md" id="moose-search-box"></input></div></div><div><div class="col s12" id="moose-search-results"></div></div></div></div><div class="modal-footer"><a href="#!" class="modal-close btn-flat">Close</a></div></div></header><main class="main"><div class="container"><div class="row"><div class="col hide-on-med-and-down l12"><nav class="breadcrumb-nav"><div class="nav-wrapper"><span class="breadcrumb">modules</span><a href="../.." class="breadcrumb">tensor_mechanics</a><span class="breadcrumb">tutorials</span><a href="." class="breadcrumb">introduction</a><a href="#" class="breadcrumb">answer04b</a></div></nav></div></div><div class="row"><div class="moose-content col s12 m12 l10"><blockquote><p>Let&#x27;s see if we can extract the x deflection of the left cantilever. It should be a positive value and the scalar we can extract is the maximum <code>disp_x</code> value in the simulation cell (the left cantilever has positive displacements as it bends right in the positive x direction, while the right cantilever has negative displacements as it bends left in the negative x direction). So we need a postprocessor object that gives us an extreme value of a given variable. Take a look at <a href="../../../../source/postprocessors/NodalExtremeValue.html">NodalExtremeValue</a> and try to set it up to output the maximum positive x deflection.</p></blockquote><p>Add the following top level block to the input</p><pre class="moose-pre"><code class="language-text">
+[Postprocessors]
+  [x_deflection]
+    type = NodalExtremeValue
+    value_type = max
+    variable = disp_x
+  []
+[]
+</code></pre><p>Then update your <code>[Outputs]</code> block to look like this.</p><pre class="moose-pre"><code class="language-text">
+[Outputs]
+  exodus = true
+  csv = true
+[]
+</code></pre><p>When you run the simulation you should see output like this</p><pre class="moose-pre"><code class="language-text">
+Postprocessor Values:
++----------------+----------------+
+| time           | x_deflection   |
++----------------+----------------+
+|   0.000000e+00 |   0.000000e+00 |
+|   5.000000e-01 |   2.371558e-02 |
+|   1.000000e+00 |   4.744654e-02 |
+|   1.500000e+00 |   7.119190e-02 |
+|   2.000000e+00 |   9.495067e-02 |
+|   2.500000e+00 |   1.187218e-01 |
+|   3.000000e+00 |   1.425044e-01 |
+|   3.500000e+00 |   1.662974e-01 |
+|   4.000000e+00 |   1.900998e-01 |
+|   4.500000e+00 |   2.139106e-01 |
+|   5.000000e+00 |   2.377289e-01 |
++----------------+----------------+
+</code></pre><p>We can plot this data and obtain a curve that shows the x deflection as a function of time (and in our simulation time is proportional to the applied pressure).</p><div id="9171c8be-1aaf-4df0-ae01-1ce8d8a9b865"></div><script>div = document.getElementById('9171c8be-1aaf-4df0-ae01-1ce8d8a9b865');
+Plotly.plot(div, [{'x': [0.0, 0.5, 1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0, 4.5, 5.0], 'y': [0.0, 0.023715578545891, 0.047446543911184, 0.071191904882184, 0.094950668270887, 0.11872183902512, 0.14250442033962, 0.16629741376752, 0.19009981923785, 0.21391063550499, 0.23772885980544], 'name': 'v=0.3'}], {'xaxis': {'title': 'Time'}, 'yaxis': {'title': 'Maximum x displacement'}, 'title': 'Cantilever deflection'});
+</script></div><div class="col hide-on-med-and-down l2"><div class="toc-wrapper pin-top"><ul class="section table-of-contents"></ul></div></div></div></div></main></div></body><script type="text/javascript" src="../../../../contrib/materialize/materialize.min.js"></script><script type="text/javascript" src="../../../../contrib/clipboard/clipboard.min.js"></script><script type="text/javascript" src="../../../../contrib/prism/prism.min.js"></script><script type="text/javascript" src="../../../../js/init.js"></script><script type="text/javascript" src="../../../../js/navigation.js"></script><script type="text/javascript" src="../../../../contrib/fuse/fuse.min.js"></script><script type="text/javascript" src="../../../../js/search_index.js"></script><script type="text/javascript" src="../../../../js/sqa_moose.js"></script>

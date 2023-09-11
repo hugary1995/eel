@@ -1,0 +1,38 @@
+<!DOCTYPE html><head><meta charset="UTF-8"><title>rdg_srs.md | Eel</title><link href="../contrib/materialize/materialize.min.css" type="text/css" rel="stylesheet" media="screen,projection"></link><link href="../contrib/prism/prism.min.css" type="text/css" rel="stylesheet"></link><link href="../css/moose.css" type="text/css" rel="stylesheet"></link><link href="../css/devel_moose.css" type="text/css" rel="stylesheet"></link><link href="../css/alert_moose.css" type="text/css" rel="stylesheet"></link><link href="../css/content_moose.css" type="text/css" rel="stylesheet"></link><link href="../css/sqa_moose.css" type="text/css" rel="stylesheet"></link><link href="../css/civet_moose.css" type="text/css" rel="stylesheet"></link><script type="text/javascript" src="../contrib/jquery/jquery.min.js"></script></head><body><div class="page-wrap"><header><nav><div class="nav-wrapper container"><a href="../index.html" class="left moose-logo hide-on-med-and-down" id="home-button">Eel</a><a href="https://github.com/hugary1995/eel" class="right"><img src="../media/framework/github-logo.png" class="github-mark"></img><img src="../media/framework/github-mark.png" class="github-logo"></img></a><ul class="right hide-on-med-and-down"><li><a href="../eel.html">Documentation</a></li></ul><a href="#" class="sidenav-trigger" data-target="c0f1c711-616e-4c40-9609-c42ae40fd017"><i class="material-icons">menu</i></a><ul class="sidenav" id="c0f1c711-616e-4c40-9609-c42ae40fd017"><li><a href="../eel.html">Documentation</a></li></ul><a href="#moose-search" class="modal-trigger"><i class="material-icons">search</i></a></div></nav><div class="modal modal-fixed-footer moose-search-modal" id="moose-search"><div class="modal-content container moose-search-modal-content"><div class="row"><div class="col l12"><div class="input-field"><input type_="text" onkeyup="mooseSearch()" placeholder="/index.md" id="moose-search-box"></input></div></div><div><div class="col s12" id="moose-search-results"></div></div></div></div><div class="modal-footer"><a href="#!" class="modal-close btn-flat">Close</a></div></div></header><main class="main"><div class="container"><div class="row"><div class="col hide-on-med-and-down l12"><nav class="breadcrumb-nav"><div class="nav-wrapper"><a href="." class="breadcrumb">sqa</a><a href="#" class="breadcrumb">rdg_srs</a></div></nav></div></div><div class="row"><div class="moose-content col s12 m12 l10"><p class="moose-disabled">!template load file=sqa/module_srs.md.template module=Reconstructed Discontinuous Galerkin category=rdg</p><p class="moose-disabled">
+
+!template! item key=system-purpose
+!! system-purpose-begin
+The MOOSE rDG module is a library for the implementation of simulation tools that solve
+convection-dominated problems using the class of so-called reconstructed discontinuous Galerkin (rDG)
+methods. The specific rDG method implemented in this module is rDG(P0P1), which is equivalent to the
+second-order cell-centered finite volume method (FVM). Cell-centered FVMs are regarded as a subset of
+rDG methods in the case when the baseline polynomial solution in each element is a constant
+monomial. The FVMs are the most widely used numerical methods in areas such as computational fluid
+dynamics (CFD) and heat transfer, computational acoustics, and magnetohydrodynamics (MHD).
+!! system-purpose-finish
+!template-end!</p><p class="moose-disabled">
+
+!template! item key=system-scope
+!! system-scope-begin
+The purpose of this software is to provide capability to MOOSE-based applications
+to use a second-order, cell-centered finite volume method (FVM). This
+module provides a systematic solution for implementing all required components in a second-order FVM
+such as slope reconstruction, slope limiting, numerical flux, and proper boundary conditions.
+Additionally, this module provides an implementation of these components for the
+scalar advection equation.
+!! system-scope-finish
+!template-end!</p><p class="moose-disabled">
+
+!template! item key=assumptions-and-dependencies
+The {{module}} module is designed with the fewest possible constraints on hardware and software.
+For more context on this point, the {{module}} module SRS defers to the framework
+[framework_srs.md#assumptions-and-dependencies]. Any physics-based or mathematics-based
+assumptions in code simulations and code objects are highlighted in their
+respective documentation pages.
+!template-end!</p><p class="moose-disabled">
+
+!template! item key=reliability
+The regression test suite will cover at least 65% of all lines of code within the {{module}}
+module at all times. Known regressions will be recorded and tracked (see [#maintainability]) to an
+independent and satisfactory resolution.
+!template-end!</p></div><div class="col hide-on-med-and-down l2"><div class="toc-wrapper pin-top"><ul class="section table-of-contents"></ul></div></div></div></div></main></div></body><script type="text/javascript" src="../contrib/materialize/materialize.min.js"></script><script type="text/javascript" src="../contrib/clipboard/clipboard.min.js"></script><script type="text/javascript" src="../contrib/prism/prism.min.js"></script><script type="text/javascript" src="../js/init.js"></script><script type="text/javascript" src="../js/navigation.js"></script><script type="text/javascript" src="../contrib/fuse/fuse.min.js"></script><script type="text/javascript" src="../js/search_index.js"></script><script type="text/javascript" src="../js/sqa_moose.js"></script>

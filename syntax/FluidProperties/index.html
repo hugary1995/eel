@@ -1,0 +1,885 @@
+<!DOCTYPE html><head><meta charset="UTF-8"><title>FluidProperties System | Eel</title><link href="../../contrib/materialize/materialize.min.css" type="text/css" rel="stylesheet" media="screen,projection"></link><link href="../../contrib/prism/prism.min.css" type="text/css" rel="stylesheet"></link><link href="../../css/moose.css" type="text/css" rel="stylesheet"></link><link href="../../css/devel_moose.css" type="text/css" rel="stylesheet"></link><link href="../../css/alert_moose.css" type="text/css" rel="stylesheet"></link><link href="../../css/content_moose.css" type="text/css" rel="stylesheet"></link><link href="../../css/sqa_moose.css" type="text/css" rel="stylesheet"></link><link href="../../css/civet_moose.css" type="text/css" rel="stylesheet"></link><link href="../../contrib/katex/katex.min.css" type="text/css" rel="stylesheet"></link><link href="../../css/katex_moose.css" type="text/css" rel="stylesheet"></link><script type="text/javascript" src="../../contrib/jquery/jquery.min.js"></script><script type="text/javascript" src="../../contrib/katex/katex.min.js"></script></head><body><div class="page-wrap"><header><nav><div class="nav-wrapper container"><a href="../../index.html" class="left moose-logo hide-on-med-and-down" id="home-button">Eel</a><a href="https://github.com/hugary1995/eel" class="right"><img src="../../media/framework/github-logo.png" class="github-mark"></img><img src="../../media/framework/github-mark.png" class="github-logo"></img></a><ul class="right hide-on-med-and-down"><li><a href="../../eel.html">Documentation</a></li></ul><a href="#" class="sidenav-trigger" data-target="3930045c-c7b6-426a-91b2-009056a1219a"><i class="material-icons">menu</i></a><ul class="sidenav" id="3930045c-c7b6-426a-91b2-009056a1219a"><li><a href="../../eel.html">Documentation</a></li></ul><a href="#moose-search" class="modal-trigger"><i class="material-icons">search</i></a></div></nav><div class="modal modal-fixed-footer moose-search-modal" id="moose-search"><div class="modal-content container moose-search-modal-content"><div class="row"><div class="col l12"><div class="input-field"><input type_="text" onkeyup="mooseSearch()" placeholder="/index.md" id="moose-search-box"></input></div></div><div><div class="col s12" id="moose-search-results"></div></div></div></div><div class="modal-footer"><a href="#!" class="modal-close btn-flat">Close</a></div></div></header><main class="main"><div class="container"><div class="row"><div class="col hide-on-med-and-down l12"><nav class="breadcrumb-nav"><div class="nav-wrapper"><a href=".." class="breadcrumb">syntax</a><a href="." class="breadcrumb">FluidProperties</a></div></nav></div></div><div class="row"><div class="moose-content col s12 m12 l10"><section id="070a832d-a93e-42e3-a3a4-fdca91212fbb" data-section-level="1" data-section-text="FluidProperties System"><h1 id="fluidproperties-system">FluidProperties System</h1><section class="scrollspy" id="1c45ff9a-bef3-48e0-93cf-d622bfc7a152" data-section-level="2" data-section-text="Overview"><h2 id="overview">Overview</h2><p><code>FluidProperties</code> objects define interfaces for computing thermodynamic properties of fluids (liquids and gases). The consistent interface allows different fluids to be used in an input file by simply swapping the name of the Fluid Properties UserObject in a plug-and-play manner.</p><p>There are multiple base classes suited to different phase and component combinations, as well as to different applications:</p><ul class="browser-default"><li><p><code>HEMFluidProperties</code>: single component, single phase, HEM formulation </p></li><li><p><code>MultiComponentFluidProperties</code>: two components, single phase, <span class="moose-katex-inline-equation" id="moose-equation-3368d37c-10cf-4093-98c2-62c093a66555"><script>var element = document.getElementById("moose-equation-3368d37c-10cf-4093-98c2-62c093a66555");katex.render("(p,T)", element, {displayMode:false,throwOnError:false,macros:{"\\bs":"\\boldsymbol{#1}","\\grad":"\\bs{\\nabla}","\\divergence":"\\grad \\cdot","\\norm":"\\left\\lVert#1\\right\\rVert","\\abs":"\\left\\lvert#1\\right\\rvert","\\diff":"\\text{ d}#1","\\bfa":"\\boldsymbol{a}","\\bfb":"\\boldsymbol{b}","\\bfc":"\\boldsymbol{c}","\\bfd":"\\boldsymbol{d}","\\bfe":"\\boldsymbol{e}","\\bff":"\\boldsymbol{f}","\\bfg":"\\boldsymbol{g}","\\bfh":"\\boldsymbol{h}","\\bfi":"\\boldsymbol{i}","\\bfj":"\\boldsymbol{j}","\\bfk":"\\boldsymbol{k}","\\bfl":"\\boldsymbol{l}","\\bfm":"\\boldsymbol{m}","\\bfn":"\\boldsymbol{n}","\\bfo":"\\boldsymbol{o}","\\bfp":"\\boldsymbol{p}","\\bfq":"\\boldsymbol{q}","\\bfr":"\\boldsymbol{r}","\\bfs":"\\boldsymbol{s}","\\bft":"\\boldsymbol{t}","\\bfu":"\\boldsymbol{u}","\\bfv":"\\boldsymbol{v}","\\bfw":"\\boldsymbol{w}","\\bfx":"\\boldsymbol{x}","\\bfy":"\\boldsymbol{y}","\\bfz":"\\boldsymbol{z}","\\bfA":"\\boldsymbol{A}","\\bfB":"\\boldsymbol{B}","\\bfC":"\\boldsymbol{C}","\\bfD":"\\boldsymbol{D}","\\bfE":"\\boldsymbol{E}","\\bfF":"\\boldsymbol{F}","\\bfG":"\\boldsymbol{G}","\\bfH":"\\boldsymbol{H}","\\bfI":"\\boldsymbol{I}","\\bfJ":"\\boldsymbol{J}","\\bfK":"\\boldsymbol{K}","\\bfL":"\\boldsymbol{L}","\\bfM":"\\boldsymbol{M}","\\bfN":"\\boldsymbol{N}","\\bfO":"\\boldsymbol{O}","\\bfP":"\\boldsymbol{P}","\\bfQ":"\\boldsymbol{Q}","\\bfR":"\\boldsymbol{R}","\\bfS":"\\boldsymbol{S}","\\bfT":"\\boldsymbol{T}","\\bfU":"\\boldsymbol{U}","\\bfV":"\\boldsymbol{V}","\\bfW":"\\boldsymbol{W}","\\bfX":"\\boldsymbol{X}","\\bfY":"\\boldsymbol{Y}","\\bfZ":"\\boldsymbol{Z}"}});</script></span> formulation </p></li><li><p><a href="../../source/fluidproperties/SinglePhaseFluidProperties.html">SinglePhaseFluidProperties</a>: single component, single phase </p></li><li><p><code>TwoPhaseFluidProperties</code>: single component, two phases </p></li><li><p><code>VaporMixtureFluidProperties</code>: multiple components, single (vapor) phase</p></li></ul></section><section class="scrollspy" id="9001eec9-d6a0-4c5f-9558-bf8fb66579a5" data-section-level="2" data-section-text="Usage"><h2 id="usage">Usage</h2><p>Fluid properties objects are <code>GeneralUserObject</code>s that have empty <code>initialize()</code>, <code>execute()</code> and <code>finalize()</code> methods, so they do nothing during a simulation. Their purpose is to provide convenient access to fluid properties through the existing UserObject interface.</p><p>All Fluid Properties UserObjects can be accessed in MOOSE objects through the usual UserObject interface. The following example provides a detailed explanation of the steps involved to use the Fluid Properties UserObjects in other MOOSE objects, and the syntax required in the input file.</p><p>This example is for a problem that has energy-volume as the primary variables. A material is provided to calculate fluid properties at the quadrature points.</p><section id="2a281260-ee34-4116-98d3-6adcc55376c1" data-section-level="3" data-section-text="Source"><h3 id="source">Source</h3><p>To access the fluid properties defined in the Fluid Properties module in a MOOSE object, the source code of the object must include the following lines of code.</p><p>In the header file of the material, a <code>const</code> reference to the base <a href="../../source/fluidproperties/SinglePhaseFluidProperties.html">SinglePhaseFluidProperties</a> object is required:</p><pre class="moose-pre" style="max-height:350px;"><code class="language-cpp">  const SinglePhaseFluidProperties &amp; _fp;
+</code></pre><a class="moose-source-filename tooltipped modal-trigger" href="#12c481be-262c-48fc-8509-0238c08c0f19">(moose/modules/fluid_properties/include/materials/FluidPropertiesMaterialVE.h)</a><div class="card moose-alert moose-alert-note"><div class="card-title moose-alert-title"><i class="material-icons moose-inline-icon">comment</i><span class="moose-alert-title-brand">note</span></div><div class="card-content"><div class="moose-alert-content"><p>A forward declaration to the <a href="../../source/fluidproperties/SinglePhaseFluidProperties.html">SinglePhaseFluidProperties</a> class is required at the beginning of the header file.</p></div></div></div><pre class="moose-pre" style="max-height:350px;"><code class="language-cpp">class SinglePhaseFluidProperties;
+</code></pre><a class="moose-source-filename tooltipped modal-trigger" href="#0b0cfce3-e1e2-49fd-b279-5c953e5e5630">(moose/modules/fluid_properties/include/materials/FluidPropertiesMaterialVE.h)</a><p>In the source file, the <code>SinglePhaseFluidProperties</code> class must be included</p><pre class="moose-pre" style="max-height:350px;"><code class="language-cpp">#include &quot;SinglePhaseFluidProperties.h&quot;
+</code></pre><a class="moose-source-filename tooltipped modal-trigger" href="#61dec594-cb77-4ddf-b65e-63beef65c7a1">(moose/modules/fluid_properties/src/materials/FluidPropertiesMaterialVE.C)</a><p>The Fluid Properties UserObject is passed to this material in the input file by adding a UserObject name parameters in the input parameters:</p><pre class="moose-pre" style="max-height:350px;"><code class="language-cpp">  params.addRequiredParam&lt;UserObjectName&gt;(&quot;fp&quot;, &quot;The name of the user object for fluid properties&quot;);
+</code></pre><a class="moose-source-filename tooltipped modal-trigger" href="#c5cef9b0-42eb-4d59-a04f-d5a2b5421efe">(moose/modules/fluid_properties/src/materials/FluidPropertiesMaterialVE.C)</a><p>The reference to the UserObject is then initialized in the constructor using</p><pre class="moose-pre" style="max-height:350px;"><code class="language-cpp">    _fp(getUserObject&lt;SinglePhaseFluidProperties&gt;(&quot;fp&quot;))
+</code></pre><a class="moose-source-filename tooltipped modal-trigger" href="#8130e50c-e6bf-48f8-9830-ca4304dd1829">(moose/modules/fluid_properties/src/materials/FluidPropertiesMaterialVE.C)</a><p>The properties defined in the Fluid Properties UserObject can now be accessed through the reference. In this material, the <code>computeQpProperties</code> method calculates a number of properties at the quadrature points using the values of <code>_v[_qp]</code> and <code>_e[_qp]</code>.</p><pre class="moose-pre" style="max-height:350px;"><code class="language-cpp">FluidPropertiesMaterialVE::computeQpProperties()
+{
+  _p[_qp] = _fp.p_from_v_e(_v[_qp], _e[_qp]);
+  _T[_qp] = _fp.T_from_v_e(_v[_qp], _e[_qp]);
+  _c[_qp] = _fp.c_from_v_e(_v[_qp], _e[_qp]);
+  _cp[_qp] = _fp.cp_from_v_e(_v[_qp], _e[_qp]);
+  _cv[_qp] = _fp.cv_from_v_e(_v[_qp], _e[_qp]);
+  _mu[_qp] = _fp.mu_from_v_e(_v[_qp], _e[_qp]);
+  _k[_qp] = _fp.k_from_v_e(_v[_qp], _e[_qp]);
+  _s[_qp] = _fp.s_from_v_e(_v[_qp], _e[_qp]);
+  _g[_qp] = _fp.g_from_v_e(_v[_qp], _e[_qp]);
+}
+</code></pre><a class="moose-source-filename tooltipped modal-trigger" href="#f0a32688-e472-45e6-9044-8f4209a33128">(moose/modules/fluid_properties/src/materials/FluidPropertiesMaterialVE.C)</a><p>In a similar fashion, fluid properties can be accessed using the Automatic Differentiation interface using the <code>DualReal</code> version which provides both the value and derivatives</p><pre class="moose-pre"><code class="language-text">
+DualReal rho = _fp.p_from_T_v(T, v);
+</code></pre><p>where <span class="moose-katex-inline-equation" id="moose-equation-af789e50-d0c9-460c-8899-c4cdef531f2a"><script>var element = document.getElementById("moose-equation-af789e50-d0c9-460c-8899-c4cdef531f2a");katex.render("T", element, {displayMode:false,throwOnError:false,macros:{"\\bs":"\\boldsymbol{#1}","\\grad":"\\bs{\\nabla}","\\divergence":"\\grad \\cdot","\\norm":"\\left\\lVert#1\\right\\rVert","\\abs":"\\left\\lvert#1\\right\\rvert","\\diff":"\\text{ d}#1","\\bfa":"\\boldsymbol{a}","\\bfb":"\\boldsymbol{b}","\\bfc":"\\boldsymbol{c}","\\bfd":"\\boldsymbol{d}","\\bfe":"\\boldsymbol{e}","\\bff":"\\boldsymbol{f}","\\bfg":"\\boldsymbol{g}","\\bfh":"\\boldsymbol{h}","\\bfi":"\\boldsymbol{i}","\\bfj":"\\boldsymbol{j}","\\bfk":"\\boldsymbol{k}","\\bfl":"\\boldsymbol{l}","\\bfm":"\\boldsymbol{m}","\\bfn":"\\boldsymbol{n}","\\bfo":"\\boldsymbol{o}","\\bfp":"\\boldsymbol{p}","\\bfq":"\\boldsymbol{q}","\\bfr":"\\boldsymbol{r}","\\bfs":"\\boldsymbol{s}","\\bft":"\\boldsymbol{t}","\\bfu":"\\boldsymbol{u}","\\bfv":"\\boldsymbol{v}","\\bfw":"\\boldsymbol{w}","\\bfx":"\\boldsymbol{x}","\\bfy":"\\boldsymbol{y}","\\bfz":"\\boldsymbol{z}","\\bfA":"\\boldsymbol{A}","\\bfB":"\\boldsymbol{B}","\\bfC":"\\boldsymbol{C}","\\bfD":"\\boldsymbol{D}","\\bfE":"\\boldsymbol{E}","\\bfF":"\\boldsymbol{F}","\\bfG":"\\boldsymbol{G}","\\bfH":"\\boldsymbol{H}","\\bfI":"\\boldsymbol{I}","\\bfJ":"\\boldsymbol{J}","\\bfK":"\\boldsymbol{K}","\\bfL":"\\boldsymbol{L}","\\bfM":"\\boldsymbol{M}","\\bfN":"\\boldsymbol{N}","\\bfO":"\\boldsymbol{O}","\\bfP":"\\boldsymbol{P}","\\bfQ":"\\boldsymbol{Q}","\\bfR":"\\boldsymbol{R}","\\bfS":"\\boldsymbol{S}","\\bfT":"\\boldsymbol{T}","\\bfU":"\\boldsymbol{U}","\\bfV":"\\boldsymbol{V}","\\bfW":"\\boldsymbol{W}","\\bfX":"\\boldsymbol{X}","\\bfY":"\\boldsymbol{Y}","\\bfZ":"\\boldsymbol{Z}"}});</script></span> and <span class="moose-katex-inline-equation" id="moose-equation-7f55b24a-7631-40c2-96ef-cf8693f16164"><script>var element = document.getElementById("moose-equation-7f55b24a-7631-40c2-96ef-cf8693f16164");katex.render("v", element, {displayMode:false,throwOnError:false,macros:{"\\bs":"\\boldsymbol{#1}","\\grad":"\\bs{\\nabla}","\\divergence":"\\grad \\cdot","\\norm":"\\left\\lVert#1\\right\\rVert","\\abs":"\\left\\lvert#1\\right\\rvert","\\diff":"\\text{ d}#1","\\bfa":"\\boldsymbol{a}","\\bfb":"\\boldsymbol{b}","\\bfc":"\\boldsymbol{c}","\\bfd":"\\boldsymbol{d}","\\bfe":"\\boldsymbol{e}","\\bff":"\\boldsymbol{f}","\\bfg":"\\boldsymbol{g}","\\bfh":"\\boldsymbol{h}","\\bfi":"\\boldsymbol{i}","\\bfj":"\\boldsymbol{j}","\\bfk":"\\boldsymbol{k}","\\bfl":"\\boldsymbol{l}","\\bfm":"\\boldsymbol{m}","\\bfn":"\\boldsymbol{n}","\\bfo":"\\boldsymbol{o}","\\bfp":"\\boldsymbol{p}","\\bfq":"\\boldsymbol{q}","\\bfr":"\\boldsymbol{r}","\\bfs":"\\boldsymbol{s}","\\bft":"\\boldsymbol{t}","\\bfu":"\\boldsymbol{u}","\\bfv":"\\boldsymbol{v}","\\bfw":"\\boldsymbol{w}","\\bfx":"\\boldsymbol{x}","\\bfy":"\\boldsymbol{y}","\\bfz":"\\boldsymbol{z}","\\bfA":"\\boldsymbol{A}","\\bfB":"\\boldsymbol{B}","\\bfC":"\\boldsymbol{C}","\\bfD":"\\boldsymbol{D}","\\bfE":"\\boldsymbol{E}","\\bfF":"\\boldsymbol{F}","\\bfG":"\\boldsymbol{G}","\\bfH":"\\boldsymbol{H}","\\bfI":"\\boldsymbol{I}","\\bfJ":"\\boldsymbol{J}","\\bfK":"\\boldsymbol{K}","\\bfL":"\\boldsymbol{L}","\\bfM":"\\boldsymbol{M}","\\bfN":"\\boldsymbol{N}","\\bfO":"\\boldsymbol{O}","\\bfP":"\\boldsymbol{P}","\\bfQ":"\\boldsymbol{Q}","\\bfR":"\\boldsymbol{R}","\\bfS":"\\boldsymbol{S}","\\bfT":"\\boldsymbol{T}","\\bfU":"\\boldsymbol{U}","\\bfV":"\\boldsymbol{V}","\\bfW":"\\boldsymbol{W}","\\bfX":"\\boldsymbol{X}","\\bfY":"\\boldsymbol{Y}","\\bfZ":"\\boldsymbol{Z}"}});</script></span> are <code>DualReal</code>&#x27;s. The result (density <code>rho</code> in this example) then contains both the value of density and its derivatives with respect to the primary variables <code>T</code> and <code>v</code>.</p></section><section id="fbb2ee20-dbc2-4881-b543-b0e50c096fa8" data-section-level="3" data-section-text="Input file syntax"><h3 id="input-file-syntax">Input file syntax</h3><p>The Fluid Properties UserObjects are implemented in an input file in the <code>FluidProperties</code> block.  For example, to use the ideal gas formulation for specific volume and energy, the input file syntax would be:</p><pre class="moose-pre" style="max-height:350px;"><code class="language-text">[FluidProperties]
+  [./ideal_gas]
+    type = IdealGasFluidProperties
+    gamma = 1.4
+    molar_mass = 1.000536678700361
+  [../]
+[]
+</code></pre><a class="moose-source-filename tooltipped modal-trigger" href="#7f8be36c-1b05-4a53-9da9-373469c233a4">(moose/modules/fluid_properties/test/tests/ideal_gas/test.i)</a><p>In this example, the user has specified a value for <code>gamma</code> (the ratio of isobaric to isochoric specific heat capacities), and <code>R</code>, the universal gas constant.</p><p>The fluid properties can then be accessed by other MOOSE objects through the name given in the input file.</p><pre class="moose-pre" style="max-height:350px;"><code class="language-text">[Materials]
+  [./fp_mat]
+    type = FluidPropertiesMaterialVE
+    e = e
+    v = v
+    fp = ideal_gas
+  [../]
+[]
+</code></pre><a class="moose-source-filename tooltipped modal-trigger" href="#d95b8957-6dc0-4871-b577-3364b6a7ded7">(moose/modules/fluid_properties/test/tests/ideal_gas/test.i)</a><p>Due to the consistent interface for fluid properties, a different fluid can be substituted in the input file be changing the type of the UserObject. For example, to use a stiffened gas instead of an ideal gas, the only modification required in the input file is</p><pre class="moose-pre" style="max-height:350px;"><code class="language-text">[FluidProperties]
+  [./sg]
+    type = StiffenedGasFluidProperties
+    gamma = 2.35
+    q = -1167e3
+    q_prime = 0
+    p_inf = 1.e9
+    cv = 1816
+
+    mu = 0.9
+    k = 0.6
+  [../]
+[]
+</code></pre><a class="moose-source-filename tooltipped modal-trigger" href="#d104a9f0-2914-4f5f-84bf-c78fa4a689ee">(moose/modules/fluid_properties/test/tests/stiffened_gas/test.i)</a></section></section><section class="scrollspy" id="e2c35caf-36e6-4860-acdd-11ffa5ff75b9" data-section-level="2" data-section-text="Creating additional fluids"><h2 id="creating-additional-fluids">Creating additional fluids</h2><p>New fluids can be added to the Fluid Properties module by inheriting from the base class and overriding the methods that describe the fluid properties. These can then be used in an identical manner as all other Fluid Properties UserObjects.</p></section><section class="scrollspy" id="38fb02ef-a255-45eb-9bd4-876d88334b43" data-section-level="2" data-section-text="Utilities"><h2 id="utilities">Utilities</h2><section id="0d369b21-49b7-4ff9-84f2-65651d22831e" data-section-level="3" data-section-text="Fluid Properties Interrogator"><h3 id="fluid-properties-interrogator">Fluid Properties Interrogator</h3><p>The <a href="../../source/userobjects/FluidPropertiesInterrogator.html">FluidPropertiesInterrogator</a> is a user object which can be used to query eligible fluid properties objects.</p></section><section id="98610d03-0da1-4b49-a3c8-9636adda295e" data-section-level="3" data-section-text="Fluid properties materials"><h3 id="fluid-properties-materials">Fluid properties materials</h3><p>The <a href="../../source/materials/FluidPropertiesMaterialVE.html">FluidPropertiesMaterialVE</a> and <a href="../../source/materials/FluidPropertiesMaterialPT.html">FluidPropertiesMaterialPT</a> are materials which define many fluid properties as material properties, mainly for visualizing them over the solve domain.</p></section></section><section class="scrollspy" id="f2c80f18-cd0d-443f-8335-294b4445fb9b" data-section-level="2" data-section-text="Available Objects"><h2 id="available-objects">Available Objects</h2><ul class="moose-syntax-list collection with-header"><li class="collection-header">Fluid Properties App</li><li class="collection-item"><a href="../../source/fluidproperties/BrineFluidProperties.html">BrineFluidProperties</a>Fluid properties for brine</li><li class="collection-item"><a href="../../source/fluidproperties/CO2FluidProperties.html">CO2FluidProperties</a>Fluid properties for carbon dioxide (CO2) using the Span &amp; Wagner EOS</li><li class="collection-item"><a href="../../source/fluidproperties/CaloricallyImperfectGas.html">CaloricallyImperfectGas</a>Fluid properties for an ideal gas with imperfect caloric behavior.</li><li class="collection-item"><a href="../../source/fluidproperties/FlibeFluidProperties.html">FlibeFluidProperties</a>Fluid properties for flibe</li><li class="collection-item"><a href="../../source/fluidproperties/FlinakFluidProperties.html">FlinakFluidProperties</a>Fluid properties for flinak</li><li class="collection-item"><a href="../../source/fluidproperties/HeliumFluidProperties.html">HeliumFluidProperties</a>Fluid properties for helium</li><li class="collection-item"><a href="../../source/fluidproperties/HydrogenFluidProperties.html">HydrogenFluidProperties</a>Fluid properties for Hydrogen (H2)</li><li class="collection-item"><a href="../../source/fluidproperties/IdealGasFluidProperties.html">IdealGasFluidProperties</a>Fluid properties for an ideal gas</li><li class="collection-item"><a href="../../source/fluidproperties/IdealRealGasMixtureFluidProperties.html">IdealRealGasMixtureFluidProperties</a>Class for fluid properties of an arbitrary vapor mixture</li><li class="collection-item"><a href="../../source/fluidproperties/LeadBismuthFluidProperties.html">LeadBismuthFluidProperties</a>Fluid properties for Lead Bismuth eutectic 2LiF-BeF2</li><li class="collection-item"><a href="../../source/fluidproperties/LeadFluidProperties.html">LeadFluidProperties</a>Fluid properties for Lead</li><li class="collection-item"><a href="../../source/fluidproperties/MethaneFluidProperties.html">MethaneFluidProperties</a>Fluid properties for methane (CH4)</li><li class="collection-item"><a href="../../source/fluidproperties/NaClFluidProperties.html">NaClFluidProperties</a>Fluid properties for NaCl</li><li class="collection-item"><a href="../../source/fluidproperties/NaKFluidProperties.html">NaKFluidProperties</a>Fluid properties for NaK</li><li class="collection-item"><a href="../../source/fluidproperties/NitrogenFluidProperties.html">NitrogenFluidProperties</a>Fluid properties for Nitrogen (N2)</li><li class="collection-item"><a href="../../source/fluidproperties/SimpleFluidProperties.html">SimpleFluidProperties</a>Fluid properties for a simple fluid with a constant bulk density</li><li class="collection-item"><a href="../../source/fluidproperties/SodiumProperties.html">SodiumProperties</a>Fluid properties for sodium</li><li class="collection-item"><a href="../../source/fluidproperties/SodiumSaturationFluidProperties.html">SodiumSaturationFluidProperties</a>Fluid properties for liquid sodium at saturation conditions</li><li class="collection-item"><a href="../../source/fluidproperties/StiffenedGasFluidProperties.html">StiffenedGasFluidProperties</a>Fluid properties for a stiffened gas</li><li class="collection-item"><a href="../../source/fluidproperties/StiffenedGasTwoPhaseFluidProperties.html">StiffenedGasTwoPhaseFluidProperties</a>Two-phase stiffened gas fluid properties</li><li class="collection-item"><a href="../../source/fluidproperties/TabulatedBicubicFluidProperties.html">TabulatedBicubicFluidProperties</a>Fluid properties using bicubic interpolation on tabulated values provided</li><li class="collection-item"><a href="../../source/fluidproperties/TabulatedBicubicFluidProperties.html">TabulatedFluidProperties</a>Fluid properties using bicubic interpolation on tabulated values provided</li><li class="collection-item"><a href="../../source/fluidproperties/TemperaturePressureFunctionFluidProperties.html">TemperaturePressureFunctionFluidProperties</a>Single-phase fluid properties that allows to provide thermal conductivity, density, and viscosity as functions of temperature and pressure.</li><li class="collection-item"><a href="../../source/fluidproperties/TwoPhaseFluidPropertiesIndependent.html">TwoPhaseFluidPropertiesIndependent</a>2-phase fluid properties for 2 independent single-phase fluid properties</li><li class="collection-item"><a href="../../source/fluidproperties/Water97FluidProperties.html">Water97FluidProperties</a>Fluid properties for water and steam (H2O) using IAPWS-IF97</li></ul></section><section class="scrollspy" id="4e64484f-ae8e-4086-8e7c-d5fef8c5a047" data-section-level="2" data-section-text="Available Actions"><h2 id="available-actions">Available Actions</h2><ul class="moose-syntax-list collection with-header"><li class="collection-header">Fluid Properties App</li><li class="collection-item"><a href="../../source/actions/AddFluidPropertiesAction.html">AddFluidPropertiesAction</a>Add a UserObject object to the simulation.</li></ul></section></section><div class="moose-modal modal" id="12c481be-262c-48fc-8509-0238c08c0f19"><div class="modal-content"><h4>(moose/modules/fluid_properties/include/materials/FluidPropertiesMaterialVE.h)</h4><pre class="moose-pre"><code class="language-cpp">// This file is part of the MOOSE framework
+// https://www.mooseframework.org
+//
+// All rights reserved, see COPYRIGHT for full restrictions
+// https://github.com/idaholab/moose/blob/master/COPYRIGHT
+//
+// Licensed under LGPL 2.1, please see LICENSE for details
+// https://www.gnu.org/licenses/lgpl-2.1.html
+
+#pragma once
+
+#include &quot;Material.h&quot;
+
+class SinglePhaseFluidProperties;
+
+/**
+ * Computes fluid properties using (specific energy, specific volume) formulation
+ */
+class FluidPropertiesMaterialVE : public Material
+{
+public:
+  static InputParameters validParams();
+
+  FluidPropertiesMaterialVE(const InputParameters &amp; parameters);
+  virtual ~FluidPropertiesMaterialVE();
+
+protected:
+  void computeQpProperties() override;
+
+  /// Specific internal energy (J/kg)
+  const VariableValue &amp; _e;
+  /// Specific volume (1/m^3)
+  const VariableValue &amp; _v;
+  /// Pressure (Pa)
+  MaterialProperty&lt;Real&gt; &amp; _p;
+  /// Temperature (K)
+  MaterialProperty&lt;Real&gt; &amp; _T;
+  /// Speed of sound (m/s)
+  MaterialProperty&lt;Real&gt; &amp; _c;
+  /// Isobaric specific heat capacity (J/kg/K)
+  MaterialProperty&lt;Real&gt; &amp; _cp;
+  /// Isochoric specific heat capacity (J/kg/K)
+  MaterialProperty&lt;Real&gt; &amp; _cv;
+  /// Dynamic viscosity (Pa.s)
+  MaterialProperty&lt;Real&gt; &amp; _mu;
+  /// Thermal conductivity (W/m/K)
+  MaterialProperty&lt;Real&gt; &amp; _k;
+  /// Specific entropy (J/kg/K)
+  MaterialProperty&lt;Real&gt; &amp; _s;
+  /// Gibbs free energy
+  MaterialProperty&lt;Real&gt; &amp; _g;
+
+  /// Fluid properties
+  const SinglePhaseFluidProperties &amp; _fp;
+};
+</code></pre></div><div class="modal-footer"><a class="modal-close btn-flat">Close</a></div></div><div class="moose-modal modal" id="0b0cfce3-e1e2-49fd-b279-5c953e5e5630"><div class="modal-content"><h4>(moose/modules/fluid_properties/include/materials/FluidPropertiesMaterialVE.h)</h4><pre class="moose-pre"><code class="language-cpp">// This file is part of the MOOSE framework
+// https://www.mooseframework.org
+//
+// All rights reserved, see COPYRIGHT for full restrictions
+// https://github.com/idaholab/moose/blob/master/COPYRIGHT
+//
+// Licensed under LGPL 2.1, please see LICENSE for details
+// https://www.gnu.org/licenses/lgpl-2.1.html
+
+#pragma once
+
+#include &quot;Material.h&quot;
+
+class SinglePhaseFluidProperties;
+
+/**
+ * Computes fluid properties using (specific energy, specific volume) formulation
+ */
+class FluidPropertiesMaterialVE : public Material
+{
+public:
+  static InputParameters validParams();
+
+  FluidPropertiesMaterialVE(const InputParameters &amp; parameters);
+  virtual ~FluidPropertiesMaterialVE();
+
+protected:
+  void computeQpProperties() override;
+
+  /// Specific internal energy (J/kg)
+  const VariableValue &amp; _e;
+  /// Specific volume (1/m^3)
+  const VariableValue &amp; _v;
+  /// Pressure (Pa)
+  MaterialProperty&lt;Real&gt; &amp; _p;
+  /// Temperature (K)
+  MaterialProperty&lt;Real&gt; &amp; _T;
+  /// Speed of sound (m/s)
+  MaterialProperty&lt;Real&gt; &amp; _c;
+  /// Isobaric specific heat capacity (J/kg/K)
+  MaterialProperty&lt;Real&gt; &amp; _cp;
+  /// Isochoric specific heat capacity (J/kg/K)
+  MaterialProperty&lt;Real&gt; &amp; _cv;
+  /// Dynamic viscosity (Pa.s)
+  MaterialProperty&lt;Real&gt; &amp; _mu;
+  /// Thermal conductivity (W/m/K)
+  MaterialProperty&lt;Real&gt; &amp; _k;
+  /// Specific entropy (J/kg/K)
+  MaterialProperty&lt;Real&gt; &amp; _s;
+  /// Gibbs free energy
+  MaterialProperty&lt;Real&gt; &amp; _g;
+
+  /// Fluid properties
+  const SinglePhaseFluidProperties &amp; _fp;
+};
+</code></pre></div><div class="modal-footer"><a class="modal-close btn-flat">Close</a></div></div><div class="moose-modal modal" id="61dec594-cb77-4ddf-b65e-63beef65c7a1"><div class="modal-content"><h4>(moose/modules/fluid_properties/src/materials/FluidPropertiesMaterialVE.C)</h4><pre class="moose-pre"><code class="language-cpp">// This file is part of the MOOSE framework
+// https://www.mooseframework.org
+//
+// All rights reserved, see COPYRIGHT for full restrictions
+// https://github.com/idaholab/moose/blob/master/COPYRIGHT
+//
+// Licensed under LGPL 2.1, please see LICENSE for details
+// https://www.gnu.org/licenses/lgpl-2.1.html
+
+#include &quot;FluidPropertiesMaterialVE.h&quot;
+#include &quot;SinglePhaseFluidProperties.h&quot;
+
+registerMooseObject(&quot;FluidPropertiesApp&quot;, FluidPropertiesMaterialVE);
+registerMooseObjectRenamed(&quot;FluidPropertiesApp&quot;,
+                           FluidPropertiesMaterial,
+                           &quot;01/01/2023 00:00&quot;,
+                           FluidPropertiesMaterialVE);
+
+InputParameters
+FluidPropertiesMaterialVE::validParams()
+{
+  InputParameters params = Material::validParams();
+  params.addRequiredCoupledVar(&quot;e&quot;, &quot;Specific internal energy&quot;);
+  params.addRequiredCoupledVar(&quot;v&quot;, &quot;Specific volume&quot;);
+  params.addRequiredParam&lt;UserObjectName&gt;(&quot;fp&quot;, &quot;The name of the user object for fluid properties&quot;);
+  params.addClassDescription(
+      &quot;Computes fluid properties using (specific internal energy, specific volume) formulation&quot;);
+  return params;
+}
+
+FluidPropertiesMaterialVE::FluidPropertiesMaterialVE(const InputParameters &amp; parameters)
+  : Material(parameters),
+    _e(coupledValue(&quot;e&quot;)),
+    _v(coupledValue(&quot;v&quot;)),
+
+    _p(declareProperty&lt;Real&gt;(&quot;pressure&quot;)),
+    _T(declareProperty&lt;Real&gt;(&quot;temperature&quot;)),
+    _c(declareProperty&lt;Real&gt;(&quot;c&quot;)),
+    _cp(declareProperty&lt;Real&gt;(&quot;cp&quot;)),
+    _cv(declareProperty&lt;Real&gt;(&quot;cv&quot;)),
+    _mu(declareProperty&lt;Real&gt;(&quot;mu&quot;)),
+    _k(declareProperty&lt;Real&gt;(&quot;k&quot;)),
+    _s(declareProperty&lt;Real&gt;(&quot;s&quot;)),
+    _g(declareProperty&lt;Real&gt;(&quot;g&quot;)),
+
+    _fp(getUserObject&lt;SinglePhaseFluidProperties&gt;(&quot;fp&quot;))
+{
+}
+
+FluidPropertiesMaterialVE::~FluidPropertiesMaterialVE() {}
+
+void
+FluidPropertiesMaterialVE::computeQpProperties()
+{
+  _p[_qp] = _fp.p_from_v_e(_v[_qp], _e[_qp]);
+  _T[_qp] = _fp.T_from_v_e(_v[_qp], _e[_qp]);
+  _c[_qp] = _fp.c_from_v_e(_v[_qp], _e[_qp]);
+  _cp[_qp] = _fp.cp_from_v_e(_v[_qp], _e[_qp]);
+  _cv[_qp] = _fp.cv_from_v_e(_v[_qp], _e[_qp]);
+  _mu[_qp] = _fp.mu_from_v_e(_v[_qp], _e[_qp]);
+  _k[_qp] = _fp.k_from_v_e(_v[_qp], _e[_qp]);
+  _s[_qp] = _fp.s_from_v_e(_v[_qp], _e[_qp]);
+  _g[_qp] = _fp.g_from_v_e(_v[_qp], _e[_qp]);
+}
+</code></pre></div><div class="modal-footer"><a class="modal-close btn-flat">Close</a></div></div><div class="moose-modal modal" id="c5cef9b0-42eb-4d59-a04f-d5a2b5421efe"><div class="modal-content"><h4>(moose/modules/fluid_properties/src/materials/FluidPropertiesMaterialVE.C)</h4><pre class="moose-pre"><code class="language-cpp">// This file is part of the MOOSE framework
+// https://www.mooseframework.org
+//
+// All rights reserved, see COPYRIGHT for full restrictions
+// https://github.com/idaholab/moose/blob/master/COPYRIGHT
+//
+// Licensed under LGPL 2.1, please see LICENSE for details
+// https://www.gnu.org/licenses/lgpl-2.1.html
+
+#include &quot;FluidPropertiesMaterialVE.h&quot;
+#include &quot;SinglePhaseFluidProperties.h&quot;
+
+registerMooseObject(&quot;FluidPropertiesApp&quot;, FluidPropertiesMaterialVE);
+registerMooseObjectRenamed(&quot;FluidPropertiesApp&quot;,
+                           FluidPropertiesMaterial,
+                           &quot;01/01/2023 00:00&quot;,
+                           FluidPropertiesMaterialVE);
+
+InputParameters
+FluidPropertiesMaterialVE::validParams()
+{
+  InputParameters params = Material::validParams();
+  params.addRequiredCoupledVar(&quot;e&quot;, &quot;Specific internal energy&quot;);
+  params.addRequiredCoupledVar(&quot;v&quot;, &quot;Specific volume&quot;);
+  params.addRequiredParam&lt;UserObjectName&gt;(&quot;fp&quot;, &quot;The name of the user object for fluid properties&quot;);
+  params.addClassDescription(
+      &quot;Computes fluid properties using (specific internal energy, specific volume) formulation&quot;);
+  return params;
+}
+
+FluidPropertiesMaterialVE::FluidPropertiesMaterialVE(const InputParameters &amp; parameters)
+  : Material(parameters),
+    _e(coupledValue(&quot;e&quot;)),
+    _v(coupledValue(&quot;v&quot;)),
+
+    _p(declareProperty&lt;Real&gt;(&quot;pressure&quot;)),
+    _T(declareProperty&lt;Real&gt;(&quot;temperature&quot;)),
+    _c(declareProperty&lt;Real&gt;(&quot;c&quot;)),
+    _cp(declareProperty&lt;Real&gt;(&quot;cp&quot;)),
+    _cv(declareProperty&lt;Real&gt;(&quot;cv&quot;)),
+    _mu(declareProperty&lt;Real&gt;(&quot;mu&quot;)),
+    _k(declareProperty&lt;Real&gt;(&quot;k&quot;)),
+    _s(declareProperty&lt;Real&gt;(&quot;s&quot;)),
+    _g(declareProperty&lt;Real&gt;(&quot;g&quot;)),
+
+    _fp(getUserObject&lt;SinglePhaseFluidProperties&gt;(&quot;fp&quot;))
+{
+}
+
+FluidPropertiesMaterialVE::~FluidPropertiesMaterialVE() {}
+
+void
+FluidPropertiesMaterialVE::computeQpProperties()
+{
+  _p[_qp] = _fp.p_from_v_e(_v[_qp], _e[_qp]);
+  _T[_qp] = _fp.T_from_v_e(_v[_qp], _e[_qp]);
+  _c[_qp] = _fp.c_from_v_e(_v[_qp], _e[_qp]);
+  _cp[_qp] = _fp.cp_from_v_e(_v[_qp], _e[_qp]);
+  _cv[_qp] = _fp.cv_from_v_e(_v[_qp], _e[_qp]);
+  _mu[_qp] = _fp.mu_from_v_e(_v[_qp], _e[_qp]);
+  _k[_qp] = _fp.k_from_v_e(_v[_qp], _e[_qp]);
+  _s[_qp] = _fp.s_from_v_e(_v[_qp], _e[_qp]);
+  _g[_qp] = _fp.g_from_v_e(_v[_qp], _e[_qp]);
+}
+</code></pre></div><div class="modal-footer"><a class="modal-close btn-flat">Close</a></div></div><div class="moose-modal modal" id="8130e50c-e6bf-48f8-9830-ca4304dd1829"><div class="modal-content"><h4>(moose/modules/fluid_properties/src/materials/FluidPropertiesMaterialVE.C)</h4><pre class="moose-pre"><code class="language-cpp">// This file is part of the MOOSE framework
+// https://www.mooseframework.org
+//
+// All rights reserved, see COPYRIGHT for full restrictions
+// https://github.com/idaholab/moose/blob/master/COPYRIGHT
+//
+// Licensed under LGPL 2.1, please see LICENSE for details
+// https://www.gnu.org/licenses/lgpl-2.1.html
+
+#include &quot;FluidPropertiesMaterialVE.h&quot;
+#include &quot;SinglePhaseFluidProperties.h&quot;
+
+registerMooseObject(&quot;FluidPropertiesApp&quot;, FluidPropertiesMaterialVE);
+registerMooseObjectRenamed(&quot;FluidPropertiesApp&quot;,
+                           FluidPropertiesMaterial,
+                           &quot;01/01/2023 00:00&quot;,
+                           FluidPropertiesMaterialVE);
+
+InputParameters
+FluidPropertiesMaterialVE::validParams()
+{
+  InputParameters params = Material::validParams();
+  params.addRequiredCoupledVar(&quot;e&quot;, &quot;Specific internal energy&quot;);
+  params.addRequiredCoupledVar(&quot;v&quot;, &quot;Specific volume&quot;);
+  params.addRequiredParam&lt;UserObjectName&gt;(&quot;fp&quot;, &quot;The name of the user object for fluid properties&quot;);
+  params.addClassDescription(
+      &quot;Computes fluid properties using (specific internal energy, specific volume) formulation&quot;);
+  return params;
+}
+
+FluidPropertiesMaterialVE::FluidPropertiesMaterialVE(const InputParameters &amp; parameters)
+  : Material(parameters),
+    _e(coupledValue(&quot;e&quot;)),
+    _v(coupledValue(&quot;v&quot;)),
+
+    _p(declareProperty&lt;Real&gt;(&quot;pressure&quot;)),
+    _T(declareProperty&lt;Real&gt;(&quot;temperature&quot;)),
+    _c(declareProperty&lt;Real&gt;(&quot;c&quot;)),
+    _cp(declareProperty&lt;Real&gt;(&quot;cp&quot;)),
+    _cv(declareProperty&lt;Real&gt;(&quot;cv&quot;)),
+    _mu(declareProperty&lt;Real&gt;(&quot;mu&quot;)),
+    _k(declareProperty&lt;Real&gt;(&quot;k&quot;)),
+    _s(declareProperty&lt;Real&gt;(&quot;s&quot;)),
+    _g(declareProperty&lt;Real&gt;(&quot;g&quot;)),
+
+    _fp(getUserObject&lt;SinglePhaseFluidProperties&gt;(&quot;fp&quot;))
+{
+}
+
+FluidPropertiesMaterialVE::~FluidPropertiesMaterialVE() {}
+
+void
+FluidPropertiesMaterialVE::computeQpProperties()
+{
+  _p[_qp] = _fp.p_from_v_e(_v[_qp], _e[_qp]);
+  _T[_qp] = _fp.T_from_v_e(_v[_qp], _e[_qp]);
+  _c[_qp] = _fp.c_from_v_e(_v[_qp], _e[_qp]);
+  _cp[_qp] = _fp.cp_from_v_e(_v[_qp], _e[_qp]);
+  _cv[_qp] = _fp.cv_from_v_e(_v[_qp], _e[_qp]);
+  _mu[_qp] = _fp.mu_from_v_e(_v[_qp], _e[_qp]);
+  _k[_qp] = _fp.k_from_v_e(_v[_qp], _e[_qp]);
+  _s[_qp] = _fp.s_from_v_e(_v[_qp], _e[_qp]);
+  _g[_qp] = _fp.g_from_v_e(_v[_qp], _e[_qp]);
+}
+</code></pre></div><div class="modal-footer"><a class="modal-close btn-flat">Close</a></div></div><div class="moose-modal modal" id="f0a32688-e472-45e6-9044-8f4209a33128"><div class="modal-content"><h4>(moose/modules/fluid_properties/src/materials/FluidPropertiesMaterialVE.C)</h4><pre class="moose-pre"><code class="language-cpp">// This file is part of the MOOSE framework
+// https://www.mooseframework.org
+//
+// All rights reserved, see COPYRIGHT for full restrictions
+// https://github.com/idaholab/moose/blob/master/COPYRIGHT
+//
+// Licensed under LGPL 2.1, please see LICENSE for details
+// https://www.gnu.org/licenses/lgpl-2.1.html
+
+#include &quot;FluidPropertiesMaterialVE.h&quot;
+#include &quot;SinglePhaseFluidProperties.h&quot;
+
+registerMooseObject(&quot;FluidPropertiesApp&quot;, FluidPropertiesMaterialVE);
+registerMooseObjectRenamed(&quot;FluidPropertiesApp&quot;,
+                           FluidPropertiesMaterial,
+                           &quot;01/01/2023 00:00&quot;,
+                           FluidPropertiesMaterialVE);
+
+InputParameters
+FluidPropertiesMaterialVE::validParams()
+{
+  InputParameters params = Material::validParams();
+  params.addRequiredCoupledVar(&quot;e&quot;, &quot;Specific internal energy&quot;);
+  params.addRequiredCoupledVar(&quot;v&quot;, &quot;Specific volume&quot;);
+  params.addRequiredParam&lt;UserObjectName&gt;(&quot;fp&quot;, &quot;The name of the user object for fluid properties&quot;);
+  params.addClassDescription(
+      &quot;Computes fluid properties using (specific internal energy, specific volume) formulation&quot;);
+  return params;
+}
+
+FluidPropertiesMaterialVE::FluidPropertiesMaterialVE(const InputParameters &amp; parameters)
+  : Material(parameters),
+    _e(coupledValue(&quot;e&quot;)),
+    _v(coupledValue(&quot;v&quot;)),
+
+    _p(declareProperty&lt;Real&gt;(&quot;pressure&quot;)),
+    _T(declareProperty&lt;Real&gt;(&quot;temperature&quot;)),
+    _c(declareProperty&lt;Real&gt;(&quot;c&quot;)),
+    _cp(declareProperty&lt;Real&gt;(&quot;cp&quot;)),
+    _cv(declareProperty&lt;Real&gt;(&quot;cv&quot;)),
+    _mu(declareProperty&lt;Real&gt;(&quot;mu&quot;)),
+    _k(declareProperty&lt;Real&gt;(&quot;k&quot;)),
+    _s(declareProperty&lt;Real&gt;(&quot;s&quot;)),
+    _g(declareProperty&lt;Real&gt;(&quot;g&quot;)),
+
+    _fp(getUserObject&lt;SinglePhaseFluidProperties&gt;(&quot;fp&quot;))
+{
+}
+
+FluidPropertiesMaterialVE::~FluidPropertiesMaterialVE() {}
+
+void
+FluidPropertiesMaterialVE::computeQpProperties()
+{
+  _p[_qp] = _fp.p_from_v_e(_v[_qp], _e[_qp]);
+  _T[_qp] = _fp.T_from_v_e(_v[_qp], _e[_qp]);
+  _c[_qp] = _fp.c_from_v_e(_v[_qp], _e[_qp]);
+  _cp[_qp] = _fp.cp_from_v_e(_v[_qp], _e[_qp]);
+  _cv[_qp] = _fp.cv_from_v_e(_v[_qp], _e[_qp]);
+  _mu[_qp] = _fp.mu_from_v_e(_v[_qp], _e[_qp]);
+  _k[_qp] = _fp.k_from_v_e(_v[_qp], _e[_qp]);
+  _s[_qp] = _fp.s_from_v_e(_v[_qp], _e[_qp]);
+  _g[_qp] = _fp.g_from_v_e(_v[_qp], _e[_qp]);
+}
+</code></pre></div><div class="modal-footer"><a class="modal-close btn-flat">Close</a></div></div><div class="moose-modal modal" id="7f8be36c-1b05-4a53-9da9-373469c233a4"><div class="modal-content"><h4>(moose/modules/fluid_properties/test/tests/ideal_gas/test.i)</h4><pre class="moose-pre"><code class="language-text">[Mesh]
+  type = GeneratedMesh
+  dim = 2
+  nx = 2
+  ny = 2
+  elem_type = QUAD4
+[]
+
+[Functions]
+  [./f_fn]
+    type = ParsedFunction
+    expression = -4
+  [../]
+  [./bc_fn]
+    type = ParsedFunction
+    expression = &#x27;x*x+y*y&#x27;
+  [../]
+[]
+
+[Variables]
+  [./u]
+  [../]
+[]
+
+[AuxVariables]
+  [./e]
+    initial_condition = 6232.5
+  [../]
+  [./v]
+    initial_condition = 0.02493
+  [../]
+
+  [./p]
+    family = MONOMIAL
+    order = CONSTANT
+  [../]
+  [./T]
+    family = MONOMIAL
+    order = CONSTANT
+  [../]
+  [./cp]
+    family = MONOMIAL
+    order = CONSTANT
+  [../]
+  [./cv]
+    family = MONOMIAL
+    order = CONSTANT
+  [../]
+  [./c]
+    family = MONOMIAL
+    order = CONSTANT
+  [../]
+  [./mu]
+    family = MONOMIAL
+    order = CONSTANT
+  [../]
+  [./k]
+    family = MONOMIAL
+    order = CONSTANT
+  [../]
+  [./g]
+    family = MONOMIAL
+    order = CONSTANT
+  [../]
+[]
+
+[AuxKernels]
+  [./p]
+    type = MaterialRealAux
+     variable = p
+     property = pressure
+  [../]
+  [./T]
+    type = MaterialRealAux
+     variable = T
+     property = temperature
+  [../]
+  [./cp]
+    type = MaterialRealAux
+     variable = cp
+     property = cp
+  [../]
+  [./cv]
+    type = MaterialRealAux
+     variable = cv
+     property = cv
+  [../]
+  [./c]
+    type = MaterialRealAux
+     variable = c
+     property = c
+  [../]
+  [./mu]
+    type = MaterialRealAux
+     variable = mu
+     property = mu
+  [../]
+  [./k]
+    type = MaterialRealAux
+     variable = k
+     property = k
+  [../]
+  [./g]
+    type = MaterialRealAux
+     variable = g
+     property = g
+  [../]
+[]
+
+[FluidProperties]
+  [./ideal_gas]
+    type = IdealGasFluidProperties
+    gamma = 1.4
+    molar_mass = 1.000536678700361
+  [../]
+[]
+
+[Materials]
+  [./fp_mat]
+    type = FluidPropertiesMaterialVE
+    e = e
+    v = v
+    fp = ideal_gas
+  [../]
+[]
+
+[Kernels]
+  [./diff]
+    type = Diffusion
+    variable = u
+  [../]
+  [./ffn]
+    type = BodyForce
+    variable = u
+    function = f_fn
+  [../]
+[]
+
+[BCs]
+  [./all]
+    type = FunctionDirichletBC
+    variable = u
+    boundary = &#x27;left right top bottom&#x27;
+    function = bc_fn
+  [../]
+[]
+
+[Executioner]
+  type = Steady
+  solve_type = NEWTON
+[]
+
+[Outputs]
+  exodus = true
+[]
+</code></pre></div><div class="modal-footer"><a class="modal-close btn-flat">Close</a></div></div><div class="moose-modal modal" id="d95b8957-6dc0-4871-b577-3364b6a7ded7"><div class="modal-content"><h4>(moose/modules/fluid_properties/test/tests/ideal_gas/test.i)</h4><pre class="moose-pre"><code class="language-text">[Mesh]
+  type = GeneratedMesh
+  dim = 2
+  nx = 2
+  ny = 2
+  elem_type = QUAD4
+[]
+
+[Functions]
+  [./f_fn]
+    type = ParsedFunction
+    expression = -4
+  [../]
+  [./bc_fn]
+    type = ParsedFunction
+    expression = &#x27;x*x+y*y&#x27;
+  [../]
+[]
+
+[Variables]
+  [./u]
+  [../]
+[]
+
+[AuxVariables]
+  [./e]
+    initial_condition = 6232.5
+  [../]
+  [./v]
+    initial_condition = 0.02493
+  [../]
+
+  [./p]
+    family = MONOMIAL
+    order = CONSTANT
+  [../]
+  [./T]
+    family = MONOMIAL
+    order = CONSTANT
+  [../]
+  [./cp]
+    family = MONOMIAL
+    order = CONSTANT
+  [../]
+  [./cv]
+    family = MONOMIAL
+    order = CONSTANT
+  [../]
+  [./c]
+    family = MONOMIAL
+    order = CONSTANT
+  [../]
+  [./mu]
+    family = MONOMIAL
+    order = CONSTANT
+  [../]
+  [./k]
+    family = MONOMIAL
+    order = CONSTANT
+  [../]
+  [./g]
+    family = MONOMIAL
+    order = CONSTANT
+  [../]
+[]
+
+[AuxKernels]
+  [./p]
+    type = MaterialRealAux
+     variable = p
+     property = pressure
+  [../]
+  [./T]
+    type = MaterialRealAux
+     variable = T
+     property = temperature
+  [../]
+  [./cp]
+    type = MaterialRealAux
+     variable = cp
+     property = cp
+  [../]
+  [./cv]
+    type = MaterialRealAux
+     variable = cv
+     property = cv
+  [../]
+  [./c]
+    type = MaterialRealAux
+     variable = c
+     property = c
+  [../]
+  [./mu]
+    type = MaterialRealAux
+     variable = mu
+     property = mu
+  [../]
+  [./k]
+    type = MaterialRealAux
+     variable = k
+     property = k
+  [../]
+  [./g]
+    type = MaterialRealAux
+     variable = g
+     property = g
+  [../]
+[]
+
+[FluidProperties]
+  [./ideal_gas]
+    type = IdealGasFluidProperties
+    gamma = 1.4
+    molar_mass = 1.000536678700361
+  [../]
+[]
+
+[Materials]
+  [./fp_mat]
+    type = FluidPropertiesMaterialVE
+    e = e
+    v = v
+    fp = ideal_gas
+  [../]
+[]
+
+[Kernels]
+  [./diff]
+    type = Diffusion
+    variable = u
+  [../]
+  [./ffn]
+    type = BodyForce
+    variable = u
+    function = f_fn
+  [../]
+[]
+
+[BCs]
+  [./all]
+    type = FunctionDirichletBC
+    variable = u
+    boundary = &#x27;left right top bottom&#x27;
+    function = bc_fn
+  [../]
+[]
+
+[Executioner]
+  type = Steady
+  solve_type = NEWTON
+[]
+
+[Outputs]
+  exodus = true
+[]
+</code></pre></div><div class="modal-footer"><a class="modal-close btn-flat">Close</a></div></div><div class="moose-modal modal" id="d104a9f0-2914-4f5f-84bf-c78fa4a689ee"><div class="modal-content"><h4>(moose/modules/fluid_properties/test/tests/stiffened_gas/test.i)</h4><pre class="moose-pre"><code class="language-text">[Mesh]
+  type = GeneratedMesh
+  dim = 2
+  nx = 2
+  ny = 2
+  elem_type = QUAD4
+[]
+
+[Functions]
+  [./f_fn]
+    type = ParsedFunction
+    expression = -4
+  [../]
+  [./bc_fn]
+    type = ParsedFunction
+    expression = &#x27;x*x+y*y&#x27;
+  [../]
+[]
+
+[Variables]
+  [./u]
+  [../]
+[]
+
+[AuxVariables]
+  [./e]
+    initial_condition = 113206.45935406466
+  [../]
+  [./v]
+    initial_condition = 0.0007354064593540647
+  [../]
+
+  [./p]
+    family = MONOMIAL
+    order = CONSTANT
+  [../]
+  [./T]
+    family = MONOMIAL
+    order = CONSTANT
+  [../]
+  [./cp]
+    family = MONOMIAL
+    order = CONSTANT
+  [../]
+  [./cv]
+    family = MONOMIAL
+    order = CONSTANT
+  [../]
+  [./c]
+    family = MONOMIAL
+    order = CONSTANT
+  [../]
+  [./mu]
+    family = MONOMIAL
+    order = CONSTANT
+  [../]
+  [./k]
+    family = MONOMIAL
+    order = CONSTANT
+  [../]
+  [./g]
+    family = MONOMIAL
+    order = CONSTANT
+  [../]
+[]
+
+[AuxKernels]
+  [./p]
+    type = MaterialRealAux
+     variable = p
+     property = pressure
+  [../]
+  [./T]
+    type = MaterialRealAux
+     variable = T
+     property = temperature
+  [../]
+  [./cp]
+    type = MaterialRealAux
+     variable = cp
+     property = cp
+  [../]
+  [./cv]
+    type = MaterialRealAux
+     variable = cv
+     property = cv
+  [../]
+  [./c]
+    type = MaterialRealAux
+     variable = c
+     property = c
+  [../]
+  [./mu]
+    type = MaterialRealAux
+     variable = mu
+     property = mu
+  [../]
+  [./k]
+    type = MaterialRealAux
+     variable = k
+     property = k
+  [../]
+  [./g]
+    type = MaterialRealAux
+     variable = g
+     property = g
+  [../]
+[]
+
+[FluidProperties]
+  [./sg]
+    type = StiffenedGasFluidProperties
+    gamma = 2.35
+    q = -1167e3
+    q_prime = 0
+    p_inf = 1.e9
+    cv = 1816
+
+    mu = 0.9
+    k = 0.6
+  [../]
+[]
+
+[Materials]
+  [./fp_mat]
+    type = FluidPropertiesMaterialVE
+    e = e
+    v = v
+    fp = sg
+  [../]
+[]
+
+[Kernels]
+  [./diff]
+    type = Diffusion
+    variable = u
+  [../]
+  [./ffn]
+    type = BodyForce
+    variable = u
+    function = f_fn
+  [../]
+[]
+
+[BCs]
+  [./all]
+    type = FunctionDirichletBC
+    variable = u
+    boundary = &#x27;left right top bottom&#x27;
+    function = bc_fn
+  [../]
+[]
+
+[Executioner]
+  type = Steady
+  solve_type = NEWTON
+[]
+
+[Outputs]
+  exodus = true
+[]
+</code></pre></div><div class="modal-footer"><a class="modal-close btn-flat">Close</a></div></div></div><div class="col hide-on-med-and-down l2"><div class="toc-wrapper pin-top"><ul class="section table-of-contents"><li><a href="#1c45ff9a-bef3-48e0-93cf-d622bfc7a152" class="tooltipped" data-position="left" data-tooltip="Overview">Overview</a></li><li><a href="#9001eec9-d6a0-4c5f-9558-bf8fb66579a5" class="tooltipped" data-position="left" data-tooltip="Usage">Usage</a></li><li><a href="#e2c35caf-36e6-4860-acdd-11ffa5ff75b9" class="tooltipped" data-position="left" data-tooltip="Creating additional fluids">Creating additional fluids</a></li><li><a href="#38fb02ef-a255-45eb-9bd4-876d88334b43" class="tooltipped" data-position="left" data-tooltip="Utilities">Utilities</a></li><li><a href="#f2c80f18-cd0d-443f-8335-294b4445fb9b" class="tooltipped" data-position="left" data-tooltip="Available Objects">Available Objects</a></li><li><a href="#4e64484f-ae8e-4086-8e7c-d5fef8c5a047" class="tooltipped" data-position="left" data-tooltip="Available Actions">Available Actions</a></li></ul></div></div></div></div></main></div></body><script type="text/javascript" src="../../contrib/materialize/materialize.min.js"></script><script type="text/javascript" src="../../contrib/clipboard/clipboard.min.js"></script><script type="text/javascript" src="../../contrib/prism/prism.min.js"></script><script type="text/javascript" src="../../js/init.js"></script><script type="text/javascript" src="../../js/navigation.js"></script><script type="text/javascript" src="../../contrib/fuse/fuse.min.js"></script><script type="text/javascript" src="../../js/search_index.js"></script><script type="text/javascript" src="../../js/sqa_moose.js"></script>

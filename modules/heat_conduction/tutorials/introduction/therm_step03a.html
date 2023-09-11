@@ -1,0 +1,289 @@
+<!DOCTYPE html><head><meta charset="UTF-8"><title>Step 3 a Adding volumetric heating | Eel</title><link href="../../../../contrib/materialize/materialize.min.css" type="text/css" rel="stylesheet" media="screen,projection"></link><link href="../../../../contrib/prism/prism.min.css" type="text/css" rel="stylesheet"></link><link href="../../../../css/moose.css" type="text/css" rel="stylesheet"></link><link href="../../../../css/devel_moose.css" type="text/css" rel="stylesheet"></link><link href="../../../../css/alert_moose.css" type="text/css" rel="stylesheet"></link><link href="../../../../css/content_moose.css" type="text/css" rel="stylesheet"></link><link href="../../../../css/sqa_moose.css" type="text/css" rel="stylesheet"></link><link href="../../../../css/civet_moose.css" type="text/css" rel="stylesheet"></link><script type="text/javascript" src="../../../../contrib/jquery/jquery.min.js"></script></head><body><div class="page-wrap"><header><nav><div class="nav-wrapper container"><a href="../../../../index.html" class="left moose-logo hide-on-med-and-down" id="home-button">Eel</a><a href="https://github.com/hugary1995/eel" class="right"><img src="../../../../media/framework/github-logo.png" class="github-mark"></img><img src="../../../../media/framework/github-mark.png" class="github-logo"></img></a><ul class="right hide-on-med-and-down"><li><a href="../../../../eel.html">Documentation</a></li></ul><a href="#" class="sidenav-trigger" data-target="e1254c8a-9681-46da-b2f5-b817c48fbe7c"><i class="material-icons">menu</i></a><ul class="sidenav" id="e1254c8a-9681-46da-b2f5-b817c48fbe7c"><li><a href="../../../../eel.html">Documentation</a></li></ul><a href="#moose-search" class="modal-trigger"><i class="material-icons">search</i></a></div></nav><div class="modal modal-fixed-footer moose-search-modal" id="moose-search"><div class="modal-content container moose-search-modal-content"><div class="row"><div class="col l12"><div class="input-field"><input type_="text" onkeyup="mooseSearch()" placeholder="/index.md" id="moose-search-box"></input></div></div><div><div class="col s12" id="moose-search-results"></div></div></div></div><div class="modal-footer"><a href="#!" class="modal-close btn-flat">Close</a></div></div></header><main class="main"><div class="container"><div class="row"><div class="col hide-on-med-and-down l12"><nav class="breadcrumb-nav"><div class="nav-wrapper"><span class="breadcrumb">modules</span><a href="../.." class="breadcrumb">heat_conduction</a><span class="breadcrumb">tutorials</span><a href="." class="breadcrumb">introduction</a><a href="#" class="breadcrumb">therm_step03a</a></div></nav></div></div><div class="row"><div class="moose-content col s12 m12 l10"><section id="7e079f52-7e70-4185-9d61-c1ad6daa62c0" data-section-level="1" data-section-text="Step 3 a - Adding volumetric heating"><h1 id="step-3-a-adding-volumetric-heating">Step 3a - Adding volumetric heating</h1><p>In Step 3, we added the time-derivative term to the heat equation, and showed how including it allows for the solution of transient thermal problems. Some thermal problems also involve a volumetric heat source, which could arise due to a number of phenomena, including  exothermic chemical reactions, nuclear fission, and resistive heating.</p><pre class="moose-pre" style="max-height:350px;"><code class="language-text">#
+# Single block thermal input with time derivative and volumetric heat source terms
+# https://mooseframework.inl.gov/modules/heat_conduction/tutorials/introduction/therm_step03.html
+#
+
+[Mesh]
+  [generated]
+    type = GeneratedMeshGenerator
+    dim = 2
+    nx = 10
+    ny = 10
+    xmax = 2
+    ymax = 1
+  []
+[]
+
+[Variables]
+  [T]
+    initial_condition = 300.0
+  []
+[]
+
+[Kernels]
+  [heat_conduction]
+    type = HeatConduction
+    variable = T
+  []
+  [time_derivative]
+    type = HeatConductionTimeDerivative
+    variable = T
+  []
+  [heat_source]
+    type = HeatSource
+    variable = T
+    value = 1e4
+  []
+[]
+
+[Materials]
+  [thermal]
+    type = HeatConductionMaterial
+    thermal_conductivity = 45.0
+    specific_heat = 0.5
+  []
+  [density]
+    type = GenericConstantMaterial
+    prop_names = &#x27;density&#x27;
+    prop_values = 8000.0
+  []
+[]
+
+[BCs]
+  [t_left]
+    type = DirichletBC
+    variable = T
+    value = 300
+    boundary = &#x27;left&#x27;
+  []
+  [t_right]
+    type = FunctionDirichletBC
+    variable = T
+    function = &#x27;300+5*t&#x27;
+    boundary = &#x27;right&#x27;
+  []
+[]
+
+[Executioner]
+  type = Transient
+  end_time = 5
+  dt = 1
+[]
+
+[VectorPostprocessors]
+  [t_sampler]
+    type = LineValueSampler
+    variable = T
+    start_point = &#x27;0 0.5 0&#x27;
+    end_point = &#x27;2 0.5 0&#x27;
+    num_points = 20
+    sort_by = x
+  []
+[]
+
+[Outputs]
+  exodus = true
+  [csv]
+    type = CSV
+    file_base = therm_step03a_out
+    execute_on = final
+  []
+[]
+</code></pre><a class="moose-source-filename tooltipped modal-trigger" href="#93d2164c-3e3a-482c-9e67-d3ff32ba1835">(moose/modules/heat_conduction/tutorials/introduction/therm_step03a.i)</a><section class="scrollspy" id="f8b75191-f912-4dc6-9a8f-b28bed32b6fa" data-section-level="2" data-section-text="Input file"><h2 id="input-file">Input file</h2><section id="de702b82-c31c-4939-b17f-4948a99f8f4a" data-section-level="3" data-section-text="Kernels"><h3><code>Kernels</code></h3><p>The only change necessary to include a volumetric heating term to this problem is to add an additional block under <code>Kernels</code> for the volumetric heat source, which is provided by the <code>HeatSource</code> kernel. The prescribed value here is a  constant heat source prescribed as a heat source per unit volume. Options exist for prescribing this using a function, which provides the flexibility to model a wide variety of problems.</p><p>It may seem unusual that this is prescribed using a Kernel because this is similar in nature to a boundary condition. However, volume integrals are prescribed as Kernels in MOOSE, regardless of whether they are source terms or terms that depend on a derivative of the solution.</p><pre class="moose-pre" style="max-height:350px;"><code class="language-text">[Kernels]
+  [heat_conduction]
+    type = HeatConduction
+    variable = T
+  []
+  [time_derivative]
+    type = HeatConductionTimeDerivative
+    variable = T
+  []
+  [heat_source]
+    type = HeatSource
+    variable = T
+    value = 1e4
+  []
+[]
+</code></pre><a class="moose-source-filename tooltipped modal-trigger" href="#eebeb893-db4b-4bf8-9a84-0642836a07a9">(moose/modules/heat_conduction/tutorials/introduction/therm_step03a.i)</a></section></section><section class="scrollspy" id="c3b4c330-a120-46eb-a59d-75deccbe8204" data-section-level="2" data-section-text="Questions"><h2 id="questions">Questions</h2><p>Before running the model, consider how the solution should change with the addition of volumetric heating.</p><p><a href="answer03c.html">Click here for the answer.</a></p><p>Now go ahead and run the input and visualize the result to see if it matches the behavior you would expect.</p><section id="8628fe65-5470-47b8-aed9-6f31691683d1" data-section-level="3" data-section-text="Exploring parameters"><h3 id="exploring-parameters">Exploring parameters</h3><p>Try changing the magnitude of the volumetric heating and see how that affects the solution.</p><p></p></section></section></section><div class="moose-modal modal" id="93d2164c-3e3a-482c-9e67-d3ff32ba1835"><div class="modal-content"><h4>(moose/modules/heat_conduction/tutorials/introduction/therm_step03a.i)</h4><pre class="moose-pre"><code class="language-text">#
+# Single block thermal input with time derivative and volumetric heat source terms
+# https://mooseframework.inl.gov/modules/heat_conduction/tutorials/introduction/therm_step03.html
+#
+
+[Mesh]
+  [generated]
+    type = GeneratedMeshGenerator
+    dim = 2
+    nx = 10
+    ny = 10
+    xmax = 2
+    ymax = 1
+  []
+[]
+
+[Variables]
+  [T]
+    initial_condition = 300.0
+  []
+[]
+
+[Kernels]
+  [heat_conduction]
+    type = HeatConduction
+    variable = T
+  []
+  [time_derivative]
+    type = HeatConductionTimeDerivative
+    variable = T
+  []
+  [heat_source]
+    type = HeatSource
+    variable = T
+    value = 1e4
+  []
+[]
+
+[Materials]
+  [thermal]
+    type = HeatConductionMaterial
+    thermal_conductivity = 45.0
+    specific_heat = 0.5
+  []
+  [density]
+    type = GenericConstantMaterial
+    prop_names = &#x27;density&#x27;
+    prop_values = 8000.0
+  []
+[]
+
+[BCs]
+  [t_left]
+    type = DirichletBC
+    variable = T
+    value = 300
+    boundary = &#x27;left&#x27;
+  []
+  [t_right]
+    type = FunctionDirichletBC
+    variable = T
+    function = &#x27;300+5*t&#x27;
+    boundary = &#x27;right&#x27;
+  []
+[]
+
+[Executioner]
+  type = Transient
+  end_time = 5
+  dt = 1
+[]
+
+[VectorPostprocessors]
+  [t_sampler]
+    type = LineValueSampler
+    variable = T
+    start_point = &#x27;0 0.5 0&#x27;
+    end_point = &#x27;2 0.5 0&#x27;
+    num_points = 20
+    sort_by = x
+  []
+[]
+
+[Outputs]
+  exodus = true
+  [csv]
+    type = CSV
+    file_base = therm_step03a_out
+    execute_on = final
+  []
+[]
+</code></pre></div><div class="modal-footer"><a class="modal-close btn-flat">Close</a></div></div><div class="moose-modal modal" id="eebeb893-db4b-4bf8-9a84-0642836a07a9"><div class="modal-content"><h4>(moose/modules/heat_conduction/tutorials/introduction/therm_step03a.i)</h4><pre class="moose-pre"><code class="language-text">#
+# Single block thermal input with time derivative and volumetric heat source terms
+# https://mooseframework.inl.gov/modules/heat_conduction/tutorials/introduction/therm_step03.html
+#
+
+[Mesh]
+  [generated]
+    type = GeneratedMeshGenerator
+    dim = 2
+    nx = 10
+    ny = 10
+    xmax = 2
+    ymax = 1
+  []
+[]
+
+[Variables]
+  [T]
+    initial_condition = 300.0
+  []
+[]
+
+[Kernels]
+  [heat_conduction]
+    type = HeatConduction
+    variable = T
+  []
+  [time_derivative]
+    type = HeatConductionTimeDerivative
+    variable = T
+  []
+  [heat_source]
+    type = HeatSource
+    variable = T
+    value = 1e4
+  []
+[]
+
+[Materials]
+  [thermal]
+    type = HeatConductionMaterial
+    thermal_conductivity = 45.0
+    specific_heat = 0.5
+  []
+  [density]
+    type = GenericConstantMaterial
+    prop_names = &#x27;density&#x27;
+    prop_values = 8000.0
+  []
+[]
+
+[BCs]
+  [t_left]
+    type = DirichletBC
+    variable = T
+    value = 300
+    boundary = &#x27;left&#x27;
+  []
+  [t_right]
+    type = FunctionDirichletBC
+    variable = T
+    function = &#x27;300+5*t&#x27;
+    boundary = &#x27;right&#x27;
+  []
+[]
+
+[Executioner]
+  type = Transient
+  end_time = 5
+  dt = 1
+[]
+
+[VectorPostprocessors]
+  [t_sampler]
+    type = LineValueSampler
+    variable = T
+    start_point = &#x27;0 0.5 0&#x27;
+    end_point = &#x27;2 0.5 0&#x27;
+    num_points = 20
+    sort_by = x
+  []
+[]
+
+[Outputs]
+  exodus = true
+  [csv]
+    type = CSV
+    file_base = therm_step03a_out
+    execute_on = final
+  []
+[]
+</code></pre></div><div class="modal-footer"><a class="modal-close btn-flat">Close</a></div></div></div><div class="col hide-on-med-and-down l2"><div class="toc-wrapper pin-top"><ul class="section table-of-contents"><li><a href="#f8b75191-f912-4dc6-9a8f-b28bed32b6fa" class="tooltipped" data-position="left" data-tooltip="Input file">Input file</a></li><li><a href="#c3b4c330-a120-46eb-a59d-75deccbe8204" class="tooltipped" data-position="left" data-tooltip="Questions">Questions</a></li></ul></div></div></div></div></main></div></body><script type="text/javascript" src="../../../../contrib/materialize/materialize.min.js"></script><script type="text/javascript" src="../../../../contrib/clipboard/clipboard.min.js"></script><script type="text/javascript" src="../../../../contrib/prism/prism.min.js"></script><script type="text/javascript" src="../../../../js/init.js"></script><script type="text/javascript" src="../../../../js/navigation.js"></script><script type="text/javascript" src="../../../../contrib/fuse/fuse.min.js"></script><script type="text/javascript" src="../../../../js/search_index.js"></script><script type="text/javascript" src="../../../../js/sqa_moose.js"></script>

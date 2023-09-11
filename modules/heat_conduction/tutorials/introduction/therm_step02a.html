@@ -1,0 +1,319 @@
+<!DOCTYPE html><head><meta charset="UTF-8"><title>Step 2 a Sampling values along a line | Eel</title><link href="../../../../contrib/materialize/materialize.min.css" type="text/css" rel="stylesheet" media="screen,projection"></link><link href="../../../../contrib/prism/prism.min.css" type="text/css" rel="stylesheet"></link><link href="../../../../css/moose.css" type="text/css" rel="stylesheet"></link><link href="../../../../css/devel_moose.css" type="text/css" rel="stylesheet"></link><link href="../../../../css/alert_moose.css" type="text/css" rel="stylesheet"></link><link href="../../../../css/content_moose.css" type="text/css" rel="stylesheet"></link><link href="../../../../css/sqa_moose.css" type="text/css" rel="stylesheet"></link><link href="../../../../css/civet_moose.css" type="text/css" rel="stylesheet"></link><link href="../../../../contrib/katex/katex.min.css" type="text/css" rel="stylesheet"></link><link href="../../../../css/katex_moose.css" type="text/css" rel="stylesheet"></link><script type="text/javascript" src="../../../../contrib/jquery/jquery.min.js"></script><script type="text/javascript" src="../../../../contrib/katex/katex.min.js"></script></head><body><div class="page-wrap"><header><nav><div class="nav-wrapper container"><a href="../../../../index.html" class="left moose-logo hide-on-med-and-down" id="home-button">Eel</a><a href="https://github.com/hugary1995/eel" class="right"><img src="../../../../media/framework/github-logo.png" class="github-mark"></img><img src="../../../../media/framework/github-mark.png" class="github-logo"></img></a><ul class="right hide-on-med-and-down"><li><a href="../../../../eel.html">Documentation</a></li></ul><a href="#" class="sidenav-trigger" data-target="0a28473a-512d-4ce2-9e4c-be0baf53ec4a"><i class="material-icons">menu</i></a><ul class="sidenav" id="0a28473a-512d-4ce2-9e4c-be0baf53ec4a"><li><a href="../../../../eel.html">Documentation</a></li></ul><a href="#moose-search" class="modal-trigger"><i class="material-icons">search</i></a></div></nav><div class="modal modal-fixed-footer moose-search-modal" id="moose-search"><div class="modal-content container moose-search-modal-content"><div class="row"><div class="col l12"><div class="input-field"><input type_="text" onkeyup="mooseSearch()" placeholder="/index.md" id="moose-search-box"></input></div></div><div><div class="col s12" id="moose-search-results"></div></div></div></div><div class="modal-footer"><a href="#!" class="modal-close btn-flat">Close</a></div></div></header><main class="main"><div class="container"><div class="row"><div class="col hide-on-med-and-down l12"><nav class="breadcrumb-nav"><div class="nav-wrapper"><span class="breadcrumb">modules</span><a href="../.." class="breadcrumb">heat_conduction</a><span class="breadcrumb">tutorials</span><a href="." class="breadcrumb">introduction</a><a href="#" class="breadcrumb">therm_step02a</a></div></nav></div></div><div class="row"><div class="moose-content col s12 m12 l10"><section id="a8033a45-dcfa-4407-992a-0991d0abf569" data-section-level="1" data-section-text="Step 2 a - Sampling values along a line"><h1 id="step-2-a-sampling-values-along-a-line">Step 2a - Sampling values along a line</h1><p>In this sidebar we&#x27;ll go through how to sample variables along a line. As noted previously in <a href="therm_step02.html">Step 2</a>, this problem is expected to provide a solution for the temperature that varies linearly as a function of the <span class="moose-katex-inline-equation" id="moose-equation-fe905866-bdcb-4ab3-9959-6f110bfe7969"><script>var element = document.getElementById("moose-equation-fe905866-bdcb-4ab3-9959-6f110bfe7969");katex.render("x", element, {displayMode:false,throwOnError:false,macros:{"\\bs":"\\boldsymbol{#1}","\\grad":"\\bs{\\nabla}","\\divergence":"\\grad \\cdot","\\norm":"\\left\\lVert#1\\right\\rVert","\\abs":"\\left\\lvert#1\\right\\rvert","\\diff":"\\text{ d}#1","\\bfa":"\\boldsymbol{a}","\\bfb":"\\boldsymbol{b}","\\bfc":"\\boldsymbol{c}","\\bfd":"\\boldsymbol{d}","\\bfe":"\\boldsymbol{e}","\\bff":"\\boldsymbol{f}","\\bfg":"\\boldsymbol{g}","\\bfh":"\\boldsymbol{h}","\\bfi":"\\boldsymbol{i}","\\bfj":"\\boldsymbol{j}","\\bfk":"\\boldsymbol{k}","\\bfl":"\\boldsymbol{l}","\\bfm":"\\boldsymbol{m}","\\bfn":"\\boldsymbol{n}","\\bfo":"\\boldsymbol{o}","\\bfp":"\\boldsymbol{p}","\\bfq":"\\boldsymbol{q}","\\bfr":"\\boldsymbol{r}","\\bfs":"\\boldsymbol{s}","\\bft":"\\boldsymbol{t}","\\bfu":"\\boldsymbol{u}","\\bfv":"\\boldsymbol{v}","\\bfw":"\\boldsymbol{w}","\\bfx":"\\boldsymbol{x}","\\bfy":"\\boldsymbol{y}","\\bfz":"\\boldsymbol{z}","\\bfA":"\\boldsymbol{A}","\\bfB":"\\boldsymbol{B}","\\bfC":"\\boldsymbol{C}","\\bfD":"\\boldsymbol{D}","\\bfE":"\\boldsymbol{E}","\\bfF":"\\boldsymbol{F}","\\bfG":"\\boldsymbol{G}","\\bfH":"\\boldsymbol{H}","\\bfI":"\\boldsymbol{I}","\\bfJ":"\\boldsymbol{J}","\\bfK":"\\boldsymbol{K}","\\bfL":"\\boldsymbol{L}","\\bfM":"\\boldsymbol{M}","\\bfN":"\\boldsymbol{N}","\\bfO":"\\boldsymbol{O}","\\bfP":"\\boldsymbol{P}","\\bfQ":"\\boldsymbol{Q}","\\bfR":"\\boldsymbol{R}","\\bfS":"\\boldsymbol{S}","\\bfT":"\\boldsymbol{T}","\\bfU":"\\boldsymbol{U}","\\bfV":"\\boldsymbol{V}","\\bfW":"\\boldsymbol{W}","\\bfX":"\\boldsymbol{X}","\\bfY":"\\boldsymbol{Y}","\\bfZ":"\\boldsymbol{Z}"}});</script></span> coordinate.</p><p>The variation of the solution as stored in the Exodus file can be visualized along a line using tools like Paraview, but MOOSE also offers a way of directly outputing values sampled along a line to a comma-separate value (CSV) file.  Benefits of doing this include:</p><p> - If a calculation is repeated many times, plotting of key quantities can be automated.</p><p> - The solution is sampled from the finite element interpolation used internally by MOOSE, which provides the most accurate description of the solution.</p><p> - The values sampled along the line could be used for other computations within the MOOSE simulation.</p><p>To sample the values along a line, the MOOSE <code>VectorPostprocessor</code> system is used. Whereas a <code>Postprocessor</code> in MOOSE computes a single value, a <code>VectorPostprocessor</code> computes a vector of values. The <code>LineValueSampler</code> is a <code>VectorPostprocessor</code> that computes values at a discrete set of points along a line.</p><pre class="moose-pre" style="max-height:350px;"><code class="language-text">#
+# Single block thermal input with a line value sampler
+# https://mooseframework.inl.gov/modules/heat_conduction/tutorials/introduction/therm_step02.html
+#
+
+[Mesh]
+  [generated]
+    type = GeneratedMeshGenerator
+    dim = 2
+    nx = 10
+    ny = 10
+    xmax = 2
+    ymax = 1
+  []
+[]
+
+[Variables]
+  [T]
+  []
+[]
+
+[Kernels]
+  [heat_conduction]
+    type = HeatConduction
+    variable = T
+  []
+[]
+
+[Materials]
+  [thermal]
+    type = HeatConductionMaterial
+    thermal_conductivity = 45.0
+  []
+[]
+
+[BCs]
+  [t_left]
+    type = DirichletBC
+    variable = T
+    value = 300
+    boundary = &#x27;left&#x27;
+  []
+  [t_right]
+    type = FunctionDirichletBC
+    variable = T
+    function = &#x27;300+5*t&#x27;
+    boundary = &#x27;right&#x27;
+  []
+[]
+
+[Executioner]
+  type = Transient
+  end_time = 5
+  dt = 1
+[]
+
+[VectorPostprocessors]
+  [t_sampler]
+    type = LineValueSampler
+    variable = T
+    start_point = &#x27;0 0.5 0&#x27;
+    end_point = &#x27;2 0.5 0&#x27;
+    num_points = 20
+    sort_by = x
+  []
+[]
+
+[Outputs]
+  exodus = true
+  [csv]
+    type = CSV
+    file_base = therm_step02a_out
+    execute_on = final
+  []
+[]
+</code></pre><a class="moose-source-filename tooltipped modal-trigger" href="#dd89450b-2efc-4fee-bd71-ece6b4fb0ebd">(moose/modules/heat_conduction/tutorials/introduction/therm_step02a.i)</a><section class="scrollspy" id="9bb24641-deb0-4ec6-b48d-83f6a712abac" data-section-level="2" data-section-text="Input file"><h2 id="input-file">Input file</h2><section id="5507e300-c3aa-4c7e-be52-834ba24035ce" data-section-level="3" data-section-text="VectorPostprocessors"><h3><code>VectorPostprocessors</code></h3><p>To add sampling along a line, a single block to define a <code>LineValueSampler</code> is nested within the <code>VectorPostprocessors</code> top level block. Most of the parameters are self-explanatory. They define the variable to be sampled, the start and end points of the line, and the number of points. The order that the values are output is controlled by the <code>sort_by</code> parameter, and in this case, they are sorted by the <code>x</code> value since the line is oriented along the <span class="moose-katex-inline-equation" id="moose-equation-024847d0-d5d7-4e3f-bc11-a99a1d4081f5"><script>var element = document.getElementById("moose-equation-024847d0-d5d7-4e3f-bc11-a99a1d4081f5");katex.render("x", element, {displayMode:false,throwOnError:false,macros:{"\\bs":"\\boldsymbol{#1}","\\grad":"\\bs{\\nabla}","\\divergence":"\\grad \\cdot","\\norm":"\\left\\lVert#1\\right\\rVert","\\abs":"\\left\\lvert#1\\right\\rvert","\\diff":"\\text{ d}#1","\\bfa":"\\boldsymbol{a}","\\bfb":"\\boldsymbol{b}","\\bfc":"\\boldsymbol{c}","\\bfd":"\\boldsymbol{d}","\\bfe":"\\boldsymbol{e}","\\bff":"\\boldsymbol{f}","\\bfg":"\\boldsymbol{g}","\\bfh":"\\boldsymbol{h}","\\bfi":"\\boldsymbol{i}","\\bfj":"\\boldsymbol{j}","\\bfk":"\\boldsymbol{k}","\\bfl":"\\boldsymbol{l}","\\bfm":"\\boldsymbol{m}","\\bfn":"\\boldsymbol{n}","\\bfo":"\\boldsymbol{o}","\\bfp":"\\boldsymbol{p}","\\bfq":"\\boldsymbol{q}","\\bfr":"\\boldsymbol{r}","\\bfs":"\\boldsymbol{s}","\\bft":"\\boldsymbol{t}","\\bfu":"\\boldsymbol{u}","\\bfv":"\\boldsymbol{v}","\\bfw":"\\boldsymbol{w}","\\bfx":"\\boldsymbol{x}","\\bfy":"\\boldsymbol{y}","\\bfz":"\\boldsymbol{z}","\\bfA":"\\boldsymbol{A}","\\bfB":"\\boldsymbol{B}","\\bfC":"\\boldsymbol{C}","\\bfD":"\\boldsymbol{D}","\\bfE":"\\boldsymbol{E}","\\bfF":"\\boldsymbol{F}","\\bfG":"\\boldsymbol{G}","\\bfH":"\\boldsymbol{H}","\\bfI":"\\boldsymbol{I}","\\bfJ":"\\boldsymbol{J}","\\bfK":"\\boldsymbol{K}","\\bfL":"\\boldsymbol{L}","\\bfM":"\\boldsymbol{M}","\\bfN":"\\boldsymbol{N}","\\bfO":"\\boldsymbol{O}","\\bfP":"\\boldsymbol{P}","\\bfQ":"\\boldsymbol{Q}","\\bfR":"\\boldsymbol{R}","\\bfS":"\\boldsymbol{S}","\\bfT":"\\boldsymbol{T}","\\bfU":"\\boldsymbol{U}","\\bfV":"\\boldsymbol{V}","\\bfW":"\\boldsymbol{W}","\\bfX":"\\boldsymbol{X}","\\bfY":"\\boldsymbol{Y}","\\bfZ":"\\boldsymbol{Z}"}});</script></span> axis. For lines that are not oriented along one of the Cartesian axes, the <code>sort_by = id</code> option can be used to sort by the position along the line.</p><pre class="moose-pre" style="max-height:350px;"><code class="language-text">[VectorPostprocessors]
+  [t_sampler]
+    type = LineValueSampler
+    variable = T
+    start_point = &#x27;0 0.5 0&#x27;
+    end_point = &#x27;2 0.5 0&#x27;
+    num_points = 20
+    sort_by = x
+  []
+[]
+</code></pre><a class="moose-source-filename tooltipped modal-trigger" href="#8aead338-895b-4319-a4dd-999fcdbeafb4">(moose/modules/heat_conduction/tutorials/introduction/therm_step02a.i)</a></section><section id="6e2a54f3-f833-4b08-9404-f35785f94ae0" data-section-level="3" data-section-text="Outputs"><h3><code>Outputs</code></h3><p>Adding the <code>LineValueSampler</code> block will result in values being computed, but they will only exist internally in the code unless CSV output is requested in the <code>Outputs</code> block. The simplest way to request this is to add <code>csv = true</code>, similar to the <code>exodus = true</code> parameter. However, a block specific for the CSV output is added to the <code>Outputs</code> block in this case to allow specifying parameters to make the output more manageable. The <code>file_base</code> parameter permits controlling the base name for the output file. By default a separate CSV file will be output for each time step. To limit the amount of output, the <code>execute_on = final</code> parameter makes the system only output a CSV file for the last time step.</p><pre class="moose-pre" style="max-height:350px;"><code class="language-text">[Outputs]
+  exodus = true
+  [csv]
+    type = CSV
+    file_base = therm_step02a_out
+    execute_on = final
+  []
+[]
+</code></pre><a class="moose-source-filename tooltipped modal-trigger" href="#3c771396-0045-4015-ac90-90403512ca17">(moose/modules/heat_conduction/tutorials/introduction/therm_step02a.i)</a></section></section><section class="scrollspy" id="7a47dc5c-525c-42d6-ba93-c628a32160e8" data-section-level="2" data-section-text="Exercises"><h2 id="exercises">Exercises</h2><section id="370d1f75-4746-41a7-8147-0319b8409df8" data-section-level="3" data-section-text="Examining output"><h3 id="examining-output">Examining output</h3><p>First, run the model as-is and examine the CSV file that is output. Try opening that file in a plotting package to visualize the results.</p></section><section id="1c5769ff-5bd2-4a94-9c13-fb8ba046e77e" data-section-level="3" data-section-text="Output at multiple times"><h3 id="output-at-multiple-times">Output at multiple times</h3><p>Try commenting out the <code>execute_on = final</code> line in the <code>csv</code> output block and re-running the model. You should see multiple CSV files generated &ndash; one for each time step.</p><p>Once you&#x27;ve run this example we will move on to <a href="therm_step03.html">Step 3</a>, where additional terms will be added to the heat equation. </p></section></section></section><div class="moose-modal modal" id="dd89450b-2efc-4fee-bd71-ece6b4fb0ebd"><div class="modal-content"><h4>(moose/modules/heat_conduction/tutorials/introduction/therm_step02a.i)</h4><pre class="moose-pre"><code class="language-text">#
+# Single block thermal input with a line value sampler
+# https://mooseframework.inl.gov/modules/heat_conduction/tutorials/introduction/therm_step02.html
+#
+
+[Mesh]
+  [generated]
+    type = GeneratedMeshGenerator
+    dim = 2
+    nx = 10
+    ny = 10
+    xmax = 2
+    ymax = 1
+  []
+[]
+
+[Variables]
+  [T]
+  []
+[]
+
+[Kernels]
+  [heat_conduction]
+    type = HeatConduction
+    variable = T
+  []
+[]
+
+[Materials]
+  [thermal]
+    type = HeatConductionMaterial
+    thermal_conductivity = 45.0
+  []
+[]
+
+[BCs]
+  [t_left]
+    type = DirichletBC
+    variable = T
+    value = 300
+    boundary = &#x27;left&#x27;
+  []
+  [t_right]
+    type = FunctionDirichletBC
+    variable = T
+    function = &#x27;300+5*t&#x27;
+    boundary = &#x27;right&#x27;
+  []
+[]
+
+[Executioner]
+  type = Transient
+  end_time = 5
+  dt = 1
+[]
+
+[VectorPostprocessors]
+  [t_sampler]
+    type = LineValueSampler
+    variable = T
+    start_point = &#x27;0 0.5 0&#x27;
+    end_point = &#x27;2 0.5 0&#x27;
+    num_points = 20
+    sort_by = x
+  []
+[]
+
+[Outputs]
+  exodus = true
+  [csv]
+    type = CSV
+    file_base = therm_step02a_out
+    execute_on = final
+  []
+[]
+</code></pre></div><div class="modal-footer"><a class="modal-close btn-flat">Close</a></div></div><div class="moose-modal modal" id="8aead338-895b-4319-a4dd-999fcdbeafb4"><div class="modal-content"><h4>(moose/modules/heat_conduction/tutorials/introduction/therm_step02a.i)</h4><pre class="moose-pre"><code class="language-text">#
+# Single block thermal input with a line value sampler
+# https://mooseframework.inl.gov/modules/heat_conduction/tutorials/introduction/therm_step02.html
+#
+
+[Mesh]
+  [generated]
+    type = GeneratedMeshGenerator
+    dim = 2
+    nx = 10
+    ny = 10
+    xmax = 2
+    ymax = 1
+  []
+[]
+
+[Variables]
+  [T]
+  []
+[]
+
+[Kernels]
+  [heat_conduction]
+    type = HeatConduction
+    variable = T
+  []
+[]
+
+[Materials]
+  [thermal]
+    type = HeatConductionMaterial
+    thermal_conductivity = 45.0
+  []
+[]
+
+[BCs]
+  [t_left]
+    type = DirichletBC
+    variable = T
+    value = 300
+    boundary = &#x27;left&#x27;
+  []
+  [t_right]
+    type = FunctionDirichletBC
+    variable = T
+    function = &#x27;300+5*t&#x27;
+    boundary = &#x27;right&#x27;
+  []
+[]
+
+[Executioner]
+  type = Transient
+  end_time = 5
+  dt = 1
+[]
+
+[VectorPostprocessors]
+  [t_sampler]
+    type = LineValueSampler
+    variable = T
+    start_point = &#x27;0 0.5 0&#x27;
+    end_point = &#x27;2 0.5 0&#x27;
+    num_points = 20
+    sort_by = x
+  []
+[]
+
+[Outputs]
+  exodus = true
+  [csv]
+    type = CSV
+    file_base = therm_step02a_out
+    execute_on = final
+  []
+[]
+</code></pre></div><div class="modal-footer"><a class="modal-close btn-flat">Close</a></div></div><div class="moose-modal modal" id="3c771396-0045-4015-ac90-90403512ca17"><div class="modal-content"><h4>(moose/modules/heat_conduction/tutorials/introduction/therm_step02a.i)</h4><pre class="moose-pre"><code class="language-text">#
+# Single block thermal input with a line value sampler
+# https://mooseframework.inl.gov/modules/heat_conduction/tutorials/introduction/therm_step02.html
+#
+
+[Mesh]
+  [generated]
+    type = GeneratedMeshGenerator
+    dim = 2
+    nx = 10
+    ny = 10
+    xmax = 2
+    ymax = 1
+  []
+[]
+
+[Variables]
+  [T]
+  []
+[]
+
+[Kernels]
+  [heat_conduction]
+    type = HeatConduction
+    variable = T
+  []
+[]
+
+[Materials]
+  [thermal]
+    type = HeatConductionMaterial
+    thermal_conductivity = 45.0
+  []
+[]
+
+[BCs]
+  [t_left]
+    type = DirichletBC
+    variable = T
+    value = 300
+    boundary = &#x27;left&#x27;
+  []
+  [t_right]
+    type = FunctionDirichletBC
+    variable = T
+    function = &#x27;300+5*t&#x27;
+    boundary = &#x27;right&#x27;
+  []
+[]
+
+[Executioner]
+  type = Transient
+  end_time = 5
+  dt = 1
+[]
+
+[VectorPostprocessors]
+  [t_sampler]
+    type = LineValueSampler
+    variable = T
+    start_point = &#x27;0 0.5 0&#x27;
+    end_point = &#x27;2 0.5 0&#x27;
+    num_points = 20
+    sort_by = x
+  []
+[]
+
+[Outputs]
+  exodus = true
+  [csv]
+    type = CSV
+    file_base = therm_step02a_out
+    execute_on = final
+  []
+[]
+</code></pre></div><div class="modal-footer"><a class="modal-close btn-flat">Close</a></div></div></div><div class="col hide-on-med-and-down l2"><div class="toc-wrapper pin-top"><ul class="section table-of-contents"><li><a href="#9bb24641-deb0-4ec6-b48d-83f6a712abac" class="tooltipped" data-position="left" data-tooltip="Input file">Input file</a></li><li><a href="#7a47dc5c-525c-42d6-ba93-c628a32160e8" class="tooltipped" data-position="left" data-tooltip="Exercises">Exercises</a></li></ul></div></div></div></div></main></div></body><script type="text/javascript" src="../../../../contrib/materialize/materialize.min.js"></script><script type="text/javascript" src="../../../../contrib/clipboard/clipboard.min.js"></script><script type="text/javascript" src="../../../../contrib/prism/prism.min.js"></script><script type="text/javascript" src="../../../../js/init.js"></script><script type="text/javascript" src="../../../../js/navigation.js"></script><script type="text/javascript" src="../../../../contrib/fuse/fuse.min.js"></script><script type="text/javascript" src="../../../../js/search_index.js"></script><script type="text/javascript" src="../../../../js/sqa_moose.js"></script>

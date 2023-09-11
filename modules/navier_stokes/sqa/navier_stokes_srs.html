@@ -1,0 +1,45 @@
+<!DOCTYPE html><head><meta charset="UTF-8"><title>navier_stokes_srs.md | Eel</title><link href="../../../contrib/materialize/materialize.min.css" type="text/css" rel="stylesheet" media="screen,projection"></link><link href="../../../contrib/prism/prism.min.css" type="text/css" rel="stylesheet"></link><link href="../../../css/moose.css" type="text/css" rel="stylesheet"></link><link href="../../../css/devel_moose.css" type="text/css" rel="stylesheet"></link><link href="../../../css/alert_moose.css" type="text/css" rel="stylesheet"></link><link href="../../../css/content_moose.css" type="text/css" rel="stylesheet"></link><link href="../../../css/sqa_moose.css" type="text/css" rel="stylesheet"></link><link href="../../../css/civet_moose.css" type="text/css" rel="stylesheet"></link><script type="text/javascript" src="../../../contrib/jquery/jquery.min.js"></script></head><body><div class="page-wrap"><header><nav><div class="nav-wrapper container"><a href="../../../index.html" class="left moose-logo hide-on-med-and-down" id="home-button">Eel</a><a href="https://github.com/hugary1995/eel" class="right"><img src="../../../media/framework/github-logo.png" class="github-mark"></img><img src="../../../media/framework/github-mark.png" class="github-logo"></img></a><ul class="right hide-on-med-and-down"><li><a href="../../../eel.html">Documentation</a></li></ul><a href="#" class="sidenav-trigger" data-target="e080b24e-b371-4b21-8c99-4ddffd3c86cb"><i class="material-icons">menu</i></a><ul class="sidenav" id="e080b24e-b371-4b21-8c99-4ddffd3c86cb"><li><a href="../../../eel.html">Documentation</a></li></ul><a href="#moose-search" class="modal-trigger"><i class="material-icons">search</i></a></div></nav><div class="modal modal-fixed-footer moose-search-modal" id="moose-search"><div class="modal-content container moose-search-modal-content"><div class="row"><div class="col l12"><div class="input-field"><input type_="text" onkeyup="mooseSearch()" placeholder="/index.md" id="moose-search-box"></input></div></div><div><div class="col s12" id="moose-search-results"></div></div></div></div><div class="modal-footer"><a href="#!" class="modal-close btn-flat">Close</a></div></div></header><main class="main"><div class="container"><div class="row"><div class="col hide-on-med-and-down l12"><nav class="breadcrumb-nav"><div class="nav-wrapper"><span class="breadcrumb">modules</span><a href=".." class="breadcrumb">navier_stokes</a><a href="." class="breadcrumb">sqa</a><a href="#" class="breadcrumb">navier_stokes_srs</a></div></nav></div></div><div class="row"><div class="moose-content col s12 m12 l10"><p class="moose-disabled">!template load file=sqa/module_srs.md.template category=navier_stokes module=Navier Stokes</p><p class="moose-disabled">
+
+!template! item key=system-scope
+!! system-scope-begin
+The [!ac](MOOSE) Navier Stokes module provides numerical discretizations of the
+Navier Stokes equations to model the flow of fluid through regular and porous media.
+The equations discretized include the conservation of mass, momentum, energy and of transported
+scalars / species.
+It covers a wide range of fluids and of fluid flow regimes. It covers both natural and forced
+convection regime, and should be able to model conjugate heat transfer between the fluid
+and solid phases. A number of scalar species can be transported using the velocity
+field determined from the fluid flow equations.
+It can be used as a standalone application or can be included in
+downstream applications interested in modeling multiphysics problems involving fluid flow.
+!! system-scope-finish
+!template-end!</p><p class="moose-disabled">
+
+!template! item key=system-purpose
+!! system-purpose-begin
+The purpose of this software is to allow simulation of fluid flow in regular and porous media.
+It should be able to determine the pressure, velocity, and fluid temperature fields, as well
+as the solid temperature field in the case of conjugate heat transfer simulations. It aims to also be able to
+transport scalar species in the flow fields determined.
+!! system-purpose-finish
+!template-end!</p><p class="moose-disabled">
+
+!template! item key=assumptions-and-dependencies
+The {{module}} module is designed with the fewest possible constraints on hardware and software.
+For more context on this point, the {{module}} module SRS defers to the framework
+[framework_srs.md#assumptions-and-dependencies]. The {{module}} module depends on the fluid
+properties module for fluid properties.
+All physics-based assumptions in this module&#x27;s objects are highlighted in each object&#x27;s respective
+documentation pages. A summary of the key assumptions may be found on the {{module}} module [homepage](navier_stokes/index.md).
+The key physics-based assumptions when modeling fluid flow consist of the compressibility,
+from incompressible to fully compressible, the flow regime, whether turbulent or regular, and whether the media is
+porous or not, which induces volumetric friction.
+The key numerical decisions to be made when using the {{module}} module are whether to use a finite volume or finite element
+discretization, and within those which numerical scheme to use, notably for discretizing the advective term.
+!template-end!</p><p class="moose-disabled">
+
+!template! item key=reliability
+The regression test suite will cover at least 77% of all lines of code within the {{module}}
+module at all times. Known regressions will be recorded and tracked (see [#maintainability]) to an
+independent and satisfactory resolution.
+!template-end!</p></div><div class="col hide-on-med-and-down l2"><div class="toc-wrapper pin-top"><ul class="section table-of-contents"></ul></div></div></div></div></main></div></body><script type="text/javascript" src="../../../contrib/materialize/materialize.min.js"></script><script type="text/javascript" src="../../../contrib/clipboard/clipboard.min.js"></script><script type="text/javascript" src="../../../contrib/prism/prism.min.js"></script><script type="text/javascript" src="../../../js/init.js"></script><script type="text/javascript" src="../../../js/navigation.js"></script><script type="text/javascript" src="../../../contrib/fuse/fuse.min.js"></script><script type="text/javascript" src="../../../js/search_index.js"></script><script type="text/javascript" src="../../../js/sqa_moose.js"></script>

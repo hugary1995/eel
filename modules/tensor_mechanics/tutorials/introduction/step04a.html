@@ -1,0 +1,232 @@
+<!DOCTYPE html><head><meta charset="UTF-8"><title>Step 4 a Volumetric locking | Eel</title><link href="../../../../contrib/materialize/materialize.min.css" type="text/css" rel="stylesheet" media="screen,projection"></link><link href="../../../../contrib/prism/prism.min.css" type="text/css" rel="stylesheet"></link><link href="../../../../css/moose.css" type="text/css" rel="stylesheet"></link><link href="../../../../css/devel_moose.css" type="text/css" rel="stylesheet"></link><link href="../../../../css/alert_moose.css" type="text/css" rel="stylesheet"></link><link href="../../../../css/content_moose.css" type="text/css" rel="stylesheet"></link><link href="../../../../css/sqa_moose.css" type="text/css" rel="stylesheet"></link><link href="../../../../css/civet_moose.css" type="text/css" rel="stylesheet"></link><script type="text/javascript" src="../../../../contrib/jquery/jquery.min.js"></script><script type="text/javascript" src="../../../../contrib/plotly/plotly.min.js"></script></head><body><div class="page-wrap"><header><nav><div class="nav-wrapper container"><a href="../../../../index.html" class="left moose-logo hide-on-med-and-down" id="home-button">Eel</a><a href="https://github.com/hugary1995/eel" class="right"><img src="../../../../media/framework/github-logo.png" class="github-mark"></img><img src="../../../../media/framework/github-mark.png" class="github-logo"></img></a><ul class="right hide-on-med-and-down"><li><a href="../../../../eel.html">Documentation</a></li></ul><a href="#" class="sidenav-trigger" data-target="be7f6247-54d1-456e-b679-c04626ee422b"><i class="material-icons">menu</i></a><ul class="sidenav" id="be7f6247-54d1-456e-b679-c04626ee422b"><li><a href="../../../../eel.html">Documentation</a></li></ul><a href="#moose-search" class="modal-trigger"><i class="material-icons">search</i></a></div></nav><div class="modal modal-fixed-footer moose-search-modal" id="moose-search"><div class="modal-content container moose-search-modal-content"><div class="row"><div class="col l12"><div class="input-field"><input type_="text" onkeyup="mooseSearch()" placeholder="/index.md" id="moose-search-box"></input></div></div><div><div class="col s12" id="moose-search-results"></div></div></div></div><div class="modal-footer"><a href="#!" class="modal-close btn-flat">Close</a></div></div></header><main class="main"><div class="container"><div class="row"><div class="col hide-on-med-and-down l12"><nav class="breadcrumb-nav"><div class="nav-wrapper"><span class="breadcrumb">modules</span><a href="../.." class="breadcrumb">tensor_mechanics</a><span class="breadcrumb">tutorials</span><a href="." class="breadcrumb">introduction</a><a href="#" class="breadcrumb">step04a</a></div></nav></div></div><div class="row"><div class="moose-content col s12 m12 l10"><section id="550818df-5738-4043-b770-dbf00539e5f8" data-section-level="1" data-section-text="Step 4 a - Volumetric locking"><h1 id="step-4-a-volumetric-locking">Step 4a - Volumetric locking</h1><blockquote><p>Keep the postprocessing modifications from the previous question, set the <a href="#fb5a8cc1-a5c6-4fd8-bba0-c6a7f951b55e" class="moose-modal-link modal-trigger">&quot;poissons_ratio&quot;</a> of the cantilevers to <code>0.49</code>. Then add and modify the following parameters</p><ul class="browser-default"><li><p><a href="#509cd188-dc04-427e-867e-c34e1e7c8dcf" class="moose-modal-link modal-trigger">&quot;uniform_refine&quot;</a> in the <code>[Mesh]</code> block </p></li><li><p><a href="#e9352d64-d439-4cf0-93cd-d75c33cc7076" class="moose-modal-link modal-trigger">&quot;volumetric_locking_correction&quot;</a> in the tensor mechanics master action block </p></li><li><p><a href="#6b6ea06a-39e8-4de5-9be1-12f5826d5f08" class="moose-modal-link modal-trigger">&quot;elem_type&quot;</a> in the <code>GeneratedMeshGenerator</code> blocks</p></li></ul><p>For convenience all those parameters may be listed under <code>[GlobalParams]</code> instead. Compare first order QUAD4 elements to second order QUAD8 elements, compare the cantilever deflection with and without volumetric locking correction (with QUAD4 elements), and compare the result for different levels of uniform refinement (1, 2, 3, 4).</p></blockquote><pre class="moose-pre" style="max-height:350px;"><code class="language-text">#
+# We study the effects of volumetric locking
+# https://mooseframework.inl.gov/modules/tensor_mechanics/tutorials/introduction/answer04b.html
+#
+
+[GlobalParams]
+  displacements = &#x27;disp_x disp_y&#x27;
+  # elem_type applies to the GeneratedMeshGenerator blocks
+  elem_type = QUAD4
+  # volumetric_locking_correction applies to the TensorMechanics Master action
+  volumetric_locking_correction = false
+  # uniform_refine applies to the final mesh
+  uniform_refine = 0
+[]
+
+[Mesh]
+  [generated1]
+    type = GeneratedMeshGenerator
+    dim = 2
+    nx = 5
+    ny = 15
+    xmin = -0.6
+    xmax = -0.1
+    ymax = 5
+    bias_y = 0.9
+    boundary_name_prefix = pillar1
+  []
+  [generated2]
+    type = GeneratedMeshGenerator
+    dim = 2
+    nx = 4
+    ny = 15
+    xmin = 0.1
+    xmax = 0.6
+    ymax = 5
+    bias_y = 0.9
+    boundary_name_prefix = pillar2
+    boundary_id_offset = 4
+  []
+  [collect_meshes]
+    type = MeshCollectionGenerator
+    inputs = &#x27;generated1 generated2&#x27;
+  []
+[]
+
+[Modules/TensorMechanics/Master]
+  [all]
+    add_variables = true
+    strain = FINITE
+  []
+[]
+
+[BCs]
+  [bottom_x]
+    type = DirichletBC
+    variable = disp_x
+    boundary = &#x27;pillar1_bottom pillar2_bottom&#x27;
+    value = 0
+  []
+  [bottom_y]
+    type = DirichletBC
+    variable = disp_y
+    boundary = &#x27;pillar1_bottom pillar2_bottom&#x27;
+    value = 0
+  []
+  [Pressure]
+    [sides]
+      boundary = &#x27;pillar1_left pillar2_right&#x27;
+      function = 1e4*t
+    []
+  []
+[]
+
+[Materials]
+  [elasticity]
+    type = ComputeIsotropicElasticityTensor
+    youngs_modulus = 1e9
+    # near incopmpressible material
+    poissons_ratio = 0.49
+  []
+  [stress]
+    type = ComputeFiniteStrainElasticStress
+  []
+[]
+
+[Postprocessors]
+  [x_deflection]
+    type = NodalExtremeValue
+    value_type = max
+    variable = disp_x
+  []
+[]
+
+[Executioner]
+  type = Transient
+  solve_type = NEWTON
+  line_search = none
+  petsc_options_iname = &#x27;-pc_type&#x27;
+  petsc_options_value = &#x27;lu&#x27;
+  end_time = 5
+  dt = 0.5
+  [Predictor]
+    type = SimplePredictor
+    scale = 1
+  []
+[]
+
+[Outputs]
+  exodus = true
+  csv = true
+[]
+</code></pre><a class="moose-source-filename tooltipped modal-trigger" href="#fab51daf-9af3-4a70-9e9e-47c6b3a9defe">(moose/modules/tensor_mechanics/tutorials/introduction/mech_step04a.i)</a><p>We can run the various combinations of first/second order elements, active/deactivated volumetric locking correction, and levels of refinement and plot the resulting data.</p><p>Note that you can override input file parameters from the command line! That means you can run all the cases plotted below using these commands:</p><pre class="moose-pre"><code class="language-text">
+../../tensor_mechanics-opt -i mech_step04a.i GlobalParams/elem_type=QUAD4
+../../tensor_mechanics-opt -i mech_step04a.i GlobalParams/elem_type=QUAD4 GlobalParams/volumetric_locking_correction=true
+mpirun -n 4 ../../tensor_mechanics-opt -i mech_step04a.i GlobalParams/elem_type=QUAD4 GlobalParams/volumetric_locking_correction=true GlobalParams/uniform_refine=1
+mpirun -n 4 ../../tensor_mechanics-opt -i mech_step04a.i GlobalParams/elem_type=QUAD8
+mpirun -n 8 ../../tensor_mechanics-opt -i mech_step04a.i GlobalParams/elem_type=QUAD4 GlobalParams/volumetric_locking_correction=true GlobalParams/uniform_refine=4
+mpirun -n 8 ../../tensor_mechanics-opt -i mech_step04a.i GlobalParams/elem_type=QUAD8 GlobalParams/uniform_refine=2
+</code></pre><div id="79340f1d-1900-48c0-bddb-4e8d7dd5cb2d"></div><script>div = document.getElementById('79340f1d-1900-48c0-bddb-4e8d7dd5cb2d');
+Plotly.plot(div, [{'x': [0.0, 0.5, 1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0, 4.5, 5.0], 'y': [0.0, 0.012297557746208, 0.024599992602543, 0.036907158654046, 0.049218909800504, 0.061535099761101, 0.073855582079212, 0.086180210127172, 0.098508837111067, 0.11084131607555, 0.12317749990864], 'name': 'QUAD4'}, {'x': [0.0, 0.5, 1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0, 4.5, 5.0], 'y': [0.0, 0.021384512916666, 0.042781782730663, 0.064191101648472, 0.085611760585222, 0.10704304922261, 0.12848425606777, 0.1499346685122, 0.17139357289095, 0.19286025454192, 0.21433399786539], 'name': 'QUAD4 + volumetric locking correction'}, {'x': [0.0, 0.5, 1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0, 4.5, 5.0], 'y': [0.0, 0.025980241948164, 0.051978049020957, 0.077992266340977, 0.10402173675443, 0.13006530093618, 0.15612179749739, 0.1821900630933, 0.2082689325313, 0.2343572388794, 0.26045381280635], 'name': 'QUAD4 + volumetric locking correction + 1x refined'}, {'x': [0.0, 0.5, 1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0, 4.5, 5.0], 'y': [0.0, 0.025589093864284, 0.05119563282622, 0.076818475850263, 0.10245647963567, 0.12810849870985, 0.15377338552523, 0.17944999055589, 0.20513716239479, 0.23083374711374, 0.25653859103719], 'name': 'QUAD8'}, {'x': [0.0, 0.5, 1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0, 4.5, 5.0], 'y': [0.0, 0.028423505022903, 0.056867312053567, 0.08532998978869, 0.1138101040149, 0.14230621773907, 0.17081689132304, 0.19934068261827, 0.22787614710086, 0.25642183704174, 0.28497630514449], 'name': 'QUAD4 + volumetric locking correction + 4x refined'}, {'x': [0.0, 0.5, 1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0, 4.5, 5.0], 'y': [0.0, 0.02803496726704, 0.056089857227362, 0.084163290305322, 0.1122538841367, 0.14036025368994, 0.16848101139175, 0.19661476725264, 0.22476012899275, 0.25291570216821, 0.28108009029795], 'name': 'QUAD8 + 2x refined'}], {'xaxis': {'title': 'Time'}, 'yaxis': {'title': 'Maximum x displacement'}, 'title': 'Cantilever deflection'});
+</script><p>The point here is to make you aware that volumetric locking can occur in first order elements with certain material properties. It can be alleviated through</p><ul class="browser-default"><li><p>Refinement </p></li><li><p>Use of higher order elements (QUAD8) </p></li><li><p>Use of volumetric locking correction</p></li></ul><p>Users are encouraged to carefully check their results through convergence studies. </p></section><div class="moose-modal modal" id="fb5a8cc1-a5c6-4fd8-bba0-c6a7f951b55e"><div class="modal-content"><h4>poissons_ratio</h4><p class="moose-parameter-description-default"><span>Default:</span>-1</p><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>double</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>Yes</p><p class="moose-parameter-description"><span>Description:</span>Poisson's ratio for the material.</p></div></div><div class="moose-modal modal" id="509cd188-dc04-427e-867e-c34e1e7c8dcf"><div class="modal-content"><h4>uniform_refine</h4><p class="moose-parameter-description-default"><span>Default:</span>0</p><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>unsigned int</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>No</p><p class="moose-parameter-description"><span>Description:</span>Specify the level of uniform refinement applied to the initial mesh</p></div></div><div class="moose-modal modal" id="e9352d64-d439-4cf0-93cd-d75c33cc7076"><div class="modal-content"><h4>volumetric_locking_correction</h4><p class="moose-parameter-description-default"><span>Default:</span>False</p><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>bool</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>No</p><p class="moose-parameter-description"><span>Description:</span>Flag to correct volumetric locking</p></div></div><div class="moose-modal modal" id="6b6ea06a-39e8-4de5-9be1-12f5826d5f08"><div class="modal-content"><h4>elem_type</h4><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>MooseEnum</p><p class="moose-parameter-description-options"><span>Options:</span>EDGE, EDGE2, EDGE3, EDGE4, QUAD, QUAD4, QUAD8, QUAD9, TRI3, TRI6, HEX, HEX8, HEX20, HEX27, TET4, TET10, PRISM6, PRISM15, PRISM18, PYRAMID5, PYRAMID13, PYRAMID14</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>No</p><p class="moose-parameter-description"><span>Description:</span>The type of element from libMesh to generate (default: linear element for requested dimension)</p></div></div><div class="moose-modal modal" id="fab51daf-9af3-4a70-9e9e-47c6b3a9defe"><div class="modal-content"><h4>(moose/modules/tensor_mechanics/tutorials/introduction/mech_step04a.i)</h4><pre class="moose-pre"><code class="language-text">#
+# We study the effects of volumetric locking
+# https://mooseframework.inl.gov/modules/tensor_mechanics/tutorials/introduction/answer04b.html
+#
+
+[GlobalParams]
+  displacements = &#x27;disp_x disp_y&#x27;
+  # elem_type applies to the GeneratedMeshGenerator blocks
+  elem_type = QUAD4
+  # volumetric_locking_correction applies to the TensorMechanics Master action
+  volumetric_locking_correction = false
+  # uniform_refine applies to the final mesh
+  uniform_refine = 0
+[]
+
+[Mesh]
+  [generated1]
+    type = GeneratedMeshGenerator
+    dim = 2
+    nx = 5
+    ny = 15
+    xmin = -0.6
+    xmax = -0.1
+    ymax = 5
+    bias_y = 0.9
+    boundary_name_prefix = pillar1
+  []
+  [generated2]
+    type = GeneratedMeshGenerator
+    dim = 2
+    nx = 4
+    ny = 15
+    xmin = 0.1
+    xmax = 0.6
+    ymax = 5
+    bias_y = 0.9
+    boundary_name_prefix = pillar2
+    boundary_id_offset = 4
+  []
+  [collect_meshes]
+    type = MeshCollectionGenerator
+    inputs = &#x27;generated1 generated2&#x27;
+  []
+[]
+
+[Modules/TensorMechanics/Master]
+  [all]
+    add_variables = true
+    strain = FINITE
+  []
+[]
+
+[BCs]
+  [bottom_x]
+    type = DirichletBC
+    variable = disp_x
+    boundary = &#x27;pillar1_bottom pillar2_bottom&#x27;
+    value = 0
+  []
+  [bottom_y]
+    type = DirichletBC
+    variable = disp_y
+    boundary = &#x27;pillar1_bottom pillar2_bottom&#x27;
+    value = 0
+  []
+  [Pressure]
+    [sides]
+      boundary = &#x27;pillar1_left pillar2_right&#x27;
+      function = 1e4*t
+    []
+  []
+[]
+
+[Materials]
+  [elasticity]
+    type = ComputeIsotropicElasticityTensor
+    youngs_modulus = 1e9
+    # near incopmpressible material
+    poissons_ratio = 0.49
+  []
+  [stress]
+    type = ComputeFiniteStrainElasticStress
+  []
+[]
+
+[Postprocessors]
+  [x_deflection]
+    type = NodalExtremeValue
+    value_type = max
+    variable = disp_x
+  []
+[]
+
+[Executioner]
+  type = Transient
+  solve_type = NEWTON
+  line_search = none
+  petsc_options_iname = &#x27;-pc_type&#x27;
+  petsc_options_value = &#x27;lu&#x27;
+  end_time = 5
+  dt = 0.5
+  [Predictor]
+    type = SimplePredictor
+    scale = 1
+  []
+[]
+
+[Outputs]
+  exodus = true
+  csv = true
+[]
+</code></pre></div><div class="modal-footer"><a class="modal-close btn-flat">Close</a></div></div></div><div class="col hide-on-med-and-down l2"><div class="toc-wrapper pin-top"><ul class="section table-of-contents"></ul></div></div></div></div></main></div></body><script type="text/javascript" src="../../../../contrib/materialize/materialize.min.js"></script><script type="text/javascript" src="../../../../contrib/clipboard/clipboard.min.js"></script><script type="text/javascript" src="../../../../contrib/prism/prism.min.js"></script><script type="text/javascript" src="../../../../js/init.js"></script><script type="text/javascript" src="../../../../js/navigation.js"></script><script type="text/javascript" src="../../../../contrib/fuse/fuse.min.js"></script><script type="text/javascript" src="../../../../js/search_index.js"></script><script type="text/javascript" src="../../../../js/sqa_moose.js"></script>

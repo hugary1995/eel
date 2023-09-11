@@ -1,0 +1,893 @@
+<!DOCTYPE html><head><meta charset="UTF-8"><title>Material Time Step Postprocessor | Eel</title><link href="../../contrib/materialize/materialize.min.css" type="text/css" rel="stylesheet" media="screen,projection"></link><link href="../../contrib/prism/prism.min.css" type="text/css" rel="stylesheet"></link><link href="../../css/moose.css" type="text/css" rel="stylesheet"></link><link href="../../css/devel_moose.css" type="text/css" rel="stylesheet"></link><link href="../../css/alert_moose.css" type="text/css" rel="stylesheet"></link><link href="../../css/content_moose.css" type="text/css" rel="stylesheet"></link><link href="../../css/sqa_moose.css" type="text/css" rel="stylesheet"></link><link href="../../css/civet_moose.css" type="text/css" rel="stylesheet"></link><link href="../../contrib/katex/katex.min.css" type="text/css" rel="stylesheet"></link><link href="../../css/katex_moose.css" type="text/css" rel="stylesheet"></link><script type="text/javascript" src="../../contrib/jquery/jquery.min.js"></script><script type="text/javascript" src="../../contrib/katex/katex.min.js"></script></head><body><div class="page-wrap"><header><nav><div class="nav-wrapper container"><a href="../../index.html" class="left moose-logo hide-on-med-and-down" id="home-button">Eel</a><a href="https://github.com/hugary1995/eel" class="right"><img src="../../media/framework/github-logo.png" class="github-mark"></img><img src="../../media/framework/github-mark.png" class="github-logo"></img></a><ul class="right hide-on-med-and-down"><li><a href="../../eel.html">Documentation</a></li></ul><a href="#" class="sidenav-trigger" data-target="683492c0-d259-4685-8691-64c89da5f219"><i class="material-icons">menu</i></a><ul class="sidenav" id="683492c0-d259-4685-8691-64c89da5f219"><li><a href="../../eel.html">Documentation</a></li></ul><a href="#moose-search" class="modal-trigger"><i class="material-icons">search</i></a></div></nav><div class="modal modal-fixed-footer moose-search-modal" id="moose-search"><div class="modal-content container moose-search-modal-content"><div class="row"><div class="col l12"><div class="input-field"><input type_="text" onkeyup="mooseSearch()" placeholder="/index.md" id="moose-search-box"></input></div></div><div><div class="col s12" id="moose-search-results"></div></div></div></div><div class="modal-footer"><a href="#!" class="modal-close btn-flat">Close</a></div></div></header><main class="main"><div class="container"><div class="row"><div class="col hide-on-med-and-down l12"><nav class="breadcrumb-nav"><div class="nav-wrapper"><a href=".." class="breadcrumb">source</a><span class="breadcrumb">postprocessors</span><a href="#" class="breadcrumb">MaterialTimeStepPostprocessor</a></div></nav></div></div><div class="row"><div class="moose-content col s12 m12 l10"><section id="5521a4e5-7dd1-4652-95a9-d9278ba750e8" data-section-level="1" data-section-text="Material Time Step Postprocessor"><h1 id="material-time-step-postprocessor">Material Time Step Postprocessor</h1><p>This postprocessor estimates a timestep that reduces the increment change in a material property below a given threshold.</p><section class="scrollspy" id="807f6144-e4f8-43fd-9e0c-2d23e44d263f" data-section-level="2" data-section-text="Description"><h2 id="description">Description</h2><p>The <code>MaterialTimeStepPostprocessor</code> works in conjunction with material models to compute the appropriate maximum time step allowed by individual material models. For creep or plasticity models, this maximum time step size is governed by an allowable inelastic strain increment, but a variety of methods could be used by individual material models to compute their acceptable time step. For continuum damage models, the maximum time step size is governed by the allowable increment of damage over a single time step.</p><section id="a60e7ddc-2e17-4af1-812a-3f100e1dc15a" data-section-level="3" data-section-text="Creep Strain Example"><h3 id="creep-strain-example">Creep Strain Example</h3><p>The maximum time step size is a numerical tool used to ensure the calculation of physically reasonable inelastic strains and to improve convergence of the inelastic material model. As an example, the maximum allowable time step computation for a creep model has the form <span class="moose-katex-block-equation"><span class="moose-katex-equation table-cell" id="moose-equation-2bb44efe-68f5-401a-a28d-927eba016419"></span><span class="moose-katex-equation-number">(1)</span><script>var element = document.getElementById("moose-equation-2bb44efe-68f5-401a-a28d-927eba016419");katex.render("     \\Delta t |_{limit} = \\Delta t \\cdot \\frac{\\Delta \\epsilon^{inel}_{max}}{\\Delta \\epsilon^{inel}}", element, {displayMode:true,throwOnError:false,macros:{"\\bs":"\\boldsymbol{#1}","\\grad":"\\bs{\\nabla}","\\divergence":"\\grad \\cdot","\\norm":"\\left\\lVert#1\\right\\rVert","\\abs":"\\left\\lvert#1\\right\\rvert","\\diff":"\\text{ d}#1","\\bfa":"\\boldsymbol{a}","\\bfb":"\\boldsymbol{b}","\\bfc":"\\boldsymbol{c}","\\bfd":"\\boldsymbol{d}","\\bfe":"\\boldsymbol{e}","\\bff":"\\boldsymbol{f}","\\bfg":"\\boldsymbol{g}","\\bfh":"\\boldsymbol{h}","\\bfi":"\\boldsymbol{i}","\\bfj":"\\boldsymbol{j}","\\bfk":"\\boldsymbol{k}","\\bfl":"\\boldsymbol{l}","\\bfm":"\\boldsymbol{m}","\\bfn":"\\boldsymbol{n}","\\bfo":"\\boldsymbol{o}","\\bfp":"\\boldsymbol{p}","\\bfq":"\\boldsymbol{q}","\\bfr":"\\boldsymbol{r}","\\bfs":"\\boldsymbol{s}","\\bft":"\\boldsymbol{t}","\\bfu":"\\boldsymbol{u}","\\bfv":"\\boldsymbol{v}","\\bfw":"\\boldsymbol{w}","\\bfx":"\\boldsymbol{x}","\\bfy":"\\boldsymbol{y}","\\bfz":"\\boldsymbol{z}","\\bfA":"\\boldsymbol{A}","\\bfB":"\\boldsymbol{B}","\\bfC":"\\boldsymbol{C}","\\bfD":"\\boldsymbol{D}","\\bfE":"\\boldsymbol{E}","\\bfF":"\\boldsymbol{F}","\\bfG":"\\boldsymbol{G}","\\bfH":"\\boldsymbol{H}","\\bfI":"\\boldsymbol{I}","\\bfJ":"\\boldsymbol{J}","\\bfK":"\\boldsymbol{K}","\\bfL":"\\boldsymbol{L}","\\bfM":"\\boldsymbol{M}","\\bfN":"\\boldsymbol{N}","\\bfO":"\\boldsymbol{O}","\\bfP":"\\boldsymbol{P}","\\bfQ":"\\boldsymbol{Q}","\\bfR":"\\boldsymbol{R}","\\bfS":"\\boldsymbol{S}","\\bfT":"\\boldsymbol{T}","\\bfU":"\\boldsymbol{U}","\\bfV":"\\boldsymbol{V}","\\bfW":"\\boldsymbol{W}","\\bfX":"\\boldsymbol{X}","\\bfY":"\\boldsymbol{Y}","\\bfZ":"\\boldsymbol{Z}"}});</script></span> where <span class="moose-katex-inline-equation" id="moose-equation-76d13fb6-bf8d-4dc3-9f77-dfcb5363a396"><script>var element = document.getElementById("moose-equation-76d13fb6-bf8d-4dc3-9f77-dfcb5363a396");katex.render("\\Delta \\epsilon^{inel}_{max}", element, {displayMode:false,throwOnError:false,macros:{"\\bs":"\\boldsymbol{#1}","\\grad":"\\bs{\\nabla}","\\divergence":"\\grad \\cdot","\\norm":"\\left\\lVert#1\\right\\rVert","\\abs":"\\left\\lvert#1\\right\\rvert","\\diff":"\\text{ d}#1","\\bfa":"\\boldsymbol{a}","\\bfb":"\\boldsymbol{b}","\\bfc":"\\boldsymbol{c}","\\bfd":"\\boldsymbol{d}","\\bfe":"\\boldsymbol{e}","\\bff":"\\boldsymbol{f}","\\bfg":"\\boldsymbol{g}","\\bfh":"\\boldsymbol{h}","\\bfi":"\\boldsymbol{i}","\\bfj":"\\boldsymbol{j}","\\bfk":"\\boldsymbol{k}","\\bfl":"\\boldsymbol{l}","\\bfm":"\\boldsymbol{m}","\\bfn":"\\boldsymbol{n}","\\bfo":"\\boldsymbol{o}","\\bfp":"\\boldsymbol{p}","\\bfq":"\\boldsymbol{q}","\\bfr":"\\boldsymbol{r}","\\bfs":"\\boldsymbol{s}","\\bft":"\\boldsymbol{t}","\\bfu":"\\boldsymbol{u}","\\bfv":"\\boldsymbol{v}","\\bfw":"\\boldsymbol{w}","\\bfx":"\\boldsymbol{x}","\\bfy":"\\boldsymbol{y}","\\bfz":"\\boldsymbol{z}","\\bfA":"\\boldsymbol{A}","\\bfB":"\\boldsymbol{B}","\\bfC":"\\boldsymbol{C}","\\bfD":"\\boldsymbol{D}","\\bfE":"\\boldsymbol{E}","\\bfF":"\\boldsymbol{F}","\\bfG":"\\boldsymbol{G}","\\bfH":"\\boldsymbol{H}","\\bfI":"\\boldsymbol{I}","\\bfJ":"\\boldsymbol{J}","\\bfK":"\\boldsymbol{K}","\\bfL":"\\boldsymbol{L}","\\bfM":"\\boldsymbol{M}","\\bfN":"\\boldsymbol{N}","\\bfO":"\\boldsymbol{O}","\\bfP":"\\boldsymbol{P}","\\bfQ":"\\boldsymbol{Q}","\\bfR":"\\boldsymbol{R}","\\bfS":"\\boldsymbol{S}","\\bfT":"\\boldsymbol{T}","\\bfU":"\\boldsymbol{U}","\\bfV":"\\boldsymbol{V}","\\bfW":"\\boldsymbol{W}","\\bfX":"\\boldsymbol{X}","\\bfY":"\\boldsymbol{Y}","\\bfZ":"\\boldsymbol{Z}"}});</script></span> is the maximum effective inelastic strain increment (a default value of 1e-4), set by the user, and <span class="moose-katex-inline-equation" id="moose-equation-64f43dfd-4572-469f-8259-bca481e024a3"><script>var element = document.getElementById("moose-equation-64f43dfd-4572-469f-8259-bca481e024a3");katex.render("\\Delta \\epsilon^{inel}", element, {displayMode:false,throwOnError:false,macros:{"\\bs":"\\boldsymbol{#1}","\\grad":"\\bs{\\nabla}","\\divergence":"\\grad \\cdot","\\norm":"\\left\\lVert#1\\right\\rVert","\\abs":"\\left\\lvert#1\\right\\rvert","\\diff":"\\text{ d}#1","\\bfa":"\\boldsymbol{a}","\\bfb":"\\boldsymbol{b}","\\bfc":"\\boldsymbol{c}","\\bfd":"\\boldsymbol{d}","\\bfe":"\\boldsymbol{e}","\\bff":"\\boldsymbol{f}","\\bfg":"\\boldsymbol{g}","\\bfh":"\\boldsymbol{h}","\\bfi":"\\boldsymbol{i}","\\bfj":"\\boldsymbol{j}","\\bfk":"\\boldsymbol{k}","\\bfl":"\\boldsymbol{l}","\\bfm":"\\boldsymbol{m}","\\bfn":"\\boldsymbol{n}","\\bfo":"\\boldsymbol{o}","\\bfp":"\\boldsymbol{p}","\\bfq":"\\boldsymbol{q}","\\bfr":"\\boldsymbol{r}","\\bfs":"\\boldsymbol{s}","\\bft":"\\boldsymbol{t}","\\bfu":"\\boldsymbol{u}","\\bfv":"\\boldsymbol{v}","\\bfw":"\\boldsymbol{w}","\\bfx":"\\boldsymbol{x}","\\bfy":"\\boldsymbol{y}","\\bfz":"\\boldsymbol{z}","\\bfA":"\\boldsymbol{A}","\\bfB":"\\boldsymbol{B}","\\bfC":"\\boldsymbol{C}","\\bfD":"\\boldsymbol{D}","\\bfE":"\\boldsymbol{E}","\\bfF":"\\boldsymbol{F}","\\bfG":"\\boldsymbol{G}","\\bfH":"\\boldsymbol{H}","\\bfI":"\\boldsymbol{I}","\\bfJ":"\\boldsymbol{J}","\\bfK":"\\boldsymbol{K}","\\bfL":"\\boldsymbol{L}","\\bfM":"\\boldsymbol{M}","\\bfN":"\\boldsymbol{N}","\\bfO":"\\boldsymbol{O}","\\bfP":"\\boldsymbol{P}","\\bfQ":"\\boldsymbol{Q}","\\bfR":"\\boldsymbol{R}","\\bfS":"\\boldsymbol{S}","\\bfT":"\\boldsymbol{T}","\\bfU":"\\boldsymbol{U}","\\bfV":"\\boldsymbol{V}","\\bfW":"\\boldsymbol{W}","\\bfX":"\\boldsymbol{X}","\\bfY":"\\boldsymbol{Y}","\\bfZ":"\\boldsymbol{Z}"}});</script></span> is the current scalar effective inelastic strain increment.</p></section><section id="a16c3bd2-c99c-49e4-9a86-bac70cff10cc" data-section-level="3" data-section-text="Mesh - Wide Evaluation"><h3 id="mesh-wide-evaluation">Mesh-Wide Evaluation</h3><p>The <code>MaterialTimeStepPostprocessor</code> collects the time step limitations from all of the quadrature points in the simulation mesh and stores the minimum value. This minimum allowable time step size value is then used by the <a href="../timesteppers/IterationAdaptiveDT.html">IterationAdaptiveDT</a> to restrict the time step size based on the limit calculated in the previous time step.</p><p>Note that the <a href="../timesteppers/IterationAdaptiveDT.html">IterationAdaptiveDT</a> will apply the limiting time step size value from the <code>MaterialTimeStepPostprocessor</code> only if that value is less than maximum time step size value calculated by the internal <a href="../timesteppers/IterationAdaptiveDT.html">IterationAdaptiveDT</a> adaptive time step size algorithm.</p><div class="card moose-alert moose-alert-note"><div class="card-title moose-alert-title"><i class="material-icons moose-inline-icon">comment</i><span class="moose-alert-title-brand">note:</span>Time Step Limiter Lags Calculation</div><div class="card-content"><div class="moose-alert-content"><p>The value of the maximum allowable time step as collected by the <strong><code>MaterialTimeStepPostprocessor</code></strong> is enforced in the next simulation time step.</p></div></div></div></section><section id="e0226c01-1b09-45b6-9a67-e3c659a8f979" data-section-level="3" data-section-text="Minimum Time Step Calculated in Material Models"><h3 id="minimum-time-step-calculated-in-material-models">Minimum Time Step Calculated in Material Models</h3><p>The calculation of the maximum allowable timestep is dependent on each individual material: both the maximum allowable inelastic strain increment and the method of calculating the current inelastic strain, <a href="#moose-equation-2bb44efe-68f5-401a-a28d-927eba016419">Eq. (1)</a>, are defined separately for each material. Given this material dependent nature, the maximum time step value is calculated separately by the <a href="../materials/RadialReturnStressUpdate.html">RadialReturnStressUpdate</a> materials at each quadrature point. The <code>MaterialTimeStepPostprocessor</code> then determines the minimum time step size value from all of the quadrature points in the simulation.</p><p>Initially the value of the maximum time step size is set to <code>std::numeric_limits&lt;Real&gt;::max()</code>. Once the inelastic material model begins to calculate inelastic strain, the value of the allowable time step size varies with the inelastic strain computation.</p><p>The limiting time step size is stored within a material property called <code>material_timestep_limit</code>. This material property can be set up either by the <a href="../materials/ComputeMultipleInelasticStress.html">ComputeMultipleInelasticStress</a> model (for creep or plastic strains) or the <a href="../materials/ComputeDamageStress.html">ComputeDamageStress</a> for continuum damage models.</p></section><section id="4402288d-e74a-4ab6-bb27-9229fcc4ba4c" data-section-level="3" data-section-text="Minimum Time Step Size Based on Number of Elements in which a Property Changes"><h3 id="minimum-time-step-size-based-on-number-of-elements-in-which-a-property-changes">Minimum Time Step Size Based on Number of Elements in which a Property Changes</h3><p>The allowable time step size can also be controlled by the total number of elements in which a material property changes over the course of the time step. This can be used in the context of continuum damage to limit the number of elements damaged at a single time step. To do so, the user needs to define a scalar material property with the input parameter <code>elements_changed_property</code> as well as the maximum acceptable number of elements changed using the <code>elements_changed</code> input parameter. When these are defined, the <code>MaterialTimeStepPostprocessor</code> will sweep over the entire mesh and count the number of elements in which the selected property has changed at at least one quadrature point. The limiting time step is then calculated using the ratio between the current number of elements changed <span class="moose-katex-inline-equation" id="moose-equation-7a94b026-c97a-4fb6-b3f9-bb8626d72768"><script>var element = document.getElementById("moose-equation-7a94b026-c97a-4fb6-b3f9-bb8626d72768");katex.render("N_{changed}", element, {displayMode:false,throwOnError:false,macros:{"\\bs":"\\boldsymbol{#1}","\\grad":"\\bs{\\nabla}","\\divergence":"\\grad \\cdot","\\norm":"\\left\\lVert#1\\right\\rVert","\\abs":"\\left\\lvert#1\\right\\rvert","\\diff":"\\text{ d}#1","\\bfa":"\\boldsymbol{a}","\\bfb":"\\boldsymbol{b}","\\bfc":"\\boldsymbol{c}","\\bfd":"\\boldsymbol{d}","\\bfe":"\\boldsymbol{e}","\\bff":"\\boldsymbol{f}","\\bfg":"\\boldsymbol{g}","\\bfh":"\\boldsymbol{h}","\\bfi":"\\boldsymbol{i}","\\bfj":"\\boldsymbol{j}","\\bfk":"\\boldsymbol{k}","\\bfl":"\\boldsymbol{l}","\\bfm":"\\boldsymbol{m}","\\bfn":"\\boldsymbol{n}","\\bfo":"\\boldsymbol{o}","\\bfp":"\\boldsymbol{p}","\\bfq":"\\boldsymbol{q}","\\bfr":"\\boldsymbol{r}","\\bfs":"\\boldsymbol{s}","\\bft":"\\boldsymbol{t}","\\bfu":"\\boldsymbol{u}","\\bfv":"\\boldsymbol{v}","\\bfw":"\\boldsymbol{w}","\\bfx":"\\boldsymbol{x}","\\bfy":"\\boldsymbol{y}","\\bfz":"\\boldsymbol{z}","\\bfA":"\\boldsymbol{A}","\\bfB":"\\boldsymbol{B}","\\bfC":"\\boldsymbol{C}","\\bfD":"\\boldsymbol{D}","\\bfE":"\\boldsymbol{E}","\\bfF":"\\boldsymbol{F}","\\bfG":"\\boldsymbol{G}","\\bfH":"\\boldsymbol{H}","\\bfI":"\\boldsymbol{I}","\\bfJ":"\\boldsymbol{J}","\\bfK":"\\boldsymbol{K}","\\bfL":"\\boldsymbol{L}","\\bfM":"\\boldsymbol{M}","\\bfN":"\\boldsymbol{N}","\\bfO":"\\boldsymbol{O}","\\bfP":"\\boldsymbol{P}","\\bfQ":"\\boldsymbol{Q}","\\bfR":"\\boldsymbol{R}","\\bfS":"\\boldsymbol{S}","\\bfT":"\\boldsymbol{T}","\\bfU":"\\boldsymbol{U}","\\bfV":"\\boldsymbol{V}","\\bfW":"\\boldsymbol{W}","\\bfX":"\\boldsymbol{X}","\\bfY":"\\boldsymbol{Y}","\\bfZ":"\\boldsymbol{Z}"}});</script></span> and the maximum value <span class="moose-katex-inline-equation" id="moose-equation-78ee2240-e93e-44af-8fc7-d1cee27d87b2"><script>var element = document.getElementById("moose-equation-78ee2240-e93e-44af-8fc7-d1cee27d87b2");katex.render("N_{max}", element, {displayMode:false,throwOnError:false,macros:{"\\bs":"\\boldsymbol{#1}","\\grad":"\\bs{\\nabla}","\\divergence":"\\grad \\cdot","\\norm":"\\left\\lVert#1\\right\\rVert","\\abs":"\\left\\lvert#1\\right\\rvert","\\diff":"\\text{ d}#1","\\bfa":"\\boldsymbol{a}","\\bfb":"\\boldsymbol{b}","\\bfc":"\\boldsymbol{c}","\\bfd":"\\boldsymbol{d}","\\bfe":"\\boldsymbol{e}","\\bff":"\\boldsymbol{f}","\\bfg":"\\boldsymbol{g}","\\bfh":"\\boldsymbol{h}","\\bfi":"\\boldsymbol{i}","\\bfj":"\\boldsymbol{j}","\\bfk":"\\boldsymbol{k}","\\bfl":"\\boldsymbol{l}","\\bfm":"\\boldsymbol{m}","\\bfn":"\\boldsymbol{n}","\\bfo":"\\boldsymbol{o}","\\bfp":"\\boldsymbol{p}","\\bfq":"\\boldsymbol{q}","\\bfr":"\\boldsymbol{r}","\\bfs":"\\boldsymbol{s}","\\bft":"\\boldsymbol{t}","\\bfu":"\\boldsymbol{u}","\\bfv":"\\boldsymbol{v}","\\bfw":"\\boldsymbol{w}","\\bfx":"\\boldsymbol{x}","\\bfy":"\\boldsymbol{y}","\\bfz":"\\boldsymbol{z}","\\bfA":"\\boldsymbol{A}","\\bfB":"\\boldsymbol{B}","\\bfC":"\\boldsymbol{C}","\\bfD":"\\boldsymbol{D}","\\bfE":"\\boldsymbol{E}","\\bfF":"\\boldsymbol{F}","\\bfG":"\\boldsymbol{G}","\\bfH":"\\boldsymbol{H}","\\bfI":"\\boldsymbol{I}","\\bfJ":"\\boldsymbol{J}","\\bfK":"\\boldsymbol{K}","\\bfL":"\\boldsymbol{L}","\\bfM":"\\boldsymbol{M}","\\bfN":"\\boldsymbol{N}","\\bfO":"\\boldsymbol{O}","\\bfP":"\\boldsymbol{P}","\\bfQ":"\\boldsymbol{Q}","\\bfR":"\\boldsymbol{R}","\\bfS":"\\boldsymbol{S}","\\bfT":"\\boldsymbol{T}","\\bfU":"\\boldsymbol{U}","\\bfV":"\\boldsymbol{V}","\\bfW":"\\boldsymbol{W}","\\bfX":"\\boldsymbol{X}","\\bfY":"\\boldsymbol{Y}","\\bfZ":"\\boldsymbol{Z}"}});</script></span>.</p><p><span class="moose-katex-block-equation"><span class="moose-katex-equation table-cell" id="moose-equation-7c992ced-ed16-4694-9627-19cdce020851"></span><span class="moose-katex-equation-number">(2)</span><script>var element = document.getElementById("moose-equation-7c992ced-ed16-4694-9627-19cdce020851");katex.render("     \\Delta t |_{limit} = \\Delta t \\cdot \\frac{N_{changed}}{N_{max}}", element, {displayMode:true,throwOnError:false,macros:{"\\bs":"\\boldsymbol{#1}","\\grad":"\\bs{\\nabla}","\\divergence":"\\grad \\cdot","\\norm":"\\left\\lVert#1\\right\\rVert","\\abs":"\\left\\lvert#1\\right\\rvert","\\diff":"\\text{ d}#1","\\bfa":"\\boldsymbol{a}","\\bfb":"\\boldsymbol{b}","\\bfc":"\\boldsymbol{c}","\\bfd":"\\boldsymbol{d}","\\bfe":"\\boldsymbol{e}","\\bff":"\\boldsymbol{f}","\\bfg":"\\boldsymbol{g}","\\bfh":"\\boldsymbol{h}","\\bfi":"\\boldsymbol{i}","\\bfj":"\\boldsymbol{j}","\\bfk":"\\boldsymbol{k}","\\bfl":"\\boldsymbol{l}","\\bfm":"\\boldsymbol{m}","\\bfn":"\\boldsymbol{n}","\\bfo":"\\boldsymbol{o}","\\bfp":"\\boldsymbol{p}","\\bfq":"\\boldsymbol{q}","\\bfr":"\\boldsymbol{r}","\\bfs":"\\boldsymbol{s}","\\bft":"\\boldsymbol{t}","\\bfu":"\\boldsymbol{u}","\\bfv":"\\boldsymbol{v}","\\bfw":"\\boldsymbol{w}","\\bfx":"\\boldsymbol{x}","\\bfy":"\\boldsymbol{y}","\\bfz":"\\boldsymbol{z}","\\bfA":"\\boldsymbol{A}","\\bfB":"\\boldsymbol{B}","\\bfC":"\\boldsymbol{C}","\\bfD":"\\boldsymbol{D}","\\bfE":"\\boldsymbol{E}","\\bfF":"\\boldsymbol{F}","\\bfG":"\\boldsymbol{G}","\\bfH":"\\boldsymbol{H}","\\bfI":"\\boldsymbol{I}","\\bfJ":"\\boldsymbol{J}","\\bfK":"\\boldsymbol{K}","\\bfL":"\\boldsymbol{L}","\\bfM":"\\boldsymbol{M}","\\bfN":"\\boldsymbol{N}","\\bfO":"\\boldsymbol{O}","\\bfP":"\\boldsymbol{P}","\\bfQ":"\\boldsymbol{Q}","\\bfR":"\\boldsymbol{R}","\\bfS":"\\boldsymbol{S}","\\bfT":"\\boldsymbol{T}","\\bfU":"\\boldsymbol{U}","\\bfV":"\\boldsymbol{V}","\\bfW":"\\boldsymbol{W}","\\bfX":"\\boldsymbol{X}","\\bfY":"\\boldsymbol{Y}","\\bfZ":"\\boldsymbol{Z}"}});</script></span></p><p>The user can define a <code>elements_changed_threshold</code> to detect a change in property. This can be for example used to count the number of elements in which the damage increases by at least a specific amount.</p><p>This method is optional and is only active if both <code>elements_changed_property</code> and <code>elements_changed</code> are defined. The <code>MaterialTimeStepPostprocessor</code> then uses the minimum between the value provided by the material model (see above) or by the number of elements changed. If the input parameter <code>use_material_timestep_limit</code> is set to <code>false</code>, only the number of elements changed is used.</p></section></section><section class="scrollspy" id="da7abd66-3ec1-4083-870b-5ee74c408d3c" data-section-level="2" data-section-text="Example Input File"><h2 id="example-input-file">Example Input File</h2><pre class="moose-pre" style="max-height:350px;"><code class="language-text">[./matl_ts_min]
+  type = MaterialTimeStepPostprocessor
+[../]
+</code></pre><a class="moose-source-filename tooltipped modal-trigger" href="#77d42201-fd10-4cc8-a094-36b90535f9b4">(moose/modules/tensor_mechanics/test/tests/material_limit_time_step/elas_plas/nafems_nl1_lim.i)</a><p>The name of the <code>MaterialTimeStepPostprocessor</code> is passed to the <code>IterationAdaptiveDT</code> as the argument for the <code>timestep_limiting_postprocessor</code> parameter</p><pre class="moose-pre" style="max-height:350px;"><code class="language-text">[./TimeStepper]
+  type = IterationAdaptiveDT
+  dt = 0.1
+  time_t = &#x27;1.0  2.0  3.0  4.0  5.0  6.0  7.0  8.0&#x27;
+  time_dt = &#x27;0.1 0.1  0.1  0.1  0.1  0.1  0.1  0.1&#x27;
+  optimal_iterations = 30
+  iteration_window = 9
+  growth_factor = 2.0
+  cutback_factor = 0.5
+  timestep_limiting_postprocessor = matl_ts_min
+[../]
+</code></pre><a class="moose-source-filename tooltipped modal-trigger" href="#6b28e5fc-e3ac-450f-9b10-21928d007e2f">(moose/modules/tensor_mechanics/test/tests/material_limit_time_step/elas_plas/nafems_nl1_lim.i)</a><p>and the <code>max_inelastic_increment</code> parameter in the inelastic material model(s) must be set to run the time step limit calculation.</p><pre class="moose-pre" style="max-height:350px;"><code class="language-text">[./isoplas]
+  type = IsotropicPlasticityStressUpdate
+  yield_stress = 5e6
+  hardening_constant = 0.0
+  relative_tolerance = 1e-20
+  absolute_tolerance = 1e-8
+  max_inelastic_increment = 0.000001
+[../]
+</code></pre><a class="moose-source-filename tooltipped modal-trigger" href="#134ce8b0-c057-4e7f-8e18-741c3a7d8418">(moose/modules/tensor_mechanics/test/tests/material_limit_time_step/elas_plas/nafems_nl1_lim.i)</a></section><section class="scrollspy" id="ce9e4b23-5751-4d34-ae2d-bb933cc7833e" data-section-level="2" data-section-text="Input Parameters"><h2 id="input-parameters">Input Parameters</h2><section id="4a5883a4-f25d-4952-b91a-fe49148abfdd" data-section-level="3" data-section-text="Optional Parameters" data-details-open="open"><details class="moose-section-content" open="open"><ul class="collapsible" data-collapsible="expandable"><li><div class="collapsible-header"><span class="moose-parameter-name">block</span><span class="moose-parameter-header-description">The list of blocks (ids or names) that this object will be applied</span></div><div class="collapsible-body"><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>std::vector&lt;SubdomainName&gt;</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>No</p><p class="moose-parameter-description"><span>Description:</span>The list of blocks (ids or names) that this object will be applied</p></div></li><li><div class="collapsible-header"><span class="moose-parameter-name">elements_changed</span><span class="moose-parameter-header-description">Maximum number of elements within which the property named in 'elements_changed_property' is allowed to change by more than 'elements_changed_threshold' before the time step is limited.</span></div><div class="collapsible-body"><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>int</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>No</p><p class="moose-parameter-description"><span>Description:</span>Maximum number of elements within which the property named in 'elements_changed_property' is allowed to change by more than 'elements_changed_threshold' before the time step is limited.</p></div></li><li><div class="collapsible-header"><span class="moose-parameter-name">elements_changed_property</span><span class="moose-parameter-header-description">Name of the material property used to limit the time step if its value changes by more than 'elements_changed_threshold' in at least 'elements_changed' elements</span></div><div class="collapsible-body"><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>MaterialPropertyName</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>No</p><p class="moose-parameter-description"><span>Description:</span>Name of the material property used to limit the time step if its value changes by more than 'elements_changed_threshold' in at least 'elements_changed' elements</p></div></li><li><div class="collapsible-header"><span class="moose-parameter-name">elements_changed_threshold</span><span class="moose-parameter-header-description">Maximum permitted change in the value of 'elements_changed_property' in 'elements_changed' elements before the time step is limited.</span></div><div class="collapsible-body"><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>double</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>No</p><p class="moose-parameter-description"><span>Description:</span>Maximum permitted change in the value of 'elements_changed_property' in 'elements_changed' elements before the time step is limited.</p></div></li><li><div class="collapsible-header"><span class="moose-parameter-name">execute_on</span><span class="moose-parameter-header-default">TIMESTEP_END</span><span class="moose-parameter-header-description">The list of flag(s) indicating when this object should be executed, the available options include NONE, INITIAL, LINEAR, NONLINEAR, TIMESTEP_END, TIMESTEP_BEGIN, MULTIAPP_FIXED_POINT_END, MULTIAPP_FIXED_POINT_BEGIN, FINAL, CUSTOM, ALWAYS.</span></div><div class="collapsible-body"><p class="moose-parameter-description-default"><span>Default:</span>TIMESTEP_END</p><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>ExecFlagEnum</p><p class="moose-parameter-description-options"><span>Options:</span>NONE, INITIAL, LINEAR, NONLINEAR, TIMESTEP_END, TIMESTEP_BEGIN, MULTIAPP_FIXED_POINT_END, MULTIAPP_FIXED_POINT_BEGIN, FINAL, CUSTOM, ALWAYS, TRANSFER</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>No</p><p class="moose-parameter-description"><span>Description:</span>The list of flag(s) indicating when this object should be executed, the available options include NONE, INITIAL, LINEAR, NONLINEAR, TIMESTEP_END, TIMESTEP_BEGIN, MULTIAPP_FIXED_POINT_END, MULTIAPP_FIXED_POINT_BEGIN, FINAL, CUSTOM, ALWAYS.</p></div></li><li><div class="collapsible-header"><span class="moose-parameter-name">maximum_value</span><span class="moose-parameter-header-default">1.79769e+308</span><span class="moose-parameter-header-description">Maximum value returned by this postprocessor.</span></div><div class="collapsible-body"><p class="moose-parameter-description-default"><span>Default:</span>1.79769e+308</p><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>double</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>No</p><p class="moose-parameter-description"><span>Description:</span>Maximum value returned by this postprocessor.</p></div></li><li><div class="collapsible-header"><span class="moose-parameter-name">prop_getter_suffix</span><span class="moose-parameter-header-description">An optional suffix parameter that can be appended to any attempt to retrieve/get material properties. The suffix will be prepended with a '_' character.</span></div><div class="collapsible-body"><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>MaterialPropertyName</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>No</p><p class="moose-parameter-description"><span>Description:</span>An optional suffix parameter that can be appended to any attempt to retrieve/get material properties. The suffix will be prepended with a '_' character.</p></div></li><li><div class="collapsible-header"><span class="moose-parameter-name">use_material_timestep_limit</span><span class="moose-parameter-header-default">True</span><span class="moose-parameter-header-description">if true, the time step is limited by the minimum value of the material_timestep_limit property</span></div><div class="collapsible-body"><p class="moose-parameter-description-default"><span>Default:</span>True</p><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>bool</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>No</p><p class="moose-parameter-description"><span>Description:</span>if true, the time step is limited by the minimum value of the material_timestep_limit property</p></div></li></ul><summary><h3 data-details-open="open"><span class="moose-section-icon"></span>Optional Parameters</h3></summary></details></section><section id="c636a3ad-1482-4b73-8638-e75fd047f78d" data-section-level="3" data-section-text="Advanced Parameters" data-details-open="close"><details class="moose-section-content"><ul class="collapsible" data-collapsible="expandable"><li><div class="collapsible-header"><span class="moose-parameter-name">allow_duplicate_execution_on_initial</span><span class="moose-parameter-header-default">False</span><span class="moose-parameter-header-description">In the case where this UserObject is depended upon by an initial condition, allow it to be executed twice during the initial setup (once before the IC and again after mesh adaptivity (if applicable).</span></div><div class="collapsible-body"><p class="moose-parameter-description-default"><span>Default:</span>False</p><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>bool</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>No</p><p class="moose-parameter-description"><span>Description:</span>In the case where this UserObject is depended upon by an initial condition, allow it to be executed twice during the initial setup (once before the IC and again after mesh adaptivity (if applicable).</p></div></li><li><div class="collapsible-header"><span class="moose-parameter-name">control_tags</span><span class="moose-parameter-header-description">Adds user-defined labels for accessing object parameters via control logic.</span></div><div class="collapsible-body"><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>std::vector&lt;std::string&gt;</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>No</p><p class="moose-parameter-description"><span>Description:</span>Adds user-defined labels for accessing object parameters via control logic.</p></div></li><li><div class="collapsible-header"><span class="moose-parameter-name">enable</span><span class="moose-parameter-header-default">True</span><span class="moose-parameter-header-description">Set the enabled status of the MooseObject.</span></div><div class="collapsible-body"><p class="moose-parameter-description-default"><span>Default:</span>True</p><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>bool</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>Yes</p><p class="moose-parameter-description"><span>Description:</span>Set the enabled status of the MooseObject.</p></div></li><li><div class="collapsible-header"><span class="moose-parameter-name">execution_order_group</span><span class="moose-parameter-header-default">0</span><span class="moose-parameter-header-description">Execution order groups are executed in increasing order (e.g., the lowest number is executed first). Note that negative group numbers may be used to execute groups before the default (0) group. Please refer to the user object documentation for ordering of user object execution within a group.</span></div><div class="collapsible-body"><p class="moose-parameter-description-default"><span>Default:</span>0</p><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>int</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>No</p><p class="moose-parameter-description"><span>Description:</span>Execution order groups are executed in increasing order (e.g., the lowest number is executed first). Note that negative group numbers may be used to execute groups before the default (0) group. Please refer to the user object documentation for ordering of user object execution within a group.</p></div></li><li><div class="collapsible-header"><span class="moose-parameter-name">force_postaux</span><span class="moose-parameter-header-default">False</span><span class="moose-parameter-header-description">Forces the UserObject to be executed in POSTAUX</span></div><div class="collapsible-body"><p class="moose-parameter-description-default"><span>Default:</span>False</p><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>bool</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>No</p><p class="moose-parameter-description"><span>Description:</span>Forces the UserObject to be executed in POSTAUX</p></div></li><li><div class="collapsible-header"><span class="moose-parameter-name">force_preaux</span><span class="moose-parameter-header-default">False</span><span class="moose-parameter-header-description">Forces the UserObject to be executed in PREAUX</span></div><div class="collapsible-body"><p class="moose-parameter-description-default"><span>Default:</span>False</p><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>bool</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>No</p><p class="moose-parameter-description"><span>Description:</span>Forces the UserObject to be executed in PREAUX</p></div></li><li><div class="collapsible-header"><span class="moose-parameter-name">force_preic</span><span class="moose-parameter-header-default">False</span><span class="moose-parameter-header-description">Forces the UserObject to be executed in PREIC during initial setup</span></div><div class="collapsible-body"><p class="moose-parameter-description-default"><span>Default:</span>False</p><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>bool</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>No</p><p class="moose-parameter-description"><span>Description:</span>Forces the UserObject to be executed in PREIC during initial setup</p></div></li><li><div class="collapsible-header"><span class="moose-parameter-name">implicit</span><span class="moose-parameter-header-default">True</span><span class="moose-parameter-header-description">Determines whether this object is calculated using an implicit or explicit form</span></div><div class="collapsible-body"><p class="moose-parameter-description-default"><span>Default:</span>True</p><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>bool</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>No</p><p class="moose-parameter-description"><span>Description:</span>Determines whether this object is calculated using an implicit or explicit form</p></div></li><li><div class="collapsible-header"><span class="moose-parameter-name">outputs</span><span class="moose-parameter-header-description">Vector of output names where you would like to restrict the output of variables(s) associated with this object</span></div><div class="collapsible-body"><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>std::vector&lt;OutputName&gt;</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>No</p><p class="moose-parameter-description"><span>Description:</span>Vector of output names where you would like to restrict the output of variables(s) associated with this object</p></div></li><li><div class="collapsible-header"><span class="moose-parameter-name">seed</span><span class="moose-parameter-header-default">0</span><span class="moose-parameter-header-description">The seed for the master random number generator</span></div><div class="collapsible-body"><p class="moose-parameter-description-default"><span>Default:</span>0</p><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>unsigned int</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>No</p><p class="moose-parameter-description"><span>Description:</span>The seed for the master random number generator</p></div></li><li><div class="collapsible-header"><span class="moose-parameter-name">use_displaced_mesh</span><span class="moose-parameter-header-default">False</span><span class="moose-parameter-header-description">Whether or not this object should use the displaced mesh for computation.  Note that in the case this is true but no displacements are provided in the Mesh block the undisplaced mesh will still be used.</span></div><div class="collapsible-body"><p class="moose-parameter-description-default"><span>Default:</span>False</p><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>bool</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>No</p><p class="moose-parameter-description"><span>Description:</span>Whether or not this object should use the displaced mesh for computation.  Note that in the case this is true but no displacements are provided in the Mesh block the undisplaced mesh will still be used.</p></div></li></ul><summary><h3 data-details-open="close"><span class="moose-section-icon"></span>Advanced Parameters</h3></summary></details></section></section></section><div class="moose-modal modal" id="77d42201-fd10-4cc8-a094-36b90535f9b4"><div class="modal-content"><h4>(moose/modules/tensor_mechanics/test/tests/material_limit_time_step/elas_plas/nafems_nl1_lim.i)</h4><pre class="moose-pre"><code class="language-text">#
+# Tests material model IsotropicPlasticity with material based time stepper
+# Boundary conditions from NAFEMS test NL1
+#
+[GlobalParams]
+  order = FIRST
+  family = LAGRANGE
+  volumetric_locking_correction = true
+  displacements = &#x27;disp_x disp_y&#x27;
+[]
+
+[Mesh]#Comment
+  file = one_elem2.e
+[] # Mesh
+
+[Variables]
+  [./disp_x]
+  [../]
+  [./disp_y]
+  [../]
+[] # Variables
+
+[AuxVariables]
+  [./stress_xx]
+    order = CONSTANT
+    family = MONOMIAL
+  [../]
+  [./stress_yy]
+    order = CONSTANT
+    family = MONOMIAL
+  [../]
+  [./stress_zz]
+    order = CONSTANT
+    family = MONOMIAL
+  [../]
+  [./stress_xy]
+    order = CONSTANT
+    family = MONOMIAL
+  [../]
+  [./vonmises]
+    order = CONSTANT
+    family = MONOMIAL
+  [../]
+  [./elastic_strain_yy]
+    order = CONSTANT
+    family = MONOMIAL
+  [../]
+  [./plastic_strain_eff]
+    order = CONSTANT
+    family = MONOMIAL
+  [../]
+  [./tot_strain_yy]
+    order = CONSTANT
+    family = MONOMIAL
+  [../]
+[] # AuxVariables
+
+[Kernels]
+  [./TensorMechanics]
+    use_displaced_mesh = true
+  [../]
+[]
+
+[AuxKernels]
+  [./stress_xx]
+    type = RankTwoAux
+    rank_two_tensor = stress
+    variable = stress_xx
+    index_i = 0
+    index_j = 0
+  [../]
+  [./stress_yy]
+    type = RankTwoAux
+    rank_two_tensor = stress
+    variable = stress_yy
+    index_i = 1
+    index_j = 1
+  [../]
+  [./stress_zz]
+    type = RankTwoAux
+    rank_two_tensor = stress
+    variable = stress_zz
+    index_i = 2
+    index_j = 2
+  [../]
+  [./stress_xy]
+    type = RankTwoAux
+    rank_two_tensor = stress
+    variable = stress_xy
+    index_i = 0
+    index_j = 1
+  [../]
+  [./vonmises]
+    type = RankTwoScalarAux
+    rank_two_tensor = stress
+    variable = vonmises
+    scalar_type = VonMisesStress
+    execute_on = timestep_end
+  [../]
+  [./elastic_strain_yy]
+    type = RankTwoAux
+    rank_two_tensor = elastic_strain
+    variable = elastic_strain_yy
+    index_i = 1
+    index_j = 1
+  [../]
+  [./plastic_strain_eff]
+    type = MaterialRealAux
+    property = effective_plastic_strain
+    variable = plastic_strain_eff
+  [../]
+  [./tot_strain_yy]
+    type = RankTwoAux
+    rank_two_tensor = total_strain
+    variable = tot_strain_yy
+    index_i = 1
+    index_j = 1
+  [../]
+[] # AuxKernels
+
+[Functions]
+  [./appl_dispx]
+    type = PiecewiseLinear
+    x = &#x27;0   1.0   2.0   3.0  4.0   5.0  6.0  7.0  8.0&#x27;
+    y = &#x27;0.0 0.25e-4 0.50e-4 0.50e-4 0.50e-4 0.25e-4 0.0 0.0 0.0&#x27;
+  [../]
+  [./appl_dispy]
+    type = PiecewiseLinear
+    x = &#x27;0   1.0   2.0   3.0  4.0   5.0  6.0  7.0  8.0&#x27;
+    y = &#x27;0.0 0.0  0.0 0.25e-4 0.50e-4 0.50e-4 0.50e-4  0.25e-4 0.0 &#x27;
+  [../]
+[]
+
+[BCs]
+  [./side_x]
+    type = DirichletBC
+    variable = disp_x
+    boundary = 101
+    value = 0.0
+  [../]
+  [./origin_x]
+    type = DirichletBC
+    variable = disp_x
+    boundary = 103
+    value = 0.0
+  [../]
+  [./bot_y]
+    type = DirichletBC
+    variable = disp_y
+    boundary = 102
+    value = 0.0
+  [../]
+  [./origin_y]
+    type = DirichletBC
+    variable = disp_y
+    boundary = 103
+    value = 0.0
+  [../]
+  [./top_y]
+    type = FunctionDirichletBC
+    variable = disp_y
+    boundary = 1
+    function = appl_dispy
+  [../]
+  [./right_x]
+    type = FunctionDirichletBC
+    variable = disp_x
+    boundary = 2
+    function = appl_dispx
+  [../]
+[]
+
+[Materials]
+  [./elasticity_tensor]
+    type = ComputeIsotropicElasticityTensor
+    block = 1
+    youngs_modulus = 250e9
+    poissons_ratio = 0.25
+  [../]
+  [./strain]
+    type = ComputePlaneFiniteStrain
+    block = 1
+  [../]
+  [./stress]
+    type = ComputeMultipleInelasticStress
+    inelastic_models = &#x27;isoplas&#x27;
+    block = 1
+  [../]
+  [./isoplas]
+    type = IsotropicPlasticityStressUpdate
+    yield_stress = 5e6
+    hardening_constant = 0.0
+    relative_tolerance = 1e-20
+    absolute_tolerance = 1e-8
+    max_inelastic_increment = 0.000001
+  [../]
+[]
+
+[Executioner]
+  type = Transient
+  solve_type = &#x27;PJFNK&#x27;
+
+  nl_rel_tol = 1e-10
+  nl_abs_tol = 1e-12
+  l_tol = 1e-4
+  l_max_its = 100
+  nl_max_its = 20
+
+  [./TimeStepper]
+    type = IterationAdaptiveDT
+    dt = 0.1
+    time_t = &#x27;1.0  2.0  3.0  4.0  5.0  6.0  7.0  8.0&#x27;
+    time_dt = &#x27;0.1 0.1  0.1  0.1  0.1  0.1  0.1  0.1&#x27;
+    optimal_iterations = 30
+    iteration_window = 9
+    growth_factor = 2.0
+    cutback_factor = 0.5
+    timestep_limiting_postprocessor = matl_ts_min
+  [../]
+
+  start_time = 0.0
+  num_steps = 1000
+  end_time = 8.0
+[] # Executioner
+
+[Postprocessors]
+  [./matl_ts_min]
+    type = MaterialTimeStepPostprocessor
+  [../]
+  [./stress_xx]
+    type = ElementAverageValue
+    variable = stress_xx
+  [../]
+  [./stress_yy]
+    type = ElementAverageValue
+    variable = stress_yy
+  [../]
+  [./stress_zz]
+    type = ElementAverageValue
+    variable = stress_zz
+  [../]
+  [./vonmises]
+    type = ElementAverageValue
+    variable = vonmises
+  [../]
+  [./el_strain_yy]
+    type = ElementAverageValue
+    variable = elastic_strain_yy
+  [../]
+  [./plas_strain_eff]
+    type = ElementAverageValue
+    variable = plastic_strain_eff
+  [../]
+  [./tot_strain_yy]
+    type = ElementAverageValue
+    variable = tot_strain_yy
+  [../]
+  [./disp_x1]
+    type = NodalVariableValue
+    nodeid = 0
+    variable = disp_x
+  [../]
+  [./disp_x4]
+    type = NodalVariableValue
+    nodeid = 3
+    variable = disp_x
+  [../]
+  [./disp_y1]
+    type = NodalVariableValue
+    nodeid = 0
+    variable = disp_y
+  [../]
+  [./disp_y4]
+    type = NodalVariableValue
+    nodeid = 3
+    variable = disp_y
+  [../]
+  [./_dt]
+    type = TimestepSize
+  [../]
+[]
+
+[Outputs]
+  exodus = true
+  csv = true
+  [./console]
+    type = Console
+    output_linear = true
+  [../]
+[] # Outputs
+</code></pre></div><div class="modal-footer"><a class="modal-close btn-flat">Close</a></div></div><div class="moose-modal modal" id="6b28e5fc-e3ac-450f-9b10-21928d007e2f"><div class="modal-content"><h4>(moose/modules/tensor_mechanics/test/tests/material_limit_time_step/elas_plas/nafems_nl1_lim.i)</h4><pre class="moose-pre"><code class="language-text">#
+# Tests material model IsotropicPlasticity with material based time stepper
+# Boundary conditions from NAFEMS test NL1
+#
+[GlobalParams]
+  order = FIRST
+  family = LAGRANGE
+  volumetric_locking_correction = true
+  displacements = &#x27;disp_x disp_y&#x27;
+[]
+
+[Mesh]#Comment
+  file = one_elem2.e
+[] # Mesh
+
+[Variables]
+  [./disp_x]
+  [../]
+  [./disp_y]
+  [../]
+[] # Variables
+
+[AuxVariables]
+  [./stress_xx]
+    order = CONSTANT
+    family = MONOMIAL
+  [../]
+  [./stress_yy]
+    order = CONSTANT
+    family = MONOMIAL
+  [../]
+  [./stress_zz]
+    order = CONSTANT
+    family = MONOMIAL
+  [../]
+  [./stress_xy]
+    order = CONSTANT
+    family = MONOMIAL
+  [../]
+  [./vonmises]
+    order = CONSTANT
+    family = MONOMIAL
+  [../]
+  [./elastic_strain_yy]
+    order = CONSTANT
+    family = MONOMIAL
+  [../]
+  [./plastic_strain_eff]
+    order = CONSTANT
+    family = MONOMIAL
+  [../]
+  [./tot_strain_yy]
+    order = CONSTANT
+    family = MONOMIAL
+  [../]
+[] # AuxVariables
+
+[Kernels]
+  [./TensorMechanics]
+    use_displaced_mesh = true
+  [../]
+[]
+
+[AuxKernels]
+  [./stress_xx]
+    type = RankTwoAux
+    rank_two_tensor = stress
+    variable = stress_xx
+    index_i = 0
+    index_j = 0
+  [../]
+  [./stress_yy]
+    type = RankTwoAux
+    rank_two_tensor = stress
+    variable = stress_yy
+    index_i = 1
+    index_j = 1
+  [../]
+  [./stress_zz]
+    type = RankTwoAux
+    rank_two_tensor = stress
+    variable = stress_zz
+    index_i = 2
+    index_j = 2
+  [../]
+  [./stress_xy]
+    type = RankTwoAux
+    rank_two_tensor = stress
+    variable = stress_xy
+    index_i = 0
+    index_j = 1
+  [../]
+  [./vonmises]
+    type = RankTwoScalarAux
+    rank_two_tensor = stress
+    variable = vonmises
+    scalar_type = VonMisesStress
+    execute_on = timestep_end
+  [../]
+  [./elastic_strain_yy]
+    type = RankTwoAux
+    rank_two_tensor = elastic_strain
+    variable = elastic_strain_yy
+    index_i = 1
+    index_j = 1
+  [../]
+  [./plastic_strain_eff]
+    type = MaterialRealAux
+    property = effective_plastic_strain
+    variable = plastic_strain_eff
+  [../]
+  [./tot_strain_yy]
+    type = RankTwoAux
+    rank_two_tensor = total_strain
+    variable = tot_strain_yy
+    index_i = 1
+    index_j = 1
+  [../]
+[] # AuxKernels
+
+[Functions]
+  [./appl_dispx]
+    type = PiecewiseLinear
+    x = &#x27;0   1.0   2.0   3.0  4.0   5.0  6.0  7.0  8.0&#x27;
+    y = &#x27;0.0 0.25e-4 0.50e-4 0.50e-4 0.50e-4 0.25e-4 0.0 0.0 0.0&#x27;
+  [../]
+  [./appl_dispy]
+    type = PiecewiseLinear
+    x = &#x27;0   1.0   2.0   3.0  4.0   5.0  6.0  7.0  8.0&#x27;
+    y = &#x27;0.0 0.0  0.0 0.25e-4 0.50e-4 0.50e-4 0.50e-4  0.25e-4 0.0 &#x27;
+  [../]
+[]
+
+[BCs]
+  [./side_x]
+    type = DirichletBC
+    variable = disp_x
+    boundary = 101
+    value = 0.0
+  [../]
+  [./origin_x]
+    type = DirichletBC
+    variable = disp_x
+    boundary = 103
+    value = 0.0
+  [../]
+  [./bot_y]
+    type = DirichletBC
+    variable = disp_y
+    boundary = 102
+    value = 0.0
+  [../]
+  [./origin_y]
+    type = DirichletBC
+    variable = disp_y
+    boundary = 103
+    value = 0.0
+  [../]
+  [./top_y]
+    type = FunctionDirichletBC
+    variable = disp_y
+    boundary = 1
+    function = appl_dispy
+  [../]
+  [./right_x]
+    type = FunctionDirichletBC
+    variable = disp_x
+    boundary = 2
+    function = appl_dispx
+  [../]
+[]
+
+[Materials]
+  [./elasticity_tensor]
+    type = ComputeIsotropicElasticityTensor
+    block = 1
+    youngs_modulus = 250e9
+    poissons_ratio = 0.25
+  [../]
+  [./strain]
+    type = ComputePlaneFiniteStrain
+    block = 1
+  [../]
+  [./stress]
+    type = ComputeMultipleInelasticStress
+    inelastic_models = &#x27;isoplas&#x27;
+    block = 1
+  [../]
+  [./isoplas]
+    type = IsotropicPlasticityStressUpdate
+    yield_stress = 5e6
+    hardening_constant = 0.0
+    relative_tolerance = 1e-20
+    absolute_tolerance = 1e-8
+    max_inelastic_increment = 0.000001
+  [../]
+[]
+
+[Executioner]
+  type = Transient
+  solve_type = &#x27;PJFNK&#x27;
+
+  nl_rel_tol = 1e-10
+  nl_abs_tol = 1e-12
+  l_tol = 1e-4
+  l_max_its = 100
+  nl_max_its = 20
+
+  [./TimeStepper]
+    type = IterationAdaptiveDT
+    dt = 0.1
+    time_t = &#x27;1.0  2.0  3.0  4.0  5.0  6.0  7.0  8.0&#x27;
+    time_dt = &#x27;0.1 0.1  0.1  0.1  0.1  0.1  0.1  0.1&#x27;
+    optimal_iterations = 30
+    iteration_window = 9
+    growth_factor = 2.0
+    cutback_factor = 0.5
+    timestep_limiting_postprocessor = matl_ts_min
+  [../]
+
+  start_time = 0.0
+  num_steps = 1000
+  end_time = 8.0
+[] # Executioner
+
+[Postprocessors]
+  [./matl_ts_min]
+    type = MaterialTimeStepPostprocessor
+  [../]
+  [./stress_xx]
+    type = ElementAverageValue
+    variable = stress_xx
+  [../]
+  [./stress_yy]
+    type = ElementAverageValue
+    variable = stress_yy
+  [../]
+  [./stress_zz]
+    type = ElementAverageValue
+    variable = stress_zz
+  [../]
+  [./vonmises]
+    type = ElementAverageValue
+    variable = vonmises
+  [../]
+  [./el_strain_yy]
+    type = ElementAverageValue
+    variable = elastic_strain_yy
+  [../]
+  [./plas_strain_eff]
+    type = ElementAverageValue
+    variable = plastic_strain_eff
+  [../]
+  [./tot_strain_yy]
+    type = ElementAverageValue
+    variable = tot_strain_yy
+  [../]
+  [./disp_x1]
+    type = NodalVariableValue
+    nodeid = 0
+    variable = disp_x
+  [../]
+  [./disp_x4]
+    type = NodalVariableValue
+    nodeid = 3
+    variable = disp_x
+  [../]
+  [./disp_y1]
+    type = NodalVariableValue
+    nodeid = 0
+    variable = disp_y
+  [../]
+  [./disp_y4]
+    type = NodalVariableValue
+    nodeid = 3
+    variable = disp_y
+  [../]
+  [./_dt]
+    type = TimestepSize
+  [../]
+[]
+
+[Outputs]
+  exodus = true
+  csv = true
+  [./console]
+    type = Console
+    output_linear = true
+  [../]
+[] # Outputs
+</code></pre></div><div class="modal-footer"><a class="modal-close btn-flat">Close</a></div></div><div class="moose-modal modal" id="134ce8b0-c057-4e7f-8e18-741c3a7d8418"><div class="modal-content"><h4>(moose/modules/tensor_mechanics/test/tests/material_limit_time_step/elas_plas/nafems_nl1_lim.i)</h4><pre class="moose-pre"><code class="language-text">#
+# Tests material model IsotropicPlasticity with material based time stepper
+# Boundary conditions from NAFEMS test NL1
+#
+[GlobalParams]
+  order = FIRST
+  family = LAGRANGE
+  volumetric_locking_correction = true
+  displacements = &#x27;disp_x disp_y&#x27;
+[]
+
+[Mesh]#Comment
+  file = one_elem2.e
+[] # Mesh
+
+[Variables]
+  [./disp_x]
+  [../]
+  [./disp_y]
+  [../]
+[] # Variables
+
+[AuxVariables]
+  [./stress_xx]
+    order = CONSTANT
+    family = MONOMIAL
+  [../]
+  [./stress_yy]
+    order = CONSTANT
+    family = MONOMIAL
+  [../]
+  [./stress_zz]
+    order = CONSTANT
+    family = MONOMIAL
+  [../]
+  [./stress_xy]
+    order = CONSTANT
+    family = MONOMIAL
+  [../]
+  [./vonmises]
+    order = CONSTANT
+    family = MONOMIAL
+  [../]
+  [./elastic_strain_yy]
+    order = CONSTANT
+    family = MONOMIAL
+  [../]
+  [./plastic_strain_eff]
+    order = CONSTANT
+    family = MONOMIAL
+  [../]
+  [./tot_strain_yy]
+    order = CONSTANT
+    family = MONOMIAL
+  [../]
+[] # AuxVariables
+
+[Kernels]
+  [./TensorMechanics]
+    use_displaced_mesh = true
+  [../]
+[]
+
+[AuxKernels]
+  [./stress_xx]
+    type = RankTwoAux
+    rank_two_tensor = stress
+    variable = stress_xx
+    index_i = 0
+    index_j = 0
+  [../]
+  [./stress_yy]
+    type = RankTwoAux
+    rank_two_tensor = stress
+    variable = stress_yy
+    index_i = 1
+    index_j = 1
+  [../]
+  [./stress_zz]
+    type = RankTwoAux
+    rank_two_tensor = stress
+    variable = stress_zz
+    index_i = 2
+    index_j = 2
+  [../]
+  [./stress_xy]
+    type = RankTwoAux
+    rank_two_tensor = stress
+    variable = stress_xy
+    index_i = 0
+    index_j = 1
+  [../]
+  [./vonmises]
+    type = RankTwoScalarAux
+    rank_two_tensor = stress
+    variable = vonmises
+    scalar_type = VonMisesStress
+    execute_on = timestep_end
+  [../]
+  [./elastic_strain_yy]
+    type = RankTwoAux
+    rank_two_tensor = elastic_strain
+    variable = elastic_strain_yy
+    index_i = 1
+    index_j = 1
+  [../]
+  [./plastic_strain_eff]
+    type = MaterialRealAux
+    property = effective_plastic_strain
+    variable = plastic_strain_eff
+  [../]
+  [./tot_strain_yy]
+    type = RankTwoAux
+    rank_two_tensor = total_strain
+    variable = tot_strain_yy
+    index_i = 1
+    index_j = 1
+  [../]
+[] # AuxKernels
+
+[Functions]
+  [./appl_dispx]
+    type = PiecewiseLinear
+    x = &#x27;0   1.0   2.0   3.0  4.0   5.0  6.0  7.0  8.0&#x27;
+    y = &#x27;0.0 0.25e-4 0.50e-4 0.50e-4 0.50e-4 0.25e-4 0.0 0.0 0.0&#x27;
+  [../]
+  [./appl_dispy]
+    type = PiecewiseLinear
+    x = &#x27;0   1.0   2.0   3.0  4.0   5.0  6.0  7.0  8.0&#x27;
+    y = &#x27;0.0 0.0  0.0 0.25e-4 0.50e-4 0.50e-4 0.50e-4  0.25e-4 0.0 &#x27;
+  [../]
+[]
+
+[BCs]
+  [./side_x]
+    type = DirichletBC
+    variable = disp_x
+    boundary = 101
+    value = 0.0
+  [../]
+  [./origin_x]
+    type = DirichletBC
+    variable = disp_x
+    boundary = 103
+    value = 0.0
+  [../]
+  [./bot_y]
+    type = DirichletBC
+    variable = disp_y
+    boundary = 102
+    value = 0.0
+  [../]
+  [./origin_y]
+    type = DirichletBC
+    variable = disp_y
+    boundary = 103
+    value = 0.0
+  [../]
+  [./top_y]
+    type = FunctionDirichletBC
+    variable = disp_y
+    boundary = 1
+    function = appl_dispy
+  [../]
+  [./right_x]
+    type = FunctionDirichletBC
+    variable = disp_x
+    boundary = 2
+    function = appl_dispx
+  [../]
+[]
+
+[Materials]
+  [./elasticity_tensor]
+    type = ComputeIsotropicElasticityTensor
+    block = 1
+    youngs_modulus = 250e9
+    poissons_ratio = 0.25
+  [../]
+  [./strain]
+    type = ComputePlaneFiniteStrain
+    block = 1
+  [../]
+  [./stress]
+    type = ComputeMultipleInelasticStress
+    inelastic_models = &#x27;isoplas&#x27;
+    block = 1
+  [../]
+  [./isoplas]
+    type = IsotropicPlasticityStressUpdate
+    yield_stress = 5e6
+    hardening_constant = 0.0
+    relative_tolerance = 1e-20
+    absolute_tolerance = 1e-8
+    max_inelastic_increment = 0.000001
+  [../]
+[]
+
+[Executioner]
+  type = Transient
+  solve_type = &#x27;PJFNK&#x27;
+
+  nl_rel_tol = 1e-10
+  nl_abs_tol = 1e-12
+  l_tol = 1e-4
+  l_max_its = 100
+  nl_max_its = 20
+
+  [./TimeStepper]
+    type = IterationAdaptiveDT
+    dt = 0.1
+    time_t = &#x27;1.0  2.0  3.0  4.0  5.0  6.0  7.0  8.0&#x27;
+    time_dt = &#x27;0.1 0.1  0.1  0.1  0.1  0.1  0.1  0.1&#x27;
+    optimal_iterations = 30
+    iteration_window = 9
+    growth_factor = 2.0
+    cutback_factor = 0.5
+    timestep_limiting_postprocessor = matl_ts_min
+  [../]
+
+  start_time = 0.0
+  num_steps = 1000
+  end_time = 8.0
+[] # Executioner
+
+[Postprocessors]
+  [./matl_ts_min]
+    type = MaterialTimeStepPostprocessor
+  [../]
+  [./stress_xx]
+    type = ElementAverageValue
+    variable = stress_xx
+  [../]
+  [./stress_yy]
+    type = ElementAverageValue
+    variable = stress_yy
+  [../]
+  [./stress_zz]
+    type = ElementAverageValue
+    variable = stress_zz
+  [../]
+  [./vonmises]
+    type = ElementAverageValue
+    variable = vonmises
+  [../]
+  [./el_strain_yy]
+    type = ElementAverageValue
+    variable = elastic_strain_yy
+  [../]
+  [./plas_strain_eff]
+    type = ElementAverageValue
+    variable = plastic_strain_eff
+  [../]
+  [./tot_strain_yy]
+    type = ElementAverageValue
+    variable = tot_strain_yy
+  [../]
+  [./disp_x1]
+    type = NodalVariableValue
+    nodeid = 0
+    variable = disp_x
+  [../]
+  [./disp_x4]
+    type = NodalVariableValue
+    nodeid = 3
+    variable = disp_x
+  [../]
+  [./disp_y1]
+    type = NodalVariableValue
+    nodeid = 0
+    variable = disp_y
+  [../]
+  [./disp_y4]
+    type = NodalVariableValue
+    nodeid = 3
+    variable = disp_y
+  [../]
+  [./_dt]
+    type = TimestepSize
+  [../]
+[]
+
+[Outputs]
+  exodus = true
+  csv = true
+  [./console]
+    type = Console
+    output_linear = true
+  [../]
+[] # Outputs
+</code></pre></div><div class="modal-footer"><a class="modal-close btn-flat">Close</a></div></div></div><div class="col hide-on-med-and-down l2"><div class="toc-wrapper pin-top"><ul class="section table-of-contents"><li><a href="#807f6144-e4f8-43fd-9e0c-2d23e44d263f" class="tooltipped" data-position="left" data-tooltip="Description">Description</a></li><li><a href="#da7abd66-3ec1-4083-870b-5ee74c408d3c" class="tooltipped" data-position="left" data-tooltip="Example Input File">Example Input File</a></li><li><a href="#ce9e4b23-5751-4d34-ae2d-bb933cc7833e" class="tooltipped" data-position="left" data-tooltip="Input Parameters">Input Parameters</a></li></ul></div></div></div></div></main></div></body><script type="text/javascript" src="../../contrib/materialize/materialize.min.js"></script><script type="text/javascript" src="../../contrib/clipboard/clipboard.min.js"></script><script type="text/javascript" src="../../contrib/prism/prism.min.js"></script><script type="text/javascript" src="../../js/init.js"></script><script type="text/javascript" src="../../js/navigation.js"></script><script type="text/javascript" src="../../contrib/fuse/fuse.min.js"></script><script type="text/javascript" src="../../js/search_index.js"></script><script type="text/javascript" src="../../js/sqa_moose.js"></script>

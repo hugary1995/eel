@@ -1,0 +1,152 @@
+<!DOCTYPE html><head><meta charset="UTF-8"><title>IntegralDirectedSurfaceForce | Eel</title><link href="../../contrib/materialize/materialize.min.css" type="text/css" rel="stylesheet" media="screen,projection"></link><link href="../../contrib/prism/prism.min.css" type="text/css" rel="stylesheet"></link><link href="../../css/moose.css" type="text/css" rel="stylesheet"></link><link href="../../css/devel_moose.css" type="text/css" rel="stylesheet"></link><link href="../../css/alert_moose.css" type="text/css" rel="stylesheet"></link><link href="../../css/content_moose.css" type="text/css" rel="stylesheet"></link><link href="../../css/sqa_moose.css" type="text/css" rel="stylesheet"></link><link href="../../css/civet_moose.css" type="text/css" rel="stylesheet"></link><link href="../../contrib/katex/katex.min.css" type="text/css" rel="stylesheet"></link><link href="../../css/katex_moose.css" type="text/css" rel="stylesheet"></link><script type="text/javascript" src="../../contrib/jquery/jquery.min.js"></script><script type="text/javascript" src="../../contrib/katex/katex.min.js"></script></head><body><div class="page-wrap"><header><nav><div class="nav-wrapper container"><a href="../../index.html" class="left moose-logo hide-on-med-and-down" id="home-button">Eel</a><a href="https://github.com/hugary1995/eel" class="right"><img src="../../media/framework/github-logo.png" class="github-mark"></img><img src="../../media/framework/github-mark.png" class="github-logo"></img></a><ul class="right hide-on-med-and-down"><li><a href="../../eel.html">Documentation</a></li></ul><a href="#" class="sidenav-trigger" data-target="233d50da-c400-42dd-bf39-e16247364b49"><i class="material-icons">menu</i></a><ul class="sidenav" id="233d50da-c400-42dd-bf39-e16247364b49"><li><a href="../../eel.html">Documentation</a></li></ul><a href="#moose-search" class="modal-trigger"><i class="material-icons">search</i></a></div></nav><div class="modal modal-fixed-footer moose-search-modal" id="moose-search"><div class="modal-content container moose-search-modal-content"><div class="row"><div class="col l12"><div class="input-field"><input type_="text" onkeyup="mooseSearch()" placeholder="/index.md" id="moose-search-box"></input></div></div><div><div class="col s12" id="moose-search-results"></div></div></div></div><div class="modal-footer"><a href="#!" class="modal-close btn-flat">Close</a></div></div></header><main class="main"><div class="container"><div class="row"><div class="col hide-on-med-and-down l12"><nav class="breadcrumb-nav"><div class="nav-wrapper"><a href=".." class="breadcrumb">source</a><span class="breadcrumb">postprocessors</span><a href="#" class="breadcrumb">IntegralDirectedSurfaceForce</a></div></nav></div></div><div class="row"><div class="moose-content col s12 m12 l10"><section id="e5b364bf-9e48-4494-b96f-2a4e84c52dc7" data-section-level="1" data-section-text="IntegralDirectedSurfaceForce"><h1 id="integraldirectedsurfaceforce">IntegralDirectedSurfaceForce</h1><p>Computes the directed force coming from friction and pressure differences on a surface. One can use this object for the computation of the drag and lift coefficient as well.</p><section class="scrollspy" id="b6c530ca-cd5e-4899-a762-43ac33c6effb" data-section-level="2" data-section-text="Explanation"><h2 id="explanation">Explanation</h2><p>This postprocessor which computes the directed force coming from friction and pressure differences on a surface defined as:</p><span class="moose-katex-block-equation"><span class="moose-katex-equation table-cell" id="moose-equation-41ef8eaf-9134-4047-b082-17142f64c007"></span><script>var element = document.getElementById("moose-equation-41ef8eaf-9134-4047-b082-17142f64c007");katex.render("F_d = \\int\\limits_S (\\sigma \\vec{n}) \\cdot \\vec{d} ~dS", element, {displayMode:true,throwOnError:false,macros:{"\\bs":"\\boldsymbol{#1}","\\grad":"\\bs{\\nabla}","\\divergence":"\\grad \\cdot","\\norm":"\\left\\lVert#1\\right\\rVert","\\abs":"\\left\\lvert#1\\right\\rvert","\\diff":"\\text{ d}#1","\\bfa":"\\boldsymbol{a}","\\bfb":"\\boldsymbol{b}","\\bfc":"\\boldsymbol{c}","\\bfd":"\\boldsymbol{d}","\\bfe":"\\boldsymbol{e}","\\bff":"\\boldsymbol{f}","\\bfg":"\\boldsymbol{g}","\\bfh":"\\boldsymbol{h}","\\bfi":"\\boldsymbol{i}","\\bfj":"\\boldsymbol{j}","\\bfk":"\\boldsymbol{k}","\\bfl":"\\boldsymbol{l}","\\bfm":"\\boldsymbol{m}","\\bfn":"\\boldsymbol{n}","\\bfo":"\\boldsymbol{o}","\\bfp":"\\boldsymbol{p}","\\bfq":"\\boldsymbol{q}","\\bfr":"\\boldsymbol{r}","\\bfs":"\\boldsymbol{s}","\\bft":"\\boldsymbol{t}","\\bfu":"\\boldsymbol{u}","\\bfv":"\\boldsymbol{v}","\\bfw":"\\boldsymbol{w}","\\bfx":"\\boldsymbol{x}","\\bfy":"\\boldsymbol{y}","\\bfz":"\\boldsymbol{z}","\\bfA":"\\boldsymbol{A}","\\bfB":"\\boldsymbol{B}","\\bfC":"\\boldsymbol{C}","\\bfD":"\\boldsymbol{D}","\\bfE":"\\boldsymbol{E}","\\bfF":"\\boldsymbol{F}","\\bfG":"\\boldsymbol{G}","\\bfH":"\\boldsymbol{H}","\\bfI":"\\boldsymbol{I}","\\bfJ":"\\boldsymbol{J}","\\bfK":"\\boldsymbol{K}","\\bfL":"\\boldsymbol{L}","\\bfM":"\\boldsymbol{M}","\\bfN":"\\boldsymbol{N}","\\bfO":"\\boldsymbol{O}","\\bfP":"\\boldsymbol{P}","\\bfQ":"\\boldsymbol{Q}","\\bfR":"\\boldsymbol{R}","\\bfS":"\\boldsymbol{S}","\\bfT":"\\boldsymbol{T}","\\bfU":"\\boldsymbol{U}","\\bfV":"\\boldsymbol{V}","\\bfW":"\\boldsymbol{W}","\\bfX":"\\boldsymbol{X}","\\bfY":"\\boldsymbol{Y}","\\bfZ":"\\boldsymbol{Z}"}});</script></span><p>where <span class="moose-katex-inline-equation" id="moose-equation-4afa0cc3-8d96-4941-b22c-fc13dac2d8f2"><script>var element = document.getElementById("moose-equation-4afa0cc3-8d96-4941-b22c-fc13dac2d8f2");katex.render("\\sigma", element, {displayMode:false,throwOnError:false,macros:{"\\bs":"\\boldsymbol{#1}","\\grad":"\\bs{\\nabla}","\\divergence":"\\grad \\cdot","\\norm":"\\left\\lVert#1\\right\\rVert","\\abs":"\\left\\lvert#1\\right\\rvert","\\diff":"\\text{ d}#1","\\bfa":"\\boldsymbol{a}","\\bfb":"\\boldsymbol{b}","\\bfc":"\\boldsymbol{c}","\\bfd":"\\boldsymbol{d}","\\bfe":"\\boldsymbol{e}","\\bff":"\\boldsymbol{f}","\\bfg":"\\boldsymbol{g}","\\bfh":"\\boldsymbol{h}","\\bfi":"\\boldsymbol{i}","\\bfj":"\\boldsymbol{j}","\\bfk":"\\boldsymbol{k}","\\bfl":"\\boldsymbol{l}","\\bfm":"\\boldsymbol{m}","\\bfn":"\\boldsymbol{n}","\\bfo":"\\boldsymbol{o}","\\bfp":"\\boldsymbol{p}","\\bfq":"\\boldsymbol{q}","\\bfr":"\\boldsymbol{r}","\\bfs":"\\boldsymbol{s}","\\bft":"\\boldsymbol{t}","\\bfu":"\\boldsymbol{u}","\\bfv":"\\boldsymbol{v}","\\bfw":"\\boldsymbol{w}","\\bfx":"\\boldsymbol{x}","\\bfy":"\\boldsymbol{y}","\\bfz":"\\boldsymbol{z}","\\bfA":"\\boldsymbol{A}","\\bfB":"\\boldsymbol{B}","\\bfC":"\\boldsymbol{C}","\\bfD":"\\boldsymbol{D}","\\bfE":"\\boldsymbol{E}","\\bfF":"\\boldsymbol{F}","\\bfG":"\\boldsymbol{G}","\\bfH":"\\boldsymbol{H}","\\bfI":"\\boldsymbol{I}","\\bfJ":"\\boldsymbol{J}","\\bfK":"\\boldsymbol{K}","\\bfL":"\\boldsymbol{L}","\\bfM":"\\boldsymbol{M}","\\bfN":"\\boldsymbol{N}","\\bfO":"\\boldsymbol{O}","\\bfP":"\\boldsymbol{P}","\\bfQ":"\\boldsymbol{Q}","\\bfR":"\\boldsymbol{R}","\\bfS":"\\boldsymbol{S}","\\bfT":"\\boldsymbol{T}","\\bfU":"\\boldsymbol{U}","\\bfV":"\\boldsymbol{V}","\\bfW":"\\boldsymbol{W}","\\bfX":"\\boldsymbol{X}","\\bfY":"\\boldsymbol{Y}","\\bfZ":"\\boldsymbol{Z}"}});</script></span> is the Cauchy stress tensor. One can use this in combination with other postprocessors to compute representative drag and lift coefficients.</p></section><section class="scrollspy" id="401b8ccb-ab0e-4d52-bfc5-ac533caf5523" data-section-level="2" data-section-text="Example input syntax"><h2 id="example-input-syntax">Example input syntax</h2><p>In this case, the lift and drag coefficients are computed on the surface of a cylinder.</p><pre class="moose-pre" style="max-height:350px;"><code class="language-text">[Postprocessors]
+  [Re]
+    type = ParsedPostprocessor
+    function = &#x27;rho * U * D / mu&#x27;
+    constant_names = &#x27;rho U D mu&#x27;
+    constant_expressions = &#x27;${rho} ${fparse 2/3*inlet_velocity} ${fparse 2*circle_radius} ${mu}&#x27;
+    pp_names = &#x27;&#x27;
+  []
+  [point_vel_x]
+    type = PointValue
+    point = &#x27;${fparse (x_max-x_min)/2} ${fparse (y_max-y_min)/2} 0&#x27;
+    variable = &#x27;vel_x&#x27;
+  []
+  [point_vel_y]
+    type = PointValue
+    point = &#x27;${fparse (x_max-x_min)/2} ${fparse (y_max-y_min)/2} 0&#x27;
+    variable = &#x27;vel_y&#x27;
+  []
+  [drag_force]
+    type = IntegralDirectedSurfaceForce
+    vel_x = vel_x
+    vel_y = vel_y
+    mu = ${mu}
+    pressure = pressure
+    principal_direction = &#x27;1 0 0&#x27;
+    boundary = &#x27;circle&#x27;
+    outputs = none
+    execute_on = &#x27;INITIAL TIMESTEP_END&#x27;
+  []
+  [drag_coeff]
+    type = ParsedPostprocessor
+    function = &#x27;2*drag_force/rho/(avgvel*avgvel)/D&#x27;
+    constant_names = &#x27;rho avgvel D&#x27;
+    constant_expressions = &#x27;${rho} ${fparse 2/3*inlet_velocity} ${fparse 2*circle_radius}&#x27;
+    pp_names = &#x27;drag_force&#x27;
+    execute_on = &#x27;INITIAL TIMESTEP_END&#x27;
+  []
+  [lift_force]
+    type = IntegralDirectedSurfaceForce
+    vel_x = vel_x
+    vel_y = vel_y
+    mu = ${mu}
+    pressure = pressure
+    principal_direction = &#x27;0 1 0&#x27;
+    boundary = &#x27;circle&#x27;
+    outputs = none
+    execute_on = &#x27;INITIAL TIMESTEP_END&#x27;
+  []
+  [lift_coeff]
+    type = ParsedPostprocessor
+    function = &#x27;2*lift_force/rho/(avgvel*avgvel)/D&#x27;
+    constant_names = &#x27;rho avgvel D&#x27;
+    constant_expressions = &#x27;${rho} ${fparse 2/3*inlet_velocity} ${fparse 2*circle_radius}&#x27;
+    pp_names = &#x27;lift_force&#x27;
+    execute_on = &#x27;INITIAL TIMESTEP_END&#x27;
+  []
+[]
+</code></pre><a class="moose-source-filename tooltipped modal-trigger" href="#d2c23e3a-2e4d-411b-8e0d-0614826e2495">(moose/modules/navier_stokes/examples/flow-over-circle/executioner_postprocessor.i)</a></section><section class="scrollspy" id="a7867fae-27d5-4baa-a45d-374d3955577a" data-section-level="2" data-section-text="Input Parameters"><h2 id="input-parameters">Input Parameters</h2><section id="166052ef-4934-46d8-bb47-551f5d794468" data-section-level="3" data-section-text="Required Parameters" data-details-open="open"><details class="moose-section-content" open="open"><ul class="collapsible" data-collapsible="expandable"><li><div class="collapsible-header"><span class="moose-parameter-name">boundary</span><span class="moose-parameter-header-description">The list of boundary IDs from the mesh where this object applies</span></div><div class="collapsible-body"><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>std::vector&lt;BoundaryName&gt;</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>No</p><p class="moose-parameter-description"><span>Description:</span>The list of boundary IDs from the mesh where this object applies</p></div></li><li><div class="collapsible-header"><span class="moose-parameter-name">mu</span><span class="moose-parameter-header-description">The dynamic viscosity.</span></div><div class="collapsible-body"><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>MooseFunctorName</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>No</p><p class="moose-parameter-description"><span>Description:</span>The dynamic viscosity.</p></div></li><li><div class="collapsible-header"><span class="moose-parameter-name">pressure</span><span class="moose-parameter-header-description">The pressure functor.</span></div><div class="collapsible-body"><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>MooseFunctorName</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>No</p><p class="moose-parameter-description"><span>Description:</span>The pressure functor.</p></div></li><li><div class="collapsible-header"><span class="moose-parameter-name">principal_direction</span><span class="moose-parameter-header-description">The direction in which the force is computed.</span></div><div class="collapsible-body"><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>libMesh::VectorValue&lt;double&gt;</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>No</p><p class="moose-parameter-description"><span>Description:</span>The direction in which the force is computed.</p></div></li><li><div class="collapsible-header"><span class="moose-parameter-name">vel_x</span><span class="moose-parameter-header-description">The velocity in direction x.</span></div><div class="collapsible-body"><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>MooseFunctorName</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>No</p><p class="moose-parameter-description"><span>Description:</span>The velocity in direction x.</p></div></li></ul><summary><h3 data-details-open="open"><span class="moose-section-icon"></span>Required Parameters</h3></summary></details></section><section id="30d65f30-298f-4e5a-bf97-3037c0c8b114" data-section-level="3" data-section-text="Optional Parameters" data-details-open="open"><details class="moose-section-content" open="open"><ul class="collapsible" data-collapsible="expandable"><li><div class="collapsible-header"><span class="moose-parameter-name">execute_on</span><span class="moose-parameter-header-default">TIMESTEP_END</span><span class="moose-parameter-header-description">The list of flag(s) indicating when this object should be executed, the available options include NONE, INITIAL, LINEAR, NONLINEAR, TIMESTEP_END, TIMESTEP_BEGIN, MULTIAPP_FIXED_POINT_END, MULTIAPP_FIXED_POINT_BEGIN, FINAL, CUSTOM, ALWAYS.</span></div><div class="collapsible-body"><p class="moose-parameter-description-default"><span>Default:</span>TIMESTEP_END</p><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>ExecFlagEnum</p><p class="moose-parameter-description-options"><span>Options:</span>NONE, INITIAL, LINEAR, NONLINEAR, TIMESTEP_END, TIMESTEP_BEGIN, MULTIAPP_FIXED_POINT_END, MULTIAPP_FIXED_POINT_BEGIN, FINAL, CUSTOM, ALWAYS, TRANSFER</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>No</p><p class="moose-parameter-description"><span>Description:</span>The list of flag(s) indicating when this object should be executed, the available options include NONE, INITIAL, LINEAR, NONLINEAR, TIMESTEP_END, TIMESTEP_BEGIN, MULTIAPP_FIXED_POINT_END, MULTIAPP_FIXED_POINT_BEGIN, FINAL, CUSTOM, ALWAYS.</p></div></li><li><div class="collapsible-header"><span class="moose-parameter-name">prop_getter_suffix</span><span class="moose-parameter-header-description">An optional suffix parameter that can be appended to any attempt to retrieve/get material properties. The suffix will be prepended with a '_' character.</span></div><div class="collapsible-body"><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>MaterialPropertyName</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>No</p><p class="moose-parameter-description"><span>Description:</span>An optional suffix parameter that can be appended to any attempt to retrieve/get material properties. The suffix will be prepended with a '_' character.</p></div></li><li><div class="collapsible-header"><span class="moose-parameter-name">vel_y</span><span class="moose-parameter-header-description">The velocity in direction y.</span></div><div class="collapsible-body"><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>MooseFunctorName</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>No</p><p class="moose-parameter-description"><span>Description:</span>The velocity in direction y.</p></div></li><li><div class="collapsible-header"><span class="moose-parameter-name">vel_z</span><span class="moose-parameter-header-description">The velocity in direction z.</span></div><div class="collapsible-body"><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>MooseFunctorName</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>No</p><p class="moose-parameter-description"><span>Description:</span>The velocity in direction z.</p></div></li></ul><summary><h3 data-details-open="open"><span class="moose-section-icon"></span>Optional Parameters</h3></summary></details></section><section id="b627489f-9d14-4767-a0e1-4d16416af3fb" data-section-level="3" data-section-text="Advanced Parameters" data-details-open="close"><details class="moose-section-content"><ul class="collapsible" data-collapsible="expandable"><li><div class="collapsible-header"><span class="moose-parameter-name">allow_duplicate_execution_on_initial</span><span class="moose-parameter-header-default">False</span><span class="moose-parameter-header-description">In the case where this UserObject is depended upon by an initial condition, allow it to be executed twice during the initial setup (once before the IC and again after mesh adaptivity (if applicable).</span></div><div class="collapsible-body"><p class="moose-parameter-description-default"><span>Default:</span>False</p><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>bool</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>No</p><p class="moose-parameter-description"><span>Description:</span>In the case where this UserObject is depended upon by an initial condition, allow it to be executed twice during the initial setup (once before the IC and again after mesh adaptivity (if applicable).</p></div></li><li><div class="collapsible-header"><span class="moose-parameter-name">control_tags</span><span class="moose-parameter-header-description">Adds user-defined labels for accessing object parameters via control logic.</span></div><div class="collapsible-body"><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>std::vector&lt;std::string&gt;</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>No</p><p class="moose-parameter-description"><span>Description:</span>Adds user-defined labels for accessing object parameters via control logic.</p></div></li><li><div class="collapsible-header"><span class="moose-parameter-name">enable</span><span class="moose-parameter-header-default">True</span><span class="moose-parameter-header-description">Set the enabled status of the MooseObject.</span></div><div class="collapsible-body"><p class="moose-parameter-description-default"><span>Default:</span>True</p><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>bool</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>Yes</p><p class="moose-parameter-description"><span>Description:</span>Set the enabled status of the MooseObject.</p></div></li><li><div class="collapsible-header"><span class="moose-parameter-name">execution_order_group</span><span class="moose-parameter-header-default">0</span><span class="moose-parameter-header-description">Execution order groups are executed in increasing order (e.g., the lowest number is executed first). Note that negative group numbers may be used to execute groups before the default (0) group. Please refer to the user object documentation for ordering of user object execution within a group.</span></div><div class="collapsible-body"><p class="moose-parameter-description-default"><span>Default:</span>0</p><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>int</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>No</p><p class="moose-parameter-description"><span>Description:</span>Execution order groups are executed in increasing order (e.g., the lowest number is executed first). Note that negative group numbers may be used to execute groups before the default (0) group. Please refer to the user object documentation for ordering of user object execution within a group.</p></div></li><li><div class="collapsible-header"><span class="moose-parameter-name">force_postaux</span><span class="moose-parameter-header-default">False</span><span class="moose-parameter-header-description">Forces the UserObject to be executed in POSTAUX</span></div><div class="collapsible-body"><p class="moose-parameter-description-default"><span>Default:</span>False</p><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>bool</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>No</p><p class="moose-parameter-description"><span>Description:</span>Forces the UserObject to be executed in POSTAUX</p></div></li><li><div class="collapsible-header"><span class="moose-parameter-name">force_preaux</span><span class="moose-parameter-header-default">False</span><span class="moose-parameter-header-description">Forces the UserObject to be executed in PREAUX</span></div><div class="collapsible-body"><p class="moose-parameter-description-default"><span>Default:</span>False</p><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>bool</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>No</p><p class="moose-parameter-description"><span>Description:</span>Forces the UserObject to be executed in PREAUX</p></div></li><li><div class="collapsible-header"><span class="moose-parameter-name">force_preic</span><span class="moose-parameter-header-default">False</span><span class="moose-parameter-header-description">Forces the UserObject to be executed in PREIC during initial setup</span></div><div class="collapsible-body"><p class="moose-parameter-description-default"><span>Default:</span>False</p><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>bool</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>No</p><p class="moose-parameter-description"><span>Description:</span>Forces the UserObject to be executed in PREIC during initial setup</p></div></li><li><div class="collapsible-header"><span class="moose-parameter-name">outputs</span><span class="moose-parameter-header-description">Vector of output names where you would like to restrict the output of variables(s) associated with this object</span></div><div class="collapsible-body"><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>std::vector&lt;OutputName&gt;</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>No</p><p class="moose-parameter-description"><span>Description:</span>Vector of output names where you would like to restrict the output of variables(s) associated with this object</p></div></li><li><div class="collapsible-header"><span class="moose-parameter-name">use_displaced_mesh</span><span class="moose-parameter-header-default">False</span><span class="moose-parameter-header-description">Whether or not this object should use the displaced mesh for computation.  Note that in the case this is true but no displacements are provided in the Mesh block the undisplaced mesh will still be used.</span></div><div class="collapsible-body"><p class="moose-parameter-description-default"><span>Default:</span>False</p><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>bool</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>No</p><p class="moose-parameter-description"><span>Description:</span>Whether or not this object should use the displaced mesh for computation.  Note that in the case this is true but no displacements are provided in the Mesh block the undisplaced mesh will still be used.</p></div></li></ul><summary><h3 data-details-open="close"><span class="moose-section-icon"></span>Advanced Parameters</h3></summary></details></section></section></section><div class="moose-modal modal" id="d2c23e3a-2e4d-411b-8e0d-0614826e2495"><div class="modal-content"><h4>(moose/modules/navier_stokes/examples/flow-over-circle/executioner_postprocessor.i)</h4><pre class="moose-pre"><code class="language-text">[Functions]
+  [inlet_function]
+    type = ParsedFunction
+    expression = &#x27;4*U*(y-ymin)*(ymax-y)/(ymax-ymin)/(ymax-ymin)&#x27;
+    symbol_names = &#x27;U ymax ymin&#x27;
+    symbol_values = &#x27;${inlet_velocity} ${y_max} ${y_min}&#x27;
+  []
+[]
+
+[Executioner]
+  type = Transient
+  solve_type = &#x27;NEWTON&#x27;
+  petsc_options = &#x27;-snes_converged_reason -ksp_converged_reason&#x27;
+  petsc_options_iname = &#x27;-pc_type&#x27;
+  petsc_options_value = &#x27;lu&#x27;
+  line_search = &#x27;none&#x27;
+  nl_rel_tol = 1e-8
+  nl_abs_tol = 1e-10
+  nl_max_its = 10
+  end_time = 15
+  dtmax = 2e-2
+  dtmin = 1e-5
+  scheme = &#x27;bdf2&#x27;
+  [TimeStepper]
+    type = IterationAdaptiveDT
+    dt = 1e-3
+    optimal_iterations = 6
+    growth_factor = 1.5
+  []
+[]
+
+[Outputs]
+  exodus = true
+  csv = true
+  checkpoint = true
+[]
+
+[Postprocessors]
+  [Re]
+    type = ParsedPostprocessor
+    function = &#x27;rho * U * D / mu&#x27;
+    constant_names = &#x27;rho U D mu&#x27;
+    constant_expressions = &#x27;${rho} ${fparse 2/3*inlet_velocity} ${fparse 2*circle_radius} ${mu}&#x27;
+    pp_names = &#x27;&#x27;
+  []
+  [point_vel_x]
+    type = PointValue
+    point = &#x27;${fparse (x_max-x_min)/2} ${fparse (y_max-y_min)/2} 0&#x27;
+    variable = &#x27;vel_x&#x27;
+  []
+  [point_vel_y]
+    type = PointValue
+    point = &#x27;${fparse (x_max-x_min)/2} ${fparse (y_max-y_min)/2} 0&#x27;
+    variable = &#x27;vel_y&#x27;
+  []
+  [drag_force]
+    type = IntegralDirectedSurfaceForce
+    vel_x = vel_x
+    vel_y = vel_y
+    mu = ${mu}
+    pressure = pressure
+    principal_direction = &#x27;1 0 0&#x27;
+    boundary = &#x27;circle&#x27;
+    outputs = none
+    execute_on = &#x27;INITIAL TIMESTEP_END&#x27;
+  []
+  [drag_coeff]
+    type = ParsedPostprocessor
+    function = &#x27;2*drag_force/rho/(avgvel*avgvel)/D&#x27;
+    constant_names = &#x27;rho avgvel D&#x27;
+    constant_expressions = &#x27;${rho} ${fparse 2/3*inlet_velocity} ${fparse 2*circle_radius}&#x27;
+    pp_names = &#x27;drag_force&#x27;
+    execute_on = &#x27;INITIAL TIMESTEP_END&#x27;
+  []
+  [lift_force]
+    type = IntegralDirectedSurfaceForce
+    vel_x = vel_x
+    vel_y = vel_y
+    mu = ${mu}
+    pressure = pressure
+    principal_direction = &#x27;0 1 0&#x27;
+    boundary = &#x27;circle&#x27;
+    outputs = none
+    execute_on = &#x27;INITIAL TIMESTEP_END&#x27;
+  []
+  [lift_coeff]
+    type = ParsedPostprocessor
+    function = &#x27;2*lift_force/rho/(avgvel*avgvel)/D&#x27;
+    constant_names = &#x27;rho avgvel D&#x27;
+    constant_expressions = &#x27;${rho} ${fparse 2/3*inlet_velocity} ${fparse 2*circle_radius}&#x27;
+    pp_names = &#x27;lift_force&#x27;
+    execute_on = &#x27;INITIAL TIMESTEP_END&#x27;
+  []
+[]
+</code></pre></div><div class="modal-footer"><a class="modal-close btn-flat">Close</a></div></div></div><div class="col hide-on-med-and-down l2"><div class="toc-wrapper pin-top"><ul class="section table-of-contents"><li><a href="#b6c530ca-cd5e-4899-a762-43ac33c6effb" class="tooltipped" data-position="left" data-tooltip="Explanation">Explanation</a></li><li><a href="#401b8ccb-ab0e-4d52-bfc5-ac533caf5523" class="tooltipped" data-position="left" data-tooltip="Example input syntax">Example input syntax</a></li><li><a href="#a7867fae-27d5-4baa-a45d-374d3955577a" class="tooltipped" data-position="left" data-tooltip="Input Parameters">Input Parameters</a></li></ul></div></div></div></div></main></div></body><script type="text/javascript" src="../../contrib/materialize/materialize.min.js"></script><script type="text/javascript" src="../../contrib/clipboard/clipboard.min.js"></script><script type="text/javascript" src="../../contrib/prism/prism.min.js"></script><script type="text/javascript" src="../../js/init.js"></script><script type="text/javascript" src="../../js/navigation.js"></script><script type="text/javascript" src="../../contrib/fuse/fuse.min.js"></script><script type="text/javascript" src="../../js/search_index.js"></script><script type="text/javascript" src="../../js/sqa_moose.js"></script>

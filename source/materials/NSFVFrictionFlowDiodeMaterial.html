@@ -1,0 +1,1160 @@
+<!DOCTYPE html><head><meta charset="UTF-8"><title>NSFVFrictionFlowDiodeMaterial | Eel</title><link href="../../contrib/materialize/materialize.min.css" type="text/css" rel="stylesheet" media="screen,projection"></link><link href="../../contrib/prism/prism.min.css" type="text/css" rel="stylesheet"></link><link href="../../css/moose.css" type="text/css" rel="stylesheet"></link><link href="../../css/devel_moose.css" type="text/css" rel="stylesheet"></link><link href="../../css/alert_moose.css" type="text/css" rel="stylesheet"></link><link href="../../css/content_moose.css" type="text/css" rel="stylesheet"></link><link href="../../css/sqa_moose.css" type="text/css" rel="stylesheet"></link><link href="../../css/civet_moose.css" type="text/css" rel="stylesheet"></link><script type="text/javascript" src="../../contrib/jquery/jquery.min.js"></script></head><body><div class="page-wrap"><header><nav><div class="nav-wrapper container"><a href="../../index.html" class="left moose-logo hide-on-med-and-down" id="home-button">Eel</a><a href="https://github.com/hugary1995/eel" class="right"><img src="../../media/framework/github-logo.png" class="github-mark"></img><img src="../../media/framework/github-mark.png" class="github-logo"></img></a><ul class="right hide-on-med-and-down"><li><a href="../../eel.html">Documentation</a></li></ul><a href="#" class="sidenav-trigger" data-target="25b54183-1ae8-46d3-86a3-3660b6f023fe"><i class="material-icons">menu</i></a><ul class="sidenav" id="25b54183-1ae8-46d3-86a3-3660b6f023fe"><li><a href="../../eel.html">Documentation</a></li></ul><a href="#moose-search" class="modal-trigger"><i class="material-icons">search</i></a></div></nav><div class="modal modal-fixed-footer moose-search-modal" id="moose-search"><div class="modal-content container moose-search-modal-content"><div class="row"><div class="col l12"><div class="input-field"><input type_="text" onkeyup="mooseSearch()" placeholder="/index.md" id="moose-search-box"></input></div></div><div><div class="col s12" id="moose-search-results"></div></div></div></div><div class="modal-footer"><a href="#!" class="modal-close btn-flat">Close</a></div></div></header><main class="main"><div class="container"><div class="row"><div class="col hide-on-med-and-down l12"><nav class="breadcrumb-nav"><div class="nav-wrapper"><a href=".." class="breadcrumb">source</a><span class="breadcrumb">materials</span><a href="#" class="breadcrumb">NSFVFrictionFlowDiodeMaterial</a></div></nav></div></div><div class="row"><div class="moose-content col s12 m12 l10"><section id="877fb2cd-6e29-480d-b0d8-566321542bbd" data-section-level="1" data-section-text="NSFVFrictionFlowDiodeMaterial"><h1 id="nsfvfrictionflowdiodematerial">NSFVFrictionFlowDiodeMaterial</h1><p>Increases the anistropic friction coefficients, linear or quadratic, by K_i * |direction_i| when the diode is turned on with a boolean</p><p>This material is meant to be used to implement a simplistic volumetric flow diode. The parameter <a href="#91bc1b3e-4e14-4579-a2b9-10ca3e1f090a" class="moose-modal-link modal-trigger">&quot;additional_linear_resistance&quot;</a> and <a href="#74928762-3c66-4a5c-bf62-3e0eb51abbf6" class="moose-modal-link modal-trigger">&quot;additional_quadratic_resistance&quot;</a> should be chosen such that the flow is sufficiently vanished in the direction opposite the diode.</p><div class="card moose-alert moose-alert-warning"><div class="card-title moose-alert-title"><i class="material-icons moose-inline-icon">warning</i><span class="moose-alert-title-brand">warning</span></div><div class="card-content"><div class="moose-alert-content"><p>The operation of the diode is controlled with the <a href="#86739022-5e7d-41fb-b85c-a3b83db74fd9" class="moose-modal-link modal-trigger">&quot;turn_on_diode&quot;</a> parameter. If this parameter is false, the &#x27;diode&#x27; does <em>NOT</em> create any flow restriction.</p></div></div></div><section class="scrollspy" id="8e597acf-cb65-4b4b-b1cb-56cecc63aad1" data-section-level="2" data-section-text="Example input file syntax"><h2 id="example-input-file-syntax">Example input file syntax</h2><section id="d15a9990-9c29-4cb7-898e-933bd1cb4952" data-section-level="3" data-section-text="Simple always - on friction term"><h3 id="simple-always-on-friction-term">Simple always-on friction term</h3><p>In this example the friction flow diode is added to a porous media simulation. The <code>combined_linear/quadratic</code> friction coefficients contain both the diode friction coefficients and the base porous media friction.</p><p>The friction coefficients are then combined using a <a href="../functormaterials/PiecewiseByBlockVectorFunctorMaterial.html">PiecewiseByBlockVectorFunctorMaterial ADPiecewiseByBlockVectorFunctorMaterial</a> to have a uniform name over the whole domain for friction coefficients.</p><pre class="moose-pre" style="max-height:350px;"><code class="language-text">[Materials]
+  [porosity]
+    type = ADGenericFunctorMaterial
+    prop_names = &#x27;porosity&#x27;
+    prop_values = &#x27;0.5&#x27;
+  []
+  [base_friction]
+    type = ADGenericVectorFunctorMaterial
+    prop_names = &#x27;Darcy Forchheimer&#x27;
+    prop_values = &#x27;1 1 1 0.1 0.2 0.3&#x27;
+  []
+  [diode]
+    type = NSFVFrictionFlowDiodeMaterial
+    direction = &#x27;1 0 0&#x27;
+    additional_linear_resistance = &#x27;10 0 0&#x27; #&#x27;100 10 20&#x27;
+    additional_quadratic_resistance = &#x27;10 0 0&#x27; #&#x27;10 4 4&#x27;
+    base_linear_friction_coefs = &#x27;Darcy&#x27;
+    base_quadratic_friction_coefs = &#x27;Forchheimer&#x27;
+    sum_linear_friction_name = &#x27;diode_linear&#x27;
+    sum_quadratic_friction_name = &#x27;diode_quad&#x27;
+    block = &#x27;2&#x27;
+    turn_on_diode = true
+  []
+  [combine_linear_friction]
+    type = ADPiecewiseByBlockVectorFunctorMaterial
+    prop_name = &#x27;combined_linear&#x27;
+    subdomain_to_prop_value = &#x27;1 Darcy
+                               2 diode_linear&#x27;
+  []
+  [combine_quadratic_friction]
+    type = ADPiecewiseByBlockVectorFunctorMaterial
+    prop_name = &#x27;combined_quadratic&#x27;
+    subdomain_to_prop_value = &#x27;1 Forchheimer
+                               2 diode_quad&#x27;
+  []
+[]
+</code></pre><a class="moose-source-filename tooltipped modal-trigger" href="#efe0a6cd-535b-4b2b-8169-7675277b9d2e">(moose/modules/navier_stokes/test/tests/finite_volume/materials/flow_diode/friction.i)</a></section><section id="add57f3d-fdb1-4dca-956f-f6eb6a1f3611" data-section-level="3" data-section-text="Dynamic operation of a diode"><h3 id="dynamic-operation-of-a-diode">Dynamic operation of a diode</h3><p>In this example, we show three <a href="../../syntax/Controls/index.html">Control</a> strategies for the diode. The idea of these controls is to detect a condition in which the flow should be blocked, because it&#x27;s going in the way opposite the direction of the diode, or because it meets a criterion that is outlined in the postprocessors and functions involved to describe it.</p><p>The first strategy is simply to block the flow at a given time.</p><pre class="moose-pre" style="max-height:350px;"><code class="language-text">[time_based]
+  type = BoolFunctionControl
+  function = time_function
+  parameter = &#x27;Materials/diode/turn_on_diode&#x27;
+  execute_on = timestep_begin
+[]
+
+[time_function]
+  type = ParsedFunction
+  expression = &#x27;if(t&lt;0.1, 0, 1)&#x27;
+[]
+</code></pre><a class="moose-source-filename tooltipped modal-trigger" href="#5f6290aa-6efb-4db8-94e2-476a63853f97">(moose/modules/navier_stokes/test/tests/finite_volume/materials/flow_diode/transient_operation.i)</a><p>The second strategy is to look at the pressure drop across the diode, and block (add friction to) the flow if it exceeds a certain value. If it exceeds a certain value, then in all likelihood means that the flow is flowing through the diode in the direction of decreasing pressure.</p><pre class="moose-pre" style="max-height:350px;"><code class="language-text">[pdrop_based]
+  type = BoolFunctionControl
+  function = pdrop_positive
+  parameter = &#x27;Materials/diode/turn_on_diode&#x27;
+  execute_on = timestep_begin
+[]
+
+[pdrop_diode]
+  type = PressureDrop
+  upstream_boundary = &#x27;diode_inlet&#x27;
+  downstream_boundary = &#x27;top_left&#x27;
+  weighting_functor = &#x27;momentum&#x27;
+  boundary = &#x27;diode_inlet top_left&#x27;
+  pressure = pressure
+[]
+
+[pdrop_positive]
+  type = ParsedFunction
+  expression = &#x27;if(pdrop_diode&gt;100, 1, 0)&#x27;
+  symbol_names = pdrop_diode
+  symbol_values = pdrop_diode
+[]
+</code></pre><a class="moose-source-filename tooltipped modal-trigger" href="#b3296276-5a33-4eab-9c0b-8e4b66449c06">(moose/modules/navier_stokes/test/tests/finite_volume/materials/flow_diode/transient_operation.i)</a><p>The final strategy is to compute the mass flow rate through the diode, and block (add friction to) the flow if it exceeds a certain value.</p><pre class="moose-pre" style="max-height:350px;"><code class="language-text">[flow_based]
+  type = BoolFunctionControl
+  function = velocity_big_enough
+  parameter = &#x27;Materials/diode/turn_on_diode&#x27;
+  execute_on = timestep_begin
+[]
+
+[flow_diode]
+  type = VolumetricFlowRate
+  boundary = &#x27;diode_inlet&#x27;
+  vel_x = superficial_vel_x
+  vel_y = superficial_vel_y
+  advected_quantity = ${rho}
+[]
+
+[velocity_big_enough]
+  type = ParsedFunction
+  expression = &#x27;if(flow_diode&lt;-0.4, 1, 0)&#x27;
+  symbol_names = flow_diode
+  symbol_values = flow_diode
+[]
+</code></pre><a class="moose-source-filename tooltipped modal-trigger" href="#d3e90eb6-f39f-4e94-86cc-de1c8fe445d4">(moose/modules/navier_stokes/test/tests/finite_volume/materials/flow_diode/transient_operation.i)</a><div class="card moose-alert moose-alert-note"><div class="card-title moose-alert-title"><i class="material-icons moose-inline-icon">comment</i><span class="moose-alert-title-brand">note</span></div><div class="card-content"><div class="moose-alert-content"><p>All these strategies are workarounds for the fact that looking at the local velocity (in multi-dimensional space) to apply a friction term based on this local velocity, rather than an average quantity, seems to be numerically unstable.</p></div></div></div></section></section><section class="scrollspy" id="a4f9f863-af2e-4f4a-b858-59119e70ac97" data-section-level="2" data-section-text="Input Parameters"><h2 id="input-parameters">Input Parameters</h2><section id="f2105c74-3b97-49df-aecb-b119c546d793" data-section-level="3" data-section-text="Required Parameters" data-details-open="open"><details class="moose-section-content" open="open"><ul class="collapsible" data-collapsible="expandable"><li><div class="collapsible-header"><span class="moose-parameter-name">additional_linear_resistance</span><span class="moose-parameter-header-description">Additional linear friction factor</span></div><div class="collapsible-body"><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>libMesh::VectorValue&lt;double&gt;</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>No</p><p class="moose-parameter-description"><span>Description:</span>Additional linear friction factor</p></div></li><li><div class="collapsible-header"><span class="moose-parameter-name">additional_quadratic_resistance</span><span class="moose-parameter-header-description">Additional quadratic friction factor</span></div><div class="collapsible-body"><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>libMesh::VectorValue&lt;double&gt;</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>No</p><p class="moose-parameter-description"><span>Description:</span>Additional quadratic friction factor</p></div></li><li><div class="collapsible-header"><span class="moose-parameter-name">base_linear_friction_coefs</span><span class="moose-parameter-header-description">Name of the base anistropic Darcy/linear friction functor</span></div><div class="collapsible-body"><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>MooseFunctorName</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>No</p><p class="moose-parameter-description"><span>Description:</span>Name of the base anistropic Darcy/linear friction functor</p></div></li><li><div class="collapsible-header"><span class="moose-parameter-name">base_quadratic_friction_coefs</span><span class="moose-parameter-header-description">Name of the base anistropic Forchheimer/quadratic friction functor</span></div><div class="collapsible-body"><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>MooseFunctorName</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>No</p><p class="moose-parameter-description"><span>Description:</span>Name of the base anistropic Forchheimer/quadratic friction functor</p></div></li><li><div class="collapsible-header"><span class="moose-parameter-name">direction</span><span class="moose-parameter-header-description">Direction of the diode</span></div><div class="collapsible-body"><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>libMesh::VectorValue&lt;double&gt;</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>No</p><p class="moose-parameter-description"><span>Description:</span>Direction of the diode</p></div></li><li><div class="collapsible-header"><span class="moose-parameter-name">sum_linear_friction_name</span><span class="moose-parameter-header-description">Name of the additional Darcy/linear friction functor</span></div><div class="collapsible-body"><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>MooseFunctorName</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>No</p><p class="moose-parameter-description"><span>Description:</span>Name of the additional Darcy/linear friction functor</p></div></li><li><div class="collapsible-header"><span class="moose-parameter-name">sum_quadratic_friction_name</span><span class="moose-parameter-header-description">Name of the additional Forchheimer/quadratic friction functor</span></div><div class="collapsible-body"><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>MooseFunctorName</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>No</p><p class="moose-parameter-description"><span>Description:</span>Name of the additional Forchheimer/quadratic friction functor</p></div></li><li><div class="collapsible-header"><span class="moose-parameter-name">turn_on_diode</span><span class="moose-parameter-header-default">False</span><span class="moose-parameter-header-description">Whether to add the additional friction</span></div><div class="collapsible-body"><p class="moose-parameter-description-default"><span>Default:</span>False</p><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>bool</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>Yes</p><p class="moose-parameter-description"><span>Description:</span>Whether to add the additional friction</p></div></li></ul><summary><h3 data-details-open="open"><span class="moose-section-icon"></span>Required Parameters</h3></summary></details></section><section id="4460aa23-789e-4d50-bb14-6da95b372759" data-section-level="3" data-section-text="Optional Parameters" data-details-open="open"><details class="moose-section-content" open="open"><ul class="collapsible" data-collapsible="expandable"><li><div class="collapsible-header"><span class="moose-parameter-name">block</span><span class="moose-parameter-header-description">The list of blocks (ids or names) that this object will be applied</span></div><div class="collapsible-body"><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>std::vector&lt;SubdomainName&gt;</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>No</p><p class="moose-parameter-description"><span>Description:</span>The list of blocks (ids or names) that this object will be applied</p></div></li><li><div class="collapsible-header"><span class="moose-parameter-name">boundary</span><span class="moose-parameter-header-description">The list of boundaries (ids or names) from the mesh where this object applies</span></div><div class="collapsible-body"><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>std::vector&lt;BoundaryName&gt;</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>No</p><p class="moose-parameter-description"><span>Description:</span>The list of boundaries (ids or names) from the mesh where this object applies</p></div></li><li><div class="collapsible-header"><span class="moose-parameter-name">compute</span><span class="moose-parameter-header-default">True</span><span class="moose-parameter-header-description">When false, MOOSE will not call compute methods on this material. The user must call computeProperties() after retrieving the MaterialBase via MaterialBasePropertyInterface::getMaterialBase(). Non-computed MaterialBases are not sorted for dependencies.</span></div><div class="collapsible-body"><p class="moose-parameter-description-default"><span>Default:</span>True</p><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>bool</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>No</p><p class="moose-parameter-description"><span>Description:</span>When false, MOOSE will not call compute methods on this material. The user must call computeProperties() after retrieving the MaterialBase via MaterialBasePropertyInterface::getMaterialBase(). Non-computed MaterialBases are not sorted for dependencies.</p></div></li><li><div class="collapsible-header"><span class="moose-parameter-name">constant_on</span><span class="moose-parameter-header-default">NONE</span><span class="moose-parameter-header-description">When ELEMENT, MOOSE will only call computeQpProperties() for the 0th quadrature point, and then copy that value to the other qps.When SUBDOMAIN, MOOSE will only call computeQpProperties() for the 0th quadrature point, and then copy that value to the other qps. Evaluations on element qps will be skipped</span></div><div class="collapsible-body"><p class="moose-parameter-description-default"><span>Default:</span>NONE</p><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>MooseEnum</p><p class="moose-parameter-description-options"><span>Options:</span>NONE, ELEMENT, SUBDOMAIN</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>No</p><p class="moose-parameter-description"><span>Description:</span>When ELEMENT, MOOSE will only call computeQpProperties() for the 0th quadrature point, and then copy that value to the other qps.When SUBDOMAIN, MOOSE will only call computeQpProperties() for the 0th quadrature point, and then copy that value to the other qps. Evaluations on element qps will be skipped</p></div></li><li><div class="collapsible-header"><span class="moose-parameter-name">declare_suffix</span><span class="moose-parameter-header-description">An optional suffix parameter that can be appended to any declared properties. The suffix will be prepended with a '_' character.</span></div><div class="collapsible-body"><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>MaterialPropertyName</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>No</p><p class="moose-parameter-description"><span>Description:</span>An optional suffix parameter that can be appended to any declared properties. The suffix will be prepended with a '_' character.</p></div></li><li><div class="collapsible-header"><span class="moose-parameter-name">prop_getter_suffix</span><span class="moose-parameter-header-description">An optional suffix parameter that can be appended to any attempt to retrieve/get material properties. The suffix will be prepended with a '_' character.</span></div><div class="collapsible-body"><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>MaterialPropertyName</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>No</p><p class="moose-parameter-description"><span>Description:</span>An optional suffix parameter that can be appended to any attempt to retrieve/get material properties. The suffix will be prepended with a '_' character.</p></div></li></ul><summary><h3 data-details-open="open"><span class="moose-section-icon"></span>Optional Parameters</h3></summary></details></section><section id="f5184660-f89c-4c91-9d81-7d71f44f09d5" data-section-level="3" data-section-text="Advanced Parameters" data-details-open="close"><details class="moose-section-content"><ul class="collapsible" data-collapsible="expandable"><li><div class="collapsible-header"><span class="moose-parameter-name">control_tags</span><span class="moose-parameter-header-description">Adds user-defined labels for accessing object parameters via control logic.</span></div><div class="collapsible-body"><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>std::vector&lt;std::string&gt;</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>No</p><p class="moose-parameter-description"><span>Description:</span>Adds user-defined labels for accessing object parameters via control logic.</p></div></li><li><div class="collapsible-header"><span class="moose-parameter-name">enable</span><span class="moose-parameter-header-default">True</span><span class="moose-parameter-header-description">Set the enabled status of the MooseObject.</span></div><div class="collapsible-body"><p class="moose-parameter-description-default"><span>Default:</span>True</p><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>bool</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>Yes</p><p class="moose-parameter-description"><span>Description:</span>Set the enabled status of the MooseObject.</p></div></li><li><div class="collapsible-header"><span class="moose-parameter-name">implicit</span><span class="moose-parameter-header-default">True</span><span class="moose-parameter-header-description">Determines whether this object is calculated using an implicit or explicit form</span></div><div class="collapsible-body"><p class="moose-parameter-description-default"><span>Default:</span>True</p><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>bool</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>No</p><p class="moose-parameter-description"><span>Description:</span>Determines whether this object is calculated using an implicit or explicit form</p></div></li><li><div class="collapsible-header"><span class="moose-parameter-name">seed</span><span class="moose-parameter-header-default">0</span><span class="moose-parameter-header-description">The seed for the master random number generator</span></div><div class="collapsible-body"><p class="moose-parameter-description-default"><span>Default:</span>0</p><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>unsigned int</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>No</p><p class="moose-parameter-description"><span>Description:</span>The seed for the master random number generator</p></div></li><li><div class="collapsible-header"><span class="moose-parameter-name">use_displaced_mesh</span><span class="moose-parameter-header-default">False</span><span class="moose-parameter-header-description">Whether or not this object should use the displaced mesh for computation.  Note that in the case this is true but no displacements are provided in the Mesh block the undisplaced mesh will still be used.</span></div><div class="collapsible-body"><p class="moose-parameter-description-default"><span>Default:</span>False</p><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>bool</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>No</p><p class="moose-parameter-description"><span>Description:</span>Whether or not this object should use the displaced mesh for computation.  Note that in the case this is true but no displacements are provided in the Mesh block the undisplaced mesh will still be used.</p></div></li></ul><summary><h3 data-details-open="close"><span class="moose-section-icon"></span>Advanced Parameters</h3></summary></details></section><section id="fd64b108-f53a-44d9-bacd-51298f4790d4" data-section-level="3" data-section-text="Outputs Parameters" data-details-open="close"><details class="moose-section-content"><ul class="collapsible" data-collapsible="expandable"><li><div class="collapsible-header"><span class="moose-parameter-name">output_properties</span><span class="moose-parameter-header-description">List of material properties, from this material, to output (outputs must also be defined to an output type)</span></div><div class="collapsible-body"><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>std::vector&lt;std::string&gt;</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>No</p><p class="moose-parameter-description"><span>Description:</span>List of material properties, from this material, to output (outputs must also be defined to an output type)</p></div></li><li><div class="collapsible-header"><span class="moose-parameter-name">outputs</span><span class="moose-parameter-header-default">none </span><span class="moose-parameter-header-description">Vector of output names where you would like to restrict the output of variables(s) associated with this object</span></div><div class="collapsible-body"><p class="moose-parameter-description-default"><span>Default:</span>none </p><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>std::vector&lt;OutputName&gt;</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>No</p><p class="moose-parameter-description"><span>Description:</span>Vector of output names where you would like to restrict the output of variables(s) associated with this object</p></div></li></ul><summary><h3 data-details-open="close"><span class="moose-section-icon"></span>Outputs Parameters</h3></summary></details></section></section></section><div class="moose-modal modal" id="91bc1b3e-4e14-4579-a2b9-10ca3e1f090a"><div class="modal-content"><h4>additional_linear_resistance</h4><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>libMesh::VectorValue&lt;double&gt;</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>No</p><p class="moose-parameter-description"><span>Description:</span>Additional linear friction factor</p></div></div><div class="moose-modal modal" id="74928762-3c66-4a5c-bf62-3e0eb51abbf6"><div class="modal-content"><h4>additional_quadratic_resistance</h4><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>libMesh::VectorValue&lt;double&gt;</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>No</p><p class="moose-parameter-description"><span>Description:</span>Additional quadratic friction factor</p></div></div><div class="moose-modal modal" id="86739022-5e7d-41fb-b85c-a3b83db74fd9"><div class="modal-content"><h4>turn_on_diode</h4><p class="moose-parameter-description-default"><span>Default:</span>False</p><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>bool</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>Yes</p><p class="moose-parameter-description"><span>Description:</span>Whether to add the additional friction</p></div></div><div class="moose-modal modal" id="efe0a6cd-535b-4b2b-8169-7675277b9d2e"><div class="modal-content"><h4>(moose/modules/navier_stokes/test/tests/finite_volume/materials/flow_diode/friction.i)</h4><pre class="moose-pre"><code class="language-text">mu = 0.1
+rho = 10
+
+[Mesh]
+  [cmg]
+    type = CartesianMeshGenerator
+    dim = 2
+    dx = &#x27;1 0.5 1&#x27;
+    dy = &#x27;0.5 0.5&#x27;
+    ix = &#x27;3 2 3&#x27;
+    iy = &#x27;3 3&#x27;
+    subdomain_id = &#x27;1 1 2
+                    2 1 1&#x27;
+  []
+
+  [top_outlet]
+    type = ParsedGenerateSideset
+    input = cmg
+    combinatorial_geometry = &#x27;x&gt;2.499 &amp; y&gt;0.4999&#x27;
+    new_sideset_name = top_right
+  []
+
+  [bottom_outlet]
+    type = ParsedGenerateSideset
+    input = top_outlet
+    combinatorial_geometry = &#x27;x&gt;2.499 &amp; y&lt;0.50001&#x27;
+    new_sideset_name = bottom_right
+  []
+[]
+
+[GlobalParams]
+  rhie_chow_user_object = &#x27;pins_rhie_chow_interpolator&#x27;
+  advected_interp_method = &#x27;upwind&#x27;
+  velocity_interp_method = &#x27;rc&#x27;
+[]
+
+[Modules]
+  [NavierStokesFV]
+    compressibility = &#x27;incompressible&#x27;
+    porous_medium_treatment = true
+
+    density = ${rho}
+    dynamic_viscosity = ${mu}
+
+    initial_velocity = &#x27;1e-6 1e-6 0&#x27;
+    initial_pressure = 0.0
+
+    inlet_boundaries = &#x27;left&#x27;
+    momentum_inlet_types = &#x27;fixed-velocity&#x27;
+    momentum_inlet_function = &#x27;1 0&#x27;
+
+    wall_boundaries = &#x27;top bottom&#x27;
+    momentum_wall_types = &#x27;noslip noslip&#x27;
+
+    outlet_boundaries = &#x27;right&#x27;
+    momentum_outlet_types = &#x27;fixed-pressure&#x27;
+    pressure_function = &#x27;1&#x27;
+
+    use_friction_correction = true
+    consistent_scaling = 10
+    friction_blocks = &#x27;1; 2&#x27;
+    friction_types = &#x27;darcy forchheimer; darcy forchheimer&#x27;
+    # Base friction
+    # friction_coeffs = &#x27;Darcy Forchheimer; Darcy Forchheimer&#x27;
+    # Combined with diode
+    friction_coeffs = &#x27;combined_linear combined_quadratic; combined_linear combined_quadratic&#x27;
+
+    mass_advection_interpolation = &#x27;average&#x27;
+    momentum_advection_interpolation = &#x27;average&#x27;
+  []
+[]
+
+[Materials]
+  [porosity]
+    type = ADGenericFunctorMaterial
+    prop_names = &#x27;porosity&#x27;
+    prop_values = &#x27;0.5&#x27;
+  []
+  [base_friction]
+    type = ADGenericVectorFunctorMaterial
+    prop_names = &#x27;Darcy Forchheimer&#x27;
+    prop_values = &#x27;1 1 1 0.1 0.2 0.3&#x27;
+  []
+  [diode]
+    type = NSFVFrictionFlowDiodeMaterial
+    direction = &#x27;1 0 0&#x27;
+    additional_linear_resistance = &#x27;10 0 0&#x27; #&#x27;100 10 20&#x27;
+    additional_quadratic_resistance = &#x27;10 0 0&#x27; #&#x27;10 4 4&#x27;
+    base_linear_friction_coefs = &#x27;Darcy&#x27;
+    base_quadratic_friction_coefs = &#x27;Forchheimer&#x27;
+    sum_linear_friction_name = &#x27;diode_linear&#x27;
+    sum_quadratic_friction_name = &#x27;diode_quad&#x27;
+    block = &#x27;2&#x27;
+    turn_on_diode = true
+  []
+  [combine_linear_friction]
+    type = ADPiecewiseByBlockVectorFunctorMaterial
+    prop_name = &#x27;combined_linear&#x27;
+    subdomain_to_prop_value = &#x27;1 Darcy
+                               2 diode_linear&#x27;
+  []
+  [combine_quadratic_friction]
+    type = ADPiecewiseByBlockVectorFunctorMaterial
+    prop_name = &#x27;combined_quadratic&#x27;
+    subdomain_to_prop_value = &#x27;1 Forchheimer
+                               2 diode_quad&#x27;
+  []
+[]
+
+[Executioner]
+  type = Steady
+  solve_type = NEWTON
+  petsc_options_iname = &#x27;-pc_type -pc_factor_shift_type -ksp_gmres_restart&#x27;
+  petsc_options_value = &#x27;lu       NONZERO               200&#x27;
+  line_search = &#x27;none&#x27;
+
+  nl_abs_tol = 1e-14
+[]
+
+[Postprocessors]
+  [mdot_top]
+    type = VolumetricFlowRate
+    boundary = &#x27;top_right&#x27;
+    vel_x = superficial_vel_x
+    vel_y = superficial_vel_y
+    advected_quantity = ${rho}
+  []
+  [mdot_bottom]
+    type = VolumetricFlowRate
+    boundary = &#x27;bottom_right&#x27;
+    vel_x = superficial_vel_x
+    vel_y = superficial_vel_y
+    advected_quantity = ${rho}
+  []
+[]
+
+[Outputs]
+  exodus = true
+[]
+</code></pre></div><div class="modal-footer"><a class="modal-close btn-flat">Close</a></div></div><div class="moose-modal modal" id="5f6290aa-6efb-4db8-94e2-476a63853f97"><div class="modal-content"><h4>(moose/modules/navier_stokes/test/tests/finite_volume/materials/flow_diode/transient_operation.i)</h4><pre class="moose-pre"><code class="language-text"># Horizontal H junction with flow in different directions in the two branches
+# One of the branches has a diode against the direction of the flow that can
+# be triggered using the Controls
+# There are 3 different strategies available for the diode blocking the flow
+# - based on a time trigger
+# - based on a pressure drop (here chosen across the diode)
+# - based on a mass flow rate (here chosen through the diode)
+
+mu = 0.1
+rho = 10
+
+nx = 10
+ny = 5
+
+[Mesh]
+  [cmg]
+    type = CartesianMeshGenerator
+    dim = 2
+    dx = &#x27;1 0.3 1&#x27;
+    dy = &#x27;0.5 0.2 0.5&#x27;
+    ix = &#x27;${nx} ${fparse nx/2} ${nx}&#x27;
+    iy = &#x27;${ny} ${ny} ${ny}&#x27;
+    subdomain_id = &#x27;1 1 1
+                    2 1 2
+                    3 4 1&#x27;
+  []
+
+  [add_walls]
+    type = SideSetsBetweenSubdomainsGenerator
+    input = &#x27;cmg&#x27;
+    primary_block = &#x27;1 3 4&#x27;
+    paired_block = &#x27;2&#x27;
+    new_boundary = &#x27;walls&#x27;
+  []
+  [remove_wall_blocks]
+    type = BlockDeletionGenerator
+    input = add_walls
+    block = 2
+  []
+
+  # Add inlets and outlets
+  [top_left]
+    type = ParsedGenerateSideset
+    input = remove_wall_blocks
+    combinatorial_geometry = &#x27;x&lt;0.001 &amp; y&gt;0.6&#x27;
+    new_sideset_name = top_left
+  []
+  [bottom_left]
+    type = ParsedGenerateSideset
+    input = top_left
+    combinatorial_geometry = &#x27;x&lt;0.001 &amp; y&lt;0.6&#x27;
+    new_sideset_name = bottom_left
+  []
+  [top_right]
+    type = ParsedGenerateSideset
+    input = bottom_left
+    combinatorial_geometry = &#x27;x&gt;2.299 &amp; y&gt;0.6&#x27;
+    new_sideset_name = top_right
+  []
+  [bottom_right]
+    type = ParsedGenerateSideset
+    input = top_right
+    combinatorial_geometry = &#x27;x&gt;2.299 &amp; y&lt;0.6&#x27;
+    new_sideset_name = bottom_right
+  []
+
+  # Extra surfaces
+  [diode_inlet]
+    type = SideSetsBetweenSubdomainsGenerator
+    input = bottom_right
+    primary_block = 4
+    paired_block = 3
+    new_boundary = &#x27;diode_inlet&#x27;
+  []
+  [mid_section]
+    type = SideSetsBetweenSubdomainsGenerator
+    input = diode_inlet
+    primary_block = 4
+    paired_block = 1
+    new_boundary = &#x27;mid_connection&#x27;
+  []
+
+  [reduce_blocks]
+    type = RenameBlockGenerator
+    input = &#x27;mid_section&#x27;
+    old_block = &#x27;4 3 1&#x27;
+    new_block = &#x27;1 diode fluid&#x27;
+  []
+[]
+
+[GlobalParams]
+  rhie_chow_user_object = &#x27;pins_rhie_chow_interpolator&#x27;
+  advected_interp_method = &#x27;upwind&#x27;
+  velocity_interp_method = &#x27;rc&#x27;
+[]
+
+[Modules]
+  [NavierStokesFV]
+    compressibility = &#x27;incompressible&#x27;
+    porous_medium_treatment = true
+
+    density = ${rho}
+    dynamic_viscosity = ${mu}
+
+    initial_velocity = &#x27;1e-6 1e-6 0&#x27;
+    initial_pressure = 0.0
+
+    inlet_boundaries = &#x27;bottom_left top_right&#x27;
+    momentum_inlet_types = &#x27;fixed-velocity fixed-velocity&#x27;
+    momentum_inlet_function = &#x27;1 0; -1 0&#x27;
+
+    wall_boundaries = &#x27;top bottom walls&#x27;
+    momentum_wall_types = &#x27;noslip noslip noslip&#x27;
+
+    outlet_boundaries = &#x27;bottom_right top_left&#x27;
+    momentum_outlet_types = &#x27;fixed-pressure fixed-pressure&#x27;
+    pressure_function = &#x27;1 1&#x27;
+
+    friction_blocks = &#x27;fluid; diode&#x27;
+    friction_types = &#x27;darcy forchheimer; darcy forchheimer&#x27;
+    # Base friction
+    # friction_coeffs = &#x27;Darcy Forchheimer; Darcy Forchheimer&#x27;
+    # Combined with diode
+    friction_coeffs = &#x27;combined_linear combined_quadratic; combined_linear combined_quadratic&#x27;
+
+    # Porosity jump treatment
+    # Option 1: diffusion correction
+    use_friction_correction = true
+    consistent_scaling = 10
+
+    # Option 2: bernouilli jump
+    # porosity_interface_pressure_treatment = bernoulli
+
+    mass_advection_interpolation = &#x27;average&#x27;
+    momentum_advection_interpolation = &#x27;average&#x27;
+  []
+[]
+
+[Materials]
+  [porosity]
+    type = ADGenericFunctorMaterial
+    prop_names = &#x27;porosity&#x27;
+    prop_values = &#x27;0.5&#x27;
+  []
+  [base_friction]
+    type = ADGenericVectorFunctorMaterial
+    prop_names = &#x27;Darcy Forchheimer&#x27;
+    prop_values = &#x27;1 1 1 0.1 0.2 0.3&#x27;
+  []
+
+  # Material definitions needed for the diode
+  [diode]
+    type = NSFVFrictionFlowDiodeMaterial
+    # Friction only in X direction
+    direction = &#x27;-1 0 0&#x27;
+    additional_linear_resistance = &#x27;100 0 0&#x27;
+    additional_quadratic_resistance = &#x27;0 0 0&#x27;
+    base_linear_friction_coefs = &#x27;Darcy&#x27;
+    base_quadratic_friction_coefs = &#x27;Forchheimer&#x27;
+    sum_linear_friction_name = &#x27;diode_linear&#x27;
+    sum_quadratic_friction_name = &#x27;diode_quad&#x27;
+    block = &#x27;diode&#x27;
+    turn_on_diode = false
+  []
+  [combine_linear_friction]
+    type = ADPiecewiseByBlockVectorFunctorMaterial
+    prop_name = &#x27;combined_linear&#x27;
+    subdomain_to_prop_value = &#x27;fluid Darcy
+                               diode diode_linear&#x27;
+  []
+  [combine_quadratic_friction]
+    type = ADPiecewiseByBlockVectorFunctorMaterial
+    prop_name = &#x27;combined_quadratic&#x27;
+    subdomain_to_prop_value = &#x27;fluid Forchheimer
+                               diode diode_quad&#x27;
+  []
+
+  # density is constant
+  [momentum]
+    type = ADGenericVectorFunctorMaterial
+    prop_names = &#x27;momentum&#x27;
+    prop_values = &#x27;superficial_vel_x superficial_vel_y 0&#x27;
+  []
+[]
+
+[Executioner]
+  type = Transient
+  solve_type = NEWTON
+  petsc_options_iname = &#x27;-pc_type -pc_factor_shift_type -ksp_gmres_restart&#x27;
+  petsc_options_value = &#x27;lu       NONZERO               200&#x27;
+  line_search = &#x27;none&#x27;
+
+  end_time = 0.2
+  dt = 0.015
+  nl_abs_tol = 1e-12
+[]
+
+[Controls]
+  active = &#x27;pdrop_based&#x27;
+  # Case 1: Diode turns on at a certain time and blocks (adds friction) flow at a given time
+  [time_based]
+    type = BoolFunctionControl
+    function = time_function
+    parameter = &#x27;Materials/diode/turn_on_diode&#x27;
+    execute_on = timestep_begin
+  []
+
+  # Case 2: Diode looks at pressure drop, reduces flow if positive pressure drop
+  # This will not oscillate as the diode increases the pressure drop
+  [pdrop_based]
+    type = BoolFunctionControl
+    function = pdrop_positive
+    parameter = &#x27;Materials/diode/turn_on_diode&#x27;
+    execute_on = timestep_begin
+  []
+
+  # Case 3: Diode looks at flow direction &amp; quantity, reduces flow if too much flow
+  # in a given direction
+  # This will oscillate (turn on/off on each step) if the action of turning the diode
+  # makes the amount of flow smaller than the threshold for turning on the diode
+  [flow_based]
+    type = BoolFunctionControl
+    function = velocity_big_enough
+    parameter = &#x27;Materials/diode/turn_on_diode&#x27;
+    execute_on = timestep_begin
+  []
+[]
+
+[Functions]
+  # Functions are used to parse postprocessors and provide them to a BoolFunctionControl
+  [time_function]
+    type = ParsedFunction
+    expression = &#x27;if(t&lt;0.1, 0, 1)&#x27;
+  []
+  [pdrop_positive]
+    type = ParsedFunction
+    expression = &#x27;if(pdrop_diode&gt;100, 1, 0)&#x27;
+    symbol_names = pdrop_diode
+    symbol_values = pdrop_diode
+  []
+  [velocity_big_enough]
+    type = ParsedFunction
+    expression = &#x27;if(flow_diode&lt;-0.4, 1, 0)&#x27;
+    symbol_names = flow_diode
+    symbol_values = flow_diode
+  []
+[]
+
+[Postprocessors]
+  # Analysis of the simulation
+  [mdot_top]
+    type = VolumetricFlowRate
+    boundary = &#x27;top_right&#x27;
+    vel_x = superficial_vel_x
+    vel_y = superficial_vel_y
+    advected_quantity = ${rho}
+  []
+  [mdot_bottom]
+    type = VolumetricFlowRate
+    boundary = &#x27;bottom_right&#x27;
+    vel_x = superficial_vel_x
+    vel_y = superficial_vel_y
+    advected_quantity = ${rho}
+  []
+  [mdot_middle]
+    type = VolumetricFlowRate
+    boundary = &#x27;mid_connection&#x27;
+    vel_x = superficial_vel_x
+    vel_y = superficial_vel_y
+    advected_quantity = ${rho}
+  []
+  [pdrop_top_channel]
+    type = PressureDrop
+    upstream_boundary = &#x27;top_left&#x27;
+    downstream_boundary = &#x27;top_right&#x27;
+    weighting_functor = &#x27;momentum&#x27;
+    boundary = &#x27;top_left top_right&#x27;
+    pressure = pressure
+  []
+  [pdrop_bottom_channel]
+    type = PressureDrop
+    upstream_boundary = &#x27;bottom_left&#x27;
+    downstream_boundary = &#x27;bottom_right&#x27;
+    weighting_functor = &#x27;momentum&#x27;
+    boundary = &#x27;bottom_left bottom_right&#x27;
+    pressure = pressure
+  []
+
+  # Diode operation
+  [pdrop_diode]
+    type = PressureDrop
+    upstream_boundary = &#x27;diode_inlet&#x27;
+    downstream_boundary = &#x27;top_left&#x27;
+    weighting_functor = &#x27;momentum&#x27;
+    boundary = &#x27;diode_inlet top_left&#x27;
+    pressure = pressure
+  []
+  [flow_diode]
+    type = VolumetricFlowRate
+    boundary = &#x27;diode_inlet&#x27;
+    vel_x = superficial_vel_x
+    vel_y = superficial_vel_y
+    advected_quantity = ${rho}
+  []
+[]
+
+[Outputs]
+  exodus = true
+  csv = true
+[]
+</code></pre></div><div class="modal-footer"><a class="modal-close btn-flat">Close</a></div></div><div class="moose-modal modal" id="b3296276-5a33-4eab-9c0b-8e4b66449c06"><div class="modal-content"><h4>(moose/modules/navier_stokes/test/tests/finite_volume/materials/flow_diode/transient_operation.i)</h4><pre class="moose-pre"><code class="language-text"># Horizontal H junction with flow in different directions in the two branches
+# One of the branches has a diode against the direction of the flow that can
+# be triggered using the Controls
+# There are 3 different strategies available for the diode blocking the flow
+# - based on a time trigger
+# - based on a pressure drop (here chosen across the diode)
+# - based on a mass flow rate (here chosen through the diode)
+
+mu = 0.1
+rho = 10
+
+nx = 10
+ny = 5
+
+[Mesh]
+  [cmg]
+    type = CartesianMeshGenerator
+    dim = 2
+    dx = &#x27;1 0.3 1&#x27;
+    dy = &#x27;0.5 0.2 0.5&#x27;
+    ix = &#x27;${nx} ${fparse nx/2} ${nx}&#x27;
+    iy = &#x27;${ny} ${ny} ${ny}&#x27;
+    subdomain_id = &#x27;1 1 1
+                    2 1 2
+                    3 4 1&#x27;
+  []
+
+  [add_walls]
+    type = SideSetsBetweenSubdomainsGenerator
+    input = &#x27;cmg&#x27;
+    primary_block = &#x27;1 3 4&#x27;
+    paired_block = &#x27;2&#x27;
+    new_boundary = &#x27;walls&#x27;
+  []
+  [remove_wall_blocks]
+    type = BlockDeletionGenerator
+    input = add_walls
+    block = 2
+  []
+
+  # Add inlets and outlets
+  [top_left]
+    type = ParsedGenerateSideset
+    input = remove_wall_blocks
+    combinatorial_geometry = &#x27;x&lt;0.001 &amp; y&gt;0.6&#x27;
+    new_sideset_name = top_left
+  []
+  [bottom_left]
+    type = ParsedGenerateSideset
+    input = top_left
+    combinatorial_geometry = &#x27;x&lt;0.001 &amp; y&lt;0.6&#x27;
+    new_sideset_name = bottom_left
+  []
+  [top_right]
+    type = ParsedGenerateSideset
+    input = bottom_left
+    combinatorial_geometry = &#x27;x&gt;2.299 &amp; y&gt;0.6&#x27;
+    new_sideset_name = top_right
+  []
+  [bottom_right]
+    type = ParsedGenerateSideset
+    input = top_right
+    combinatorial_geometry = &#x27;x&gt;2.299 &amp; y&lt;0.6&#x27;
+    new_sideset_name = bottom_right
+  []
+
+  # Extra surfaces
+  [diode_inlet]
+    type = SideSetsBetweenSubdomainsGenerator
+    input = bottom_right
+    primary_block = 4
+    paired_block = 3
+    new_boundary = &#x27;diode_inlet&#x27;
+  []
+  [mid_section]
+    type = SideSetsBetweenSubdomainsGenerator
+    input = diode_inlet
+    primary_block = 4
+    paired_block = 1
+    new_boundary = &#x27;mid_connection&#x27;
+  []
+
+  [reduce_blocks]
+    type = RenameBlockGenerator
+    input = &#x27;mid_section&#x27;
+    old_block = &#x27;4 3 1&#x27;
+    new_block = &#x27;1 diode fluid&#x27;
+  []
+[]
+
+[GlobalParams]
+  rhie_chow_user_object = &#x27;pins_rhie_chow_interpolator&#x27;
+  advected_interp_method = &#x27;upwind&#x27;
+  velocity_interp_method = &#x27;rc&#x27;
+[]
+
+[Modules]
+  [NavierStokesFV]
+    compressibility = &#x27;incompressible&#x27;
+    porous_medium_treatment = true
+
+    density = ${rho}
+    dynamic_viscosity = ${mu}
+
+    initial_velocity = &#x27;1e-6 1e-6 0&#x27;
+    initial_pressure = 0.0
+
+    inlet_boundaries = &#x27;bottom_left top_right&#x27;
+    momentum_inlet_types = &#x27;fixed-velocity fixed-velocity&#x27;
+    momentum_inlet_function = &#x27;1 0; -1 0&#x27;
+
+    wall_boundaries = &#x27;top bottom walls&#x27;
+    momentum_wall_types = &#x27;noslip noslip noslip&#x27;
+
+    outlet_boundaries = &#x27;bottom_right top_left&#x27;
+    momentum_outlet_types = &#x27;fixed-pressure fixed-pressure&#x27;
+    pressure_function = &#x27;1 1&#x27;
+
+    friction_blocks = &#x27;fluid; diode&#x27;
+    friction_types = &#x27;darcy forchheimer; darcy forchheimer&#x27;
+    # Base friction
+    # friction_coeffs = &#x27;Darcy Forchheimer; Darcy Forchheimer&#x27;
+    # Combined with diode
+    friction_coeffs = &#x27;combined_linear combined_quadratic; combined_linear combined_quadratic&#x27;
+
+    # Porosity jump treatment
+    # Option 1: diffusion correction
+    use_friction_correction = true
+    consistent_scaling = 10
+
+    # Option 2: bernouilli jump
+    # porosity_interface_pressure_treatment = bernoulli
+
+    mass_advection_interpolation = &#x27;average&#x27;
+    momentum_advection_interpolation = &#x27;average&#x27;
+  []
+[]
+
+[Materials]
+  [porosity]
+    type = ADGenericFunctorMaterial
+    prop_names = &#x27;porosity&#x27;
+    prop_values = &#x27;0.5&#x27;
+  []
+  [base_friction]
+    type = ADGenericVectorFunctorMaterial
+    prop_names = &#x27;Darcy Forchheimer&#x27;
+    prop_values = &#x27;1 1 1 0.1 0.2 0.3&#x27;
+  []
+
+  # Material definitions needed for the diode
+  [diode]
+    type = NSFVFrictionFlowDiodeMaterial
+    # Friction only in X direction
+    direction = &#x27;-1 0 0&#x27;
+    additional_linear_resistance = &#x27;100 0 0&#x27;
+    additional_quadratic_resistance = &#x27;0 0 0&#x27;
+    base_linear_friction_coefs = &#x27;Darcy&#x27;
+    base_quadratic_friction_coefs = &#x27;Forchheimer&#x27;
+    sum_linear_friction_name = &#x27;diode_linear&#x27;
+    sum_quadratic_friction_name = &#x27;diode_quad&#x27;
+    block = &#x27;diode&#x27;
+    turn_on_diode = false
+  []
+  [combine_linear_friction]
+    type = ADPiecewiseByBlockVectorFunctorMaterial
+    prop_name = &#x27;combined_linear&#x27;
+    subdomain_to_prop_value = &#x27;fluid Darcy
+                               diode diode_linear&#x27;
+  []
+  [combine_quadratic_friction]
+    type = ADPiecewiseByBlockVectorFunctorMaterial
+    prop_name = &#x27;combined_quadratic&#x27;
+    subdomain_to_prop_value = &#x27;fluid Forchheimer
+                               diode diode_quad&#x27;
+  []
+
+  # density is constant
+  [momentum]
+    type = ADGenericVectorFunctorMaterial
+    prop_names = &#x27;momentum&#x27;
+    prop_values = &#x27;superficial_vel_x superficial_vel_y 0&#x27;
+  []
+[]
+
+[Executioner]
+  type = Transient
+  solve_type = NEWTON
+  petsc_options_iname = &#x27;-pc_type -pc_factor_shift_type -ksp_gmres_restart&#x27;
+  petsc_options_value = &#x27;lu       NONZERO               200&#x27;
+  line_search = &#x27;none&#x27;
+
+  end_time = 0.2
+  dt = 0.015
+  nl_abs_tol = 1e-12
+[]
+
+[Controls]
+  active = &#x27;pdrop_based&#x27;
+  # Case 1: Diode turns on at a certain time and blocks (adds friction) flow at a given time
+  [time_based]
+    type = BoolFunctionControl
+    function = time_function
+    parameter = &#x27;Materials/diode/turn_on_diode&#x27;
+    execute_on = timestep_begin
+  []
+
+  # Case 2: Diode looks at pressure drop, reduces flow if positive pressure drop
+  # This will not oscillate as the diode increases the pressure drop
+  [pdrop_based]
+    type = BoolFunctionControl
+    function = pdrop_positive
+    parameter = &#x27;Materials/diode/turn_on_diode&#x27;
+    execute_on = timestep_begin
+  []
+
+  # Case 3: Diode looks at flow direction &amp; quantity, reduces flow if too much flow
+  # in a given direction
+  # This will oscillate (turn on/off on each step) if the action of turning the diode
+  # makes the amount of flow smaller than the threshold for turning on the diode
+  [flow_based]
+    type = BoolFunctionControl
+    function = velocity_big_enough
+    parameter = &#x27;Materials/diode/turn_on_diode&#x27;
+    execute_on = timestep_begin
+  []
+[]
+
+[Functions]
+  # Functions are used to parse postprocessors and provide them to a BoolFunctionControl
+  [time_function]
+    type = ParsedFunction
+    expression = &#x27;if(t&lt;0.1, 0, 1)&#x27;
+  []
+  [pdrop_positive]
+    type = ParsedFunction
+    expression = &#x27;if(pdrop_diode&gt;100, 1, 0)&#x27;
+    symbol_names = pdrop_diode
+    symbol_values = pdrop_diode
+  []
+  [velocity_big_enough]
+    type = ParsedFunction
+    expression = &#x27;if(flow_diode&lt;-0.4, 1, 0)&#x27;
+    symbol_names = flow_diode
+    symbol_values = flow_diode
+  []
+[]
+
+[Postprocessors]
+  # Analysis of the simulation
+  [mdot_top]
+    type = VolumetricFlowRate
+    boundary = &#x27;top_right&#x27;
+    vel_x = superficial_vel_x
+    vel_y = superficial_vel_y
+    advected_quantity = ${rho}
+  []
+  [mdot_bottom]
+    type = VolumetricFlowRate
+    boundary = &#x27;bottom_right&#x27;
+    vel_x = superficial_vel_x
+    vel_y = superficial_vel_y
+    advected_quantity = ${rho}
+  []
+  [mdot_middle]
+    type = VolumetricFlowRate
+    boundary = &#x27;mid_connection&#x27;
+    vel_x = superficial_vel_x
+    vel_y = superficial_vel_y
+    advected_quantity = ${rho}
+  []
+  [pdrop_top_channel]
+    type = PressureDrop
+    upstream_boundary = &#x27;top_left&#x27;
+    downstream_boundary = &#x27;top_right&#x27;
+    weighting_functor = &#x27;momentum&#x27;
+    boundary = &#x27;top_left top_right&#x27;
+    pressure = pressure
+  []
+  [pdrop_bottom_channel]
+    type = PressureDrop
+    upstream_boundary = &#x27;bottom_left&#x27;
+    downstream_boundary = &#x27;bottom_right&#x27;
+    weighting_functor = &#x27;momentum&#x27;
+    boundary = &#x27;bottom_left bottom_right&#x27;
+    pressure = pressure
+  []
+
+  # Diode operation
+  [pdrop_diode]
+    type = PressureDrop
+    upstream_boundary = &#x27;diode_inlet&#x27;
+    downstream_boundary = &#x27;top_left&#x27;
+    weighting_functor = &#x27;momentum&#x27;
+    boundary = &#x27;diode_inlet top_left&#x27;
+    pressure = pressure
+  []
+  [flow_diode]
+    type = VolumetricFlowRate
+    boundary = &#x27;diode_inlet&#x27;
+    vel_x = superficial_vel_x
+    vel_y = superficial_vel_y
+    advected_quantity = ${rho}
+  []
+[]
+
+[Outputs]
+  exodus = true
+  csv = true
+[]
+</code></pre></div><div class="modal-footer"><a class="modal-close btn-flat">Close</a></div></div><div class="moose-modal modal" id="d3e90eb6-f39f-4e94-86cc-de1c8fe445d4"><div class="modal-content"><h4>(moose/modules/navier_stokes/test/tests/finite_volume/materials/flow_diode/transient_operation.i)</h4><pre class="moose-pre"><code class="language-text"># Horizontal H junction with flow in different directions in the two branches
+# One of the branches has a diode against the direction of the flow that can
+# be triggered using the Controls
+# There are 3 different strategies available for the diode blocking the flow
+# - based on a time trigger
+# - based on a pressure drop (here chosen across the diode)
+# - based on a mass flow rate (here chosen through the diode)
+
+mu = 0.1
+rho = 10
+
+nx = 10
+ny = 5
+
+[Mesh]
+  [cmg]
+    type = CartesianMeshGenerator
+    dim = 2
+    dx = &#x27;1 0.3 1&#x27;
+    dy = &#x27;0.5 0.2 0.5&#x27;
+    ix = &#x27;${nx} ${fparse nx/2} ${nx}&#x27;
+    iy = &#x27;${ny} ${ny} ${ny}&#x27;
+    subdomain_id = &#x27;1 1 1
+                    2 1 2
+                    3 4 1&#x27;
+  []
+
+  [add_walls]
+    type = SideSetsBetweenSubdomainsGenerator
+    input = &#x27;cmg&#x27;
+    primary_block = &#x27;1 3 4&#x27;
+    paired_block = &#x27;2&#x27;
+    new_boundary = &#x27;walls&#x27;
+  []
+  [remove_wall_blocks]
+    type = BlockDeletionGenerator
+    input = add_walls
+    block = 2
+  []
+
+  # Add inlets and outlets
+  [top_left]
+    type = ParsedGenerateSideset
+    input = remove_wall_blocks
+    combinatorial_geometry = &#x27;x&lt;0.001 &amp; y&gt;0.6&#x27;
+    new_sideset_name = top_left
+  []
+  [bottom_left]
+    type = ParsedGenerateSideset
+    input = top_left
+    combinatorial_geometry = &#x27;x&lt;0.001 &amp; y&lt;0.6&#x27;
+    new_sideset_name = bottom_left
+  []
+  [top_right]
+    type = ParsedGenerateSideset
+    input = bottom_left
+    combinatorial_geometry = &#x27;x&gt;2.299 &amp; y&gt;0.6&#x27;
+    new_sideset_name = top_right
+  []
+  [bottom_right]
+    type = ParsedGenerateSideset
+    input = top_right
+    combinatorial_geometry = &#x27;x&gt;2.299 &amp; y&lt;0.6&#x27;
+    new_sideset_name = bottom_right
+  []
+
+  # Extra surfaces
+  [diode_inlet]
+    type = SideSetsBetweenSubdomainsGenerator
+    input = bottom_right
+    primary_block = 4
+    paired_block = 3
+    new_boundary = &#x27;diode_inlet&#x27;
+  []
+  [mid_section]
+    type = SideSetsBetweenSubdomainsGenerator
+    input = diode_inlet
+    primary_block = 4
+    paired_block = 1
+    new_boundary = &#x27;mid_connection&#x27;
+  []
+
+  [reduce_blocks]
+    type = RenameBlockGenerator
+    input = &#x27;mid_section&#x27;
+    old_block = &#x27;4 3 1&#x27;
+    new_block = &#x27;1 diode fluid&#x27;
+  []
+[]
+
+[GlobalParams]
+  rhie_chow_user_object = &#x27;pins_rhie_chow_interpolator&#x27;
+  advected_interp_method = &#x27;upwind&#x27;
+  velocity_interp_method = &#x27;rc&#x27;
+[]
+
+[Modules]
+  [NavierStokesFV]
+    compressibility = &#x27;incompressible&#x27;
+    porous_medium_treatment = true
+
+    density = ${rho}
+    dynamic_viscosity = ${mu}
+
+    initial_velocity = &#x27;1e-6 1e-6 0&#x27;
+    initial_pressure = 0.0
+
+    inlet_boundaries = &#x27;bottom_left top_right&#x27;
+    momentum_inlet_types = &#x27;fixed-velocity fixed-velocity&#x27;
+    momentum_inlet_function = &#x27;1 0; -1 0&#x27;
+
+    wall_boundaries = &#x27;top bottom walls&#x27;
+    momentum_wall_types = &#x27;noslip noslip noslip&#x27;
+
+    outlet_boundaries = &#x27;bottom_right top_left&#x27;
+    momentum_outlet_types = &#x27;fixed-pressure fixed-pressure&#x27;
+    pressure_function = &#x27;1 1&#x27;
+
+    friction_blocks = &#x27;fluid; diode&#x27;
+    friction_types = &#x27;darcy forchheimer; darcy forchheimer&#x27;
+    # Base friction
+    # friction_coeffs = &#x27;Darcy Forchheimer; Darcy Forchheimer&#x27;
+    # Combined with diode
+    friction_coeffs = &#x27;combined_linear combined_quadratic; combined_linear combined_quadratic&#x27;
+
+    # Porosity jump treatment
+    # Option 1: diffusion correction
+    use_friction_correction = true
+    consistent_scaling = 10
+
+    # Option 2: bernouilli jump
+    # porosity_interface_pressure_treatment = bernoulli
+
+    mass_advection_interpolation = &#x27;average&#x27;
+    momentum_advection_interpolation = &#x27;average&#x27;
+  []
+[]
+
+[Materials]
+  [porosity]
+    type = ADGenericFunctorMaterial
+    prop_names = &#x27;porosity&#x27;
+    prop_values = &#x27;0.5&#x27;
+  []
+  [base_friction]
+    type = ADGenericVectorFunctorMaterial
+    prop_names = &#x27;Darcy Forchheimer&#x27;
+    prop_values = &#x27;1 1 1 0.1 0.2 0.3&#x27;
+  []
+
+  # Material definitions needed for the diode
+  [diode]
+    type = NSFVFrictionFlowDiodeMaterial
+    # Friction only in X direction
+    direction = &#x27;-1 0 0&#x27;
+    additional_linear_resistance = &#x27;100 0 0&#x27;
+    additional_quadratic_resistance = &#x27;0 0 0&#x27;
+    base_linear_friction_coefs = &#x27;Darcy&#x27;
+    base_quadratic_friction_coefs = &#x27;Forchheimer&#x27;
+    sum_linear_friction_name = &#x27;diode_linear&#x27;
+    sum_quadratic_friction_name = &#x27;diode_quad&#x27;
+    block = &#x27;diode&#x27;
+    turn_on_diode = false
+  []
+  [combine_linear_friction]
+    type = ADPiecewiseByBlockVectorFunctorMaterial
+    prop_name = &#x27;combined_linear&#x27;
+    subdomain_to_prop_value = &#x27;fluid Darcy
+                               diode diode_linear&#x27;
+  []
+  [combine_quadratic_friction]
+    type = ADPiecewiseByBlockVectorFunctorMaterial
+    prop_name = &#x27;combined_quadratic&#x27;
+    subdomain_to_prop_value = &#x27;fluid Forchheimer
+                               diode diode_quad&#x27;
+  []
+
+  # density is constant
+  [momentum]
+    type = ADGenericVectorFunctorMaterial
+    prop_names = &#x27;momentum&#x27;
+    prop_values = &#x27;superficial_vel_x superficial_vel_y 0&#x27;
+  []
+[]
+
+[Executioner]
+  type = Transient
+  solve_type = NEWTON
+  petsc_options_iname = &#x27;-pc_type -pc_factor_shift_type -ksp_gmres_restart&#x27;
+  petsc_options_value = &#x27;lu       NONZERO               200&#x27;
+  line_search = &#x27;none&#x27;
+
+  end_time = 0.2
+  dt = 0.015
+  nl_abs_tol = 1e-12
+[]
+
+[Controls]
+  active = &#x27;pdrop_based&#x27;
+  # Case 1: Diode turns on at a certain time and blocks (adds friction) flow at a given time
+  [time_based]
+    type = BoolFunctionControl
+    function = time_function
+    parameter = &#x27;Materials/diode/turn_on_diode&#x27;
+    execute_on = timestep_begin
+  []
+
+  # Case 2: Diode looks at pressure drop, reduces flow if positive pressure drop
+  # This will not oscillate as the diode increases the pressure drop
+  [pdrop_based]
+    type = BoolFunctionControl
+    function = pdrop_positive
+    parameter = &#x27;Materials/diode/turn_on_diode&#x27;
+    execute_on = timestep_begin
+  []
+
+  # Case 3: Diode looks at flow direction &amp; quantity, reduces flow if too much flow
+  # in a given direction
+  # This will oscillate (turn on/off on each step) if the action of turning the diode
+  # makes the amount of flow smaller than the threshold for turning on the diode
+  [flow_based]
+    type = BoolFunctionControl
+    function = velocity_big_enough
+    parameter = &#x27;Materials/diode/turn_on_diode&#x27;
+    execute_on = timestep_begin
+  []
+[]
+
+[Functions]
+  # Functions are used to parse postprocessors and provide them to a BoolFunctionControl
+  [time_function]
+    type = ParsedFunction
+    expression = &#x27;if(t&lt;0.1, 0, 1)&#x27;
+  []
+  [pdrop_positive]
+    type = ParsedFunction
+    expression = &#x27;if(pdrop_diode&gt;100, 1, 0)&#x27;
+    symbol_names = pdrop_diode
+    symbol_values = pdrop_diode
+  []
+  [velocity_big_enough]
+    type = ParsedFunction
+    expression = &#x27;if(flow_diode&lt;-0.4, 1, 0)&#x27;
+    symbol_names = flow_diode
+    symbol_values = flow_diode
+  []
+[]
+
+[Postprocessors]
+  # Analysis of the simulation
+  [mdot_top]
+    type = VolumetricFlowRate
+    boundary = &#x27;top_right&#x27;
+    vel_x = superficial_vel_x
+    vel_y = superficial_vel_y
+    advected_quantity = ${rho}
+  []
+  [mdot_bottom]
+    type = VolumetricFlowRate
+    boundary = &#x27;bottom_right&#x27;
+    vel_x = superficial_vel_x
+    vel_y = superficial_vel_y
+    advected_quantity = ${rho}
+  []
+  [mdot_middle]
+    type = VolumetricFlowRate
+    boundary = &#x27;mid_connection&#x27;
+    vel_x = superficial_vel_x
+    vel_y = superficial_vel_y
+    advected_quantity = ${rho}
+  []
+  [pdrop_top_channel]
+    type = PressureDrop
+    upstream_boundary = &#x27;top_left&#x27;
+    downstream_boundary = &#x27;top_right&#x27;
+    weighting_functor = &#x27;momentum&#x27;
+    boundary = &#x27;top_left top_right&#x27;
+    pressure = pressure
+  []
+  [pdrop_bottom_channel]
+    type = PressureDrop
+    upstream_boundary = &#x27;bottom_left&#x27;
+    downstream_boundary = &#x27;bottom_right&#x27;
+    weighting_functor = &#x27;momentum&#x27;
+    boundary = &#x27;bottom_left bottom_right&#x27;
+    pressure = pressure
+  []
+
+  # Diode operation
+  [pdrop_diode]
+    type = PressureDrop
+    upstream_boundary = &#x27;diode_inlet&#x27;
+    downstream_boundary = &#x27;top_left&#x27;
+    weighting_functor = &#x27;momentum&#x27;
+    boundary = &#x27;diode_inlet top_left&#x27;
+    pressure = pressure
+  []
+  [flow_diode]
+    type = VolumetricFlowRate
+    boundary = &#x27;diode_inlet&#x27;
+    vel_x = superficial_vel_x
+    vel_y = superficial_vel_y
+    advected_quantity = ${rho}
+  []
+[]
+
+[Outputs]
+  exodus = true
+  csv = true
+[]
+</code></pre></div><div class="modal-footer"><a class="modal-close btn-flat">Close</a></div></div></div><div class="col hide-on-med-and-down l2"><div class="toc-wrapper pin-top"><ul class="section table-of-contents"><li><a href="#8e597acf-cb65-4b4b-b1cb-56cecc63aad1" class="tooltipped" data-position="left" data-tooltip="Example input file syntax">Example input file syntax</a></li><li><a href="#a4f9f863-af2e-4f4a-b858-59119e70ac97" class="tooltipped" data-position="left" data-tooltip="Input Parameters">Input Parameters</a></li></ul></div></div></div></div></main></div></body><script type="text/javascript" src="../../contrib/materialize/materialize.min.js"></script><script type="text/javascript" src="../../contrib/clipboard/clipboard.min.js"></script><script type="text/javascript" src="../../contrib/prism/prism.min.js"></script><script type="text/javascript" src="../../js/init.js"></script><script type="text/javascript" src="../../js/navigation.js"></script><script type="text/javascript" src="../../contrib/fuse/fuse.min.js"></script><script type="text/javascript" src="../../js/search_index.js"></script><script type="text/javascript" src="../../js/sqa_moose.js"></script>

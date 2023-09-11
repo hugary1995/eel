@@ -1,0 +1,740 @@
+<!DOCTYPE html><head><meta charset="UTF-8"><title>NSFVPhaseChangeSource | Eel</title><link href="../../contrib/materialize/materialize.min.css" type="text/css" rel="stylesheet" media="screen,projection"></link><link href="../../contrib/prism/prism.min.css" type="text/css" rel="stylesheet"></link><link href="../../css/moose.css" type="text/css" rel="stylesheet"></link><link href="../../css/devel_moose.css" type="text/css" rel="stylesheet"></link><link href="../../css/alert_moose.css" type="text/css" rel="stylesheet"></link><link href="../../css/content_moose.css" type="text/css" rel="stylesheet"></link><link href="../../css/sqa_moose.css" type="text/css" rel="stylesheet"></link><link href="../../css/civet_moose.css" type="text/css" rel="stylesheet"></link><link href="../../contrib/katex/katex.min.css" type="text/css" rel="stylesheet"></link><link href="../../css/katex_moose.css" type="text/css" rel="stylesheet"></link><script type="text/javascript" src="../../contrib/jquery/jquery.min.js"></script><script type="text/javascript" src="../../contrib/katex/katex.min.js"></script></head><body><div class="page-wrap"><header><nav><div class="nav-wrapper container"><a href="../../index.html" class="left moose-logo hide-on-med-and-down" id="home-button">Eel</a><a href="https://github.com/hugary1995/eel" class="right"><img src="../../media/framework/github-logo.png" class="github-mark"></img><img src="../../media/framework/github-mark.png" class="github-logo"></img></a><ul class="right hide-on-med-and-down"><li><a href="../../eel.html">Documentation</a></li></ul><a href="#" class="sidenav-trigger" data-target="5b69a847-7d56-4984-a95c-ee02e6e3226c"><i class="material-icons">menu</i></a><ul class="sidenav" id="5b69a847-7d56-4984-a95c-ee02e6e3226c"><li><a href="../../eel.html">Documentation</a></li></ul><a href="#moose-search" class="modal-trigger"><i class="material-icons">search</i></a></div></nav><div class="modal modal-fixed-footer moose-search-modal" id="moose-search"><div class="modal-content container moose-search-modal-content"><div class="row"><div class="col l12"><div class="input-field"><input type_="text" onkeyup="mooseSearch()" placeholder="/index.md" id="moose-search-box"></input></div></div><div><div class="col s12" id="moose-search-results"></div></div></div></div><div class="modal-footer"><a href="#!" class="modal-close btn-flat">Close</a></div></div></header><main class="main"><div class="container"><div class="row"><div class="col hide-on-med-and-down l12"><nav class="breadcrumb-nav"><div class="nav-wrapper"><a href=".." class="breadcrumb">source</a><span class="breadcrumb">fvkernels</span><a href="#" class="breadcrumb">NSFVPhaseChangeSource</a></div></nav></div></div><div class="row"><div class="moose-content col s12 m12 l10"><section id="9db68d20-8e87-4b46-a293-319aa567e08c" data-section-level="1" data-section-text="NSFVPhaseChangeSource"><h1 id="nsfvphasechangesource">NSFVPhaseChangeSource</h1><p>Computes the energy source due to solidification/melting.</p><p>The power source is computed as:</p><p><span class="moose-katex-block-equation"><span class="moose-katex-equation table-cell" id="moose-equation-b1845d00-e2ff-403d-9ad0-726174178db9"></span><script>var element = document.getElementById("moose-equation-b1845d00-e2ff-403d-9ad0-726174178db9");katex.render("q''' = - \\rho_l L \\frac{d f_l}{dt} \\,,", element, {displayMode:true,throwOnError:false,macros:{"\\bs":"\\boldsymbol{#1}","\\grad":"\\bs{\\nabla}","\\divergence":"\\grad \\cdot","\\norm":"\\left\\lVert#1\\right\\rVert","\\abs":"\\left\\lvert#1\\right\\rvert","\\diff":"\\text{ d}#1","\\bfa":"\\boldsymbol{a}","\\bfb":"\\boldsymbol{b}","\\bfc":"\\boldsymbol{c}","\\bfd":"\\boldsymbol{d}","\\bfe":"\\boldsymbol{e}","\\bff":"\\boldsymbol{f}","\\bfg":"\\boldsymbol{g}","\\bfh":"\\boldsymbol{h}","\\bfi":"\\boldsymbol{i}","\\bfj":"\\boldsymbol{j}","\\bfk":"\\boldsymbol{k}","\\bfl":"\\boldsymbol{l}","\\bfm":"\\boldsymbol{m}","\\bfn":"\\boldsymbol{n}","\\bfo":"\\boldsymbol{o}","\\bfp":"\\boldsymbol{p}","\\bfq":"\\boldsymbol{q}","\\bfr":"\\boldsymbol{r}","\\bfs":"\\boldsymbol{s}","\\bft":"\\boldsymbol{t}","\\bfu":"\\boldsymbol{u}","\\bfv":"\\boldsymbol{v}","\\bfw":"\\boldsymbol{w}","\\bfx":"\\boldsymbol{x}","\\bfy":"\\boldsymbol{y}","\\bfz":"\\boldsymbol{z}","\\bfA":"\\boldsymbol{A}","\\bfB":"\\boldsymbol{B}","\\bfC":"\\boldsymbol{C}","\\bfD":"\\boldsymbol{D}","\\bfE":"\\boldsymbol{E}","\\bfF":"\\boldsymbol{F}","\\bfG":"\\boldsymbol{G}","\\bfH":"\\boldsymbol{H}","\\bfI":"\\boldsymbol{I}","\\bfJ":"\\boldsymbol{J}","\\bfK":"\\boldsymbol{K}","\\bfL":"\\boldsymbol{L}","\\bfM":"\\boldsymbol{M}","\\bfN":"\\boldsymbol{N}","\\bfO":"\\boldsymbol{O}","\\bfP":"\\boldsymbol{P}","\\bfQ":"\\boldsymbol{Q}","\\bfR":"\\boldsymbol{R}","\\bfS":"\\boldsymbol{S}","\\bfT":"\\boldsymbol{T}","\\bfU":"\\boldsymbol{U}","\\bfV":"\\boldsymbol{V}","\\bfW":"\\boldsymbol{W}","\\bfX":"\\boldsymbol{X}","\\bfY":"\\boldsymbol{Y}","\\bfZ":"\\boldsymbol{Z}"}});</script></span></p><p>where <span class="moose-katex-inline-equation" id="moose-equation-0d9d57e2-664b-4d9e-8b3a-e47bae94d827"><script>var element = document.getElementById("moose-equation-0d9d57e2-664b-4d9e-8b3a-e47bae94d827");katex.render("\\rho_l \\left[ \\frac{kg}{m^3} \\right]", element, {displayMode:false,throwOnError:false,macros:{"\\bs":"\\boldsymbol{#1}","\\grad":"\\bs{\\nabla}","\\divergence":"\\grad \\cdot","\\norm":"\\left\\lVert#1\\right\\rVert","\\abs":"\\left\\lvert#1\\right\\rvert","\\diff":"\\text{ d}#1","\\bfa":"\\boldsymbol{a}","\\bfb":"\\boldsymbol{b}","\\bfc":"\\boldsymbol{c}","\\bfd":"\\boldsymbol{d}","\\bfe":"\\boldsymbol{e}","\\bff":"\\boldsymbol{f}","\\bfg":"\\boldsymbol{g}","\\bfh":"\\boldsymbol{h}","\\bfi":"\\boldsymbol{i}","\\bfj":"\\boldsymbol{j}","\\bfk":"\\boldsymbol{k}","\\bfl":"\\boldsymbol{l}","\\bfm":"\\boldsymbol{m}","\\bfn":"\\boldsymbol{n}","\\bfo":"\\boldsymbol{o}","\\bfp":"\\boldsymbol{p}","\\bfq":"\\boldsymbol{q}","\\bfr":"\\boldsymbol{r}","\\bfs":"\\boldsymbol{s}","\\bft":"\\boldsymbol{t}","\\bfu":"\\boldsymbol{u}","\\bfv":"\\boldsymbol{v}","\\bfw":"\\boldsymbol{w}","\\bfx":"\\boldsymbol{x}","\\bfy":"\\boldsymbol{y}","\\bfz":"\\boldsymbol{z}","\\bfA":"\\boldsymbol{A}","\\bfB":"\\boldsymbol{B}","\\bfC":"\\boldsymbol{C}","\\bfD":"\\boldsymbol{D}","\\bfE":"\\boldsymbol{E}","\\bfF":"\\boldsymbol{F}","\\bfG":"\\boldsymbol{G}","\\bfH":"\\boldsymbol{H}","\\bfI":"\\boldsymbol{I}","\\bfJ":"\\boldsymbol{J}","\\bfK":"\\boldsymbol{K}","\\bfL":"\\boldsymbol{L}","\\bfM":"\\boldsymbol{M}","\\bfN":"\\boldsymbol{N}","\\bfO":"\\boldsymbol{O}","\\bfP":"\\boldsymbol{P}","\\bfQ":"\\boldsymbol{Q}","\\bfR":"\\boldsymbol{R}","\\bfS":"\\boldsymbol{S}","\\bfT":"\\boldsymbol{T}","\\bfU":"\\boldsymbol{U}","\\bfV":"\\boldsymbol{V}","\\bfW":"\\boldsymbol{W}","\\bfX":"\\boldsymbol{X}","\\bfY":"\\boldsymbol{Y}","\\bfZ":"\\boldsymbol{Z}"}});</script></span> is the liquid density, <span class="moose-katex-inline-equation" id="moose-equation-0f5268d7-edc6-43c2-a886-dd57ed2cbc43"><script>var element = document.getElementById("moose-equation-0f5268d7-edc6-43c2-a886-dd57ed2cbc43");katex.render("L \\left[ \\frac{J}{kg} \\right]", element, {displayMode:false,throwOnError:false,macros:{"\\bs":"\\boldsymbol{#1}","\\grad":"\\bs{\\nabla}","\\divergence":"\\grad \\cdot","\\norm":"\\left\\lVert#1\\right\\rVert","\\abs":"\\left\\lvert#1\\right\\rvert","\\diff":"\\text{ d}#1","\\bfa":"\\boldsymbol{a}","\\bfb":"\\boldsymbol{b}","\\bfc":"\\boldsymbol{c}","\\bfd":"\\boldsymbol{d}","\\bfe":"\\boldsymbol{e}","\\bff":"\\boldsymbol{f}","\\bfg":"\\boldsymbol{g}","\\bfh":"\\boldsymbol{h}","\\bfi":"\\boldsymbol{i}","\\bfj":"\\boldsymbol{j}","\\bfk":"\\boldsymbol{k}","\\bfl":"\\boldsymbol{l}","\\bfm":"\\boldsymbol{m}","\\bfn":"\\boldsymbol{n}","\\bfo":"\\boldsymbol{o}","\\bfp":"\\boldsymbol{p}","\\bfq":"\\boldsymbol{q}","\\bfr":"\\boldsymbol{r}","\\bfs":"\\boldsymbol{s}","\\bft":"\\boldsymbol{t}","\\bfu":"\\boldsymbol{u}","\\bfv":"\\boldsymbol{v}","\\bfw":"\\boldsymbol{w}","\\bfx":"\\boldsymbol{x}","\\bfy":"\\boldsymbol{y}","\\bfz":"\\boldsymbol{z}","\\bfA":"\\boldsymbol{A}","\\bfB":"\\boldsymbol{B}","\\bfC":"\\boldsymbol{C}","\\bfD":"\\boldsymbol{D}","\\bfE":"\\boldsymbol{E}","\\bfF":"\\boldsymbol{F}","\\bfG":"\\boldsymbol{G}","\\bfH":"\\boldsymbol{H}","\\bfI":"\\boldsymbol{I}","\\bfJ":"\\boldsymbol{J}","\\bfK":"\\boldsymbol{K}","\\bfL":"\\boldsymbol{L}","\\bfM":"\\boldsymbol{M}","\\bfN":"\\boldsymbol{N}","\\bfO":"\\boldsymbol{O}","\\bfP":"\\boldsymbol{P}","\\bfQ":"\\boldsymbol{Q}","\\bfR":"\\boldsymbol{R}","\\bfS":"\\boldsymbol{S}","\\bfT":"\\boldsymbol{T}","\\bfU":"\\boldsymbol{U}","\\bfV":"\\boldsymbol{V}","\\bfW":"\\boldsymbol{W}","\\bfX":"\\boldsymbol{X}","\\bfY":"\\boldsymbol{Y}","\\bfZ":"\\boldsymbol{Z}"}});</script></span> is the latent heat, and <span class="moose-katex-inline-equation" id="moose-equation-102d37fc-e4bb-4a47-90d7-dead00e19ac7"><script>var element = document.getElementById("moose-equation-102d37fc-e4bb-4a47-90d7-dead00e19ac7");katex.render("f_l", element, {displayMode:false,throwOnError:false,macros:{"\\bs":"\\boldsymbol{#1}","\\grad":"\\bs{\\nabla}","\\divergence":"\\grad \\cdot","\\norm":"\\left\\lVert#1\\right\\rVert","\\abs":"\\left\\lvert#1\\right\\rvert","\\diff":"\\text{ d}#1","\\bfa":"\\boldsymbol{a}","\\bfb":"\\boldsymbol{b}","\\bfc":"\\boldsymbol{c}","\\bfd":"\\boldsymbol{d}","\\bfe":"\\boldsymbol{e}","\\bff":"\\boldsymbol{f}","\\bfg":"\\boldsymbol{g}","\\bfh":"\\boldsymbol{h}","\\bfi":"\\boldsymbol{i}","\\bfj":"\\boldsymbol{j}","\\bfk":"\\boldsymbol{k}","\\bfl":"\\boldsymbol{l}","\\bfm":"\\boldsymbol{m}","\\bfn":"\\boldsymbol{n}","\\bfo":"\\boldsymbol{o}","\\bfp":"\\boldsymbol{p}","\\bfq":"\\boldsymbol{q}","\\bfr":"\\boldsymbol{r}","\\bfs":"\\boldsymbol{s}","\\bft":"\\boldsymbol{t}","\\bfu":"\\boldsymbol{u}","\\bfv":"\\boldsymbol{v}","\\bfw":"\\boldsymbol{w}","\\bfx":"\\boldsymbol{x}","\\bfy":"\\boldsymbol{y}","\\bfz":"\\boldsymbol{z}","\\bfA":"\\boldsymbol{A}","\\bfB":"\\boldsymbol{B}","\\bfC":"\\boldsymbol{C}","\\bfD":"\\boldsymbol{D}","\\bfE":"\\boldsymbol{E}","\\bfF":"\\boldsymbol{F}","\\bfG":"\\boldsymbol{G}","\\bfH":"\\boldsymbol{H}","\\bfI":"\\boldsymbol{I}","\\bfJ":"\\boldsymbol{J}","\\bfK":"\\boldsymbol{K}","\\bfL":"\\boldsymbol{L}","\\bfM":"\\boldsymbol{M}","\\bfN":"\\boldsymbol{N}","\\bfO":"\\boldsymbol{O}","\\bfP":"\\boldsymbol{P}","\\bfQ":"\\boldsymbol{Q}","\\bfR":"\\boldsymbol{R}","\\bfS":"\\boldsymbol{S}","\\bfT":"\\boldsymbol{T}","\\bfU":"\\boldsymbol{U}","\\bfV":"\\boldsymbol{V}","\\bfW":"\\boldsymbol{W}","\\bfX":"\\boldsymbol{X}","\\bfY":"\\boldsymbol{Y}","\\bfZ":"\\boldsymbol{Z}"}});</script></span> is the liquid fraction.</p><section class="scrollspy" id="90d78af3-3155-451d-880c-f4e9e2c2dd14" data-section-level="2" data-section-text="Example"><h2 id="example">Example</h2><p>For an example on how to use this object see the model of the Galium melting experiment below <a href="#gau1986melting">Gau and Viskanta (1986)</a></p><pre class="moose-pre" style="max-height:350px;"><code class="language-text">##########################################################
+# Simulation of Galium Melting Experiment
+# Ref: Gau, C., &amp; Viskanta, R. (1986). Melting and solidification of a pure metal on a vertical wall.
+# Key physics: melting/solidification, convective heat transfer, natural convection
+##########################################################
+
+mu = 1.81e-3
+rho_solid = 6093
+rho_liquid = 6093
+k_solid = 32
+k_liquid = 32
+cp_solid = 381.5
+cp_liquid = 381.5
+L = 80160
+alpha_b = 1.2e-4
+T_solidus = 302.93
+T_liquidus = &#x27;${fparse T_solidus + 0.1}&#x27;
+advected_interp_method = &#x27;upwind&#x27;
+velocity_interp_method = &#x27;rc&#x27;
+T_cold = 301.15
+T_hot = 311.15
+Nx = 100
+Ny = 50
+
+[GlobalParams]
+  rhie_chow_user_object = &#x27;rc&#x27;
+[]
+
+[UserObjects]
+  [rc]
+    type = INSFVRhieChowInterpolator
+    u = vel_x
+    v = vel_y
+    pressure = pressure
+  []
+[]
+
+[Mesh]
+  [gen]
+    type = GeneratedMeshGenerator
+    dim = 2
+    xmin = 0
+    xmax = 88.9e-3
+    ymin = 0
+    ymax = 63.5e-3
+    nx = ${Nx}
+    ny = ${Ny}
+  []
+[]
+
+[AuxVariables]
+  [U]
+    type = MooseVariableFVReal
+  []
+  [fl]
+    type = MooseVariableFVReal
+    initial_condition = 0.0
+  []
+  [density]
+    type = MooseVariableFVReal
+  []
+  [th_cond]
+    type = MooseVariableFVReal
+  []
+  [cp_var]
+    type = MooseVariableFVReal
+  []
+  [darcy_coef]
+    type = MooseVariableFVReal
+  []
+  [fch_coef]
+    type = MooseVariableFVReal
+  []
+[]
+
+[AuxKernels]
+  [mag]
+    type = VectorMagnitudeAux
+    variable = U
+    x = vel_x
+    y = vel_y
+  []
+  [compute_fl]
+    type = NSLiquidFractionAux
+    variable = fl
+    temperature = T
+    T_liquidus = &#x27;${T_liquidus}&#x27;
+    T_solidus = &#x27;${T_solidus}&#x27;
+    execute_on = &#x27;TIMESTEP_END&#x27;
+  []
+  [rho_out]
+    type = ADFunctorElementalAux
+    functor = &#x27;rho_mixture&#x27;
+    variable = &#x27;density&#x27;
+  []
+  [th_cond_out]
+    type = ADFunctorElementalAux
+    functor = &#x27;k_mixture&#x27;
+    variable = &#x27;th_cond&#x27;
+  []
+  [cp_out]
+    type = ADFunctorElementalAux
+    functor = &#x27;cp_mixture&#x27;
+    variable = &#x27;cp_var&#x27;
+  []
+  [darcy_out]
+    type = ADFunctorElementalAux
+    functor = &#x27;Darcy_coefficient&#x27;
+    variable = &#x27;darcy_coef&#x27;
+  []
+  [fch_out]
+    type = ADFunctorElementalAux
+    functor = &#x27;Forchheimer_coefficient&#x27;
+    variable = &#x27;fch_coef&#x27;
+  []
+[]
+
+[Variables]
+  [vel_x]
+    type = INSFVVelocityVariable
+    initial_condition = 0.0
+  []
+  [vel_y]
+    type = INSFVVelocityVariable
+    initial_condition = 0.0
+  []
+  [pressure]
+    type = INSFVPressureVariable
+  []
+  [lambda]
+    family = SCALAR
+    order = FIRST
+  []
+  [T]
+    type = INSFVEnergyVariable
+    initial_condition = &#x27;${T_cold}&#x27;
+    scaling = 1.0
+  []
+[]
+
+[FVKernels]
+  [mass]
+    type = INSFVMassAdvection
+    variable = pressure
+    advected_interp_method = ${advected_interp_method}
+    velocity_interp_method = ${velocity_interp_method}
+    rho = rho_mixture
+  []
+  [mean_zero_pressure]
+    type = FVIntegralValueConstraint
+    variable = pressure
+    lambda = lambda
+    phi0 = 0.0
+  []
+
+  [u_time]
+    type = INSFVMomentumTimeDerivative
+    variable = vel_x
+    rho = rho_mixture
+    momentum_component = &#x27;x&#x27;
+  []
+  [u_advection]
+    type = INSFVMomentumAdvection
+    variable = vel_x
+    advected_interp_method = ${advected_interp_method}
+    velocity_interp_method = ${velocity_interp_method}
+    rho = rho_mixture
+    momentum_component = &#x27;x&#x27;
+  []
+  [u_viscosity]
+    type = INSFVMomentumDiffusion
+    variable = vel_x
+    mu = ${mu}
+    momentum_component = &#x27;x&#x27;
+  []
+  [u_pressure]
+    type = INSFVMomentumPressure
+    variable = vel_x
+    momentum_component = &#x27;x&#x27;
+    pressure = pressure
+  []
+  [u_friction]
+    type = INSFVMomentumFriction
+    variable = vel_x
+    momentum_component = &#x27;x&#x27;
+    linear_coef_name = &#x27;Darcy_coefficient&#x27;
+    quadratic_coef_name = &#x27;Forchheimer_coefficient&#x27;
+  []
+  [u_buoyancy]
+    type = INSFVMomentumBoussinesq
+    variable = vel_x
+    T_fluid = T
+    gravity = &#x27;0 -9.81 0&#x27;
+    rho = &#x27;${rho_liquid}&#x27;
+    ref_temperature = ${T_cold}
+    momentum_component = &#x27;x&#x27;
+  []
+  [u_gravity]
+    type = INSFVMomentumGravity
+    variable = vel_x
+    gravity = &#x27;0 -9.81 0&#x27;
+    rho = &#x27;${rho_liquid}&#x27;
+    momentum_component = &#x27;x&#x27;
+  []
+
+  [v_time]
+    type = INSFVMomentumTimeDerivative
+    variable = vel_y
+    rho = rho_mixture
+    momentum_component = &#x27;y&#x27;
+  []
+  [v_advection]
+    type = INSFVMomentumAdvection
+    variable = vel_y
+    advected_interp_method = ${advected_interp_method}
+    velocity_interp_method = ${velocity_interp_method}
+    rho = rho_mixture
+    momentum_component = &#x27;y&#x27;
+  []
+  [v_viscosity]
+    type = INSFVMomentumDiffusion
+    variable = vel_y
+    mu = ${mu}
+    momentum_component = &#x27;y&#x27;
+  []
+  [v_pressure]
+    type = INSFVMomentumPressure
+    variable = vel_y
+    momentum_component = &#x27;y&#x27;
+    pressure = pressure
+  []
+  [v_friction]
+    type = INSFVMomentumFriction
+    variable = vel_y
+    momentum_component = &#x27;y&#x27;
+    linear_coef_name = &#x27;Darcy_coefficient&#x27;
+    quadratic_coef_name = &#x27;Forchheimer_coefficient&#x27;
+  []
+  [v_buoyancy]
+    type = INSFVMomentumBoussinesq
+    variable = vel_y
+    T_fluid = T
+    gravity = &#x27;0 -9.81 0&#x27;
+    rho = &#x27;${rho_liquid}&#x27;
+    ref_temperature = ${T_cold}
+    momentum_component = &#x27;y&#x27;
+  []
+  [v_gravity]
+    type = INSFVMomentumGravity
+    variable = vel_y
+    gravity = &#x27;0 -9.81 0&#x27;
+    rho = &#x27;${rho_liquid}&#x27;
+    momentum_component = &#x27;y&#x27;
+  []
+
+  [T_time]
+    type = INSFVEnergyTimeDerivative
+    variable = T
+    cp = cp_mixture
+    rho = rho_mixture
+  []
+  [energy_advection]
+    type = INSFVEnergyAdvection
+    variable = T
+    velocity_interp_method = ${velocity_interp_method}
+    advected_interp_method = ${advected_interp_method}
+  []
+  [energy_diffusion]
+    type = FVDiffusion
+    coeff = k_mixture
+    variable = T
+  []
+  [energy_source]
+    type = NSFVPhaseChangeSource
+    variable = T
+    L = ${L}
+    liquid_fraction = fl
+    T_liquidus = ${T_liquidus}
+    T_solidus = ${T_solidus}
+    rho = &#x27;rho_mixture&#x27;
+  []
+
+[]
+
+[FVBCs]
+  [walls-u]
+    type = INSFVNoSlipWallBC
+    boundary = &#x27;left right top bottom&#x27;
+    variable = vel_x
+    function = 0
+  []
+  [walls-v]
+    type = INSFVNoSlipWallBC
+    boundary = &#x27;left right top bottom&#x27;
+    variable = vel_y
+    function = 0
+  []
+  [hot_wall]
+    type = FVDirichletBC
+    variable = T
+    value = &#x27;${T_hot}&#x27;
+    boundary = &#x27;left&#x27;
+  []
+  [cold_wall]
+    type = FVDirichletBC
+    variable = T
+    value = &#x27;${T_cold}&#x27;
+    boundary = &#x27;right&#x27;
+  []
+[]
+
+[Materials]
+  [ins_fv]
+    type = INSFVEnthalpyMaterial
+    rho = rho_mixture
+    cp = cp_mixture
+    temperature = &#x27;T&#x27;
+  []
+  [eff_cp]
+    type = NSFVMixtureMaterial
+    phase_2_names = &#x27;${cp_solid} ${k_solid} ${rho_solid}&#x27;
+    phase_1_names = &#x27;${cp_liquid} ${k_liquid} ${rho_liquid}&#x27;
+    prop_names = &#x27;cp_mixture k_mixture rho_mixture&#x27;
+    phase_1_fraction = fl
+  []
+  [mushy_zone_resistance]
+    type = INSFVMushyPorousFrictionMaterial
+    liquid_fraction = &#x27;fl&#x27;
+    mu = &#x27;${mu}&#x27;
+    rho_l = &#x27;${rho_liquid}&#x27;
+    dendrite_spacing_scaling = 1e-1
+  []
+  [const_functor]
+    type = ADGenericFunctorMaterial
+    prop_names = &#x27;alpha_b&#x27;
+    prop_values = &#x27;${alpha_b}&#x27;
+  []
+[]
+
+[Executioner]
+  type = Transient
+
+  # Time-stepping parameters
+  start_time = 0.0
+  end_time = 200.0
+
+  [TimeStepper]
+    type = IterationAdaptiveDT
+    optimal_iterations = 10
+    dt = 0.1
+  []
+
+  solve_type = &#x27;NEWTON&#x27;
+  petsc_options_iname = &#x27;-pc_type -pc_factor_shift_type&#x27;
+  petsc_options_value = &#x27;lu NONZERO&#x27;
+  nl_rel_tol = 1e-2
+  nl_abs_tol = 1e-4
+  nl_max_its = 30
+[]
+
+[Outputs]
+  exodus = true
+  csv = false
+[]
+</code></pre><a class="moose-source-filename tooltipped modal-trigger" href="#a40fc0a5-625b-4ea6-a608-c95dcc86ded5">(moose/modules/navier_stokes/examples/solidification/galium_melting.i)</a></section><section class="scrollspy" id="36810ae0-96e5-4e6e-9bfe-2adce799d009" data-section-level="2" data-section-text="Input Parameters"><h2 id="input-parameters">Input Parameters</h2><section id="ee00ec14-68af-4144-bcac-e4b7fab59d0a" data-section-level="3" data-section-text="Required Parameters" data-details-open="open"><details class="moose-section-content" open="open"><ul class="collapsible" data-collapsible="expandable"><li><div class="collapsible-header"><span class="moose-parameter-name">L</span><span class="moose-parameter-header-description">Latent heat.</span></div><div class="collapsible-body"><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>MooseFunctorName</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>No</p><p class="moose-parameter-description"><span>Description:</span>Latent heat.</p></div></li><li><div class="collapsible-header"><span class="moose-parameter-name">T_liquidus</span><span class="moose-parameter-header-description">The liquidus temperature.</span></div><div class="collapsible-body"><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>MooseFunctorName</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>No</p><p class="moose-parameter-description"><span>Description:</span>The liquidus temperature.</p></div></li><li><div class="collapsible-header"><span class="moose-parameter-name">T_solidus</span><span class="moose-parameter-header-description">The solidus temperature.</span></div><div class="collapsible-body"><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>MooseFunctorName</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>No</p><p class="moose-parameter-description"><span>Description:</span>The solidus temperature.</p></div></li><li><div class="collapsible-header"><span class="moose-parameter-name">liquid_fraction</span><span class="moose-parameter-header-description">Liquid Fraction Functor.</span></div><div class="collapsible-body"><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>MooseFunctorName</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>No</p><p class="moose-parameter-description"><span>Description:</span>Liquid Fraction Functor.</p></div></li><li><div class="collapsible-header"><span class="moose-parameter-name">rho</span><span class="moose-parameter-header-description">The mixture density.</span></div><div class="collapsible-body"><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>MooseFunctorName</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>No</p><p class="moose-parameter-description"><span>Description:</span>The mixture density.</p></div></li><li><div class="collapsible-header"><span class="moose-parameter-name">variable</span><span class="moose-parameter-header-description">The name of the variable that this residual object operates on</span></div><div class="collapsible-body"><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>NonlinearVariableName</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>No</p><p class="moose-parameter-description"><span>Description:</span>The name of the variable that this residual object operates on</p></div></li></ul><summary><h3 data-details-open="open"><span class="moose-section-icon"></span>Required Parameters</h3></summary></details></section><section id="f8639f63-c4e3-4dc1-bf35-b459cae8e1dd" data-section-level="3" data-section-text="Optional Parameters" data-details-open="open"><details class="moose-section-content" open="open"><ul class="collapsible" data-collapsible="expandable"><li><div class="collapsible-header"><span class="moose-parameter-name">block</span><span class="moose-parameter-header-description">The list of blocks (ids or names) that this object will be applied</span></div><div class="collapsible-body"><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>std::vector&lt;SubdomainName&gt;</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>No</p><p class="moose-parameter-description"><span>Description:</span>The list of blocks (ids or names) that this object will be applied</p></div></li><li><div class="collapsible-header"><span class="moose-parameter-name">prop_getter_suffix</span><span class="moose-parameter-header-description">An optional suffix parameter that can be appended to any attempt to retrieve/get material properties. The suffix will be prepended with a '_' character.</span></div><div class="collapsible-body"><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>MaterialPropertyName</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>No</p><p class="moose-parameter-description"><span>Description:</span>An optional suffix parameter that can be appended to any attempt to retrieve/get material properties. The suffix will be prepended with a '_' character.</p></div></li></ul><summary><h3 data-details-open="open"><span class="moose-section-icon"></span>Optional Parameters</h3></summary></details></section><section id="a131e961-3802-4ef6-b836-61986399a414" data-section-level="3" data-section-text="Tagging Parameters" data-details-open="close"><details class="moose-section-content"><ul class="collapsible" data-collapsible="expandable"><li><div class="collapsible-header"><span class="moose-parameter-name">absolute_value_vector_tags</span><span class="moose-parameter-header-description">The tags for the vectors this residual object should fill with the absolute value of the residual contribution</span></div><div class="collapsible-body"><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>std::vector&lt;TagName&gt;</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>No</p><p class="moose-parameter-description"><span>Description:</span>The tags for the vectors this residual object should fill with the absolute value of the residual contribution</p></div></li><li><div class="collapsible-header"><span class="moose-parameter-name">extra_matrix_tags</span><span class="moose-parameter-header-description">The extra tags for the matrices this Kernel should fill</span></div><div class="collapsible-body"><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>std::vector&lt;TagName&gt;</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>No</p><p class="moose-parameter-description"><span>Description:</span>The extra tags for the matrices this Kernel should fill</p></div></li><li><div class="collapsible-header"><span class="moose-parameter-name">extra_vector_tags</span><span class="moose-parameter-header-description">The extra tags for the vectors this Kernel should fill</span></div><div class="collapsible-body"><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>std::vector&lt;TagName&gt;</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>No</p><p class="moose-parameter-description"><span>Description:</span>The extra tags for the vectors this Kernel should fill</p></div></li><li><div class="collapsible-header"><span class="moose-parameter-name">matrix_tags</span><span class="moose-parameter-header-default">system</span><span class="moose-parameter-header-description">The tag for the matrices this Kernel should fill</span></div><div class="collapsible-body"><p class="moose-parameter-description-default"><span>Default:</span>system</p><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>MultiMooseEnum</p><p class="moose-parameter-description-options"><span>Options:</span>nontime, system</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>No</p><p class="moose-parameter-description"><span>Description:</span>The tag for the matrices this Kernel should fill</p></div></li><li><div class="collapsible-header"><span class="moose-parameter-name">vector_tags</span><span class="moose-parameter-header-default">nontime</span><span class="moose-parameter-header-description">The tag for the vectors this Kernel should fill</span></div><div class="collapsible-body"><p class="moose-parameter-description-default"><span>Default:</span>nontime</p><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>MultiMooseEnum</p><p class="moose-parameter-description-options"><span>Options:</span>nontime, time</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>No</p><p class="moose-parameter-description"><span>Description:</span>The tag for the vectors this Kernel should fill</p></div></li></ul><summary><h3 data-details-open="close"><span class="moose-section-icon"></span>Tagging Parameters</h3></summary></details></section><section id="fb243ffb-1552-486a-9a70-443094bb6fc2" data-section-level="3" data-section-text="Advanced Parameters" data-details-open="close"><details class="moose-section-content"><ul class="collapsible" data-collapsible="expandable"><li><div class="collapsible-header"><span class="moose-parameter-name">control_tags</span><span class="moose-parameter-header-description">Adds user-defined labels for accessing object parameters via control logic.</span></div><div class="collapsible-body"><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>std::vector&lt;std::string&gt;</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>No</p><p class="moose-parameter-description"><span>Description:</span>Adds user-defined labels for accessing object parameters via control logic.</p></div></li><li><div class="collapsible-header"><span class="moose-parameter-name">enable</span><span class="moose-parameter-header-default">True</span><span class="moose-parameter-header-description">Set the enabled status of the MooseObject.</span></div><div class="collapsible-body"><p class="moose-parameter-description-default"><span>Default:</span>True</p><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>bool</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>Yes</p><p class="moose-parameter-description"><span>Description:</span>Set the enabled status of the MooseObject.</p></div></li><li><div class="collapsible-header"><span class="moose-parameter-name">implicit</span><span class="moose-parameter-header-default">True</span><span class="moose-parameter-header-description">Determines whether this object is calculated using an implicit or explicit form</span></div><div class="collapsible-body"><p class="moose-parameter-description-default"><span>Default:</span>True</p><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>bool</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>No</p><p class="moose-parameter-description"><span>Description:</span>Determines whether this object is calculated using an implicit or explicit form</p></div></li><li><div class="collapsible-header"><span class="moose-parameter-name">seed</span><span class="moose-parameter-header-default">0</span><span class="moose-parameter-header-description">The seed for the master random number generator</span></div><div class="collapsible-body"><p class="moose-parameter-description-default"><span>Default:</span>0</p><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>unsigned int</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>No</p><p class="moose-parameter-description"><span>Description:</span>The seed for the master random number generator</p></div></li><li><div class="collapsible-header"><span class="moose-parameter-name">use_displaced_mesh</span><span class="moose-parameter-header-default">False</span><span class="moose-parameter-header-description">Whether or not this object should use the displaced mesh for computation. Note that in the case this is true but no displacements are provided in the Mesh block the undisplaced mesh will still be used.</span></div><div class="collapsible-body"><p class="moose-parameter-description-default"><span>Default:</span>False</p><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>bool</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>No</p><p class="moose-parameter-description"><span>Description:</span>Whether or not this object should use the displaced mesh for computation. Note that in the case this is true but no displacements are provided in the Mesh block the undisplaced mesh will still be used.</p></div></li></ul><summary><h3 data-details-open="close"><span class="moose-section-icon"></span>Advanced Parameters</h3></summary></details></section><section id="4cc5fc3b-5f76-4247-9de7-92077fc30083" data-section-level="3" data-section-text="Parallel Ghosting Parameters" data-details-open="close"><details class="moose-section-content"><ul class="collapsible" data-collapsible="expandable"><li><div class="collapsible-header"><span class="moose-parameter-name">ghost_layers</span><span class="moose-parameter-header-default">1</span><span class="moose-parameter-header-description">The number of layers of elements to ghost.</span></div><div class="collapsible-body"><p class="moose-parameter-description-default"><span>Default:</span>1</p><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>unsigned short</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>No</p><p class="moose-parameter-description"><span>Description:</span>The number of layers of elements to ghost.</p></div></li><li><div class="collapsible-header"><span class="moose-parameter-name">use_point_neighbors</span><span class="moose-parameter-header-default">False</span><span class="moose-parameter-header-description">Whether to use point neighbors, which introduces additional ghosting to that used for simple face neighbors.</span></div><div class="collapsible-body"><p class="moose-parameter-description-default"><span>Default:</span>False</p><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>bool</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>No</p><p class="moose-parameter-description"><span>Description:</span>Whether to use point neighbors, which introduces additional ghosting to that used for simple face neighbors.</p></div></li></ul><summary><h3 data-details-open="close"><span class="moose-section-icon"></span>Parallel Ghosting Parameters</h3></summary></details></section></section><section class="scrollspy" id="2a6c57d5-17ea-4130-96f2-391854803a49" data-section-level="2" data-section-text="References"><h2 id="references">References</h2><div class="moose-bibliography"><ol><li id="gau1986melting">Chie Gau and Rc&nbsp;Viskanta.
+Melting and solidification of a pure metal on a vertical wall.
+<em>Journal of Heat and Mass Transfer</em>, 108:174–181, 1986.<a href="#1b834114-6892-4f11-9c55-74911b56fc9b" class="modal-trigger moose-bibtex-modal" style="padding-left:10px;">[BibTeX]</a><div class="modal" id="1b834114-6892-4f11-9c55-74911b56fc9b"><div class="modal-content"><pre style="line-height:1.25;"><code class="language-latex">@article{gau1986melting,
+    author = "Gau, Chie and Viskanta, Rc",
+    title = "Melting and solidification of a pure metal on a vertical wall",
+    year = "1986",
+    journal = "Journal of Heat and Mass Transfer",
+    volume = "108",
+    pages = "174--181",
+    publisher = "ASME"
+}
+</code></pre></div></div></li></ol></div></section></section><div class="moose-modal modal" id="a40fc0a5-625b-4ea6-a608-c95dcc86ded5"><div class="modal-content"><h4>(moose/modules/navier_stokes/examples/solidification/galium_melting.i)</h4><pre class="moose-pre"><code class="language-text">##########################################################
+# Simulation of Galium Melting Experiment
+# Ref: Gau, C., &amp; Viskanta, R. (1986). Melting and solidification of a pure metal on a vertical wall.
+# Key physics: melting/solidification, convective heat transfer, natural convection
+##########################################################
+
+mu = 1.81e-3
+rho_solid = 6093
+rho_liquid = 6093
+k_solid = 32
+k_liquid = 32
+cp_solid = 381.5
+cp_liquid = 381.5
+L = 80160
+alpha_b = 1.2e-4
+T_solidus = 302.93
+T_liquidus = &#x27;${fparse T_solidus + 0.1}&#x27;
+advected_interp_method = &#x27;upwind&#x27;
+velocity_interp_method = &#x27;rc&#x27;
+T_cold = 301.15
+T_hot = 311.15
+Nx = 100
+Ny = 50
+
+[GlobalParams]
+  rhie_chow_user_object = &#x27;rc&#x27;
+[]
+
+[UserObjects]
+  [rc]
+    type = INSFVRhieChowInterpolator
+    u = vel_x
+    v = vel_y
+    pressure = pressure
+  []
+[]
+
+[Mesh]
+  [gen]
+    type = GeneratedMeshGenerator
+    dim = 2
+    xmin = 0
+    xmax = 88.9e-3
+    ymin = 0
+    ymax = 63.5e-3
+    nx = ${Nx}
+    ny = ${Ny}
+  []
+[]
+
+[AuxVariables]
+  [U]
+    type = MooseVariableFVReal
+  []
+  [fl]
+    type = MooseVariableFVReal
+    initial_condition = 0.0
+  []
+  [density]
+    type = MooseVariableFVReal
+  []
+  [th_cond]
+    type = MooseVariableFVReal
+  []
+  [cp_var]
+    type = MooseVariableFVReal
+  []
+  [darcy_coef]
+    type = MooseVariableFVReal
+  []
+  [fch_coef]
+    type = MooseVariableFVReal
+  []
+[]
+
+[AuxKernels]
+  [mag]
+    type = VectorMagnitudeAux
+    variable = U
+    x = vel_x
+    y = vel_y
+  []
+  [compute_fl]
+    type = NSLiquidFractionAux
+    variable = fl
+    temperature = T
+    T_liquidus = &#x27;${T_liquidus}&#x27;
+    T_solidus = &#x27;${T_solidus}&#x27;
+    execute_on = &#x27;TIMESTEP_END&#x27;
+  []
+  [rho_out]
+    type = ADFunctorElementalAux
+    functor = &#x27;rho_mixture&#x27;
+    variable = &#x27;density&#x27;
+  []
+  [th_cond_out]
+    type = ADFunctorElementalAux
+    functor = &#x27;k_mixture&#x27;
+    variable = &#x27;th_cond&#x27;
+  []
+  [cp_out]
+    type = ADFunctorElementalAux
+    functor = &#x27;cp_mixture&#x27;
+    variable = &#x27;cp_var&#x27;
+  []
+  [darcy_out]
+    type = ADFunctorElementalAux
+    functor = &#x27;Darcy_coefficient&#x27;
+    variable = &#x27;darcy_coef&#x27;
+  []
+  [fch_out]
+    type = ADFunctorElementalAux
+    functor = &#x27;Forchheimer_coefficient&#x27;
+    variable = &#x27;fch_coef&#x27;
+  []
+[]
+
+[Variables]
+  [vel_x]
+    type = INSFVVelocityVariable
+    initial_condition = 0.0
+  []
+  [vel_y]
+    type = INSFVVelocityVariable
+    initial_condition = 0.0
+  []
+  [pressure]
+    type = INSFVPressureVariable
+  []
+  [lambda]
+    family = SCALAR
+    order = FIRST
+  []
+  [T]
+    type = INSFVEnergyVariable
+    initial_condition = &#x27;${T_cold}&#x27;
+    scaling = 1.0
+  []
+[]
+
+[FVKernels]
+  [mass]
+    type = INSFVMassAdvection
+    variable = pressure
+    advected_interp_method = ${advected_interp_method}
+    velocity_interp_method = ${velocity_interp_method}
+    rho = rho_mixture
+  []
+  [mean_zero_pressure]
+    type = FVIntegralValueConstraint
+    variable = pressure
+    lambda = lambda
+    phi0 = 0.0
+  []
+
+  [u_time]
+    type = INSFVMomentumTimeDerivative
+    variable = vel_x
+    rho = rho_mixture
+    momentum_component = &#x27;x&#x27;
+  []
+  [u_advection]
+    type = INSFVMomentumAdvection
+    variable = vel_x
+    advected_interp_method = ${advected_interp_method}
+    velocity_interp_method = ${velocity_interp_method}
+    rho = rho_mixture
+    momentum_component = &#x27;x&#x27;
+  []
+  [u_viscosity]
+    type = INSFVMomentumDiffusion
+    variable = vel_x
+    mu = ${mu}
+    momentum_component = &#x27;x&#x27;
+  []
+  [u_pressure]
+    type = INSFVMomentumPressure
+    variable = vel_x
+    momentum_component = &#x27;x&#x27;
+    pressure = pressure
+  []
+  [u_friction]
+    type = INSFVMomentumFriction
+    variable = vel_x
+    momentum_component = &#x27;x&#x27;
+    linear_coef_name = &#x27;Darcy_coefficient&#x27;
+    quadratic_coef_name = &#x27;Forchheimer_coefficient&#x27;
+  []
+  [u_buoyancy]
+    type = INSFVMomentumBoussinesq
+    variable = vel_x
+    T_fluid = T
+    gravity = &#x27;0 -9.81 0&#x27;
+    rho = &#x27;${rho_liquid}&#x27;
+    ref_temperature = ${T_cold}
+    momentum_component = &#x27;x&#x27;
+  []
+  [u_gravity]
+    type = INSFVMomentumGravity
+    variable = vel_x
+    gravity = &#x27;0 -9.81 0&#x27;
+    rho = &#x27;${rho_liquid}&#x27;
+    momentum_component = &#x27;x&#x27;
+  []
+
+  [v_time]
+    type = INSFVMomentumTimeDerivative
+    variable = vel_y
+    rho = rho_mixture
+    momentum_component = &#x27;y&#x27;
+  []
+  [v_advection]
+    type = INSFVMomentumAdvection
+    variable = vel_y
+    advected_interp_method = ${advected_interp_method}
+    velocity_interp_method = ${velocity_interp_method}
+    rho = rho_mixture
+    momentum_component = &#x27;y&#x27;
+  []
+  [v_viscosity]
+    type = INSFVMomentumDiffusion
+    variable = vel_y
+    mu = ${mu}
+    momentum_component = &#x27;y&#x27;
+  []
+  [v_pressure]
+    type = INSFVMomentumPressure
+    variable = vel_y
+    momentum_component = &#x27;y&#x27;
+    pressure = pressure
+  []
+  [v_friction]
+    type = INSFVMomentumFriction
+    variable = vel_y
+    momentum_component = &#x27;y&#x27;
+    linear_coef_name = &#x27;Darcy_coefficient&#x27;
+    quadratic_coef_name = &#x27;Forchheimer_coefficient&#x27;
+  []
+  [v_buoyancy]
+    type = INSFVMomentumBoussinesq
+    variable = vel_y
+    T_fluid = T
+    gravity = &#x27;0 -9.81 0&#x27;
+    rho = &#x27;${rho_liquid}&#x27;
+    ref_temperature = ${T_cold}
+    momentum_component = &#x27;y&#x27;
+  []
+  [v_gravity]
+    type = INSFVMomentumGravity
+    variable = vel_y
+    gravity = &#x27;0 -9.81 0&#x27;
+    rho = &#x27;${rho_liquid}&#x27;
+    momentum_component = &#x27;y&#x27;
+  []
+
+  [T_time]
+    type = INSFVEnergyTimeDerivative
+    variable = T
+    cp = cp_mixture
+    rho = rho_mixture
+  []
+  [energy_advection]
+    type = INSFVEnergyAdvection
+    variable = T
+    velocity_interp_method = ${velocity_interp_method}
+    advected_interp_method = ${advected_interp_method}
+  []
+  [energy_diffusion]
+    type = FVDiffusion
+    coeff = k_mixture
+    variable = T
+  []
+  [energy_source]
+    type = NSFVPhaseChangeSource
+    variable = T
+    L = ${L}
+    liquid_fraction = fl
+    T_liquidus = ${T_liquidus}
+    T_solidus = ${T_solidus}
+    rho = &#x27;rho_mixture&#x27;
+  []
+
+[]
+
+[FVBCs]
+  [walls-u]
+    type = INSFVNoSlipWallBC
+    boundary = &#x27;left right top bottom&#x27;
+    variable = vel_x
+    function = 0
+  []
+  [walls-v]
+    type = INSFVNoSlipWallBC
+    boundary = &#x27;left right top bottom&#x27;
+    variable = vel_y
+    function = 0
+  []
+  [hot_wall]
+    type = FVDirichletBC
+    variable = T
+    value = &#x27;${T_hot}&#x27;
+    boundary = &#x27;left&#x27;
+  []
+  [cold_wall]
+    type = FVDirichletBC
+    variable = T
+    value = &#x27;${T_cold}&#x27;
+    boundary = &#x27;right&#x27;
+  []
+[]
+
+[Materials]
+  [ins_fv]
+    type = INSFVEnthalpyMaterial
+    rho = rho_mixture
+    cp = cp_mixture
+    temperature = &#x27;T&#x27;
+  []
+  [eff_cp]
+    type = NSFVMixtureMaterial
+    phase_2_names = &#x27;${cp_solid} ${k_solid} ${rho_solid}&#x27;
+    phase_1_names = &#x27;${cp_liquid} ${k_liquid} ${rho_liquid}&#x27;
+    prop_names = &#x27;cp_mixture k_mixture rho_mixture&#x27;
+    phase_1_fraction = fl
+  []
+  [mushy_zone_resistance]
+    type = INSFVMushyPorousFrictionMaterial
+    liquid_fraction = &#x27;fl&#x27;
+    mu = &#x27;${mu}&#x27;
+    rho_l = &#x27;${rho_liquid}&#x27;
+    dendrite_spacing_scaling = 1e-1
+  []
+  [const_functor]
+    type = ADGenericFunctorMaterial
+    prop_names = &#x27;alpha_b&#x27;
+    prop_values = &#x27;${alpha_b}&#x27;
+  []
+[]
+
+[Executioner]
+  type = Transient
+
+  # Time-stepping parameters
+  start_time = 0.0
+  end_time = 200.0
+
+  [TimeStepper]
+    type = IterationAdaptiveDT
+    optimal_iterations = 10
+    dt = 0.1
+  []
+
+  solve_type = &#x27;NEWTON&#x27;
+  petsc_options_iname = &#x27;-pc_type -pc_factor_shift_type&#x27;
+  petsc_options_value = &#x27;lu NONZERO&#x27;
+  nl_rel_tol = 1e-2
+  nl_abs_tol = 1e-4
+  nl_max_its = 30
+[]
+
+[Outputs]
+  exodus = true
+  csv = false
+[]
+</code></pre></div><div class="modal-footer"><a class="modal-close btn-flat">Close</a></div></div></div><div class="col hide-on-med-and-down l2"><div class="toc-wrapper pin-top"><ul class="section table-of-contents"><li><a href="#90d78af3-3155-451d-880c-f4e9e2c2dd14" class="tooltipped" data-position="left" data-tooltip="Example">Example</a></li><li><a href="#36810ae0-96e5-4e6e-9bfe-2adce799d009" class="tooltipped" data-position="left" data-tooltip="Input Parameters">Input Parameters</a></li><li><a href="#2a6c57d5-17ea-4130-96f2-391854803a49" class="tooltipped" data-position="left" data-tooltip="References">References</a></li></ul></div></div></div></div></main></div></body><script type="text/javascript" src="../../contrib/materialize/materialize.min.js"></script><script type="text/javascript" src="../../contrib/clipboard/clipboard.min.js"></script><script type="text/javascript" src="../../contrib/prism/prism.min.js"></script><script type="text/javascript" src="../../js/init.js"></script><script type="text/javascript" src="../../js/navigation.js"></script><script type="text/javascript" src="../../contrib/fuse/fuse.min.js"></script><script type="text/javascript" src="../../js/search_index.js"></script><script type="text/javascript" src="../../js/sqa_moose.js"></script>

@@ -1,0 +1,30 @@
+<!DOCTYPE html><head><meta charset="UTF-8"><title>heat_conduction_srs.md | Eel</title><link href="../../../contrib/materialize/materialize.min.css" type="text/css" rel="stylesheet" media="screen,projection"></link><link href="../../../contrib/prism/prism.min.css" type="text/css" rel="stylesheet"></link><link href="../../../css/moose.css" type="text/css" rel="stylesheet"></link><link href="../../../css/devel_moose.css" type="text/css" rel="stylesheet"></link><link href="../../../css/alert_moose.css" type="text/css" rel="stylesheet"></link><link href="../../../css/content_moose.css" type="text/css" rel="stylesheet"></link><link href="../../../css/sqa_moose.css" type="text/css" rel="stylesheet"></link><link href="../../../css/civet_moose.css" type="text/css" rel="stylesheet"></link><script type="text/javascript" src="../../../contrib/jquery/jquery.min.js"></script></head><body><div class="page-wrap"><header><nav><div class="nav-wrapper container"><a href="../../../index.html" class="left moose-logo hide-on-med-and-down" id="home-button">Eel</a><a href="https://github.com/hugary1995/eel" class="right"><img src="../../../media/framework/github-logo.png" class="github-mark"></img><img src="../../../media/framework/github-mark.png" class="github-logo"></img></a><ul class="right hide-on-med-and-down"><li><a href="../../../eel.html">Documentation</a></li></ul><a href="#" class="sidenav-trigger" data-target="0b1e598c-e43f-4f44-90c8-1155b0dd7bf1"><i class="material-icons">menu</i></a><ul class="sidenav" id="0b1e598c-e43f-4f44-90c8-1155b0dd7bf1"><li><a href="../../../eel.html">Documentation</a></li></ul><a href="#moose-search" class="modal-trigger"><i class="material-icons">search</i></a></div></nav><div class="modal modal-fixed-footer moose-search-modal" id="moose-search"><div class="modal-content container moose-search-modal-content"><div class="row"><div class="col l12"><div class="input-field"><input type_="text" onkeyup="mooseSearch()" placeholder="/index.md" id="moose-search-box"></input></div></div><div><div class="col s12" id="moose-search-results"></div></div></div></div><div class="modal-footer"><a href="#!" class="modal-close btn-flat">Close</a></div></div></header><main class="main"><div class="container"><div class="row"><div class="col hide-on-med-and-down l12"><nav class="breadcrumb-nav"><div class="nav-wrapper"><span class="breadcrumb">modules</span><a href=".." class="breadcrumb">heat_conduction</a><a href="." class="breadcrumb">sqa</a><a href="#" class="breadcrumb">heat_conduction_srs</a></div></nav></div></div><div class="row"><div class="moose-content col s12 m12 l10"><p class="moose-disabled">!template load file=sqa/module_srs.md.template category=heat_conduction module=Heat Conduction</p><p class="moose-disabled">
+
+!template! item key=system-purpose
+!! system-purpose-begin
+The [!ac](MOOSE) Heat Conduction module purpose is to model heat transfer due to
+conduction and radiation.
+!! system-purpose-finish
+!template-end!</p><p class="moose-disabled">
+
+!template! item key=system-scope
+!! system-scope-begin
+The Heat Conduction module models volumetric heat transfer mechanisms due to
+conduction and body sources/sinks. Additionally surface to surface conduction
+and radiation may also be modeled.
+!! system-scope-finish
+!template-end!</p><p class="moose-disabled">
+
+!template! item key=assumptions-and-dependencies
+The {{module}} module is designed with the fewest possible constraints on hardware and software.
+For more context on this point, the {{module}} module SRS defers to the framework
+[framework_srs.md#assumptions-and-dependencies] and ray tracing module
+assumptions and dependencies. Any physics-based assumptions in
+this module&#x27;s objects are highlighted in their respective documentation pages.
+!template-end!</p><p class="moose-disabled">
+
+!template! item key=reliability
+The regression test suite will cover at least 87% of all lines of code within the {{module}}
+module at all times. Known regressions will be recorded and tracked (see [#maintainability]) to an
+independent and satisfactory resolution.
+!template-end!</p></div><div class="col hide-on-med-and-down l2"><div class="toc-wrapper pin-top"><ul class="section table-of-contents"></ul></div></div></div></div></main></div></body><script type="text/javascript" src="../../../contrib/materialize/materialize.min.js"></script><script type="text/javascript" src="../../../contrib/clipboard/clipboard.min.js"></script><script type="text/javascript" src="../../../contrib/prism/prism.min.js"></script><script type="text/javascript" src="../../../js/init.js"></script><script type="text/javascript" src="../../../js/navigation.js"></script><script type="text/javascript" src="../../../contrib/fuse/fuse.min.js"></script><script type="text/javascript" src="../../../js/search_index.js"></script><script type="text/javascript" src="../../../js/sqa_moose.js"></script>

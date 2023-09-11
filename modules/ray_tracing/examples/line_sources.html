@@ -1,0 +1,386 @@
+<!DOCTYPE html><head><meta charset="UTF-8"><title>Using Line Sources | Eel</title><link href="../../../contrib/materialize/materialize.min.css" type="text/css" rel="stylesheet" media="screen,projection"></link><link href="../../../contrib/prism/prism.min.css" type="text/css" rel="stylesheet"></link><link href="../../../css/moose.css" type="text/css" rel="stylesheet"></link><link href="../../../css/devel_moose.css" type="text/css" rel="stylesheet"></link><link href="../../../css/alert_moose.css" type="text/css" rel="stylesheet"></link><link href="../../../css/content_moose.css" type="text/css" rel="stylesheet"></link><link href="../../../css/sqa_moose.css" type="text/css" rel="stylesheet"></link><link href="../../../css/civet_moose.css" type="text/css" rel="stylesheet"></link><link href="../../../contrib/katex/katex.min.css" type="text/css" rel="stylesheet"></link><link href="../../../css/katex_moose.css" type="text/css" rel="stylesheet"></link><script type="text/javascript" src="../../../contrib/jquery/jquery.min.js"></script><script type="text/javascript" src="../../../contrib/katex/katex.min.js"></script></head><body><div class="page-wrap"><header><nav><div class="nav-wrapper container"><a href="../../../index.html" class="left moose-logo hide-on-med-and-down" id="home-button">Eel</a><a href="https://github.com/hugary1995/eel" class="right"><img src="../../../media/framework/github-logo.png" class="github-mark"></img><img src="../../../media/framework/github-mark.png" class="github-logo"></img></a><ul class="right hide-on-med-and-down"><li><a href="../../../eel.html">Documentation</a></li></ul><a href="#" class="sidenav-trigger" data-target="3830ef7f-fe81-4da3-89c5-81614d6269fa"><i class="material-icons">menu</i></a><ul class="sidenav" id="3830ef7f-fe81-4da3-89c5-81614d6269fa"><li><a href="../../../eel.html">Documentation</a></li></ul><a href="#moose-search" class="modal-trigger"><i class="material-icons">search</i></a></div></nav><div class="modal modal-fixed-footer moose-search-modal" id="moose-search"><div class="modal-content container moose-search-modal-content"><div class="row"><div class="col l12"><div class="input-field"><input type_="text" onkeyup="mooseSearch()" placeholder="/index.md" id="moose-search-box"></input></div></div><div><div class="col s12" id="moose-search-results"></div></div></div></div><div class="modal-footer"><a href="#!" class="modal-close btn-flat">Close</a></div></div></header><main class="main"><div class="container"><div class="row"><div class="col hide-on-med-and-down l12"><nav class="breadcrumb-nav"><div class="nav-wrapper"><span class="breadcrumb">modules</span><a href=".." class="breadcrumb">ray_tracing</a><span class="breadcrumb">examples</span><a href="#" class="breadcrumb">line_sources</a></div></nav></div></div><div class="row"><div class="moose-content col s12 m12 l10"><section id="a1f54ce8-7a7b-4078-a3ba-a97ed4b44be9" data-section-level="1" data-section-text="Using Line Sources"><h1 id="using-line-sources">Using Line Sources</h1><p>The <a href="../index.html">Ray Tracing Module</a> makes possible the contribution to residuals and Jacobians along segments of a line within the finite element mesh. The most simple use case of this capability is a source along a ray with given start and end points within the mesh.</p><section class="scrollspy" id="717abc9c-3a4b-4b8f-bd85-6c53fe294f83" data-section-level="2" data-section-text="Example"><h2 id="example">Example</h2><p>We begin with the standard &quot;simple diffusion&quot; problem:</p><pre class="moose-pre" style="max-height:350px;"><code class="language-text">[Mesh]
+  [gmg]
+    type = GeneratedMeshGenerator
+    dim = 2
+    nx = 10
+    ny = 10
+    xmax = 5
+    ymax = 5
+  []
+[]
+
+[Variables/u]
+[]
+
+[Kernels/diff]
+  type = Diffusion
+  variable = u
+[]
+
+[BCs]
+  [left]
+    type = DirichletBC
+    variable = u
+    boundary = left
+    value = 0
+  []
+  [right]
+    type = DirichletBC
+    variable = u
+    boundary = right
+    value = 1
+  []
+[]
+
+[Executioner]
+  type = Steady
+  solve_type = &#x27;PJFNK&#x27;
+  petsc_options_iname = &#x27;-pc_type -pc_hypre_type&#x27;
+  petsc_options_value = &#x27;hypre boomeramg&#x27;
+[]
+
+[Outputs]
+  exodus = true
+[]
+</code></pre><a class="moose-source-filename tooltipped modal-trigger" href="#ccd4abd7-e8dc-407d-8586-18e600a22bf0">(moose/modules/ray_tracing/test/tests/raykernels/line_source_ray_kernel/simple_diffusion_line_source.i)</a><p>Within this problem, we wish to define a constant line source with constant <span class="moose-katex-inline-equation" id="moose-equation-966c848d-cc85-41c1-bd29-108dd793e205"><script>var element = document.getElementById("moose-equation-966c848d-cc85-41c1-bd29-108dd793e205");katex.render("c = 5", element, {displayMode:false,throwOnError:false,macros:{"\\bs":"\\boldsymbol{#1}","\\grad":"\\bs{\\nabla}","\\divergence":"\\grad \\cdot","\\norm":"\\left\\lVert#1\\right\\rVert","\\abs":"\\left\\lvert#1\\right\\rvert","\\diff":"\\text{ d}#1","\\bfa":"\\boldsymbol{a}","\\bfb":"\\boldsymbol{b}","\\bfc":"\\boldsymbol{c}","\\bfd":"\\boldsymbol{d}","\\bfe":"\\boldsymbol{e}","\\bff":"\\boldsymbol{f}","\\bfg":"\\boldsymbol{g}","\\bfh":"\\boldsymbol{h}","\\bfi":"\\boldsymbol{i}","\\bfj":"\\boldsymbol{j}","\\bfk":"\\boldsymbol{k}","\\bfl":"\\boldsymbol{l}","\\bfm":"\\boldsymbol{m}","\\bfn":"\\boldsymbol{n}","\\bfo":"\\boldsymbol{o}","\\bfp":"\\boldsymbol{p}","\\bfq":"\\boldsymbol{q}","\\bfr":"\\boldsymbol{r}","\\bfs":"\\boldsymbol{s}","\\bft":"\\boldsymbol{t}","\\bfu":"\\boldsymbol{u}","\\bfv":"\\boldsymbol{v}","\\bfw":"\\boldsymbol{w}","\\bfx":"\\boldsymbol{x}","\\bfy":"\\boldsymbol{y}","\\bfz":"\\boldsymbol{z}","\\bfA":"\\boldsymbol{A}","\\bfB":"\\boldsymbol{B}","\\bfC":"\\boldsymbol{C}","\\bfD":"\\boldsymbol{D}","\\bfE":"\\boldsymbol{E}","\\bfF":"\\boldsymbol{F}","\\bfG":"\\boldsymbol{G}","\\bfH":"\\boldsymbol{H}","\\bfI":"\\boldsymbol{I}","\\bfJ":"\\boldsymbol{J}","\\bfK":"\\boldsymbol{K}","\\bfL":"\\boldsymbol{L}","\\bfM":"\\boldsymbol{M}","\\bfN":"\\boldsymbol{N}","\\bfO":"\\boldsymbol{O}","\\bfP":"\\boldsymbol{P}","\\bfQ":"\\boldsymbol{Q}","\\bfR":"\\boldsymbol{R}","\\bfS":"\\boldsymbol{S}","\\bfT":"\\boldsymbol{T}","\\bfU":"\\boldsymbol{U}","\\bfV":"\\boldsymbol{V}","\\bfW":"\\boldsymbol{W}","\\bfX":"\\boldsymbol{X}","\\bfY":"\\boldsymbol{Y}","\\bfZ":"\\boldsymbol{Z}"}});</script></span> between the two points</p><span class="moose-katex-block-equation"><span class="moose-katex-equation table-cell" id="moose-equation-18d42080-f464-4377-a5f2-e33ce5a77f6d"></span><script>var element = document.getElementById("moose-equation-18d42080-f464-4377-a5f2-e33ce5a77f6d");katex.render("\\vec{r}_1 = (1, 1) \\quad \\text{and} \\quad \\vec{r}_2 = (5, 2)\\,.", element, {displayMode:true,throwOnError:false,macros:{"\\bs":"\\boldsymbol{#1}","\\grad":"\\bs{\\nabla}","\\divergence":"\\grad \\cdot","\\norm":"\\left\\lVert#1\\right\\rVert","\\abs":"\\left\\lvert#1\\right\\rvert","\\diff":"\\text{ d}#1","\\bfa":"\\boldsymbol{a}","\\bfb":"\\boldsymbol{b}","\\bfc":"\\boldsymbol{c}","\\bfd":"\\boldsymbol{d}","\\bfe":"\\boldsymbol{e}","\\bff":"\\boldsymbol{f}","\\bfg":"\\boldsymbol{g}","\\bfh":"\\boldsymbol{h}","\\bfi":"\\boldsymbol{i}","\\bfj":"\\boldsymbol{j}","\\bfk":"\\boldsymbol{k}","\\bfl":"\\boldsymbol{l}","\\bfm":"\\boldsymbol{m}","\\bfn":"\\boldsymbol{n}","\\bfo":"\\boldsymbol{o}","\\bfp":"\\boldsymbol{p}","\\bfq":"\\boldsymbol{q}","\\bfr":"\\boldsymbol{r}","\\bfs":"\\boldsymbol{s}","\\bft":"\\boldsymbol{t}","\\bfu":"\\boldsymbol{u}","\\bfv":"\\boldsymbol{v}","\\bfw":"\\boldsymbol{w}","\\bfx":"\\boldsymbol{x}","\\bfy":"\\boldsymbol{y}","\\bfz":"\\boldsymbol{z}","\\bfA":"\\boldsymbol{A}","\\bfB":"\\boldsymbol{B}","\\bfC":"\\boldsymbol{C}","\\bfD":"\\boldsymbol{D}","\\bfE":"\\boldsymbol{E}","\\bfF":"\\boldsymbol{F}","\\bfG":"\\boldsymbol{G}","\\bfH":"\\boldsymbol{H}","\\bfI":"\\boldsymbol{I}","\\bfJ":"\\boldsymbol{J}","\\bfK":"\\boldsymbol{K}","\\bfL":"\\boldsymbol{L}","\\bfM":"\\boldsymbol{M}","\\bfN":"\\boldsymbol{N}","\\bfO":"\\boldsymbol{O}","\\bfP":"\\boldsymbol{P}","\\bfQ":"\\boldsymbol{Q}","\\bfR":"\\boldsymbol{R}","\\bfS":"\\boldsymbol{S}","\\bfT":"\\boldsymbol{T}","\\bfU":"\\boldsymbol{U}","\\bfV":"\\boldsymbol{V}","\\bfW":"\\boldsymbol{W}","\\bfX":"\\boldsymbol{X}","\\bfY":"\\boldsymbol{Y}","\\bfZ":"\\boldsymbol{Z}"}});</script></span><p>The strong form of this system is</p><span class="moose-katex-block-equation"><span class="moose-katex-equation table-cell" id="moose-equation-d3abb943-d351-4a41-8169-c227bf510682"></span><script>var element = document.getElementById("moose-equation-d3abb943-d351-4a41-8169-c227bf510682");katex.render("-\\nabla \\cdot \\nabla u(\\vec{r}) = c \\delta_L(\\vec{r})\\,, \\quad x \\in [0, 5]\\,, \\quad y \\in [0, 5]\\,,", element, {displayMode:true,throwOnError:false,macros:{"\\bs":"\\boldsymbol{#1}","\\grad":"\\bs{\\nabla}","\\divergence":"\\grad \\cdot","\\norm":"\\left\\lVert#1\\right\\rVert","\\abs":"\\left\\lvert#1\\right\\rvert","\\diff":"\\text{ d}#1","\\bfa":"\\boldsymbol{a}","\\bfb":"\\boldsymbol{b}","\\bfc":"\\boldsymbol{c}","\\bfd":"\\boldsymbol{d}","\\bfe":"\\boldsymbol{e}","\\bff":"\\boldsymbol{f}","\\bfg":"\\boldsymbol{g}","\\bfh":"\\boldsymbol{h}","\\bfi":"\\boldsymbol{i}","\\bfj":"\\boldsymbol{j}","\\bfk":"\\boldsymbol{k}","\\bfl":"\\boldsymbol{l}","\\bfm":"\\boldsymbol{m}","\\bfn":"\\boldsymbol{n}","\\bfo":"\\boldsymbol{o}","\\bfp":"\\boldsymbol{p}","\\bfq":"\\boldsymbol{q}","\\bfr":"\\boldsymbol{r}","\\bfs":"\\boldsymbol{s}","\\bft":"\\boldsymbol{t}","\\bfu":"\\boldsymbol{u}","\\bfv":"\\boldsymbol{v}","\\bfw":"\\boldsymbol{w}","\\bfx":"\\boldsymbol{x}","\\bfy":"\\boldsymbol{y}","\\bfz":"\\boldsymbol{z}","\\bfA":"\\boldsymbol{A}","\\bfB":"\\boldsymbol{B}","\\bfC":"\\boldsymbol{C}","\\bfD":"\\boldsymbol{D}","\\bfE":"\\boldsymbol{E}","\\bfF":"\\boldsymbol{F}","\\bfG":"\\boldsymbol{G}","\\bfH":"\\boldsymbol{H}","\\bfI":"\\boldsymbol{I}","\\bfJ":"\\boldsymbol{J}","\\bfK":"\\boldsymbol{K}","\\bfL":"\\boldsymbol{L}","\\bfM":"\\boldsymbol{M}","\\bfN":"\\boldsymbol{N}","\\bfO":"\\boldsymbol{O}","\\bfP":"\\boldsymbol{P}","\\bfQ":"\\boldsymbol{Q}","\\bfR":"\\boldsymbol{R}","\\bfS":"\\boldsymbol{S}","\\bfT":"\\boldsymbol{T}","\\bfU":"\\boldsymbol{U}","\\bfV":"\\boldsymbol{V}","\\bfW":"\\boldsymbol{W}","\\bfX":"\\boldsymbol{X}","\\bfY":"\\boldsymbol{Y}","\\bfZ":"\\boldsymbol{Z}"}});</script></span><span class="moose-katex-block-equation"><span class="moose-katex-equation table-cell" id="moose-equation-c548bf07-5677-4c3c-903c-c1a2aa5298cd"></span><script>var element = document.getElementById("moose-equation-c548bf07-5677-4c3c-903c-c1a2aa5298cd");katex.render("u(0, y) = 0\\,, \\quad y \\in [0, 5]\\,,", element, {displayMode:true,throwOnError:false,macros:{"\\bs":"\\boldsymbol{#1}","\\grad":"\\bs{\\nabla}","\\divergence":"\\grad \\cdot","\\norm":"\\left\\lVert#1\\right\\rVert","\\abs":"\\left\\lvert#1\\right\\rvert","\\diff":"\\text{ d}#1","\\bfa":"\\boldsymbol{a}","\\bfb":"\\boldsymbol{b}","\\bfc":"\\boldsymbol{c}","\\bfd":"\\boldsymbol{d}","\\bfe":"\\boldsymbol{e}","\\bff":"\\boldsymbol{f}","\\bfg":"\\boldsymbol{g}","\\bfh":"\\boldsymbol{h}","\\bfi":"\\boldsymbol{i}","\\bfj":"\\boldsymbol{j}","\\bfk":"\\boldsymbol{k}","\\bfl":"\\boldsymbol{l}","\\bfm":"\\boldsymbol{m}","\\bfn":"\\boldsymbol{n}","\\bfo":"\\boldsymbol{o}","\\bfp":"\\boldsymbol{p}","\\bfq":"\\boldsymbol{q}","\\bfr":"\\boldsymbol{r}","\\bfs":"\\boldsymbol{s}","\\bft":"\\boldsymbol{t}","\\bfu":"\\boldsymbol{u}","\\bfv":"\\boldsymbol{v}","\\bfw":"\\boldsymbol{w}","\\bfx":"\\boldsymbol{x}","\\bfy":"\\boldsymbol{y}","\\bfz":"\\boldsymbol{z}","\\bfA":"\\boldsymbol{A}","\\bfB":"\\boldsymbol{B}","\\bfC":"\\boldsymbol{C}","\\bfD":"\\boldsymbol{D}","\\bfE":"\\boldsymbol{E}","\\bfF":"\\boldsymbol{F}","\\bfG":"\\boldsymbol{G}","\\bfH":"\\boldsymbol{H}","\\bfI":"\\boldsymbol{I}","\\bfJ":"\\boldsymbol{J}","\\bfK":"\\boldsymbol{K}","\\bfL":"\\boldsymbol{L}","\\bfM":"\\boldsymbol{M}","\\bfN":"\\boldsymbol{N}","\\bfO":"\\boldsymbol{O}","\\bfP":"\\boldsymbol{P}","\\bfQ":"\\boldsymbol{Q}","\\bfR":"\\boldsymbol{R}","\\bfS":"\\boldsymbol{S}","\\bfT":"\\boldsymbol{T}","\\bfU":"\\boldsymbol{U}","\\bfV":"\\boldsymbol{V}","\\bfW":"\\boldsymbol{W}","\\bfX":"\\boldsymbol{X}","\\bfY":"\\boldsymbol{Y}","\\bfZ":"\\boldsymbol{Z}"}});</script></span><span class="moose-katex-block-equation"><span class="moose-katex-equation table-cell" id="moose-equation-8b47550f-ac92-4cfc-aabf-6e1b44e0b216"></span><script>var element = document.getElementById("moose-equation-8b47550f-ac92-4cfc-aabf-6e1b44e0b216");katex.render("u(5, y) = 1\\,, \\quad y \\in [0, 5]\\,,", element, {displayMode:true,throwOnError:false,macros:{"\\bs":"\\boldsymbol{#1}","\\grad":"\\bs{\\nabla}","\\divergence":"\\grad \\cdot","\\norm":"\\left\\lVert#1\\right\\rVert","\\abs":"\\left\\lvert#1\\right\\rvert","\\diff":"\\text{ d}#1","\\bfa":"\\boldsymbol{a}","\\bfb":"\\boldsymbol{b}","\\bfc":"\\boldsymbol{c}","\\bfd":"\\boldsymbol{d}","\\bfe":"\\boldsymbol{e}","\\bff":"\\boldsymbol{f}","\\bfg":"\\boldsymbol{g}","\\bfh":"\\boldsymbol{h}","\\bfi":"\\boldsymbol{i}","\\bfj":"\\boldsymbol{j}","\\bfk":"\\boldsymbol{k}","\\bfl":"\\boldsymbol{l}","\\bfm":"\\boldsymbol{m}","\\bfn":"\\boldsymbol{n}","\\bfo":"\\boldsymbol{o}","\\bfp":"\\boldsymbol{p}","\\bfq":"\\boldsymbol{q}","\\bfr":"\\boldsymbol{r}","\\bfs":"\\boldsymbol{s}","\\bft":"\\boldsymbol{t}","\\bfu":"\\boldsymbol{u}","\\bfv":"\\boldsymbol{v}","\\bfw":"\\boldsymbol{w}","\\bfx":"\\boldsymbol{x}","\\bfy":"\\boldsymbol{y}","\\bfz":"\\boldsymbol{z}","\\bfA":"\\boldsymbol{A}","\\bfB":"\\boldsymbol{B}","\\bfC":"\\boldsymbol{C}","\\bfD":"\\boldsymbol{D}","\\bfE":"\\boldsymbol{E}","\\bfF":"\\boldsymbol{F}","\\bfG":"\\boldsymbol{G}","\\bfH":"\\boldsymbol{H}","\\bfI":"\\boldsymbol{I}","\\bfJ":"\\boldsymbol{J}","\\bfK":"\\boldsymbol{K}","\\bfL":"\\boldsymbol{L}","\\bfM":"\\boldsymbol{M}","\\bfN":"\\boldsymbol{N}","\\bfO":"\\boldsymbol{O}","\\bfP":"\\boldsymbol{P}","\\bfQ":"\\boldsymbol{Q}","\\bfR":"\\boldsymbol{R}","\\bfS":"\\boldsymbol{S}","\\bfT":"\\boldsymbol{T}","\\bfU":"\\boldsymbol{U}","\\bfV":"\\boldsymbol{V}","\\bfW":"\\boldsymbol{W}","\\bfX":"\\boldsymbol{X}","\\bfY":"\\boldsymbol{Y}","\\bfZ":"\\boldsymbol{Z}"}});</script></span><p>where</p><span class="moose-katex-block-equation"><span class="moose-katex-equation table-cell" id="moose-equation-0370fc1c-f0b5-459f-9ea4-b3abd100b6f3"></span><script>var element = document.getElementById("moose-equation-0370fc1c-f0b5-459f-9ea4-b3abd100b6f3");katex.render("\\delta_L(\\vec{r}) = \\begin{cases} 1\\,, & \\vec{r} \\in L \\\\ 0\\,, & \\text{otherwise} \\end{cases}\\,,\\quad L = \\{\\vec{r}_1 + t\\vec{r}_2 \\mid t \\in [0, 1]\\}\\,.", element, {displayMode:true,throwOnError:false,macros:{"\\bs":"\\boldsymbol{#1}","\\grad":"\\bs{\\nabla}","\\divergence":"\\grad \\cdot","\\norm":"\\left\\lVert#1\\right\\rVert","\\abs":"\\left\\lvert#1\\right\\rvert","\\diff":"\\text{ d}#1","\\bfa":"\\boldsymbol{a}","\\bfb":"\\boldsymbol{b}","\\bfc":"\\boldsymbol{c}","\\bfd":"\\boldsymbol{d}","\\bfe":"\\boldsymbol{e}","\\bff":"\\boldsymbol{f}","\\bfg":"\\boldsymbol{g}","\\bfh":"\\boldsymbol{h}","\\bfi":"\\boldsymbol{i}","\\bfj":"\\boldsymbol{j}","\\bfk":"\\boldsymbol{k}","\\bfl":"\\boldsymbol{l}","\\bfm":"\\boldsymbol{m}","\\bfn":"\\boldsymbol{n}","\\bfo":"\\boldsymbol{o}","\\bfp":"\\boldsymbol{p}","\\bfq":"\\boldsymbol{q}","\\bfr":"\\boldsymbol{r}","\\bfs":"\\boldsymbol{s}","\\bft":"\\boldsymbol{t}","\\bfu":"\\boldsymbol{u}","\\bfv":"\\boldsymbol{v}","\\bfw":"\\boldsymbol{w}","\\bfx":"\\boldsymbol{x}","\\bfy":"\\boldsymbol{y}","\\bfz":"\\boldsymbol{z}","\\bfA":"\\boldsymbol{A}","\\bfB":"\\boldsymbol{B}","\\bfC":"\\boldsymbol{C}","\\bfD":"\\boldsymbol{D}","\\bfE":"\\boldsymbol{E}","\\bfF":"\\boldsymbol{F}","\\bfG":"\\boldsymbol{G}","\\bfH":"\\boldsymbol{H}","\\bfI":"\\boldsymbol{I}","\\bfJ":"\\boldsymbol{J}","\\bfK":"\\boldsymbol{K}","\\bfL":"\\boldsymbol{L}","\\bfM":"\\boldsymbol{M}","\\bfN":"\\boldsymbol{N}","\\bfO":"\\boldsymbol{O}","\\bfP":"\\boldsymbol{P}","\\bfQ":"\\boldsymbol{Q}","\\bfR":"\\boldsymbol{R}","\\bfS":"\\boldsymbol{S}","\\bfT":"\\boldsymbol{T}","\\bfU":"\\boldsymbol{U}","\\bfV":"\\boldsymbol{V}","\\bfW":"\\boldsymbol{W}","\\bfX":"\\boldsymbol{X}","\\bfY":"\\boldsymbol{Y}","\\bfZ":"\\boldsymbol{Z}"}});</script></span><section id="7fe57aae-7c53-40e4-a616-7c15bb2da395" data-section-level="3" data-section-text="Defining the Study"><h3 id="defining-the-study">Defining the Study</h3><p>A <a href="../../../source/userobjects/RepeatableRayStudy.html">RepeatableRayStudy</a> is defined that generates and executes the rays that compute the line source:</p><pre class="moose-pre" style="max-height:350px;"><code class="language-text">[UserObjects/study]
+  type = RepeatableRayStudy
+  names = &#x27;line_source_ray&#x27;
+  start_points = &#x27;1 1 0&#x27;
+  end_points = &#x27;5 2 0&#x27;
+  execute_on = PRE_KERNELS # must be set for line sources!
+[]
+</code></pre><a class="moose-source-filename tooltipped modal-trigger" href="#5cda83aa-e827-4f50-9ecf-9b0cd70956cf">(moose/modules/ray_tracing/test/tests/raykernels/line_source_ray_kernel/simple_diffusion_line_source.i)</a><p>The <code>study</code> object defines a single <a href="../../../source/raytracing/Ray.html">Ray</a> named <code>line_source_ray</code> that starts at (1, 1) and ends at (5, 2) to be executed on <code>PRE_KERNELS</code>.</p><div class="card moose-alert moose-alert-note"><div class="card-title moose-alert-title"><i class="material-icons moose-inline-icon">comment</i><span class="moose-alert-title-brand">note</span></div><div class="card-content"><div class="moose-alert-content"><p>You must set <code>execute_on = PRE_KERNELS</code> for any studies that have <a href="../../../syntax/RayKernels/index.html">RayKernels</a> that contribute to residuals and Jacobians.</p></div></div></div></section><section id="d7882422-b6b5-4338-9f78-9c16c7410fe8" data-section-level="3" data-section-text="Defining the RayKernel"><h3 id="defining-the-raykernel">Defining the RayKernel</h3><p><a href="../../../syntax/RayKernels/index.html">RayKernels</a> are objects that are executed on the segments of the rays. In this case, we wish to add a line source so we will define a <a href="../../../source/raykernels/LineSourceRayKernel.html">LineSourceRayKernel</a>:</p><pre class="moose-pre" style="max-height:350px;"><code class="language-text">[RayKernels/line_source]
+  type = LineSourceRayKernel
+  variable = u
+  value = 5
+[]
+
+# This isn&#x27;t used in the test but can be enabled
+# for pretty pictures as is used in an example!
+</code></pre><a class="moose-source-filename tooltipped modal-trigger" href="#e3c2dd5e-ebe0-48d4-ad6d-0e761e26d162">(moose/modules/ray_tracing/test/tests/raykernels/line_source_ray_kernel/simple_diffusion_line_source.i)</a><p>The <code>line_source</code> <a href="../../../source/raykernels/LineSourceRayKernel.html">LineSourceRayKernel</a> contributes to the variable <code>u</code> for <a href="../../../source/raytracing/Ray.html">Ray</a> <code>line_source_ray</code> with a value of 5.</p></section><section id="8d2aca99-502a-465e-ac9e-632c91c0a26d" data-section-level="3" data-section-text="Result"><h3 id="result">Result</h3><p>The visualized result follows in <a href="#result">Figure 1</a>.</p><div class="row"><div class="col s12 m6 l6"><div class="card moose-float" id="result"><div class="card-content"><picture class="materialboxed moose-image"><img src="../../../large_media/ray_tracing/simple_diffusion_line_source.png"></img></picture><p class="moose-caption"><span class="moose-caption-heading">Figure 1: </span><span class="moose-caption-text" id="result">Simple diffusion line source example result.</span></p></div></div></div><div class="col s12 m6 l6"><div class="card moose-float" id="result-mesh"><div class="card-content"><picture class="materialboxed moose-image"><img src="../../../large_media/ray_tracing/simple_diffusion_line_source_mesh.png"></img></picture><p class="moose-caption"><span class="moose-caption-heading">Figure 2: </span><span class="moose-caption-text" id="result-mesh">The result pictured in <a href="#result">Figure 1</a> with a mesh overlay.</span></p></div></div></div></div><p>Just for the purposes of producing a more appealing picture, let&#x27;s add some adaptivity to the mix to refine the region around the ray.</p><p>Take note of the <code>[Adaptivity]</code> block in the input file:</p><pre class="moose-pre" style="max-height:350px;"><code class="language-text">[Adaptivity]
+  steps = 0 # 5
+  marker = marker
+  initial_marker = marker
+  max_h_level = 5
+  [Indicators/indicator]
+    type = GradientJumpIndicator
+    variable = u
+  []
+  [Markers/marker]
+    type = ErrorFractionMarker
+    indicator = indicator
+    coarsen = 0.1
+    refine = 0.5
+  []
+[]
+</code></pre><a class="moose-source-filename tooltipped modal-trigger" href="#5d4a871f-8a77-4e8c-a48e-55488da5a365">(moose/modules/ray_tracing/test/tests/raykernels/line_source_ray_kernel/simple_diffusion_line_source.i)</a><p>Setting the number of adaptivity steps to 5 via a command line argument, i.e.:</p><pre class="moose-pre"><code class="language-text">
+./ray_tracing-opt -i test/tests/raykernels/line_source_ray_kernel/simple_diffusion_line_source.i Adaptivity/steps=5
+</code></pre><p>leads to the well-refined and visually satisfying result below in <a href="#result-adaptivity">Figure 3</a>.</p><div class="row"><div class="col s12 m6 l6"><div class="card moose-float" id="result-adaptivity"><div class="card-content"><picture class="materialboxed moose-image"><img src="../../../large_media/ray_tracing/simple_diffusion_line_source_adaptivity.png"></img></picture><p class="moose-caption"><span class="moose-caption-heading">Figure 3: </span><span class="moose-caption-text" id="result-adaptivity">Simple diffusion line source example result with adaptivity.</span></p></div></div></div><div class="col s12 m6 l6"><div class="card moose-float" id="result-adaptivity-mesh"><div class="card-content"><picture class="materialboxed moose-image"><img src="../../../large_media/ray_tracing/simple_diffusion_line_source_adaptivity_mesh.png"></img></picture><p class="moose-caption"><span class="moose-caption-heading">Figure 4: </span><span class="moose-caption-text" id="result-adaptivity-mesh">The result pictured in <a href="#result-adaptivity">Figure 3</a> with a mesh overlay.</span></p></div></div></div></div></section></section></section><div class="moose-modal modal" id="ccd4abd7-e8dc-407d-8586-18e600a22bf0"><div class="modal-content"><h4>(moose/modules/ray_tracing/test/tests/raykernels/line_source_ray_kernel/simple_diffusion_line_source.i)</h4><pre class="moose-pre"><code class="language-text">[Mesh]
+  [gmg]
+    type = GeneratedMeshGenerator
+    dim = 2
+    nx = 10
+    ny = 10
+    xmax = 5
+    ymax = 5
+  []
+[]
+
+[Variables/u]
+[]
+
+[Kernels/diff]
+  type = Diffusion
+  variable = u
+[]
+
+[BCs]
+  [left]
+    type = DirichletBC
+    variable = u
+    boundary = left
+    value = 0
+  []
+  [right]
+    type = DirichletBC
+    variable = u
+    boundary = right
+    value = 1
+  []
+[]
+
+[Executioner]
+  type = Steady
+  solve_type = &#x27;PJFNK&#x27;
+  petsc_options_iname = &#x27;-pc_type -pc_hypre_type&#x27;
+  petsc_options_value = &#x27;hypre boomeramg&#x27;
+[]
+
+[Outputs]
+  exodus = true
+[]
+
+[UserObjects/study]
+  type = RepeatableRayStudy
+  names = &#x27;line_source_ray&#x27;
+  start_points = &#x27;1 1 0&#x27;
+  end_points = &#x27;5 2 0&#x27;
+  execute_on = PRE_KERNELS # must be set for line sources!
+[]
+
+[RayKernels/line_source]
+  type = LineSourceRayKernel
+  variable = u
+  value = 5
+[]
+
+# This isn&#x27;t used in the test but can be enabled
+# for pretty pictures as is used in an example!
+[Adaptivity]
+  steps = 0 # 5
+  marker = marker
+  initial_marker = marker
+  max_h_level = 5
+  [Indicators/indicator]
+    type = GradientJumpIndicator
+    variable = u
+  []
+  [Markers/marker]
+    type = ErrorFractionMarker
+    indicator = indicator
+    coarsen = 0.1
+    refine = 0.5
+  []
+[]
+</code></pre></div><div class="modal-footer"><a class="modal-close btn-flat">Close</a></div></div><div class="moose-modal modal" id="5cda83aa-e827-4f50-9ecf-9b0cd70956cf"><div class="modal-content"><h4>(moose/modules/ray_tracing/test/tests/raykernels/line_source_ray_kernel/simple_diffusion_line_source.i)</h4><pre class="moose-pre"><code class="language-text">[Mesh]
+  [gmg]
+    type = GeneratedMeshGenerator
+    dim = 2
+    nx = 10
+    ny = 10
+    xmax = 5
+    ymax = 5
+  []
+[]
+
+[Variables/u]
+[]
+
+[Kernels/diff]
+  type = Diffusion
+  variable = u
+[]
+
+[BCs]
+  [left]
+    type = DirichletBC
+    variable = u
+    boundary = left
+    value = 0
+  []
+  [right]
+    type = DirichletBC
+    variable = u
+    boundary = right
+    value = 1
+  []
+[]
+
+[Executioner]
+  type = Steady
+  solve_type = &#x27;PJFNK&#x27;
+  petsc_options_iname = &#x27;-pc_type -pc_hypre_type&#x27;
+  petsc_options_value = &#x27;hypre boomeramg&#x27;
+[]
+
+[Outputs]
+  exodus = true
+[]
+
+[UserObjects/study]
+  type = RepeatableRayStudy
+  names = &#x27;line_source_ray&#x27;
+  start_points = &#x27;1 1 0&#x27;
+  end_points = &#x27;5 2 0&#x27;
+  execute_on = PRE_KERNELS # must be set for line sources!
+[]
+
+[RayKernels/line_source]
+  type = LineSourceRayKernel
+  variable = u
+  value = 5
+[]
+
+# This isn&#x27;t used in the test but can be enabled
+# for pretty pictures as is used in an example!
+[Adaptivity]
+  steps = 0 # 5
+  marker = marker
+  initial_marker = marker
+  max_h_level = 5
+  [Indicators/indicator]
+    type = GradientJumpIndicator
+    variable = u
+  []
+  [Markers/marker]
+    type = ErrorFractionMarker
+    indicator = indicator
+    coarsen = 0.1
+    refine = 0.5
+  []
+[]
+</code></pre></div><div class="modal-footer"><a class="modal-close btn-flat">Close</a></div></div><div class="moose-modal modal" id="e3c2dd5e-ebe0-48d4-ad6d-0e761e26d162"><div class="modal-content"><h4>(moose/modules/ray_tracing/test/tests/raykernels/line_source_ray_kernel/simple_diffusion_line_source.i)</h4><pre class="moose-pre"><code class="language-text">[Mesh]
+  [gmg]
+    type = GeneratedMeshGenerator
+    dim = 2
+    nx = 10
+    ny = 10
+    xmax = 5
+    ymax = 5
+  []
+[]
+
+[Variables/u]
+[]
+
+[Kernels/diff]
+  type = Diffusion
+  variable = u
+[]
+
+[BCs]
+  [left]
+    type = DirichletBC
+    variable = u
+    boundary = left
+    value = 0
+  []
+  [right]
+    type = DirichletBC
+    variable = u
+    boundary = right
+    value = 1
+  []
+[]
+
+[Executioner]
+  type = Steady
+  solve_type = &#x27;PJFNK&#x27;
+  petsc_options_iname = &#x27;-pc_type -pc_hypre_type&#x27;
+  petsc_options_value = &#x27;hypre boomeramg&#x27;
+[]
+
+[Outputs]
+  exodus = true
+[]
+
+[UserObjects/study]
+  type = RepeatableRayStudy
+  names = &#x27;line_source_ray&#x27;
+  start_points = &#x27;1 1 0&#x27;
+  end_points = &#x27;5 2 0&#x27;
+  execute_on = PRE_KERNELS # must be set for line sources!
+[]
+
+[RayKernels/line_source]
+  type = LineSourceRayKernel
+  variable = u
+  value = 5
+[]
+
+# This isn&#x27;t used in the test but can be enabled
+# for pretty pictures as is used in an example!
+[Adaptivity]
+  steps = 0 # 5
+  marker = marker
+  initial_marker = marker
+  max_h_level = 5
+  [Indicators/indicator]
+    type = GradientJumpIndicator
+    variable = u
+  []
+  [Markers/marker]
+    type = ErrorFractionMarker
+    indicator = indicator
+    coarsen = 0.1
+    refine = 0.5
+  []
+[]
+</code></pre></div><div class="modal-footer"><a class="modal-close btn-flat">Close</a></div></div><div class="moose-modal modal" id="5d4a871f-8a77-4e8c-a48e-55488da5a365"><div class="modal-content"><h4>(moose/modules/ray_tracing/test/tests/raykernels/line_source_ray_kernel/simple_diffusion_line_source.i)</h4><pre class="moose-pre"><code class="language-text">[Mesh]
+  [gmg]
+    type = GeneratedMeshGenerator
+    dim = 2
+    nx = 10
+    ny = 10
+    xmax = 5
+    ymax = 5
+  []
+[]
+
+[Variables/u]
+[]
+
+[Kernels/diff]
+  type = Diffusion
+  variable = u
+[]
+
+[BCs]
+  [left]
+    type = DirichletBC
+    variable = u
+    boundary = left
+    value = 0
+  []
+  [right]
+    type = DirichletBC
+    variable = u
+    boundary = right
+    value = 1
+  []
+[]
+
+[Executioner]
+  type = Steady
+  solve_type = &#x27;PJFNK&#x27;
+  petsc_options_iname = &#x27;-pc_type -pc_hypre_type&#x27;
+  petsc_options_value = &#x27;hypre boomeramg&#x27;
+[]
+
+[Outputs]
+  exodus = true
+[]
+
+[UserObjects/study]
+  type = RepeatableRayStudy
+  names = &#x27;line_source_ray&#x27;
+  start_points = &#x27;1 1 0&#x27;
+  end_points = &#x27;5 2 0&#x27;
+  execute_on = PRE_KERNELS # must be set for line sources!
+[]
+
+[RayKernels/line_source]
+  type = LineSourceRayKernel
+  variable = u
+  value = 5
+[]
+
+# This isn&#x27;t used in the test but can be enabled
+# for pretty pictures as is used in an example!
+[Adaptivity]
+  steps = 0 # 5
+  marker = marker
+  initial_marker = marker
+  max_h_level = 5
+  [Indicators/indicator]
+    type = GradientJumpIndicator
+    variable = u
+  []
+  [Markers/marker]
+    type = ErrorFractionMarker
+    indicator = indicator
+    coarsen = 0.1
+    refine = 0.5
+  []
+[]
+</code></pre></div><div class="modal-footer"><a class="modal-close btn-flat">Close</a></div></div></div><div class="col hide-on-med-and-down l2"><div class="toc-wrapper pin-top"><ul class="section table-of-contents"><li><a href="#717abc9c-3a4b-4b8f-bd85-6c53fe294f83" class="tooltipped" data-position="left" data-tooltip="Example">Example</a></li></ul></div></div></div></div></main></div></body><script type="text/javascript" src="../../../contrib/materialize/materialize.min.js"></script><script type="text/javascript" src="../../../contrib/clipboard/clipboard.min.js"></script><script type="text/javascript" src="../../../contrib/prism/prism.min.js"></script><script type="text/javascript" src="../../../js/init.js"></script><script type="text/javascript" src="../../../js/navigation.js"></script><script type="text/javascript" src="../../../contrib/fuse/fuse.min.js"></script><script type="text/javascript" src="../../../js/search_index.js"></script><script type="text/javascript" src="../../../js/sqa_moose.js"></script>

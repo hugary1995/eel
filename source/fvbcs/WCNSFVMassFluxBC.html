@@ -1,0 +1,405 @@
+<!DOCTYPE html><head><meta charset="UTF-8"><title>WCNSFVMassFluxBC | Eel</title><link href="../../contrib/materialize/materialize.min.css" type="text/css" rel="stylesheet" media="screen,projection"></link><link href="../../contrib/prism/prism.min.css" type="text/css" rel="stylesheet"></link><link href="../../css/moose.css" type="text/css" rel="stylesheet"></link><link href="../../css/devel_moose.css" type="text/css" rel="stylesheet"></link><link href="../../css/alert_moose.css" type="text/css" rel="stylesheet"></link><link href="../../css/content_moose.css" type="text/css" rel="stylesheet"></link><link href="../../css/sqa_moose.css" type="text/css" rel="stylesheet"></link><link href="../../css/civet_moose.css" type="text/css" rel="stylesheet"></link><link href="../../contrib/katex/katex.min.css" type="text/css" rel="stylesheet"></link><link href="../../css/katex_moose.css" type="text/css" rel="stylesheet"></link><script type="text/javascript" src="../../contrib/jquery/jquery.min.js"></script><script type="text/javascript" src="../../contrib/katex/katex.min.js"></script></head><body><div class="page-wrap"><header><nav><div class="nav-wrapper container"><a href="../../index.html" class="left moose-logo hide-on-med-and-down" id="home-button">Eel</a><a href="https://github.com/hugary1995/eel" class="right"><img src="../../media/framework/github-logo.png" class="github-mark"></img><img src="../../media/framework/github-mark.png" class="github-logo"></img></a><ul class="right hide-on-med-and-down"><li><a href="../../eel.html">Documentation</a></li></ul><a href="#" class="sidenav-trigger" data-target="bd70e3f5-b83b-4335-a161-f2b2ca2c1045"><i class="material-icons">menu</i></a><ul class="sidenav" id="bd70e3f5-b83b-4335-a161-f2b2ca2c1045"><li><a href="../../eel.html">Documentation</a></li></ul><a href="#moose-search" class="modal-trigger"><i class="material-icons">search</i></a></div></nav><div class="modal modal-fixed-footer moose-search-modal" id="moose-search"><div class="modal-content container moose-search-modal-content"><div class="row"><div class="col l12"><div class="input-field"><input type_="text" onkeyup="mooseSearch()" placeholder="/index.md" id="moose-search-box"></input></div></div><div><div class="col s12" id="moose-search-results"></div></div></div></div><div class="modal-footer"><a href="#!" class="modal-close btn-flat">Close</a></div></div></header><main class="main"><div class="container"><div class="row"><div class="col hide-on-med-and-down l12"><nav class="breadcrumb-nav"><div class="nav-wrapper"><a href=".." class="breadcrumb">source</a><span class="breadcrumb">fvbcs</span><a href="#" class="breadcrumb">WCNSFVMassFluxBC</a></div></nav></div></div><div class="row"><div class="moose-content col s12 m12 l10"><section id="98bf9eea-f786-4ef5-910e-9bc8497d1646" data-section-level="1" data-section-text="WCNSFVMassFluxBC"><h1 id="wcnsfvmassfluxbc">WCNSFVMassFluxBC</h1><p>Flux boundary conditions for mass advection.</p><p>The mass flux is:</p><span class="moose-katex-block-equation"><span class="moose-katex-equation table-cell" id="moose-equation-bdeb345a-de13-4d30-8b64-6c4a9b6240d3"></span><script>var element = document.getElementById("moose-equation-bdeb345a-de13-4d30-8b64-6c4a9b6240d3");katex.render("\\phi = \\rho v = \\dfrac{\\dot{m}}{A}", element, {displayMode:true,throwOnError:false,macros:{"\\bs":"\\boldsymbol{#1}","\\grad":"\\bs{\\nabla}","\\divergence":"\\grad \\cdot","\\norm":"\\left\\lVert#1\\right\\rVert","\\abs":"\\left\\lvert#1\\right\\rvert","\\diff":"\\text{ d}#1","\\bfa":"\\boldsymbol{a}","\\bfb":"\\boldsymbol{b}","\\bfc":"\\boldsymbol{c}","\\bfd":"\\boldsymbol{d}","\\bfe":"\\boldsymbol{e}","\\bff":"\\boldsymbol{f}","\\bfg":"\\boldsymbol{g}","\\bfh":"\\boldsymbol{h}","\\bfi":"\\boldsymbol{i}","\\bfj":"\\boldsymbol{j}","\\bfk":"\\boldsymbol{k}","\\bfl":"\\boldsymbol{l}","\\bfm":"\\boldsymbol{m}","\\bfn":"\\boldsymbol{n}","\\bfo":"\\boldsymbol{o}","\\bfp":"\\boldsymbol{p}","\\bfq":"\\boldsymbol{q}","\\bfr":"\\boldsymbol{r}","\\bfs":"\\boldsymbol{s}","\\bft":"\\boldsymbol{t}","\\bfu":"\\boldsymbol{u}","\\bfv":"\\boldsymbol{v}","\\bfw":"\\boldsymbol{w}","\\bfx":"\\boldsymbol{x}","\\bfy":"\\boldsymbol{y}","\\bfz":"\\boldsymbol{z}","\\bfA":"\\boldsymbol{A}","\\bfB":"\\boldsymbol{B}","\\bfC":"\\boldsymbol{C}","\\bfD":"\\boldsymbol{D}","\\bfE":"\\boldsymbol{E}","\\bfF":"\\boldsymbol{F}","\\bfG":"\\boldsymbol{G}","\\bfH":"\\boldsymbol{H}","\\bfI":"\\boldsymbol{I}","\\bfJ":"\\boldsymbol{J}","\\bfK":"\\boldsymbol{K}","\\bfL":"\\boldsymbol{L}","\\bfM":"\\boldsymbol{M}","\\bfN":"\\boldsymbol{N}","\\bfO":"\\boldsymbol{O}","\\bfP":"\\boldsymbol{P}","\\bfQ":"\\boldsymbol{Q}","\\bfR":"\\boldsymbol{R}","\\bfS":"\\boldsymbol{S}","\\bfT":"\\boldsymbol{T}","\\bfU":"\\boldsymbol{U}","\\bfV":"\\boldsymbol{V}","\\bfW":"\\boldsymbol{W}","\\bfX":"\\boldsymbol{X}","\\bfY":"\\boldsymbol{Y}","\\bfZ":"\\boldsymbol{Z}"}});</script></span><p>with <span class="moose-katex-inline-equation" id="moose-equation-6cb48949-12da-461a-ad2a-82c4c75a650b"><script>var element = document.getElementById("moose-equation-6cb48949-12da-461a-ad2a-82c4c75a650b");katex.render("\\phi", element, {displayMode:false,throwOnError:false,macros:{"\\bs":"\\boldsymbol{#1}","\\grad":"\\bs{\\nabla}","\\divergence":"\\grad \\cdot","\\norm":"\\left\\lVert#1\\right\\rVert","\\abs":"\\left\\lvert#1\\right\\rvert","\\diff":"\\text{ d}#1","\\bfa":"\\boldsymbol{a}","\\bfb":"\\boldsymbol{b}","\\bfc":"\\boldsymbol{c}","\\bfd":"\\boldsymbol{d}","\\bfe":"\\boldsymbol{e}","\\bff":"\\boldsymbol{f}","\\bfg":"\\boldsymbol{g}","\\bfh":"\\boldsymbol{h}","\\bfi":"\\boldsymbol{i}","\\bfj":"\\boldsymbol{j}","\\bfk":"\\boldsymbol{k}","\\bfl":"\\boldsymbol{l}","\\bfm":"\\boldsymbol{m}","\\bfn":"\\boldsymbol{n}","\\bfo":"\\boldsymbol{o}","\\bfp":"\\boldsymbol{p}","\\bfq":"\\boldsymbol{q}","\\bfr":"\\boldsymbol{r}","\\bfs":"\\boldsymbol{s}","\\bft":"\\boldsymbol{t}","\\bfu":"\\boldsymbol{u}","\\bfv":"\\boldsymbol{v}","\\bfw":"\\boldsymbol{w}","\\bfx":"\\boldsymbol{x}","\\bfy":"\\boldsymbol{y}","\\bfz":"\\boldsymbol{z}","\\bfA":"\\boldsymbol{A}","\\bfB":"\\boldsymbol{B}","\\bfC":"\\boldsymbol{C}","\\bfD":"\\boldsymbol{D}","\\bfE":"\\boldsymbol{E}","\\bfF":"\\boldsymbol{F}","\\bfG":"\\boldsymbol{G}","\\bfH":"\\boldsymbol{H}","\\bfI":"\\boldsymbol{I}","\\bfJ":"\\boldsymbol{J}","\\bfK":"\\boldsymbol{K}","\\bfL":"\\boldsymbol{L}","\\bfM":"\\boldsymbol{M}","\\bfN":"\\boldsymbol{N}","\\bfO":"\\boldsymbol{O}","\\bfP":"\\boldsymbol{P}","\\bfQ":"\\boldsymbol{Q}","\\bfR":"\\boldsymbol{R}","\\bfS":"\\boldsymbol{S}","\\bfT":"\\boldsymbol{T}","\\bfU":"\\boldsymbol{U}","\\bfV":"\\boldsymbol{V}","\\bfW":"\\boldsymbol{W}","\\bfX":"\\boldsymbol{X}","\\bfY":"\\boldsymbol{Y}","\\bfZ":"\\boldsymbol{Z}"}});</script></span> the mass flux, <span class="moose-katex-inline-equation" id="moose-equation-5d52d129-c7bd-4bdb-875e-6614aa9f625a"><script>var element = document.getElementById("moose-equation-5d52d129-c7bd-4bdb-875e-6614aa9f625a");katex.render("\\rho", element, {displayMode:false,throwOnError:false,macros:{"\\bs":"\\boldsymbol{#1}","\\grad":"\\bs{\\nabla}","\\divergence":"\\grad \\cdot","\\norm":"\\left\\lVert#1\\right\\rVert","\\abs":"\\left\\lvert#1\\right\\rvert","\\diff":"\\text{ d}#1","\\bfa":"\\boldsymbol{a}","\\bfb":"\\boldsymbol{b}","\\bfc":"\\boldsymbol{c}","\\bfd":"\\boldsymbol{d}","\\bfe":"\\boldsymbol{e}","\\bff":"\\boldsymbol{f}","\\bfg":"\\boldsymbol{g}","\\bfh":"\\boldsymbol{h}","\\bfi":"\\boldsymbol{i}","\\bfj":"\\boldsymbol{j}","\\bfk":"\\boldsymbol{k}","\\bfl":"\\boldsymbol{l}","\\bfm":"\\boldsymbol{m}","\\bfn":"\\boldsymbol{n}","\\bfo":"\\boldsymbol{o}","\\bfp":"\\boldsymbol{p}","\\bfq":"\\boldsymbol{q}","\\bfr":"\\boldsymbol{r}","\\bfs":"\\boldsymbol{s}","\\bft":"\\boldsymbol{t}","\\bfu":"\\boldsymbol{u}","\\bfv":"\\boldsymbol{v}","\\bfw":"\\boldsymbol{w}","\\bfx":"\\boldsymbol{x}","\\bfy":"\\boldsymbol{y}","\\bfz":"\\boldsymbol{z}","\\bfA":"\\boldsymbol{A}","\\bfB":"\\boldsymbol{B}","\\bfC":"\\boldsymbol{C}","\\bfD":"\\boldsymbol{D}","\\bfE":"\\boldsymbol{E}","\\bfF":"\\boldsymbol{F}","\\bfG":"\\boldsymbol{G}","\\bfH":"\\boldsymbol{H}","\\bfI":"\\boldsymbol{I}","\\bfJ":"\\boldsymbol{J}","\\bfK":"\\boldsymbol{K}","\\bfL":"\\boldsymbol{L}","\\bfM":"\\boldsymbol{M}","\\bfN":"\\boldsymbol{N}","\\bfO":"\\boldsymbol{O}","\\bfP":"\\boldsymbol{P}","\\bfQ":"\\boldsymbol{Q}","\\bfR":"\\boldsymbol{R}","\\bfS":"\\boldsymbol{S}","\\bfT":"\\boldsymbol{T}","\\bfU":"\\boldsymbol{U}","\\bfV":"\\boldsymbol{V}","\\bfW":"\\boldsymbol{W}","\\bfX":"\\boldsymbol{X}","\\bfY":"\\boldsymbol{Y}","\\bfZ":"\\boldsymbol{Z}"}});</script></span> the density, <span class="moose-katex-inline-equation" id="moose-equation-0097d1ad-21cc-4fc3-a1b8-d0b75d304291"><script>var element = document.getElementById("moose-equation-0097d1ad-21cc-4fc3-a1b8-d0b75d304291");katex.render("\\v", element, {displayMode:false,throwOnError:false,macros:{"\\bs":"\\boldsymbol{#1}","\\grad":"\\bs{\\nabla}","\\divergence":"\\grad \\cdot","\\norm":"\\left\\lVert#1\\right\\rVert","\\abs":"\\left\\lvert#1\\right\\rvert","\\diff":"\\text{ d}#1","\\bfa":"\\boldsymbol{a}","\\bfb":"\\boldsymbol{b}","\\bfc":"\\boldsymbol{c}","\\bfd":"\\boldsymbol{d}","\\bfe":"\\boldsymbol{e}","\\bff":"\\boldsymbol{f}","\\bfg":"\\boldsymbol{g}","\\bfh":"\\boldsymbol{h}","\\bfi":"\\boldsymbol{i}","\\bfj":"\\boldsymbol{j}","\\bfk":"\\boldsymbol{k}","\\bfl":"\\boldsymbol{l}","\\bfm":"\\boldsymbol{m}","\\bfn":"\\boldsymbol{n}","\\bfo":"\\boldsymbol{o}","\\bfp":"\\boldsymbol{p}","\\bfq":"\\boldsymbol{q}","\\bfr":"\\boldsymbol{r}","\\bfs":"\\boldsymbol{s}","\\bft":"\\boldsymbol{t}","\\bfu":"\\boldsymbol{u}","\\bfv":"\\boldsymbol{v}","\\bfw":"\\boldsymbol{w}","\\bfx":"\\boldsymbol{x}","\\bfy":"\\boldsymbol{y}","\\bfz":"\\boldsymbol{z}","\\bfA":"\\boldsymbol{A}","\\bfB":"\\boldsymbol{B}","\\bfC":"\\boldsymbol{C}","\\bfD":"\\boldsymbol{D}","\\bfE":"\\boldsymbol{E}","\\bfF":"\\boldsymbol{F}","\\bfG":"\\boldsymbol{G}","\\bfH":"\\boldsymbol{H}","\\bfI":"\\boldsymbol{I}","\\bfJ":"\\boldsymbol{J}","\\bfK":"\\boldsymbol{K}","\\bfL":"\\boldsymbol{L}","\\bfM":"\\boldsymbol{M}","\\bfN":"\\boldsymbol{N}","\\bfO":"\\boldsymbol{O}","\\bfP":"\\boldsymbol{P}","\\bfQ":"\\boldsymbol{Q}","\\bfR":"\\boldsymbol{R}","\\bfS":"\\boldsymbol{S}","\\bfT":"\\boldsymbol{T}","\\bfU":"\\boldsymbol{U}","\\bfV":"\\boldsymbol{V}","\\bfW":"\\boldsymbol{W}","\\bfX":"\\boldsymbol{X}","\\bfY":"\\boldsymbol{Y}","\\bfZ":"\\boldsymbol{Z}"}});</script></span> the fluid velocity, <span class="moose-katex-inline-equation" id="moose-equation-9072101f-b33e-435f-a4d9-8d67f37b45d6"><script>var element = document.getElementById("moose-equation-9072101f-b33e-435f-a4d9-8d67f37b45d6");katex.render("\\dot{m}", element, {displayMode:false,throwOnError:false,macros:{"\\bs":"\\boldsymbol{#1}","\\grad":"\\bs{\\nabla}","\\divergence":"\\grad \\cdot","\\norm":"\\left\\lVert#1\\right\\rVert","\\abs":"\\left\\lvert#1\\right\\rvert","\\diff":"\\text{ d}#1","\\bfa":"\\boldsymbol{a}","\\bfb":"\\boldsymbol{b}","\\bfc":"\\boldsymbol{c}","\\bfd":"\\boldsymbol{d}","\\bfe":"\\boldsymbol{e}","\\bff":"\\boldsymbol{f}","\\bfg":"\\boldsymbol{g}","\\bfh":"\\boldsymbol{h}","\\bfi":"\\boldsymbol{i}","\\bfj":"\\boldsymbol{j}","\\bfk":"\\boldsymbol{k}","\\bfl":"\\boldsymbol{l}","\\bfm":"\\boldsymbol{m}","\\bfn":"\\boldsymbol{n}","\\bfo":"\\boldsymbol{o}","\\bfp":"\\boldsymbol{p}","\\bfq":"\\boldsymbol{q}","\\bfr":"\\boldsymbol{r}","\\bfs":"\\boldsymbol{s}","\\bft":"\\boldsymbol{t}","\\bfu":"\\boldsymbol{u}","\\bfv":"\\boldsymbol{v}","\\bfw":"\\boldsymbol{w}","\\bfx":"\\boldsymbol{x}","\\bfy":"\\boldsymbol{y}","\\bfz":"\\boldsymbol{z}","\\bfA":"\\boldsymbol{A}","\\bfB":"\\boldsymbol{B}","\\bfC":"\\boldsymbol{C}","\\bfD":"\\boldsymbol{D}","\\bfE":"\\boldsymbol{E}","\\bfF":"\\boldsymbol{F}","\\bfG":"\\boldsymbol{G}","\\bfH":"\\boldsymbol{H}","\\bfI":"\\boldsymbol{I}","\\bfJ":"\\boldsymbol{J}","\\bfK":"\\boldsymbol{K}","\\bfL":"\\boldsymbol{L}","\\bfM":"\\boldsymbol{M}","\\bfN":"\\boldsymbol{N}","\\bfO":"\\boldsymbol{O}","\\bfP":"\\boldsymbol{P}","\\bfQ":"\\boldsymbol{Q}","\\bfR":"\\boldsymbol{R}","\\bfS":"\\boldsymbol{S}","\\bfT":"\\boldsymbol{T}","\\bfU":"\\boldsymbol{U}","\\bfV":"\\boldsymbol{V}","\\bfW":"\\boldsymbol{W}","\\bfX":"\\boldsymbol{X}","\\bfY":"\\boldsymbol{Y}","\\bfZ":"\\boldsymbol{Z}"}});</script></span> the mass flow rate and <span class="moose-katex-inline-equation" id="moose-equation-5110c38d-6e07-42de-bed2-63b4c21f6303"><script>var element = document.getElementById("moose-equation-5110c38d-6e07-42de-bed2-63b4c21f6303");katex.render("A", element, {displayMode:false,throwOnError:false,macros:{"\\bs":"\\boldsymbol{#1}","\\grad":"\\bs{\\nabla}","\\divergence":"\\grad \\cdot","\\norm":"\\left\\lVert#1\\right\\rVert","\\abs":"\\left\\lvert#1\\right\\rvert","\\diff":"\\text{ d}#1","\\bfa":"\\boldsymbol{a}","\\bfb":"\\boldsymbol{b}","\\bfc":"\\boldsymbol{c}","\\bfd":"\\boldsymbol{d}","\\bfe":"\\boldsymbol{e}","\\bff":"\\boldsymbol{f}","\\bfg":"\\boldsymbol{g}","\\bfh":"\\boldsymbol{h}","\\bfi":"\\boldsymbol{i}","\\bfj":"\\boldsymbol{j}","\\bfk":"\\boldsymbol{k}","\\bfl":"\\boldsymbol{l}","\\bfm":"\\boldsymbol{m}","\\bfn":"\\boldsymbol{n}","\\bfo":"\\boldsymbol{o}","\\bfp":"\\boldsymbol{p}","\\bfq":"\\boldsymbol{q}","\\bfr":"\\boldsymbol{r}","\\bfs":"\\boldsymbol{s}","\\bft":"\\boldsymbol{t}","\\bfu":"\\boldsymbol{u}","\\bfv":"\\boldsymbol{v}","\\bfw":"\\boldsymbol{w}","\\bfx":"\\boldsymbol{x}","\\bfy":"\\boldsymbol{y}","\\bfz":"\\boldsymbol{z}","\\bfA":"\\boldsymbol{A}","\\bfB":"\\boldsymbol{B}","\\bfC":"\\boldsymbol{C}","\\bfD":"\\boldsymbol{D}","\\bfE":"\\boldsymbol{E}","\\bfF":"\\boldsymbol{F}","\\bfG":"\\boldsymbol{G}","\\bfH":"\\boldsymbol{H}","\\bfI":"\\boldsymbol{I}","\\bfJ":"\\boldsymbol{J}","\\bfK":"\\boldsymbol{K}","\\bfL":"\\boldsymbol{L}","\\bfM":"\\boldsymbol{M}","\\bfN":"\\boldsymbol{N}","\\bfO":"\\boldsymbol{O}","\\bfP":"\\boldsymbol{P}","\\bfQ":"\\boldsymbol{Q}","\\bfR":"\\boldsymbol{R}","\\bfS":"\\boldsymbol{S}","\\bfT":"\\boldsymbol{T}","\\bfU":"\\boldsymbol{U}","\\bfV":"\\boldsymbol{V}","\\bfW":"\\boldsymbol{W}","\\bfX":"\\boldsymbol{X}","\\bfY":"\\boldsymbol{Y}","\\bfZ":"\\boldsymbol{Z}"}});</script></span> the inlet area.</p><p>There are two options for specifying the mass flux:</p><ul class="browser-default"><li><p>specifying a mass flow rate postprocessor, which is then divided by the area of the inlet, which may also be a postprocessor.</p><p></p></li><li><p>specifying an inlet velocity postprocessor and a density functor. The functor is usually a functor material property, defined by a <a href="../functormaterials/GeneralFunctorFluidProps.html">GeneralFunctorFluidProps</a>.</p></li></ul><p>This boundary condition works with postprocessors, which may be replaced by constant values in the input. The intended use case for this boundary condition is to be receiving its value from a coupled application, using a <a href="../postprocessors/Receiver.html">Receiver</a> postprocessor.</p><section class="scrollspy" id="d425225f-9b6a-446e-a4bf-430cd1b9f4b4" data-section-level="2" data-section-text="Example input syntax"><h2 id="example-input-syntax">Example input syntax</h2><p>In this example input, the inlet boundary condition to the mass conservation equation is specified using a <code>WCNSFVMassFluxBC</code>. The mass flux is specified using the mass flow rate and the inlet area.</p><pre class="moose-pre" style="max-height:350px;"><code class="language-text">[FVBCs]
+  # Inlet
+  [inlet_mass]
+    type = WCNSFVMassFluxBC
+    variable = pressure
+    boundary = &#x27;left&#x27;
+    mdot_pp = &#x27;inlet_mdot&#x27;
+    area_pp = &#x27;area_pp_left&#x27;
+    rho = &#x27;rho&#x27;
+  []
+  [inlet_u]
+    type = WCNSFVMomentumFluxBC
+    variable = vel_x
+    boundary = &#x27;left&#x27;
+    mdot_pp = &#x27;inlet_mdot&#x27;
+    area_pp = &#x27;area_pp_left&#x27;
+    rho = &#x27;rho&#x27;
+    momentum_component = &#x27;x&#x27;
+  []
+  [inlet_v]
+    type = WCNSFVMomentumFluxBC
+    variable = vel_y
+    boundary = &#x27;left&#x27;
+    mdot_pp = 0
+    area_pp = &#x27;area_pp_left&#x27;
+    rho = &#x27;rho&#x27;
+    momentum_component = &#x27;y&#x27;
+  []
+  [inlet_T]
+    type = WCNSFVEnergyFluxBC
+    variable = T_fluid
+    boundary = &#x27;left&#x27;
+    temperature_pp = &#x27;inlet_T&#x27;
+    mdot_pp = &#x27;inlet_mdot&#x27;
+    area_pp = &#x27;area_pp_left&#x27;
+    rho = &#x27;rho&#x27;
+    cp = &#x27;cp&#x27;
+  []
+  [inlet_scalar]
+    type = WCNSFVScalarFluxBC
+    variable = scalar
+    boundary = &#x27;left&#x27;
+    scalar_value_pp = &#x27;inlet_scalar_value&#x27;
+    mdot_pp = &#x27;inlet_mdot&#x27;
+    area_pp = &#x27;area_pp_left&#x27;
+    rho = &#x27;rho&#x27;
+  []
+
+  [outlet_p]
+    type = INSFVOutletPressureBC
+    variable = pressure
+    boundary = &#x27;right&#x27;
+    function = ${outlet_pressure}
+  []
+
+  # Walls
+  [no_slip_x]
+    type = INSFVNoSlipWallBC
+    variable = vel_x
+    boundary = &#x27;top bottom&#x27;
+    function = 0
+  []
+  [no_slip_y]
+    type = INSFVNoSlipWallBC
+    variable = vel_y
+    boundary = &#x27;top bottom&#x27;
+    function = 0
+  []
+[]
+</code></pre><a class="moose-source-filename tooltipped modal-trigger" href="#3a5228bf-e3ea-4259-a3dd-d1da1ff56b1d">(moose/modules/navier_stokes/test/tests/finite_volume/wcns/boundary_conditions/flux_bcs_mdot.i)</a></section><section class="scrollspy" id="c840d15b-d5f4-4f3e-848f-538b5efad584" data-section-level="2" data-section-text="Input Parameters"><h2 id="input-parameters">Input Parameters</h2><section id="5dab6a17-ff36-49fa-94a6-5538a7faddb9" data-section-level="3" data-section-text="Required Parameters" data-details-open="open"><details class="moose-section-content" open="open"><ul class="collapsible" data-collapsible="expandable"><li><div class="collapsible-header"><span class="moose-parameter-name">boundary</span><span class="moose-parameter-header-description">The list of boundary IDs from the mesh where this object applies</span></div><div class="collapsible-body"><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>std::vector&lt;BoundaryName&gt;</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>No</p><p class="moose-parameter-description"><span>Description:</span>The list of boundary IDs from the mesh where this object applies</p></div></li><li><div class="collapsible-header"><span class="moose-parameter-name">variable</span><span class="moose-parameter-header-description">The name of the variable that this boundary condition applies to</span></div><div class="collapsible-body"><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>NonlinearVariableName</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>No</p><p class="moose-parameter-description"><span>Description:</span>The name of the variable that this boundary condition applies to</p></div></li></ul><summary><h3 data-details-open="open"><span class="moose-section-icon"></span>Required Parameters</h3></summary></details></section><section id="e54b201f-3a73-4fba-a7aa-bce0b20a971f" data-section-level="3" data-section-text="Optional Parameters" data-details-open="open"><details class="moose-section-content" open="open"><ul class="collapsible" data-collapsible="expandable"><li><div class="collapsible-header"><span class="moose-parameter-name">area_pp</span><span class="moose-parameter-header-description">Inlet area as a postprocessor</span></div><div class="collapsible-body"><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>PostprocessorName</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>No</p><p class="moose-parameter-description"><span>Description:</span>Inlet area as a postprocessor</p></div></li><li><div class="collapsible-header"><span class="moose-parameter-name">direction</span><span class="moose-parameter-header-default">0 0 0</span><span class="moose-parameter-header-description">The direction of the flow at the boundary. This is mainly used for cases when an inlet angle needs to be defined with respect to the normal and when a boundary is defined on an internal face where the normal can point in both directions. Use positive mass flux and velocity magnitude if the flux aligns with this direction vector.</span></div><div class="collapsible-body"><p class="moose-parameter-description-default"><span>Default:</span>0 0 0</p><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>libMesh::Point</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>No</p><p class="moose-parameter-description"><span>Description:</span>The direction of the flow at the boundary. This is mainly used for cases when an inlet angle needs to be defined with respect to the normal and when a boundary is defined on an internal face where the normal can point in both directions. Use positive mass flux and velocity magnitude if the flux aligns with this direction vector.</p></div></li><li><div class="collapsible-header"><span class="moose-parameter-name">displacements</span><span class="moose-parameter-header-description">The displacements</span></div><div class="collapsible-body"><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>std::vector&lt;VariableName&gt;</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>No</p><p class="moose-parameter-description"><span>Description:</span>The displacements</p></div></li><li><div class="collapsible-header"><span class="moose-parameter-name">mdot_pp</span><span class="moose-parameter-header-description">Postprocessor with the inlet mass flow rate</span></div><div class="collapsible-body"><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>PostprocessorName</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>No</p><p class="moose-parameter-description"><span>Description:</span>Postprocessor with the inlet mass flow rate</p></div></li><li><div class="collapsible-header"><span class="moose-parameter-name">prop_getter_suffix</span><span class="moose-parameter-header-description">An optional suffix parameter that can be appended to any attempt to retrieve/get material properties. The suffix will be prepended with a '_' character.</span></div><div class="collapsible-body"><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>MaterialPropertyName</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>No</p><p class="moose-parameter-description"><span>Description:</span>An optional suffix parameter that can be appended to any attempt to retrieve/get material properties. The suffix will be prepended with a '_' character.</p></div></li><li><div class="collapsible-header"><span class="moose-parameter-name">rho</span><span class="moose-parameter-header-description">Density functor</span></div><div class="collapsible-body"><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>MooseFunctorName</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>No</p><p class="moose-parameter-description"><span>Description:</span>Density functor</p></div></li><li><div class="collapsible-header"><span class="moose-parameter-name">scaling_factor</span><span class="moose-parameter-header-default">1</span><span class="moose-parameter-header-description">To scale the mass flux</span></div><div class="collapsible-body"><p class="moose-parameter-description-default"><span>Default:</span>1</p><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>double</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>No</p><p class="moose-parameter-description"><span>Description:</span>To scale the mass flux</p></div></li><li><div class="collapsible-header"><span class="moose-parameter-name">velocity_pp</span><span class="moose-parameter-header-description">Postprocessor with the inlet velocity norm</span></div><div class="collapsible-body"><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>PostprocessorName</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>No</p><p class="moose-parameter-description"><span>Description:</span>Postprocessor with the inlet velocity norm</p></div></li></ul><summary><h3 data-details-open="open"><span class="moose-section-icon"></span>Optional Parameters</h3></summary></details></section><section id="c0c45285-95e5-43e6-a54e-faf8415f381c" data-section-level="3" data-section-text="Tagging Parameters" data-details-open="close"><details class="moose-section-content"><ul class="collapsible" data-collapsible="expandable"><li><div class="collapsible-header"><span class="moose-parameter-name">absolute_value_vector_tags</span><span class="moose-parameter-header-description">The tags for the vectors this residual object should fill with the absolute value of the residual contribution</span></div><div class="collapsible-body"><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>std::vector&lt;TagName&gt;</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>No</p><p class="moose-parameter-description"><span>Description:</span>The tags for the vectors this residual object should fill with the absolute value of the residual contribution</p></div></li><li><div class="collapsible-header"><span class="moose-parameter-name">extra_matrix_tags</span><span class="moose-parameter-header-description">The extra tags for the matrices this Kernel should fill</span></div><div class="collapsible-body"><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>std::vector&lt;TagName&gt;</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>No</p><p class="moose-parameter-description"><span>Description:</span>The extra tags for the matrices this Kernel should fill</p></div></li><li><div class="collapsible-header"><span class="moose-parameter-name">extra_vector_tags</span><span class="moose-parameter-header-description">The extra tags for the vectors this Kernel should fill</span></div><div class="collapsible-body"><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>std::vector&lt;TagName&gt;</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>No</p><p class="moose-parameter-description"><span>Description:</span>The extra tags for the vectors this Kernel should fill</p></div></li><li><div class="collapsible-header"><span class="moose-parameter-name">matrix_tags</span><span class="moose-parameter-header-default">system</span><span class="moose-parameter-header-description">The tag for the matrices this Kernel should fill</span></div><div class="collapsible-body"><p class="moose-parameter-description-default"><span>Default:</span>system</p><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>MultiMooseEnum</p><p class="moose-parameter-description-options"><span>Options:</span>nontime, system</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>No</p><p class="moose-parameter-description"><span>Description:</span>The tag for the matrices this Kernel should fill</p></div></li><li><div class="collapsible-header"><span class="moose-parameter-name">vector_tags</span><span class="moose-parameter-header-default">nontime</span><span class="moose-parameter-header-description">The tag for the vectors this Kernel should fill</span></div><div class="collapsible-body"><p class="moose-parameter-description-default"><span>Default:</span>nontime</p><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>MultiMooseEnum</p><p class="moose-parameter-description-options"><span>Options:</span>nontime, time</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>No</p><p class="moose-parameter-description"><span>Description:</span>The tag for the vectors this Kernel should fill</p></div></li></ul><summary><h3 data-details-open="close"><span class="moose-section-icon"></span>Tagging Parameters</h3></summary></details></section><section id="db3e4ab6-5e6c-4564-9fac-2fdb6010d54e" data-section-level="3" data-section-text="Advanced Parameters" data-details-open="close"><details class="moose-section-content"><ul class="collapsible" data-collapsible="expandable"><li><div class="collapsible-header"><span class="moose-parameter-name">control_tags</span><span class="moose-parameter-header-description">Adds user-defined labels for accessing object parameters via control logic.</span></div><div class="collapsible-body"><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>std::vector&lt;std::string&gt;</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>No</p><p class="moose-parameter-description"><span>Description:</span>Adds user-defined labels for accessing object parameters via control logic.</p></div></li><li><div class="collapsible-header"><span class="moose-parameter-name">enable</span><span class="moose-parameter-header-default">True</span><span class="moose-parameter-header-description">Set the enabled status of the MooseObject.</span></div><div class="collapsible-body"><p class="moose-parameter-description-default"><span>Default:</span>True</p><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>bool</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>Yes</p><p class="moose-parameter-description"><span>Description:</span>Set the enabled status of the MooseObject.</p></div></li><li><div class="collapsible-header"><span class="moose-parameter-name">implicit</span><span class="moose-parameter-header-default">True</span><span class="moose-parameter-header-description">Determines whether this object is calculated using an implicit or explicit form</span></div><div class="collapsible-body"><p class="moose-parameter-description-default"><span>Default:</span>True</p><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>bool</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>No</p><p class="moose-parameter-description"><span>Description:</span>Determines whether this object is calculated using an implicit or explicit form</p></div></li><li><div class="collapsible-header"><span class="moose-parameter-name">use_displaced_mesh</span><span class="moose-parameter-header-default">False</span><span class="moose-parameter-header-description">Whether or not this object should use the displaced mesh for computation.  Note that in the case this is true but no displacements are provided in the Mesh block the undisplaced mesh will still be used.</span></div><div class="collapsible-body"><p class="moose-parameter-description-default"><span>Default:</span>False</p><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>bool</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>No</p><p class="moose-parameter-description"><span>Description:</span>Whether or not this object should use the displaced mesh for computation.  Note that in the case this is true but no displacements are provided in the Mesh block the undisplaced mesh will still be used.</p></div></li></ul><summary><h3 data-details-open="close"><span class="moose-section-icon"></span>Advanced Parameters</h3></summary></details></section></section></section><div class="moose-modal modal" id="3a5228bf-e3ea-4259-a3dd-d1da1ff56b1d"><div class="modal-content"><h4>(moose/modules/navier_stokes/test/tests/finite_volume/wcns/boundary_conditions/flux_bcs_mdot.i)</h4><pre class="moose-pre"><code class="language-text">rho = &#x27;rho&#x27;
+l = 10
+inlet_area = 1
+velocity_interp_method = &#x27;rc&#x27;
+advected_interp_method = &#x27;average&#x27;
+
+# Artificial fluid properties
+# For a real case, use a GeneralFluidFunctorProperties and a viscosity rampdown
+# or initialize very well!
+k = 1
+cp = 1000
+mu = 1e2
+
+# Operating conditions
+inlet_temp = 300
+outlet_pressure = 1e5
+inlet_velocity = 0.001
+
+[Mesh]
+  [gen]
+    type = GeneratedMeshGenerator
+    dim = 2
+    xmin = 0
+    xmax = ${l}
+    ymin = 0
+    ymax = 1
+    nx = 10
+    ny = 5
+  []
+[]
+
+[GlobalParams]
+  rhie_chow_user_object = &#x27;rc&#x27;
+[]
+
+[UserObjects]
+  [rc]
+    type = INSFVRhieChowInterpolator
+    u = vel_x
+    v = vel_y
+    pressure = pressure
+  []
+[]
+
+[Variables]
+  [vel_x]
+    type = INSFVVelocityVariable
+    initial_condition = ${inlet_velocity}
+  []
+  [vel_y]
+    type = INSFVVelocityVariable
+    initial_condition = 1e-15
+  []
+  [pressure]
+    type = INSFVPressureVariable
+    initial_condition = ${outlet_pressure}
+  []
+  [T_fluid]
+    type = INSFVEnergyVariable
+    initial_condition = ${inlet_temp}
+  []
+  [scalar]
+    type = MooseVariableFVReal
+    initial_condition = 0.1
+  []
+[]
+
+[AuxVariables]
+  [power_density]
+    type = MooseVariableFVReal
+    initial_condition = 1e4
+  []
+[]
+
+[FVKernels]
+  # Mass equation
+  [mass_time]
+    type = WCNSFVMassTimeDerivative
+    variable = pressure
+    drho_dt = drho_dt
+  []
+  [mass]
+    type = INSFVMassAdvection
+    variable = pressure
+    advected_interp_method = ${advected_interp_method}
+    velocity_interp_method = ${velocity_interp_method}
+    rho = ${rho}
+  []
+
+  # X component momentum equation
+  [u_time]
+    type = WCNSFVMomentumTimeDerivative
+    variable = vel_x
+    drho_dt = drho_dt
+    rho = rho
+    momentum_component = &#x27;x&#x27;
+  []
+  [u_advection]
+    type = INSFVMomentumAdvection
+    variable = vel_x
+    velocity_interp_method = ${velocity_interp_method}
+    advected_interp_method = ${advected_interp_method}
+    rho = ${rho}
+    momentum_component = &#x27;x&#x27;
+  []
+  [u_viscosity]
+    type = INSFVMomentumDiffusion
+    variable = vel_x
+    mu = ${mu}
+    momentum_component = &#x27;x&#x27;
+  []
+  [u_pressure]
+    type = INSFVMomentumPressure
+    variable = vel_x
+    momentum_component = &#x27;x&#x27;
+    pressure = pressure
+  []
+
+  # Y component momentum equation
+  [v_time]
+    type = WCNSFVMomentumTimeDerivative
+    variable = vel_y
+    drho_dt = drho_dt
+    rho = rho
+    momentum_component = &#x27;y&#x27;
+  []
+  [v_advection]
+    type = INSFVMomentumAdvection
+    variable = vel_y
+    velocity_interp_method = ${velocity_interp_method}
+    advected_interp_method = ${advected_interp_method}
+    rho = ${rho}
+    momentum_component = &#x27;y&#x27;
+  []
+  [v_viscosity]
+    type = INSFVMomentumDiffusion
+    variable = vel_y
+    mu = ${mu}
+    momentum_component = &#x27;y&#x27;
+  []
+  [v_pressure]
+    type = INSFVMomentumPressure
+    variable = vel_y
+    momentum_component = &#x27;y&#x27;
+    pressure = pressure
+  []
+
+  # Energy equation
+  [temp_time]
+    type = WCNSFVEnergyTimeDerivative
+    variable = T_fluid
+    cp = cp
+    rho = rho
+    drho_dt = drho_dt
+  []
+  [temp_conduction]
+    type = FVDiffusion
+    coeff = &#x27;k&#x27;
+    variable = T_fluid
+  []
+  [temp_advection]
+    type = INSFVEnergyAdvection
+    variable = T_fluid
+    velocity_interp_method = ${velocity_interp_method}
+    advected_interp_method = ${advected_interp_method}
+  []
+  [heat_source]
+    type = FVCoupledForce
+    variable = T_fluid
+    v = power_density
+  []
+
+  # Scalar concentration equation
+  [scalar_time]
+    type = FVFunctorTimeKernel
+    variable = scalar
+  []
+  [scalar_advection]
+    type = INSFVScalarFieldAdvection
+    variable = scalar
+    velocity_interp_method = ${velocity_interp_method}
+    advected_interp_method = ${advected_interp_method}
+  []
+  [scalar_diffusion]
+    type = FVDiffusion
+    variable = scalar
+    coeff = 1.1
+  []
+  [scalar_source]
+    type = FVBodyForce
+    variable = scalar
+    function = 2.1
+  []
+[]
+
+[FVBCs]
+  # Inlet
+  [inlet_mass]
+    type = WCNSFVMassFluxBC
+    variable = pressure
+    boundary = &#x27;left&#x27;
+    mdot_pp = &#x27;inlet_mdot&#x27;
+    area_pp = &#x27;area_pp_left&#x27;
+    rho = &#x27;rho&#x27;
+  []
+  [inlet_u]
+    type = WCNSFVMomentumFluxBC
+    variable = vel_x
+    boundary = &#x27;left&#x27;
+    mdot_pp = &#x27;inlet_mdot&#x27;
+    area_pp = &#x27;area_pp_left&#x27;
+    rho = &#x27;rho&#x27;
+    momentum_component = &#x27;x&#x27;
+  []
+  [inlet_v]
+    type = WCNSFVMomentumFluxBC
+    variable = vel_y
+    boundary = &#x27;left&#x27;
+    mdot_pp = 0
+    area_pp = &#x27;area_pp_left&#x27;
+    rho = &#x27;rho&#x27;
+    momentum_component = &#x27;y&#x27;
+  []
+  [inlet_T]
+    type = WCNSFVEnergyFluxBC
+    variable = T_fluid
+    boundary = &#x27;left&#x27;
+    temperature_pp = &#x27;inlet_T&#x27;
+    mdot_pp = &#x27;inlet_mdot&#x27;
+    area_pp = &#x27;area_pp_left&#x27;
+    rho = &#x27;rho&#x27;
+    cp = &#x27;cp&#x27;
+  []
+  [inlet_scalar]
+    type = WCNSFVScalarFluxBC
+    variable = scalar
+    boundary = &#x27;left&#x27;
+    scalar_value_pp = &#x27;inlet_scalar_value&#x27;
+    mdot_pp = &#x27;inlet_mdot&#x27;
+    area_pp = &#x27;area_pp_left&#x27;
+    rho = &#x27;rho&#x27;
+  []
+
+  [outlet_p]
+    type = INSFVOutletPressureBC
+    variable = pressure
+    boundary = &#x27;right&#x27;
+    function = ${outlet_pressure}
+  []
+
+  # Walls
+  [no_slip_x]
+    type = INSFVNoSlipWallBC
+    variable = vel_x
+    boundary = &#x27;top bottom&#x27;
+    function = 0
+  []
+  [no_slip_y]
+    type = INSFVNoSlipWallBC
+    variable = vel_y
+    boundary = &#x27;top bottom&#x27;
+    function = 0
+  []
+[]
+
+# used for the boundary conditions in this example
+[Postprocessors]
+  [inlet_mdot]
+    type = Receiver
+    default = ${fparse 1980 * inlet_velocity * inlet_area}
+  []
+  [area_pp_left]
+    type = AreaPostprocessor
+    boundary = &#x27;left&#x27;
+    execute_on = &#x27;INITIAL&#x27;
+  []
+  [inlet_T]
+    type = Receiver
+    default = ${inlet_temp}
+  []
+  [inlet_scalar_value]
+    type = Receiver
+    default = 0.2
+  []
+[]
+
+[FluidProperties]
+  [fp]
+    type = FlibeFluidProperties
+  []
+[]
+
+[Materials]
+  [const_functor]
+    type = ADGenericFunctorMaterial
+    prop_names = &#x27;cp k&#x27;
+    prop_values = &#x27;${cp} ${k}&#x27;
+  []
+  [rho]
+    type = RhoFromPTFunctorMaterial
+    fp = fp
+    temperature = T_fluid
+    pressure = pressure
+  []
+  [ins_fv]
+    type = INSFVEnthalpyMaterial
+    temperature = &#x27;T_fluid&#x27;
+    rho = ${rho}
+  []
+[]
+
+[Executioner]
+  type = Transient
+  solve_type = &#x27;NEWTON&#x27;
+  petsc_options_iname = &#x27;-pc_type -pc_factor_shift_type&#x27;
+  petsc_options_value = &#x27;lu       NONZERO&#x27;
+
+  [TimeStepper]
+    type = IterationAdaptiveDT
+    dt = 1e-2
+    optimal_iterations = 6
+  []
+  end_time = 1
+
+  nl_abs_tol = 1e-9
+  nl_max_its = 50
+  line_search = &#x27;none&#x27;
+
+  automatic_scaling = true
+[]
+
+[Outputs]
+  exodus = true
+  execute_on = FINAL
+[]
+</code></pre></div><div class="modal-footer"><a class="modal-close btn-flat">Close</a></div></div></div><div class="col hide-on-med-and-down l2"><div class="toc-wrapper pin-top"><ul class="section table-of-contents"><li><a href="#d425225f-9b6a-446e-a4bf-430cd1b9f4b4" class="tooltipped" data-position="left" data-tooltip="Example input syntax">Example input syntax</a></li><li><a href="#c840d15b-d5f4-4f3e-848f-538b5efad584" class="tooltipped" data-position="left" data-tooltip="Input Parameters">Input Parameters</a></li></ul></div></div></div></div></main></div></body><script type="text/javascript" src="../../contrib/materialize/materialize.min.js"></script><script type="text/javascript" src="../../contrib/clipboard/clipboard.min.js"></script><script type="text/javascript" src="../../contrib/prism/prism.min.js"></script><script type="text/javascript" src="../../js/init.js"></script><script type="text/javascript" src="../../js/navigation.js"></script><script type="text/javascript" src="../../contrib/fuse/fuse.min.js"></script><script type="text/javascript" src="../../js/search_index.js"></script><script type="text/javascript" src="../../js/sqa_moose.js"></script>

@@ -1,0 +1,1178 @@
+<!DOCTYPE html><head><meta charset="UTF-8"><title>Weakly Compressible Finite Volume Navier Stokes | Eel</title><link href="../../contrib/materialize/materialize.min.css" type="text/css" rel="stylesheet" media="screen,projection"></link><link href="../../contrib/prism/prism.min.css" type="text/css" rel="stylesheet"></link><link href="../../css/moose.css" type="text/css" rel="stylesheet"></link><link href="../../css/devel_moose.css" type="text/css" rel="stylesheet"></link><link href="../../css/alert_moose.css" type="text/css" rel="stylesheet"></link><link href="../../css/content_moose.css" type="text/css" rel="stylesheet"></link><link href="../../css/sqa_moose.css" type="text/css" rel="stylesheet"></link><link href="../../css/civet_moose.css" type="text/css" rel="stylesheet"></link><script type="text/javascript" src="../../contrib/jquery/jquery.min.js"></script></head><body><div class="page-wrap"><header><nav><div class="nav-wrapper container"><a href="../../index.html" class="left moose-logo hide-on-med-and-down" id="home-button">Eel</a><a href="https://github.com/hugary1995/eel" class="right"><img src="../../media/framework/github-logo.png" class="github-mark"></img><img src="../../media/framework/github-mark.png" class="github-logo"></img></a><ul class="right hide-on-med-and-down"><li><a href="../../eel.html">Documentation</a></li></ul><a href="#" class="sidenav-trigger" data-target="873833aa-6b8a-4619-91e3-78b9a5647895"><i class="material-icons">menu</i></a><ul class="sidenav" id="873833aa-6b8a-4619-91e3-78b9a5647895"><li><a href="../../eel.html">Documentation</a></li></ul><a href="#moose-search" class="modal-trigger"><i class="material-icons">search</i></a></div></nav><div class="modal modal-fixed-footer moose-search-modal" id="moose-search"><div class="modal-content container moose-search-modal-content"><div class="row"><div class="col l12"><div class="input-field"><input type_="text" onkeyup="mooseSearch()" placeholder="/index.md" id="moose-search-box"></input></div></div><div><div class="col s12" id="moose-search-results"></div></div></div></div><div class="modal-footer"><a href="#!" class="modal-close btn-flat">Close</a></div></div></header><main class="main"><div class="container"><div class="row"><div class="col hide-on-med-and-down l12"><nav class="breadcrumb-nav"><div class="nav-wrapper"><span class="breadcrumb">modules</span><a href="." class="breadcrumb">navier_stokes</a><a href="#" class="breadcrumb">wcnsfv</a></div></nav></div></div><div class="row"><div class="moose-content col s12 m12 l10"><section id="a322618d-ba58-4c65-8575-46bf04aa2d46" data-section-level="1" data-section-text="Weakly Compressible Finite Volume Navier Stokes"><h1 id="weakly-compressible-finite-volume-navier-stokes">Weakly Compressible Finite Volume Navier Stokes</h1><p>The weakly compressible implementation of the Navier Stokes equations in finite volume is largely based of the <a href="insfv.html">incompressible version</a>, except that constant densities were replaced by functor material properties. The incompressible kernels were adapted to use the functor material properties, so most kernels can be adapted directly. The only kernels that different between the two formulations are the time derivative kernels, as they include the density time derivative.</p><ul class="browser-default"><li><p><a href="../../source/fvkernels/WCNSFVMassTimeDerivative.html">WCNSFVMassTimeDerivative</a></p><p></p></li><li><p><a href="../../source/fvkernels/WCNSFVMomentumTimeDerivative.html">WCNSFVMomentumTimeDerivative</a></p><p></p></li><li><p><a href="../../source/fvkernels/WCNSFVEnergyTimeDerivative.html">WCNSFVEnergyTimeDerivative</a></p></li></ul><p>In addition, the <a href="../../syntax/Modules/NavierStokesFV/index.html">NavierStokesFV</a> action syntax can also be used to set up weakly-compressible simulations.</p><section class="scrollspy" id="f8ae339d-0d5a-4942-86ba-b43531e9fc1a" data-section-level="2" data-section-text="Lid Driven Cavity Heated Flow"><h2 id="lid-driven-cavity-heated-flow">Lid Driven Cavity Heated Flow</h2><p>We show below an example input file for a cavity with a moving lid, with different heat sources on both sides of the cavity.</p><pre class="moose-pre" style="max-height:350px;"><code class="language-text">mu = 1
+rho = &#x27;rho&#x27;
+k = 1
+cp = 1
+l = 10
+velocity_interp_method = &#x27;rc&#x27;
+advected_interp_method = &#x27;average&#x27;
+cold_temp=300
+hot_temp=310
+
+[GlobalParams]
+  two_term_boundary_expansion = true
+  rhie_chow_user_object = &#x27;rc&#x27;
+[]
+
+[UserObjects]
+  [rc]
+    type = INSFVRhieChowInterpolator
+    u = u
+    v = v
+    pressure = pressure
+  []
+[]
+
+[Mesh]
+  [gen]
+    type = GeneratedMeshGenerator
+    dim = 2
+    xmin = 0
+    xmax = ${l}
+    ymin = 0
+    ymax = ${l}
+    nx = 16
+    ny = 16
+  []
+[]
+
+[Variables]
+  [u]
+    type = INSFVVelocityVariable
+    initial_condition = 1e-15
+  []
+  [v]
+    type = INSFVVelocityVariable
+    initial_condition = 1e-15
+  []
+  [pressure]
+    type = INSFVPressureVariable
+    initial_condition = 1e5
+  []
+  [T]
+    type = INSFVEnergyVariable
+    scaling = 1e-4
+    initial_condition = ${cold_temp}
+  []
+[]
+
+[AuxVariables]
+  [U]
+    order = CONSTANT
+    family = MONOMIAL
+    fv = true
+  []
+  [vel_x]
+    order = FIRST
+    family = MONOMIAL
+  []
+  [vel_y]
+    order = FIRST
+    family = MONOMIAL
+  []
+  [viz_T]
+    order = FIRST
+    family = MONOMIAL
+  []
+[]
+
+[AuxKernels]
+  [mag]
+    type = VectorMagnitudeAux
+    variable = U
+    x = u
+    y = v
+    execute_on = &#x27;initial timestep_end&#x27;
+  []
+  [vel_x]
+    type = ParsedAux
+    variable = vel_x
+    expression = &#x27;u&#x27;
+    execute_on = &#x27;initial timestep_end&#x27;
+    coupled_variables = &#x27;u&#x27;
+  []
+  [vel_y]
+    type = ParsedAux
+    variable = vel_y
+    expression = &#x27;v&#x27;
+    execute_on = &#x27;initial timestep_end&#x27;
+    coupled_variables = &#x27;v&#x27;
+  []
+  [viz_T]
+    type = ParsedAux
+    variable = viz_T
+    expression = &#x27;T&#x27;
+    execute_on = &#x27;initial timestep_end&#x27;
+    coupled_variables = &#x27;T&#x27;
+  []
+[]
+
+[FVKernels]
+  [mass_time]
+    type = WCNSFVMassTimeDerivative
+    variable = pressure
+    drho_dt = drho_dt
+  []
+  [mass]
+    type = INSFVMassAdvection
+    variable = pressure
+    advected_interp_method = ${advected_interp_method}
+    velocity_interp_method = ${velocity_interp_method}
+    rho = ${rho}
+  []
+
+  [u_time]
+    type = WCNSFVMomentumTimeDerivative
+    variable = u
+    drho_dt = drho_dt
+    rho = rho
+    momentum_component = &#x27;x&#x27;
+  []
+  [u_advection]
+    type = INSFVMomentumAdvection
+    variable = u
+    velocity_interp_method = ${velocity_interp_method}
+    advected_interp_method = ${advected_interp_method}
+    rho = ${rho}
+    momentum_component = &#x27;x&#x27;
+  []
+  [u_viscosity]
+    type = INSFVMomentumDiffusion
+    variable = u
+    mu = ${mu}
+    momentum_component = &#x27;x&#x27;
+  []
+  [u_pressure]
+    type = INSFVMomentumPressure
+    variable = u
+    momentum_component = &#x27;x&#x27;
+    pressure = pressure
+  []
+  [u_gravity]
+    type = INSFVMomentumGravity
+    variable = u
+    gravity = &#x27;0 -1 0&#x27;
+    rho = ${rho}
+    momentum_component = &#x27;x&#x27;
+  []
+
+  [v_time]
+    type = WCNSFVMomentumTimeDerivative
+    variable = v
+    drho_dt = drho_dt
+    rho = rho
+    momentum_component = &#x27;y&#x27;
+  []
+  [v_advection]
+    type = INSFVMomentumAdvection
+    variable = v
+    velocity_interp_method = ${velocity_interp_method}
+    advected_interp_method = ${advected_interp_method}
+    rho = ${rho}
+    momentum_component = &#x27;y&#x27;
+  []
+  [v_viscosity]
+    type = INSFVMomentumDiffusion
+    variable = v
+    mu = ${mu}
+    momentum_component = &#x27;y&#x27;
+  []
+  [v_pressure]
+    type = INSFVMomentumPressure
+    variable = v
+    momentum_component = &#x27;y&#x27;
+    pressure = pressure
+  []
+  [v_gravity]
+    type = INSFVMomentumGravity
+    variable = v
+    gravity = &#x27;0 -1 0&#x27;
+    rho = ${rho}
+    momentum_component = &#x27;y&#x27;
+  []
+
+  [temp_conduction]
+    type = FVDiffusion
+    coeff = &#x27;k&#x27;
+    variable = T
+  []
+  [temp_advection]
+    type = INSFVEnergyAdvection
+    variable = T
+    velocity_interp_method = ${velocity_interp_method}
+    advected_interp_method = ${advected_interp_method}
+  []
+[]
+
+[FVBCs]
+  [no_slip_x]
+    type = INSFVNoSlipWallBC
+    variable = u
+    boundary = &#x27;left right top bottom&#x27;
+    function = 0
+  []
+
+  [no_slip_y]
+    type = INSFVNoSlipWallBC
+    variable = v
+    boundary = &#x27;left right top bottom&#x27;
+    function = 0
+  []
+
+  [T_hot]
+    type = FVDirichletBC
+    variable = T
+    boundary = left
+    value = ${hot_temp}
+  []
+
+  [T_cold]
+    type = FVDirichletBC
+    variable = T
+    boundary = right
+    value = ${cold_temp}
+  []
+[]
+
+[FluidProperties]
+  [fp]
+    type = IdealGasFluidProperties
+  []
+[]
+
+[Materials]
+  [const_functor]
+    type = ADGenericFunctorMaterial
+    prop_names = &#x27;cp k&#x27;
+    prop_values = &#x27;${cp} ${k}&#x27;
+  []
+  [rho]
+    type = RhoFromPTFunctorMaterial
+    fp = fp
+    temperature = T
+    pressure = pressure
+  []
+  [ins_fv]
+    type = INSFVEnthalpyMaterial
+    temperature = &#x27;T&#x27;
+    rho = ${rho}
+  []
+[]
+
+[Functions]
+  [lid_function]
+    type = ParsedFunction
+    expression = &#x27;4*x*(1-x)&#x27;
+  []
+[]
+
+[Executioner]
+  type = Transient
+  solve_type = &#x27;NEWTON&#x27;
+  petsc_options_iname = &#x27;-pc_type -pc_factor_shift_type&#x27;
+  petsc_options_value = &#x27;lu       NONZERO&#x27;
+  steady_state_detection = true
+  [TimeStepper]
+    type = IterationAdaptiveDT
+    dt = 1e-5
+    optimal_iterations = 6
+  []
+  nl_abs_tol = 1e-9
+  normalize_solution_diff_norm_by_dt = false
+  nl_max_its = 10
+[]
+
+[Outputs]
+  [out]
+    type = Exodus
+  []
+[]
+</code></pre><a class="moose-source-filename tooltipped modal-trigger" href="#5be1855f-e871-4f0d-b3e0-c893c465202c">(moose/modules/navier_stokes/test/tests/finite_volume/ins/boussinesq/transient-wcnsfv.i)</a></section><section class="scrollspy" id="1c2b6e04-7087-4972-857b-e8dcd371b7fe" data-section-level="2" data-section-text="Heated Channel Flow"><h2 id="heated-channel-flow">Heated Channel Flow</h2><p>We show below an example input file for a heated channel. The fluid progressively heats up through the channel, with a volumetric heat source.</p><pre class="moose-pre" style="max-height:350px;"><code class="language-text">rho = &#x27;rho&#x27;
+l = 10
+velocity_interp_method = &#x27;rc&#x27;
+advected_interp_method = &#x27;average&#x27;
+
+# Artificial fluid properties
+# For a real case, use a GeneralFluidFunctorProperties and a viscosity rampdown
+# or initialize very well!
+k = 1
+cp = 1000
+mu = 1e2
+
+# Operating conditions
+inlet_temp = 300
+outlet_pressure = 1e5
+inlet_v = 0.001
+
+[Mesh]
+  [gen]
+    type = GeneratedMeshGenerator
+    dim = 2
+    xmin = 0
+    xmax = ${l}
+    ymin = 0
+    ymax = 1
+    nx = 20
+    ny = 10
+  []
+[]
+
+[GlobalParams]
+  rhie_chow_user_object = &#x27;rc&#x27;
+[]
+
+[UserObjects]
+  [rc]
+    type = INSFVRhieChowInterpolator
+    u = vel_x
+    v = vel_y
+    pressure = pressure
+  []
+[]
+
+[Variables]
+  [vel_x]
+    type = INSFVVelocityVariable
+    initial_condition = ${inlet_v}
+  []
+  [vel_y]
+    type = INSFVVelocityVariable
+    initial_condition = 1e-15
+  []
+  [pressure]
+    type = INSFVPressureVariable
+    initial_condition = ${outlet_pressure}
+  []
+  [T_fluid]
+    type = INSFVEnergyVariable
+    initial_condition = ${inlet_temp}
+  []
+[]
+
+[AuxVariables]
+  [mixing_length]
+    type = MooseVariableFVReal
+  []
+  [power_density]
+    type = MooseVariableFVReal
+    initial_condition = 1e4
+  []
+[]
+
+[FVKernels]
+  inactive = &#x27;u_turb v_turb temp_turb&#x27;
+  [mass_time]
+    type = WCNSFVMassTimeDerivative
+    variable = pressure
+    drho_dt = drho_dt
+  []
+  [mass]
+    type = INSFVMassAdvection
+    variable = pressure
+    advected_interp_method = ${advected_interp_method}
+    velocity_interp_method = ${velocity_interp_method}
+    rho = ${rho}
+  []
+
+  [u_time]
+    type = WCNSFVMomentumTimeDerivative
+    variable = vel_x
+    drho_dt = drho_dt
+    rho = rho
+    momentum_component = &#x27;x&#x27;
+  []
+  [u_advection]
+    type = INSFVMomentumAdvection
+    variable = vel_x
+    velocity_interp_method = ${velocity_interp_method}
+    advected_interp_method = ${advected_interp_method}
+    rho = ${rho}
+    momentum_component = &#x27;x&#x27;
+  []
+  [u_viscosity]
+    type = INSFVMomentumDiffusion
+    variable = vel_x
+    mu = ${mu}
+    momentum_component = &#x27;x&#x27;
+  []
+  [u_pressure]
+    type = INSFVMomentumPressure
+    variable = vel_x
+    momentum_component = &#x27;x&#x27;
+    pressure = pressure
+  []
+  [u_turb]
+    type = INSFVMixingLengthReynoldsStress
+    variable = vel_x
+    rho = ${rho}
+    mixing_length = &#x27;mixing_length&#x27;
+    momentum_component = &#x27;x&#x27;
+    u = vel_x
+    v = vel_y
+  []
+
+  [v_time]
+    type = WCNSFVMomentumTimeDerivative
+    variable = vel_y
+    drho_dt = drho_dt
+    rho = rho
+    momentum_component = &#x27;y&#x27;
+  []
+  [v_advection]
+    type = INSFVMomentumAdvection
+    variable = vel_y
+    velocity_interp_method = ${velocity_interp_method}
+    advected_interp_method = ${advected_interp_method}
+    rho = ${rho}
+    momentum_component = &#x27;y&#x27;
+  []
+  [v_viscosity]
+    type = INSFVMomentumDiffusion
+    variable = vel_y
+    momentum_component = &#x27;y&#x27;
+    mu = ${mu}
+  []
+  [v_pressure]
+    type = INSFVMomentumPressure
+    variable = vel_y
+    momentum_component = &#x27;y&#x27;
+    pressure = pressure
+  []
+  [v_turb]
+    type = INSFVMixingLengthReynoldsStress
+    variable = vel_y
+    rho = ${rho}
+    mixing_length = &#x27;mixing_length&#x27;
+    momentum_component = &#x27;y&#x27;
+    u = vel_x
+    v = vel_y
+  []
+
+  [temp_time]
+    type = WCNSFVEnergyTimeDerivative
+    variable = T_fluid
+    cp = cp
+    rho = rho
+    drho_dt = drho_dt
+  []
+  [temp_conduction]
+    type = FVDiffusion
+    coeff = &#x27;k&#x27;
+    variable = T_fluid
+  []
+  [temp_advection]
+    type = INSFVEnergyAdvection
+    variable = T_fluid
+    velocity_interp_method = ${velocity_interp_method}
+    advected_interp_method = ${advected_interp_method}
+  []
+  [heat_source]
+    type = FVCoupledForce
+    variable = T_fluid
+    v = power_density
+  []
+  [temp_turb]
+    type = WCNSFVMixingLengthEnergyDiffusion
+    variable = T_fluid
+    rho = rho
+    cp = cp
+    mixing_length = &#x27;mixing_length&#x27;
+    schmidt_number = 1
+    u = vel_x
+    v = vel_y
+  []
+[]
+
+[FVBCs]
+  [no_slip_x]
+    type = INSFVNoSlipWallBC
+    variable = vel_x
+    boundary = &#x27;top bottom&#x27;
+    function = 0
+  []
+
+  [no_slip_y]
+    type = INSFVNoSlipWallBC
+    variable = vel_y
+    boundary = &#x27;top bottom&#x27;
+    function = 0
+  []
+
+  # Inlet
+  [inlet_u]
+    type = INSFVInletVelocityBC
+    variable = vel_x
+    boundary = &#x27;left&#x27;
+    function = ${inlet_v}
+  []
+  [inlet_v]
+    type = INSFVInletVelocityBC
+    variable = vel_y
+    boundary = &#x27;left&#x27;
+    function = 0
+  []
+  [inlet_T]
+    type = FVDirichletBC
+    variable = T_fluid
+    boundary = &#x27;left&#x27;
+    value = ${inlet_temp}
+  []
+
+  [outlet_p]
+    type = INSFVOutletPressureBC
+    variable = pressure
+    boundary = &#x27;right&#x27;
+    function = ${outlet_pressure}
+  []
+[]
+
+[FluidProperties]
+  [fp]
+    type = FlibeFluidProperties
+  []
+[]
+
+[Materials]
+  [const_functor]
+    type = ADGenericFunctorMaterial
+    prop_names = &#x27;cp k&#x27;
+    prop_values = &#x27;${cp} ${k}&#x27;
+  []
+  [rho]
+    type = RhoFromPTFunctorMaterial
+    fp = fp
+    temperature = T_fluid
+    pressure = pressure
+  []
+  [ins_fv]
+    type = INSFVEnthalpyMaterial
+    temperature = &#x27;T_fluid&#x27;
+    rho = ${rho}
+  []
+[]
+
+[AuxKernels]
+  inactive = &#x27;mixing_len&#x27;
+  [mixing_len]
+    type = WallDistanceMixingLengthAux
+    walls = &#x27;top&#x27;
+    variable = mixing_length
+    execute_on = &#x27;initial&#x27;
+    delta = 0.5
+  []
+[]
+
+[Executioner]
+  type = Transient
+  solve_type = &#x27;NEWTON&#x27;
+  petsc_options_iname = &#x27;-pc_type -pc_factor_shift_type&#x27;
+  petsc_options_value = &#x27;lu       NONZERO&#x27;
+
+  [TimeStepper]
+    type = IterationAdaptiveDT
+    dt = 1e-3
+    optimal_iterations = 6
+  []
+  end_time = 15
+
+  nl_abs_tol = 1e-9
+  nl_max_its = 50
+  line_search = &#x27;none&#x27;
+
+  automatic_scaling = true
+  off_diagonals_in_auto_scaling = true
+  compute_scaling_once = false
+[]
+
+[Outputs]
+  exodus = true
+[]
+</code></pre><a class="moose-source-filename tooltipped modal-trigger" href="#3ac6e13e-7140-467e-bb1e-0ab15f5e3c78">(moose/modules/navier_stokes/test/tests/finite_volume/wcns/channel-flow/2d-transient.i)</a></section></section><div class="moose-modal modal" id="5be1855f-e871-4f0d-b3e0-c893c465202c"><div class="modal-content"><h4>(moose/modules/navier_stokes/test/tests/finite_volume/ins/boussinesq/transient-wcnsfv.i)</h4><pre class="moose-pre"><code class="language-text">mu = 1
+rho = &#x27;rho&#x27;
+k = 1
+cp = 1
+l = 10
+velocity_interp_method = &#x27;rc&#x27;
+advected_interp_method = &#x27;average&#x27;
+cold_temp=300
+hot_temp=310
+
+[GlobalParams]
+  two_term_boundary_expansion = true
+  rhie_chow_user_object = &#x27;rc&#x27;
+[]
+
+[UserObjects]
+  [rc]
+    type = INSFVRhieChowInterpolator
+    u = u
+    v = v
+    pressure = pressure
+  []
+[]
+
+[Mesh]
+  [gen]
+    type = GeneratedMeshGenerator
+    dim = 2
+    xmin = 0
+    xmax = ${l}
+    ymin = 0
+    ymax = ${l}
+    nx = 16
+    ny = 16
+  []
+[]
+
+[Variables]
+  [u]
+    type = INSFVVelocityVariable
+    initial_condition = 1e-15
+  []
+  [v]
+    type = INSFVVelocityVariable
+    initial_condition = 1e-15
+  []
+  [pressure]
+    type = INSFVPressureVariable
+    initial_condition = 1e5
+  []
+  [T]
+    type = INSFVEnergyVariable
+    scaling = 1e-4
+    initial_condition = ${cold_temp}
+  []
+[]
+
+[AuxVariables]
+  [U]
+    order = CONSTANT
+    family = MONOMIAL
+    fv = true
+  []
+  [vel_x]
+    order = FIRST
+    family = MONOMIAL
+  []
+  [vel_y]
+    order = FIRST
+    family = MONOMIAL
+  []
+  [viz_T]
+    order = FIRST
+    family = MONOMIAL
+  []
+[]
+
+[AuxKernels]
+  [mag]
+    type = VectorMagnitudeAux
+    variable = U
+    x = u
+    y = v
+    execute_on = &#x27;initial timestep_end&#x27;
+  []
+  [vel_x]
+    type = ParsedAux
+    variable = vel_x
+    expression = &#x27;u&#x27;
+    execute_on = &#x27;initial timestep_end&#x27;
+    coupled_variables = &#x27;u&#x27;
+  []
+  [vel_y]
+    type = ParsedAux
+    variable = vel_y
+    expression = &#x27;v&#x27;
+    execute_on = &#x27;initial timestep_end&#x27;
+    coupled_variables = &#x27;v&#x27;
+  []
+  [viz_T]
+    type = ParsedAux
+    variable = viz_T
+    expression = &#x27;T&#x27;
+    execute_on = &#x27;initial timestep_end&#x27;
+    coupled_variables = &#x27;T&#x27;
+  []
+[]
+
+[FVKernels]
+  [mass_time]
+    type = WCNSFVMassTimeDerivative
+    variable = pressure
+    drho_dt = drho_dt
+  []
+  [mass]
+    type = INSFVMassAdvection
+    variable = pressure
+    advected_interp_method = ${advected_interp_method}
+    velocity_interp_method = ${velocity_interp_method}
+    rho = ${rho}
+  []
+
+  [u_time]
+    type = WCNSFVMomentumTimeDerivative
+    variable = u
+    drho_dt = drho_dt
+    rho = rho
+    momentum_component = &#x27;x&#x27;
+  []
+  [u_advection]
+    type = INSFVMomentumAdvection
+    variable = u
+    velocity_interp_method = ${velocity_interp_method}
+    advected_interp_method = ${advected_interp_method}
+    rho = ${rho}
+    momentum_component = &#x27;x&#x27;
+  []
+  [u_viscosity]
+    type = INSFVMomentumDiffusion
+    variable = u
+    mu = ${mu}
+    momentum_component = &#x27;x&#x27;
+  []
+  [u_pressure]
+    type = INSFVMomentumPressure
+    variable = u
+    momentum_component = &#x27;x&#x27;
+    pressure = pressure
+  []
+  [u_gravity]
+    type = INSFVMomentumGravity
+    variable = u
+    gravity = &#x27;0 -1 0&#x27;
+    rho = ${rho}
+    momentum_component = &#x27;x&#x27;
+  []
+
+  [v_time]
+    type = WCNSFVMomentumTimeDerivative
+    variable = v
+    drho_dt = drho_dt
+    rho = rho
+    momentum_component = &#x27;y&#x27;
+  []
+  [v_advection]
+    type = INSFVMomentumAdvection
+    variable = v
+    velocity_interp_method = ${velocity_interp_method}
+    advected_interp_method = ${advected_interp_method}
+    rho = ${rho}
+    momentum_component = &#x27;y&#x27;
+  []
+  [v_viscosity]
+    type = INSFVMomentumDiffusion
+    variable = v
+    mu = ${mu}
+    momentum_component = &#x27;y&#x27;
+  []
+  [v_pressure]
+    type = INSFVMomentumPressure
+    variable = v
+    momentum_component = &#x27;y&#x27;
+    pressure = pressure
+  []
+  [v_gravity]
+    type = INSFVMomentumGravity
+    variable = v
+    gravity = &#x27;0 -1 0&#x27;
+    rho = ${rho}
+    momentum_component = &#x27;y&#x27;
+  []
+
+  [temp_conduction]
+    type = FVDiffusion
+    coeff = &#x27;k&#x27;
+    variable = T
+  []
+  [temp_advection]
+    type = INSFVEnergyAdvection
+    variable = T
+    velocity_interp_method = ${velocity_interp_method}
+    advected_interp_method = ${advected_interp_method}
+  []
+[]
+
+[FVBCs]
+  [no_slip_x]
+    type = INSFVNoSlipWallBC
+    variable = u
+    boundary = &#x27;left right top bottom&#x27;
+    function = 0
+  []
+
+  [no_slip_y]
+    type = INSFVNoSlipWallBC
+    variable = v
+    boundary = &#x27;left right top bottom&#x27;
+    function = 0
+  []
+
+  [T_hot]
+    type = FVDirichletBC
+    variable = T
+    boundary = left
+    value = ${hot_temp}
+  []
+
+  [T_cold]
+    type = FVDirichletBC
+    variable = T
+    boundary = right
+    value = ${cold_temp}
+  []
+[]
+
+[FluidProperties]
+  [fp]
+    type = IdealGasFluidProperties
+  []
+[]
+
+[Materials]
+  [const_functor]
+    type = ADGenericFunctorMaterial
+    prop_names = &#x27;cp k&#x27;
+    prop_values = &#x27;${cp} ${k}&#x27;
+  []
+  [rho]
+    type = RhoFromPTFunctorMaterial
+    fp = fp
+    temperature = T
+    pressure = pressure
+  []
+  [ins_fv]
+    type = INSFVEnthalpyMaterial
+    temperature = &#x27;T&#x27;
+    rho = ${rho}
+  []
+[]
+
+[Functions]
+  [lid_function]
+    type = ParsedFunction
+    expression = &#x27;4*x*(1-x)&#x27;
+  []
+[]
+
+
+[Executioner]
+  type = Transient
+  solve_type = &#x27;NEWTON&#x27;
+  petsc_options_iname = &#x27;-pc_type -pc_factor_shift_type&#x27;
+  petsc_options_value = &#x27;lu       NONZERO&#x27;
+  steady_state_detection = true
+  [TimeStepper]
+    type = IterationAdaptiveDT
+    dt = 1e-5
+    optimal_iterations = 6
+  []
+  nl_abs_tol = 1e-9
+  normalize_solution_diff_norm_by_dt = false
+  nl_max_its = 10
+[]
+
+[Outputs]
+  [out]
+    type = Exodus
+  []
+[]
+</code></pre></div><div class="modal-footer"><a class="modal-close btn-flat">Close</a></div></div><div class="moose-modal modal" id="3ac6e13e-7140-467e-bb1e-0ab15f5e3c78"><div class="modal-content"><h4>(moose/modules/navier_stokes/test/tests/finite_volume/wcns/channel-flow/2d-transient.i)</h4><pre class="moose-pre"><code class="language-text">rho = &#x27;rho&#x27;
+l = 10
+velocity_interp_method = &#x27;rc&#x27;
+advected_interp_method = &#x27;average&#x27;
+
+# Artificial fluid properties
+# For a real case, use a GeneralFluidFunctorProperties and a viscosity rampdown
+# or initialize very well!
+k = 1
+cp = 1000
+mu = 1e2
+
+# Operating conditions
+inlet_temp = 300
+outlet_pressure = 1e5
+inlet_v = 0.001
+
+[Mesh]
+  [gen]
+    type = GeneratedMeshGenerator
+    dim = 2
+    xmin = 0
+    xmax = ${l}
+    ymin = 0
+    ymax = 1
+    nx = 20
+    ny = 10
+  []
+[]
+
+[GlobalParams]
+  rhie_chow_user_object = &#x27;rc&#x27;
+[]
+
+[UserObjects]
+  [rc]
+    type = INSFVRhieChowInterpolator
+    u = vel_x
+    v = vel_y
+    pressure = pressure
+  []
+[]
+
+[Variables]
+  [vel_x]
+    type = INSFVVelocityVariable
+    initial_condition = ${inlet_v}
+  []
+  [vel_y]
+    type = INSFVVelocityVariable
+    initial_condition = 1e-15
+  []
+  [pressure]
+    type = INSFVPressureVariable
+    initial_condition = ${outlet_pressure}
+  []
+  [T_fluid]
+    type = INSFVEnergyVariable
+    initial_condition = ${inlet_temp}
+  []
+[]
+
+[AuxVariables]
+  [mixing_length]
+    type = MooseVariableFVReal
+  []
+  [power_density]
+    type = MooseVariableFVReal
+    initial_condition = 1e4
+  []
+[]
+
+[FVKernels]
+  inactive = &#x27;u_turb v_turb temp_turb&#x27;
+  [mass_time]
+    type = WCNSFVMassTimeDerivative
+    variable = pressure
+    drho_dt = drho_dt
+  []
+  [mass]
+    type = INSFVMassAdvection
+    variable = pressure
+    advected_interp_method = ${advected_interp_method}
+    velocity_interp_method = ${velocity_interp_method}
+    rho = ${rho}
+  []
+
+  [u_time]
+    type = WCNSFVMomentumTimeDerivative
+    variable = vel_x
+    drho_dt = drho_dt
+    rho = rho
+    momentum_component = &#x27;x&#x27;
+  []
+  [u_advection]
+    type = INSFVMomentumAdvection
+    variable = vel_x
+    velocity_interp_method = ${velocity_interp_method}
+    advected_interp_method = ${advected_interp_method}
+    rho = ${rho}
+    momentum_component = &#x27;x&#x27;
+  []
+  [u_viscosity]
+    type = INSFVMomentumDiffusion
+    variable = vel_x
+    mu = ${mu}
+    momentum_component = &#x27;x&#x27;
+  []
+  [u_pressure]
+    type = INSFVMomentumPressure
+    variable = vel_x
+    momentum_component = &#x27;x&#x27;
+    pressure = pressure
+  []
+  [u_turb]
+    type = INSFVMixingLengthReynoldsStress
+    variable = vel_x
+    rho = ${rho}
+    mixing_length = &#x27;mixing_length&#x27;
+    momentum_component = &#x27;x&#x27;
+    u = vel_x
+    v = vel_y
+  []
+
+  [v_time]
+    type = WCNSFVMomentumTimeDerivative
+    variable = vel_y
+    drho_dt = drho_dt
+    rho = rho
+    momentum_component = &#x27;y&#x27;
+  []
+  [v_advection]
+    type = INSFVMomentumAdvection
+    variable = vel_y
+    velocity_interp_method = ${velocity_interp_method}
+    advected_interp_method = ${advected_interp_method}
+    rho = ${rho}
+    momentum_component = &#x27;y&#x27;
+  []
+  [v_viscosity]
+    type = INSFVMomentumDiffusion
+    variable = vel_y
+    momentum_component = &#x27;y&#x27;
+    mu = ${mu}
+  []
+  [v_pressure]
+    type = INSFVMomentumPressure
+    variable = vel_y
+    momentum_component = &#x27;y&#x27;
+    pressure = pressure
+  []
+  [v_turb]
+    type = INSFVMixingLengthReynoldsStress
+    variable = vel_y
+    rho = ${rho}
+    mixing_length = &#x27;mixing_length&#x27;
+    momentum_component = &#x27;y&#x27;
+    u = vel_x
+    v = vel_y
+  []
+
+  [temp_time]
+    type = WCNSFVEnergyTimeDerivative
+    variable = T_fluid
+    cp = cp
+    rho = rho
+    drho_dt = drho_dt
+  []
+  [temp_conduction]
+    type = FVDiffusion
+    coeff = &#x27;k&#x27;
+    variable = T_fluid
+  []
+  [temp_advection]
+    type = INSFVEnergyAdvection
+    variable = T_fluid
+    velocity_interp_method = ${velocity_interp_method}
+    advected_interp_method = ${advected_interp_method}
+  []
+  [heat_source]
+    type = FVCoupledForce
+    variable = T_fluid
+    v = power_density
+  []
+  [temp_turb]
+    type = WCNSFVMixingLengthEnergyDiffusion
+    variable = T_fluid
+    rho = rho
+    cp = cp
+    mixing_length = &#x27;mixing_length&#x27;
+    schmidt_number = 1
+    u = vel_x
+    v = vel_y
+  []
+[]
+
+[FVBCs]
+  [no_slip_x]
+    type = INSFVNoSlipWallBC
+    variable = vel_x
+    boundary = &#x27;top bottom&#x27;
+    function = 0
+  []
+
+  [no_slip_y]
+    type = INSFVNoSlipWallBC
+    variable = vel_y
+    boundary = &#x27;top bottom&#x27;
+    function = 0
+  []
+
+  # Inlet
+  [inlet_u]
+    type = INSFVInletVelocityBC
+    variable = vel_x
+    boundary = &#x27;left&#x27;
+    function = ${inlet_v}
+  []
+  [inlet_v]
+    type = INSFVInletVelocityBC
+    variable = vel_y
+    boundary = &#x27;left&#x27;
+    function = 0
+  []
+  [inlet_T]
+    type = FVDirichletBC
+    variable = T_fluid
+    boundary = &#x27;left&#x27;
+    value = ${inlet_temp}
+  []
+
+  [outlet_p]
+    type = INSFVOutletPressureBC
+    variable = pressure
+    boundary = &#x27;right&#x27;
+    function = ${outlet_pressure}
+  []
+[]
+
+[FluidProperties]
+  [fp]
+    type = FlibeFluidProperties
+  []
+[]
+
+[Materials]
+  [const_functor]
+    type = ADGenericFunctorMaterial
+    prop_names = &#x27;cp k&#x27;
+    prop_values = &#x27;${cp} ${k}&#x27;
+  []
+  [rho]
+    type = RhoFromPTFunctorMaterial
+    fp = fp
+    temperature = T_fluid
+    pressure = pressure
+  []
+  [ins_fv]
+    type = INSFVEnthalpyMaterial
+    temperature = &#x27;T_fluid&#x27;
+    rho = ${rho}
+  []
+[]
+
+[AuxKernels]
+  inactive = &#x27;mixing_len&#x27;
+  [mixing_len]
+    type = WallDistanceMixingLengthAux
+    walls = &#x27;top&#x27;
+    variable = mixing_length
+    execute_on = &#x27;initial&#x27;
+    delta = 0.5
+  []
+[]
+
+[Executioner]
+  type = Transient
+  solve_type = &#x27;NEWTON&#x27;
+  petsc_options_iname = &#x27;-pc_type -pc_factor_shift_type&#x27;
+  petsc_options_value = &#x27;lu       NONZERO&#x27;
+
+  [TimeStepper]
+    type = IterationAdaptiveDT
+    dt = 1e-3
+    optimal_iterations = 6
+  []
+  end_time = 15
+
+  nl_abs_tol = 1e-9
+  nl_max_its = 50
+  line_search = &#x27;none&#x27;
+
+  automatic_scaling = true
+  off_diagonals_in_auto_scaling = true
+  compute_scaling_once = false
+[]
+
+[Outputs]
+  exodus = true
+[]
+</code></pre></div><div class="modal-footer"><a class="modal-close btn-flat">Close</a></div></div></div><div class="col hide-on-med-and-down l2"><div class="toc-wrapper pin-top"><ul class="section table-of-contents"><li><a href="#f8ae339d-0d5a-4942-86ba-b43531e9fc1a" class="tooltipped" data-position="left" data-tooltip="Lid Driven Cavity Heated Flow">Lid Driven Cavity Heated Flow</a></li><li><a href="#1c2b6e04-7087-4972-857b-e8dcd371b7fe" class="tooltipped" data-position="left" data-tooltip="Heated Channel Flow">Heated Channel Flow</a></li></ul></div></div></div></div></main></div></body><script type="text/javascript" src="../../contrib/materialize/materialize.min.js"></script><script type="text/javascript" src="../../contrib/clipboard/clipboard.min.js"></script><script type="text/javascript" src="../../contrib/prism/prism.min.js"></script><script type="text/javascript" src="../../js/init.js"></script><script type="text/javascript" src="../../js/navigation.js"></script><script type="text/javascript" src="../../contrib/fuse/fuse.min.js"></script><script type="text/javascript" src="../../js/search_index.js"></script><script type="text/javascript" src="../../js/sqa_moose.js"></script>

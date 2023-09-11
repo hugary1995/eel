@@ -1,0 +1,409 @@
+<!DOCTYPE html><head><meta charset="UTF-8"><title>VolumetricFlowRate | Eel</title><link href="../../contrib/materialize/materialize.min.css" type="text/css" rel="stylesheet" media="screen,projection"></link><link href="../../contrib/prism/prism.min.css" type="text/css" rel="stylesheet"></link><link href="../../css/moose.css" type="text/css" rel="stylesheet"></link><link href="../../css/devel_moose.css" type="text/css" rel="stylesheet"></link><link href="../../css/alert_moose.css" type="text/css" rel="stylesheet"></link><link href="../../css/content_moose.css" type="text/css" rel="stylesheet"></link><link href="../../css/sqa_moose.css" type="text/css" rel="stylesheet"></link><link href="../../css/civet_moose.css" type="text/css" rel="stylesheet"></link><script type="text/javascript" src="../../contrib/jquery/jquery.min.js"></script></head><body><div class="page-wrap"><header><nav><div class="nav-wrapper container"><a href="../../index.html" class="left moose-logo hide-on-med-and-down" id="home-button">Eel</a><a href="https://github.com/hugary1995/eel" class="right"><img src="../../media/framework/github-logo.png" class="github-mark"></img><img src="../../media/framework/github-mark.png" class="github-logo"></img></a><ul class="right hide-on-med-and-down"><li><a href="../../eel.html">Documentation</a></li></ul><a href="#" class="sidenav-trigger" data-target="7b22459a-c33b-4eb6-8bb5-a2b4f04bf49b"><i class="material-icons">menu</i></a><ul class="sidenav" id="7b22459a-c33b-4eb6-8bb5-a2b4f04bf49b"><li><a href="../../eel.html">Documentation</a></li></ul><a href="#moose-search" class="modal-trigger"><i class="material-icons">search</i></a></div></nav><div class="modal modal-fixed-footer moose-search-modal" id="moose-search"><div class="modal-content container moose-search-modal-content"><div class="row"><div class="col l12"><div class="input-field"><input type_="text" onkeyup="mooseSearch()" placeholder="/index.md" id="moose-search-box"></input></div></div><div><div class="col s12" id="moose-search-results"></div></div></div></div><div class="modal-footer"><a href="#!" class="modal-close btn-flat">Close</a></div></div></header><main class="main"><div class="container"><div class="row"><div class="col hide-on-med-and-down l12"><nav class="breadcrumb-nav"><div class="nav-wrapper"><a href=".." class="breadcrumb">source</a><span class="breadcrumb">postprocessors</span><a href="#" class="breadcrumb">VolumetricFlowRate</a></div></nav></div></div><div class="row"><div class="moose-content col s12 m12 l10"><section id="bff47994-f6a0-4670-9990-a0300b330707" data-section-level="1" data-section-text="VolumetricFlowRate"><h1 id="volumetricflowrate">VolumetricFlowRate</h1><p>Computes the volumetric flow rate of an advected quantity through a sideset.</p><section class="scrollspy" id="6d43fe8a-d7d8-4ec7-9483-51325ab0dc42" data-section-level="2" data-section-text="Example input syntax"><h2 id="example-input-syntax">Example input syntax</h2><p>In this example, we measure:</p><ul class="browser-default"><li><p>the mass flow rate </p></li><li><p>the momentum flow rate </p></li><li><p>the enthalpy flow rate</p></li></ul><p>with numerous <code>VolumetricFlowRate</code> postprocessors to prove the conservation of mass, momentum and energy of the finite volume discretization of the incompressible Navier Stokes equations.</p><pre class="moose-pre" style="max-height:350px;"><code class="language-text">[Postprocessors]
+  [inlet_mass_variable]
+    type = VolumetricFlowRate
+    boundary = bottom
+    vel_x = u
+    vel_y = v
+    advected_quantity = advected_density
+  []
+  [inlet_mass_constant]
+    type = VolumetricFlowRate
+    boundary = bottom
+    vel_x = u
+    vel_y = v
+    advected_quantity = ${rho}
+  []
+  [inlet_mass_matprop]
+    type = VolumetricFlowRate
+    boundary = bottom
+    vel_x = u
+    vel_y = v
+    advected_quantity = &#x27;advected_rho&#x27;
+  []
+  [mid1_mass]
+    type = VolumetricFlowRate
+    boundary = internal_bot
+    vel_x = u
+    vel_y = v
+    advected_quantity = ${rho}
+  []
+  [mid2_mass]
+    type = VolumetricFlowRate
+    boundary = internal_top
+    vel_x = u
+    vel_y = v
+    advected_quantity = ${rho}
+  []
+  [outlet_mass]
+    type = VolumetricFlowRate
+    boundary = top
+    vel_x = u
+    vel_y = v
+    advected_quantity = ${rho}
+  []
+
+  [inlet_momentum_x]
+    type = VolumetricFlowRate
+    boundary = bottom
+    vel_x = u
+    vel_y = v
+    advected_quantity = u
+  []
+
+  [inlet_momentum_y]
+    type = VolumetricFlowRate
+    boundary = bottom
+    vel_x = u
+    vel_y = v
+    advected_quantity = v
+  []
+
+  [mid1_advected_energy]
+    type = VolumetricFlowRate
+    boundary = internal_bot
+    vel_x = u
+    vel_y = v
+    advected_quantity = &#x27;rho_cp_temp&#x27;
+    advected_interp_method = &#x27;upwind&#x27;
+  []
+  [mid2_advected_energy]
+    type = VolumetricFlowRate
+    boundary = internal_top
+    vel_x = u
+    vel_y = v
+    advected_quantity = &#x27;rho_cp_temp&#x27;
+    advected_interp_method = &#x27;upwind&#x27;
+  []
+  [outlet_advected_energy]
+    type = VolumetricFlowRate
+    boundary = top
+    vel_x = u
+    vel_y = v
+    advected_quantity = &#x27;rho_cp_temp&#x27;
+    advected_interp_method = &#x27;upwind&#x27;
+  []
+[]
+</code></pre><a class="moose-source-filename tooltipped modal-trigger" href="#793df3f7-84ff-4e56-be1e-f9d6f0345b13">(moose/modules/navier_stokes/test/tests/postprocessors/flow_rates/conservation_INSFV.i)</a></section><section class="scrollspy" id="84ad6d4e-5a18-43b7-bd9a-d3d960186762" data-section-level="2" data-section-text="Input Parameters"><h2 id="input-parameters">Input Parameters</h2><section id="616a5830-84ad-4fa8-9cdf-e622ac4d7c90" data-section-level="3" data-section-text="Required Parameters" data-details-open="open"><details class="moose-section-content" open="open"><ul class="collapsible" data-collapsible="expandable"><li><div class="collapsible-header"><span class="moose-parameter-name">boundary</span><span class="moose-parameter-header-description">The list of boundary IDs from the mesh where this object applies</span></div><div class="collapsible-body"><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>std::vector&lt;BoundaryName&gt;</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>No</p><p class="moose-parameter-description"><span>Description:</span>The list of boundary IDs from the mesh where this object applies</p></div></li><li><div class="collapsible-header"><span class="moose-parameter-name">vel_x</span><span class="moose-parameter-header-description">The x-axis velocity</span></div><div class="collapsible-body"><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>std::vector&lt;VariableName&gt;</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>No</p><p class="moose-parameter-description"><span>Description:</span>The x-axis velocity</p></div></li></ul><summary><h3 data-details-open="open"><span class="moose-section-icon"></span>Required Parameters</h3></summary></details></section><section id="4d8596a6-e189-4ecb-afbf-78d7c94c3e39" data-section-level="3" data-section-text="Optional Parameters" data-details-open="open"><details class="moose-section-content" open="open"><ul class="collapsible" data-collapsible="expandable"><li><div class="collapsible-header"><span class="moose-parameter-name">advected_interp_method</span><span class="moose-parameter-header-default">upwind</span><span class="moose-parameter-header-description">The interpolation to use for the advected quantity. Options are 'upwind', 'average', 'sou' (for second-order upwind), 'min_mod', 'vanLeer', 'quick', and 'skewness-corrected' with the default being 'upwind'.</span></div><div class="collapsible-body"><p class="moose-parameter-description-default"><span>Default:</span>upwind</p><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>MooseEnum</p><p class="moose-parameter-description-options"><span>Options:</span>average, upwind, sou, min_mod, vanLeer, quick, skewness-corrected</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>No</p><p class="moose-parameter-description"><span>Description:</span>The interpolation to use for the advected quantity. Options are 'upwind', 'average', 'sou' (for second-order upwind), 'min_mod', 'vanLeer', 'quick', and 'skewness-corrected' with the default being 'upwind'.</p></div></li><li><div class="collapsible-header"><span class="moose-parameter-name">advected_mat_prop</span><span class="moose-parameter-header-default">0</span><span class="moose-parameter-header-description">The advected material property of which to study the flow; useful for finite element simulations</span></div><div class="collapsible-body"><p class="moose-parameter-description-default"><span>Default:</span>0</p><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>MooseFunctorName</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>No</p><p class="moose-parameter-description"><span>Description:</span>The advected material property of which to study the flow; useful for finite element simulations</p></div></li><li><div class="collapsible-header"><span class="moose-parameter-name">advected_quantity</span><span class="moose-parameter-header-description">The quantity to advect. This is the canonical parameter to set the advected quantity when finite volume is being used.</span></div><div class="collapsible-body"><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>MooseFunctorName</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>No</p><p class="moose-parameter-description"><span>Description:</span>The quantity to advect. This is the canonical parameter to set the advected quantity when finite volume is being used.</p></div></li><li><div class="collapsible-header"><span class="moose-parameter-name">advected_variable</span><span class="moose-parameter-header-description">The advected variable quantity of which to study the flow; useful for finite element simulations</span></div><div class="collapsible-body"><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>std::vector&lt;VariableName&gt;</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>No</p><p class="moose-parameter-description"><span>Description:</span>The advected variable quantity of which to study the flow; useful for finite element simulations</p></div></li><li><div class="collapsible-header"><span class="moose-parameter-name">execute_on</span><span class="moose-parameter-header-default">TIMESTEP_END</span><span class="moose-parameter-header-description">The list of flag(s) indicating when this object should be executed, the available options include NONE, INITIAL, LINEAR, NONLINEAR, TIMESTEP_END, TIMESTEP_BEGIN, MULTIAPP_FIXED_POINT_END, MULTIAPP_FIXED_POINT_BEGIN, FINAL, CUSTOM, ALWAYS.</span></div><div class="collapsible-body"><p class="moose-parameter-description-default"><span>Default:</span>TIMESTEP_END</p><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>ExecFlagEnum</p><p class="moose-parameter-description-options"><span>Options:</span>NONE, INITIAL, LINEAR, NONLINEAR, TIMESTEP_END, TIMESTEP_BEGIN, MULTIAPP_FIXED_POINT_END, MULTIAPP_FIXED_POINT_BEGIN, FINAL, CUSTOM, ALWAYS, TRANSFER</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>No</p><p class="moose-parameter-description"><span>Description:</span>The list of flag(s) indicating when this object should be executed, the available options include NONE, INITIAL, LINEAR, NONLINEAR, TIMESTEP_END, TIMESTEP_BEGIN, MULTIAPP_FIXED_POINT_END, MULTIAPP_FIXED_POINT_BEGIN, FINAL, CUSTOM, ALWAYS.</p></div></li><li><div class="collapsible-header"><span class="moose-parameter-name">prop_getter_suffix</span><span class="moose-parameter-header-description">An optional suffix parameter that can be appended to any attempt to retrieve/get material properties. The suffix will be prepended with a '_' character.</span></div><div class="collapsible-body"><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>MaterialPropertyName</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>No</p><p class="moose-parameter-description"><span>Description:</span>An optional suffix parameter that can be appended to any attempt to retrieve/get material properties. The suffix will be prepended with a '_' character.</p></div></li><li><div class="collapsible-header"><span class="moose-parameter-name">rhie_chow_user_object</span><span class="moose-parameter-header-description">The rhie-chow user-object</span></div><div class="collapsible-body"><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>UserObjectName</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>No</p><p class="moose-parameter-description"><span>Description:</span>The rhie-chow user-object</p></div></li><li><div class="collapsible-header"><span class="moose-parameter-name">vel_y</span><span class="moose-parameter-header-description">The y-axis velocity</span></div><div class="collapsible-body"><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>std::vector&lt;VariableName&gt;</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>No</p><p class="moose-parameter-description"><span>Description:</span>The y-axis velocity</p></div></li><li><div class="collapsible-header"><span class="moose-parameter-name">vel_z</span><span class="moose-parameter-header-description">The z-axis velocity</span></div><div class="collapsible-body"><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>std::vector&lt;VariableName&gt;</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>No</p><p class="moose-parameter-description"><span>Description:</span>The z-axis velocity</p></div></li><li><div class="collapsible-header"><span class="moose-parameter-name">velocity_interp_method</span><span class="moose-parameter-header-default">rc</span><span class="moose-parameter-header-description">The interpolation to use for the velocity. Options are 'average' and 'rc' which stands for Rhie-Chow. The default is Rhie-Chow.</span></div><div class="collapsible-body"><p class="moose-parameter-description-default"><span>Default:</span>rc</p><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>MooseEnum</p><p class="moose-parameter-description-options"><span>Options:</span>average, rc</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>No</p><p class="moose-parameter-description"><span>Description:</span>The interpolation to use for the velocity. Options are 'average' and 'rc' which stands for Rhie-Chow. The default is Rhie-Chow.</p></div></li></ul><summary><h3 data-details-open="open"><span class="moose-section-icon"></span>Optional Parameters</h3></summary></details></section><section id="18449ea5-7865-47d1-a4e3-d1083e78bae7" data-section-level="3" data-section-text="Advanced Parameters" data-details-open="close"><details class="moose-section-content"><ul class="collapsible" data-collapsible="expandable"><li><div class="collapsible-header"><span class="moose-parameter-name">allow_duplicate_execution_on_initial</span><span class="moose-parameter-header-default">False</span><span class="moose-parameter-header-description">In the case where this UserObject is depended upon by an initial condition, allow it to be executed twice during the initial setup (once before the IC and again after mesh adaptivity (if applicable).</span></div><div class="collapsible-body"><p class="moose-parameter-description-default"><span>Default:</span>False</p><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>bool</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>No</p><p class="moose-parameter-description"><span>Description:</span>In the case where this UserObject is depended upon by an initial condition, allow it to be executed twice during the initial setup (once before the IC and again after mesh adaptivity (if applicable).</p></div></li><li><div class="collapsible-header"><span class="moose-parameter-name">control_tags</span><span class="moose-parameter-header-description">Adds user-defined labels for accessing object parameters via control logic.</span></div><div class="collapsible-body"><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>std::vector&lt;std::string&gt;</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>No</p><p class="moose-parameter-description"><span>Description:</span>Adds user-defined labels for accessing object parameters via control logic.</p></div></li><li><div class="collapsible-header"><span class="moose-parameter-name">enable</span><span class="moose-parameter-header-default">True</span><span class="moose-parameter-header-description">Set the enabled status of the MooseObject.</span></div><div class="collapsible-body"><p class="moose-parameter-description-default"><span>Default:</span>True</p><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>bool</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>Yes</p><p class="moose-parameter-description"><span>Description:</span>Set the enabled status of the MooseObject.</p></div></li><li><div class="collapsible-header"><span class="moose-parameter-name">execution_order_group</span><span class="moose-parameter-header-default">0</span><span class="moose-parameter-header-description">Execution order groups are executed in increasing order (e.g., the lowest number is executed first). Note that negative group numbers may be used to execute groups before the default (0) group. Please refer to the user object documentation for ordering of user object execution within a group.</span></div><div class="collapsible-body"><p class="moose-parameter-description-default"><span>Default:</span>0</p><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>int</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>No</p><p class="moose-parameter-description"><span>Description:</span>Execution order groups are executed in increasing order (e.g., the lowest number is executed first). Note that negative group numbers may be used to execute groups before the default (0) group. Please refer to the user object documentation for ordering of user object execution within a group.</p></div></li><li><div class="collapsible-header"><span class="moose-parameter-name">force_postaux</span><span class="moose-parameter-header-default">False</span><span class="moose-parameter-header-description">Forces the UserObject to be executed in POSTAUX</span></div><div class="collapsible-body"><p class="moose-parameter-description-default"><span>Default:</span>False</p><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>bool</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>No</p><p class="moose-parameter-description"><span>Description:</span>Forces the UserObject to be executed in POSTAUX</p></div></li><li><div class="collapsible-header"><span class="moose-parameter-name">force_preaux</span><span class="moose-parameter-header-default">False</span><span class="moose-parameter-header-description">Forces the UserObject to be executed in PREAUX</span></div><div class="collapsible-body"><p class="moose-parameter-description-default"><span>Default:</span>False</p><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>bool</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>No</p><p class="moose-parameter-description"><span>Description:</span>Forces the UserObject to be executed in PREAUX</p></div></li><li><div class="collapsible-header"><span class="moose-parameter-name">force_preic</span><span class="moose-parameter-header-default">False</span><span class="moose-parameter-header-description">Forces the UserObject to be executed in PREIC during initial setup</span></div><div class="collapsible-body"><p class="moose-parameter-description-default"><span>Default:</span>False</p><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>bool</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>No</p><p class="moose-parameter-description"><span>Description:</span>Forces the UserObject to be executed in PREIC during initial setup</p></div></li><li><div class="collapsible-header"><span class="moose-parameter-name">outputs</span><span class="moose-parameter-header-description">Vector of output names where you would like to restrict the output of variables(s) associated with this object</span></div><div class="collapsible-body"><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>std::vector&lt;OutputName&gt;</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>No</p><p class="moose-parameter-description"><span>Description:</span>Vector of output names where you would like to restrict the output of variables(s) associated with this object</p></div></li><li><div class="collapsible-header"><span class="moose-parameter-name">use_displaced_mesh</span><span class="moose-parameter-header-default">False</span><span class="moose-parameter-header-description">Whether or not this object should use the displaced mesh for computation.  Note that in the case this is true but no displacements are provided in the Mesh block the undisplaced mesh will still be used.</span></div><div class="collapsible-body"><p class="moose-parameter-description-default"><span>Default:</span>False</p><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>bool</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>No</p><p class="moose-parameter-description"><span>Description:</span>Whether or not this object should use the displaced mesh for computation.  Note that in the case this is true but no displacements are provided in the Mesh block the undisplaced mesh will still be used.</p></div></li></ul><summary><h3 data-details-open="close"><span class="moose-section-icon"></span>Advanced Parameters</h3></summary></details></section></section></section><div class="moose-modal modal" id="793df3f7-84ff-4e56-be1e-f9d6f0345b13"><div class="modal-content"><h4>(moose/modules/navier_stokes/test/tests/postprocessors/flow_rates/conservation_INSFV.i)</h4><pre class="moose-pre"><code class="language-text">mu=1
+rho=1
+advected_interp_method=&#x27;average&#x27;
+velocity_interp_method=&#x27;rc&#x27;
+
+[GlobalParams]
+  rhie_chow_user_object = &#x27;rc&#x27;
+  advected_interp_method = ${advected_interp_method}
+  velocity_interp_method = ${velocity_interp_method}
+[]
+
+[UserObjects]
+  [rc]
+    type = INSFVRhieChowInterpolator
+    u = u
+    v = v
+    pressure = pressure
+  []
+[]
+
+[Mesh]
+  inactive = &#x27;mesh internal_boundary_bot internal_boundary_top&#x27;
+  [mesh]
+    type = CartesianMeshGenerator
+    dim = 2
+    dx = &#x27;1&#x27;
+    dy = &#x27;1 1 1&#x27;
+    ix = &#x27;5&#x27;
+    iy = &#x27;5 5 5&#x27;
+    subdomain_id = &#x27;1
+                    2
+                    3&#x27;
+  []
+  [internal_boundary_bot]
+    type = SideSetsBetweenSubdomainsGenerator
+    input = mesh
+    new_boundary = &#x27;internal_bot&#x27;
+    primary_block = 1
+    paired_block = 2
+  []
+  [internal_boundary_top]
+    type = SideSetsBetweenSubdomainsGenerator
+    input = internal_boundary_bot
+    new_boundary = &#x27;internal_top&#x27;
+    primary_block = 2
+    paired_block = 3
+  []
+  [diverging_mesh]
+    type = FileMeshGenerator
+    file = &#x27;expansion_quad.e&#x27;
+  []
+[]
+
+[Variables]
+  [u]
+    type = INSFVVelocityVariable
+    initial_condition = 0
+  []
+  [v]
+    type = INSFVVelocityVariable
+    initial_condition = 1
+  []
+  [pressure]
+    type = INSFVPressureVariable
+  []
+  [temperature]
+    type = INSFVEnergyVariable
+  []
+[]
+
+[AuxVariables]
+  [advected_density]
+    type = MooseVariableFVReal
+    initial_condition = ${rho}
+  []
+[]
+
+[FVKernels]
+  [mass]
+    type = INSFVMassAdvection
+    variable = pressure
+    rho = ${rho}
+  []
+
+  [u_advection]
+    type = INSFVMomentumAdvection
+    variable = u
+    rho = ${rho}
+    momentum_component = &#x27;x&#x27;
+  []
+  [u_viscosity]
+    type = INSFVMomentumDiffusion
+    variable = u
+    mu = ${mu}
+    force_boundary_execution = true
+    momentum_component = &#x27;x&#x27;
+  []
+  [u_pressure]
+    type = INSFVMomentumPressure
+    variable = u
+    momentum_component = &#x27;x&#x27;
+    pressure = pressure
+  []
+
+  [v_advection]
+    type = INSFVMomentumAdvection
+    variable = v
+    rho = ${rho}
+    momentum_component = &#x27;y&#x27;
+  []
+  [v_viscosity]
+    type = INSFVMomentumDiffusion
+    variable = v
+    mu = ${mu}
+    force_boundary_execution = true
+    momentum_component = &#x27;y&#x27;
+  []
+  [v_pressure]
+    type = INSFVMomentumPressure
+    variable = v
+    momentum_component = &#x27;y&#x27;
+    pressure = pressure
+  []
+
+  [temp_advection]
+    type = INSFVEnergyAdvection
+    variable = temperature
+    advected_interp_method = &#x27;upwind&#x27;
+  []
+  [temp_source]
+    type = FVBodyForce
+    variable = temperature
+    function = 10
+    block = 1
+  []
+[]
+
+[FVBCs]
+  inactive = &#x27;noslip-u noslip-v&#x27;
+  [inlet-u]
+    type = INSFVInletVelocityBC
+    boundary = &#x27;bottom&#x27;
+    variable = u
+    function = 0
+  []
+  [inlet-v]
+    type = INSFVInletVelocityBC
+    boundary = &#x27;bottom&#x27;
+    variable = v
+    function = 1
+  []
+  [noslip-u]
+    type = INSFVNoSlipWallBC
+    boundary = &#x27;right&#x27;
+    variable = u
+    function = 0
+  []
+  [noslip-v]
+    type = INSFVNoSlipWallBC
+    boundary = &#x27;right&#x27;
+    variable = v
+    function = 0
+  []
+  [free-slip-u]
+    type = INSFVNaturalFreeSlipBC
+    boundary = &#x27;right&#x27;
+    variable = u
+    momentum_component = &#x27;x&#x27;
+  []
+  [free-slip-v]
+    type = INSFVNaturalFreeSlipBC
+    boundary = &#x27;right&#x27;
+    variable = v
+    momentum_component = &#x27;y&#x27;
+  []
+  [axis-u]
+    type = INSFVSymmetryVelocityBC
+    boundary = &#x27;left&#x27;
+    variable = u
+    u = u
+    v = v
+    mu = ${mu}
+    momentum_component = x
+  []
+  [axis-v]
+    type = INSFVSymmetryVelocityBC
+    boundary = &#x27;left&#x27;
+    variable = v
+    u = u
+    v = v
+    mu = ${mu}
+    momentum_component = y
+  []
+  [axis-p]
+    type = INSFVSymmetryPressureBC
+    boundary = &#x27;left&#x27;
+    variable = pressure
+  []
+  [outlet_p]
+    type = INSFVOutletPressureBC
+    boundary = &#x27;top&#x27;
+    variable = pressure
+    function = 0
+  []
+  [inlet_temp]
+    type = FVNeumannBC
+    boundary = &#x27;bottom&#x27;
+    variable = temperature
+    value = 300
+  []
+[]
+
+[Materials]
+  [ins_fv]
+    type = INSFVEnthalpyMaterial
+    temperature = &#x27;temperature&#x27;
+    rho = ${rho}
+  []
+  [advected_material_property]
+    type = ADGenericFunctorMaterial
+    prop_names = &#x27;advected_rho cp&#x27;
+    prop_values =&#x27;${rho} 1&#x27;
+  []
+[]
+
+[Executioner]
+  type = Steady
+  solve_type = &#x27;NEWTON&#x27;
+  petsc_options_iname = &#x27;-pc_type -ksp_gmres_restart -sub_pc_type -sub_pc_factor_shift_type&#x27;
+  petsc_options_value = &#x27;asm      200                lu           NONZERO&#x27;
+  line_search = &#x27;none&#x27;
+  nl_rel_tol = 1e-12
+[]
+
+[Postprocessors]
+  [inlet_mass_variable]
+    type = VolumetricFlowRate
+    boundary = bottom
+    vel_x = u
+    vel_y = v
+    advected_quantity = advected_density
+  []
+  [inlet_mass_constant]
+    type = VolumetricFlowRate
+    boundary = bottom
+    vel_x = u
+    vel_y = v
+    advected_quantity = ${rho}
+  []
+  [inlet_mass_matprop]
+    type = VolumetricFlowRate
+    boundary = bottom
+    vel_x = u
+    vel_y = v
+    advected_quantity = &#x27;advected_rho&#x27;
+  []
+  [mid1_mass]
+    type = VolumetricFlowRate
+    boundary = internal_bot
+    vel_x = u
+    vel_y = v
+    advected_quantity = ${rho}
+  []
+  [mid2_mass]
+    type = VolumetricFlowRate
+    boundary = internal_top
+    vel_x = u
+    vel_y = v
+    advected_quantity = ${rho}
+  []
+  [outlet_mass]
+    type = VolumetricFlowRate
+    boundary = top
+    vel_x = u
+    vel_y = v
+    advected_quantity = ${rho}
+  []
+
+  [inlet_momentum_x]
+    type = VolumetricFlowRate
+    boundary = bottom
+    vel_x = u
+    vel_y = v
+    advected_quantity = u
+  []
+
+  [inlet_momentum_y]
+    type = VolumetricFlowRate
+    boundary = bottom
+    vel_x = u
+    vel_y = v
+    advected_quantity = v
+  []
+
+  [mid1_advected_energy]
+    type = VolumetricFlowRate
+    boundary = internal_bot
+    vel_x = u
+    vel_y = v
+    advected_quantity = &#x27;rho_cp_temp&#x27;
+    advected_interp_method = &#x27;upwind&#x27;
+  []
+  [mid2_advected_energy]
+    type = VolumetricFlowRate
+    boundary = internal_top
+    vel_x = u
+    vel_y = v
+    advected_quantity = &#x27;rho_cp_temp&#x27;
+    advected_interp_method = &#x27;upwind&#x27;
+  []
+  [outlet_advected_energy]
+    type = VolumetricFlowRate
+    boundary = top
+    vel_x = u
+    vel_y = v
+    advected_quantity = &#x27;rho_cp_temp&#x27;
+    advected_interp_method = &#x27;upwind&#x27;
+  []
+[]
+
+[Outputs]
+  csv = true
+[]
+</code></pre></div><div class="modal-footer"><a class="modal-close btn-flat">Close</a></div></div></div><div class="col hide-on-med-and-down l2"><div class="toc-wrapper pin-top"><ul class="section table-of-contents"><li><a href="#6d43fe8a-d7d8-4ec7-9483-51325ab0dc42" class="tooltipped" data-position="left" data-tooltip="Example input syntax">Example input syntax</a></li><li><a href="#84ad6d4e-5a18-43b7-bd9a-d3d960186762" class="tooltipped" data-position="left" data-tooltip="Input Parameters">Input Parameters</a></li></ul></div></div></div></div></main></div></body><script type="text/javascript" src="../../contrib/materialize/materialize.min.js"></script><script type="text/javascript" src="../../contrib/clipboard/clipboard.min.js"></script><script type="text/javascript" src="../../contrib/prism/prism.min.js"></script><script type="text/javascript" src="../../js/init.js"></script><script type="text/javascript" src="../../js/navigation.js"></script><script type="text/javascript" src="../../contrib/fuse/fuse.min.js"></script><script type="text/javascript" src="../../js/search_index.js"></script><script type="text/javascript" src="../../js/sqa_moose.js"></script>

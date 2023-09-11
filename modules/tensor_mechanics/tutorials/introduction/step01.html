@@ -1,0 +1,97 @@
+<!DOCTYPE html><head><meta charset="UTF-8"><title>Step 1 First steps | Eel</title><link href="../../../../contrib/materialize/materialize.min.css" type="text/css" rel="stylesheet" media="screen,projection"></link><link href="../../../../contrib/prism/prism.min.css" type="text/css" rel="stylesheet"></link><link href="../../../../css/moose.css" type="text/css" rel="stylesheet"></link><link href="../../../../css/devel_moose.css" type="text/css" rel="stylesheet"></link><link href="../../../../css/alert_moose.css" type="text/css" rel="stylesheet"></link><link href="../../../../css/content_moose.css" type="text/css" rel="stylesheet"></link><link href="../../../../css/sqa_moose.css" type="text/css" rel="stylesheet"></link><link href="../../../../css/civet_moose.css" type="text/css" rel="stylesheet"></link><script type="text/javascript" src="../../../../contrib/jquery/jquery.min.js"></script></head><body><div class="page-wrap"><header><nav><div class="nav-wrapper container"><a href="../../../../index.html" class="left moose-logo hide-on-med-and-down" id="home-button">Eel</a><a href="https://github.com/hugary1995/eel" class="right"><img src="../../../../media/framework/github-logo.png" class="github-mark"></img><img src="../../../../media/framework/github-mark.png" class="github-logo"></img></a><ul class="right hide-on-med-and-down"><li><a href="../../../../eel.html">Documentation</a></li></ul><a href="#" class="sidenav-trigger" data-target="593fde6b-6443-419d-a274-d8cf5c40a309"><i class="material-icons">menu</i></a><ul class="sidenav" id="593fde6b-6443-419d-a274-d8cf5c40a309"><li><a href="../../../../eel.html">Documentation</a></li></ul><a href="#moose-search" class="modal-trigger"><i class="material-icons">search</i></a></div></nav><div class="modal modal-fixed-footer moose-search-modal" id="moose-search"><div class="modal-content container moose-search-modal-content"><div class="row"><div class="col l12"><div class="input-field"><input type_="text" onkeyup="mooseSearch()" placeholder="/index.md" id="moose-search-box"></input></div></div><div><div class="col s12" id="moose-search-results"></div></div></div></div><div class="modal-footer"><a href="#!" class="modal-close btn-flat">Close</a></div></div></header><main class="main"><div class="container"><div class="row"><div class="col hide-on-med-and-down l12"><nav class="breadcrumb-nav"><div class="nav-wrapper"><span class="breadcrumb">modules</span><a href="../.." class="breadcrumb">tensor_mechanics</a><span class="breadcrumb">tutorials</span><a href="." class="breadcrumb">introduction</a><a href="#" class="breadcrumb">step01</a></div></nav></div></div><div class="row"><div class="moose-content col s12 m12 l10"><section id="e13a76f9-dfcd-4135-8977-a5d8e7de3062" data-section-level="1" data-section-text="Step 1 - First steps"><h1 id="step-1-first-steps">Step 1 - First steps</h1><p>Let&#x27;s get started with a minimal input file.</p><pre class="moose-pre" style="max-height:350px;"><code class="language-text">#
+# Initial single block mechanics input
+# https://mooseframework.inl.gov/modules/tensor_mechanics/tutorials/introduction/step01.html
+#
+
+[GlobalParams]
+  displacements = &#x27;disp_x disp_y&#x27;
+[]
+
+[Mesh]
+  [generated]
+    type = GeneratedMeshGenerator
+    dim = 2
+    nx = 10
+    ny = 10
+    xmax = 2
+    ymax = 1
+  []
+[]
+
+[Modules/TensorMechanics/Master]
+  [all]
+    add_variables = true
+  []
+[]
+
+[Materials]
+  [elasticity]
+    type = ComputeIsotropicElasticityTensor
+    youngs_modulus = 1e9
+    poissons_ratio = 0.3
+  []
+  [stress]
+    type = ComputeLinearElasticStress
+  []
+[]
+
+[Executioner]
+  type = Transient
+  end_time = 5
+  dt = 1
+[]
+
+[Outputs]
+  exodus = true
+[]
+</code></pre><a class="moose-source-filename tooltipped modal-trigger" href="#91591d50-a076-4887-984c-2665aa58d468">(moose/modules/tensor_mechanics/tutorials/introduction/mech_step01.i)</a><section class="scrollspy" id="a04fee6b-f7ef-46b4-bb45-b6afb11eb583" data-section-level="2" data-section-text="Input file"><h2 id="input-file">Input file</h2><section id="7036bb06-8a9a-478f-8b44-d3a3a99831b5" data-section-level="3" data-section-text="GlobalParams"><h3><code>GlobalParams</code></h3><p>In the <code>[GlobalParams]</code> we set a default value for the <code>displacements</code> parameters. That way we do not have to specify it explicitly in the multiple blocks below that all need this parameter set.</p></section><section id="94a9d921-8c71-49a4-83b7-d31780d52db6" data-section-level="3" data-section-text="Mesh"><h3><code>Mesh</code></h3><p>We create a simple regular orthogonal mesh block using the <a href="../../../../source/meshgenerators/GeneratedMeshGenerator.html"><code>GeneratedMeshGenerator</code></a>. All subblocks under <code>[Mesh]</code> are the so called <a href="../../../../source/meshgenerators/MeshGenerator.html"><em>MeshGenerators</em></a>. They can be chained together and MOOSE provides a multitude of generators to create and modify meshes. Later on we will see how to create a second block and combine it into a two block mesh. A commonly used MeshGenerator is the <a href="../../../../source/meshgenerators/FileMeshGenerator.html"><code>FileMeshGenerator</code></a>, it is used to load a mesh file generated by third party software like Cubit of Gmsh (or sometimes even meshes generated by MOOSE). MOOSE provides a shorthand for the <code>FileMeshGenerator</code> through the <a href="#5955a2e8-545e-4db5-9a80-3ed2dd703167" class="moose-modal-link modal-trigger">&quot;file&quot;</a> parameter inside <code>[Mesh]</code>, e.g.</p><pre class="moose-pre"><code class="language-text">
+[Mesh]
+  file = pressure_vessel.e
+[]
+</code></pre><p>MOOSE supports a <a href="../../../../source/meshgenerators/FileMeshGenerator.html">variety of mesh file formats</a>; most commonly used is the Exodus II format.</p></section><section id="b498f823-1fc3-4a22-acba-c5e60ad3f2af" data-section-level="3" data-section-text="TensorMechanics Action Master"><h3 id="tensormechanics-action">TensorMechanics <code>Master</code> Action</h3><p>The third top level block has a path with three components in the title. You can think of the MOOSE input file block structure like a directory. <a href="../../../../syntax/Modules/TensorMechanics/Master/index.html">The <code>Master</code> action</a> is nested under <code>Modules</code> and <code>TensorMechanics</code>. A MOOSE Action is a convenience object that can setup multiple aspects of a simulation for the user, resulting in a more compact syntax. Actions can also enforce consistency in the simulation definition. In this simple example the action will create the displacement variables (as specified by the <code>GlobalParams/displacements</code> parameter). The action will automatically determine if second order shape functions are needed, based on the order of the mesh in the simulation (this works with any kind of mesh, whether it is generated by MOOSE or read in from a file).</p><p>Furthermore the appropriate <em>strain calculator</em> will be added for the chosen coordinate system (axisymmetric, spherical, Cartesian).</p><p>Check the <a href="../../../../syntax/Modules/TensorMechanics/Master/index.html">master action documentation</a> for a full run-down of all objects it creates.</p></section><section id="f83088ea-a023-4c70-ad1f-943125d91bee" data-section-level="3" data-section-text="Materials"><h3><code>Materials</code></h3><p>The two subblocks under <a href="../../../../syntax/Materials/index.html"><code>[Materials]</code></a> define an <a href="../../../../source/materials/ComputeIsotropicElasticityTensor.html">isotropic elasticity tensor</a> and a <a href="../../../../source/materials/ComputeLinearElasticStress.html">linear elastic stress calculator</a>. Neither object is block restricted (using the <code>block</code> parameter), so they apply to the entire simulation domain.</p></section><section id="9151e211-1d19-4a1c-8569-6bb7341c1fbc" data-section-level="3" data-section-text="Executioner"><h3><code>Executioner</code></h3><p>In the <a href="../../../../syntax/Executioner/index.html"><code>[Executioner]</code></a> block all parameters relevant to the solution of the current problem are set. <a href="../../../../source/executioners/Transient.html"><code>type = Transient</code></a> selects a time-dependent simulation (as opposed to <a href="../../../../source/executioners/Steady.html"><code>type = Steady</code></a>). We chose to run for five simulation steps; with a timestep of <code>1</code>.</p></section><section id="03052f1e-5d5d-429f-9014-cf8d5d94dcaf" data-section-level="3" data-section-text="Outputs"><h3><code>Outputs</code></h3><p>We use the <code>exodus = true</code> shorthand to setup an output object of type <code>Exodus</code> to write an Exodus II mesh and solution file to the disk. You can visualize these outputs using <a href="https://www.paraview.org">Paraview</a>.</p></section></section><section class="scrollspy" id="7860382a-3f7a-4fdd-82d9-44aea42ebb00" data-section-level="2" data-section-text="Questions"><h2 id="questions">Questions</h2><section id="6a9964a9-d228-4651-8f1c-16e102cb2593" data-section-level="3" data-section-text="Units"><h3 id="units">Units</h3><p>A question that comes up often is &quot;What units does MOOSE use?&quot;.</p><blockquote><p> Look through the input file and try to identify places where units might be  relevant.</p></blockquote><p><a href="answer01a.html">Click here for the answer.</a></p></section><section id="65c311ad-2586-44e1-9e25-64ea70d3f77c" data-section-level="3" data-section-text="Expected outcome"><h3 id="expected-outcome">Expected outcome</h3><blockquote><p>Before you run this first input file take a moment to think about what you expect to happen.</p></blockquote><p><a href="answer01b.html">Click here for the answer.</a></p><p>Once you&#x27;ve answered the questions and run the first example it is time to move on to a slightly more complex scenario in <a href="step02.html">Step 2</a>. </p></section></section></section><div class="moose-modal modal" id="91591d50-a076-4887-984c-2665aa58d468"><div class="modal-content"><h4>(moose/modules/tensor_mechanics/tutorials/introduction/mech_step01.i)</h4><pre class="moose-pre"><code class="language-text">#
+# Initial single block mechanics input
+# https://mooseframework.inl.gov/modules/tensor_mechanics/tutorials/introduction/step01.html
+#
+
+[GlobalParams]
+  displacements = &#x27;disp_x disp_y&#x27;
+[]
+
+[Mesh]
+  [generated]
+    type = GeneratedMeshGenerator
+    dim = 2
+    nx = 10
+    ny = 10
+    xmax = 2
+    ymax = 1
+  []
+[]
+
+[Modules/TensorMechanics/Master]
+  [all]
+    add_variables = true
+  []
+[]
+
+[Materials]
+  [elasticity]
+    type = ComputeIsotropicElasticityTensor
+    youngs_modulus = 1e9
+    poissons_ratio = 0.3
+  []
+  [stress]
+    type = ComputeLinearElasticStress
+  []
+[]
+
+[Executioner]
+  type = Transient
+  end_time = 5
+  dt = 1
+[]
+
+[Outputs]
+  exodus = true
+[]
+</code></pre></div><div class="modal-footer"><a class="modal-close btn-flat">Close</a></div></div><div class="moose-modal modal" id="5955a2e8-545e-4db5-9a80-3ed2dd703167"><div class="modal-content"><h4>file</h4><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>MeshFileName</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>No</p><p class="moose-parameter-description"><span>Description:</span>The name of the mesh file to read</p></div></div></div><div class="col hide-on-med-and-down l2"><div class="toc-wrapper pin-top"><ul class="section table-of-contents"><li><a href="#a04fee6b-f7ef-46b4-bb45-b6afb11eb583" class="tooltipped" data-position="left" data-tooltip="Input file">Input file</a></li><li><a href="#7860382a-3f7a-4fdd-82d9-44aea42ebb00" class="tooltipped" data-position="left" data-tooltip="Questions">Questions</a></li></ul></div></div></div></div></main></div></body><script type="text/javascript" src="../../../../contrib/materialize/materialize.min.js"></script><script type="text/javascript" src="../../../../contrib/clipboard/clipboard.min.js"></script><script type="text/javascript" src="../../../../contrib/prism/prism.min.js"></script><script type="text/javascript" src="../../../../js/init.js"></script><script type="text/javascript" src="../../../../js/navigation.js"></script><script type="text/javascript" src="../../../../contrib/fuse/fuse.min.js"></script><script type="text/javascript" src="../../../../js/search_index.js"></script><script type="text/javascript" src="../../../../js/sqa_moose.js"></script>

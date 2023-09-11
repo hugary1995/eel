@@ -1,0 +1,3178 @@
+<!DOCTYPE html><head><meta charset="UTF-8"><title>NavierStokesFV System | Eel</title><link href="../../../contrib/materialize/materialize.min.css" type="text/css" rel="stylesheet" media="screen,projection"></link><link href="../../../contrib/prism/prism.min.css" type="text/css" rel="stylesheet"></link><link href="../../../css/moose.css" type="text/css" rel="stylesheet"></link><link href="../../../css/devel_moose.css" type="text/css" rel="stylesheet"></link><link href="../../../css/alert_moose.css" type="text/css" rel="stylesheet"></link><link href="../../../css/content_moose.css" type="text/css" rel="stylesheet"></link><link href="../../../css/sqa_moose.css" type="text/css" rel="stylesheet"></link><link href="../../../css/civet_moose.css" type="text/css" rel="stylesheet"></link><script type="text/javascript" src="../../../contrib/jquery/jquery.min.js"></script></head><body><div class="page-wrap"><header><nav><div class="nav-wrapper container"><a href="../../../index.html" class="left moose-logo hide-on-med-and-down" id="home-button">Eel</a><a href="https://github.com/hugary1995/eel" class="right"><img src="../../../media/framework/github-logo.png" class="github-mark"></img><img src="../../../media/framework/github-mark.png" class="github-logo"></img></a><ul class="right hide-on-med-and-down"><li><a href="../../../eel.html">Documentation</a></li></ul><a href="#" class="sidenav-trigger" data-target="6f2ae9eb-f8bd-4d01-abef-66e1bc58e433"><i class="material-icons">menu</i></a><ul class="sidenav" id="6f2ae9eb-f8bd-4d01-abef-66e1bc58e433"><li><a href="../../../eel.html">Documentation</a></li></ul><a href="#moose-search" class="modal-trigger"><i class="material-icons">search</i></a></div></nav><div class="modal modal-fixed-footer moose-search-modal" id="moose-search"><div class="modal-content container moose-search-modal-content"><div class="row"><div class="col l12"><div class="input-field"><input type_="text" onkeyup="mooseSearch()" placeholder="/index.md" id="moose-search-box"></input></div></div><div><div class="col s12" id="moose-search-results"></div></div></div></div><div class="modal-footer"><a href="#!" class="modal-close btn-flat">Close</a></div></div></header><main class="main"><div class="container"><div class="row"><div class="col hide-on-med-and-down l12"><nav class="breadcrumb-nav"><div class="nav-wrapper"><a href="../.." class="breadcrumb">syntax</a><a href=".." class="breadcrumb">Modules</a><a href="." class="breadcrumb">NavierStokesFV</a></div></nav></div></div><div class="row"><div class="moose-content col s12 m12 l10"><section id="5c15567b-4d2e-47a9-b052-7a0fdd8a24f7" data-section-level="1" data-section-text="NavierStokesFV System"><h1 id="navierstokesfv-system">NavierStokesFV System</h1><section class="scrollspy" id="4388766a-24e3-4ac0-af56-c56a37f83d65" data-section-level="2" data-section-text="Overview"><h2 id="overview">Overview</h2><p>The NavierStokesFV system is dedicated to decrease the effort required by the user to prepare simulations which need to solve the Navier Stokes equations. The action is capable of setting up:</p><ul class="browser-default"><li><p><strong>Incompressible</strong> and <strong>weakly-compressible</strong> simulations for </p></li><li><p><strong>Clean fluids</strong> and flows in <strong>porous media</strong></p></li></ul><p>The action handles boundary conditions, necessary materials for fluid properties, variables, variable initialization and various objects for turbulence modeling.</p><div class="card moose-alert moose-alert-note"><div class="card-title moose-alert-title"><i class="material-icons moose-inline-icon">comment</i><span class="moose-alert-title-brand">note</span></div><div class="card-content"><div class="moose-alert-content"><p>This action only supports Rhie-Chow interpolation for the determination of face velocities in the advection terms. The face interpolation of the advected quantities (e.g. upwind, average) can be controlled through the <code>*_advection_interpolation</code> action parameters.</p><p></p></div></div></div></section><section class="scrollspy" id="eaebbb31-171e-4902-94db-9da552cf3663" data-section-level="2" data-section-text="Automatically defined variables"><h2 id="automatically-defined-variables">Automatically defined variables</h2><p>The NavierStokesFV action automatically sets up the variables which are necessary for the solution of a given problem. These variables can then be used to couple fluid flow simulations with other physics. The list of variable names commonly used in the action syntax is presented below:</p><ul class="browser-default"><li><p>Velocities for non-porous-medium simulations:</p><pre class="moose-pre" style="max-height:350px;"><code class="language-cpp">static const std::string velocity_x = &quot;vel_x&quot;;
+static const std::string velocity_y = &quot;vel_y&quot;;
+static const std::string velocity_z = &quot;vel_z&quot;;
+</code></pre><a class="moose-source-filename tooltipped modal-trigger" href="#c3d94145-7f1b-4080-a1a9-9004cd9b7211">(moose/modules/navier_stokes/include/base/NS.h)</a><p></p></li><li><p>Velocities for porous medium simulations:</p><pre class="moose-pre" style="max-height:350px;"><code class="language-cpp">static const std::string superficial_velocity_x = &quot;superficial_vel_x&quot;;
+static const std::string superficial_velocity_y = &quot;superficial_vel_y&quot;;
+static const std::string superficial_velocity_z = &quot;superficial_vel_z&quot;;
+</code></pre><a class="moose-source-filename tooltipped modal-trigger" href="#4a33833b-474d-4a3a-bcdd-6fc07a878fe4">(moose/modules/navier_stokes/include/base/NS.h)</a><p></p></li><li><p>Pressure and temperature:</p><pre class="moose-pre" style="max-height:350px;"><code class="language-cpp">static const std::string pressure = &quot;pressure&quot;;
+</code></pre><a class="moose-source-filename tooltipped modal-trigger" href="#9f533456-3a60-466b-803e-232e12b0f2e0">(moose/modules/navier_stokes/include/base/NS.h)</a><pre class="moose-pre" style="max-height:350px;"><code class="language-cpp">static const std::string T_fluid = &quot;T_fluid&quot;;
+</code></pre><a class="moose-source-filename tooltipped modal-trigger" href="#c567bfd2-e53d-407a-8488-39b036b94790">(moose/modules/navier_stokes/include/base/NS.h)</a></li></ul><p>For the default names of other variables used in this action, visit <a class="moose-source-filename tooltipped modal-trigger" href="#73b4fd54-54e0-4593-bd59-46e91566898f">this site</a>.</p></section><section class="scrollspy" id="5912a57a-14bd-4885-b946-03e7382022e5" data-section-level="2" data-section-text="Bernoulli pressure jump treatment"><h2 id="bernoulli-pressure-jump-treatment">Bernoulli pressure jump treatment</h2><p>Please see <a href="../../../source/variables/BernoulliPressureVariable.html">the Bernouilli pressure variable documentation</a> for more information.</p></section><section class="scrollspy" id="50514149-2c59-45c7-b817-d1696612f473" data-section-level="2" data-section-text="Examples"><h2 id="examples">Examples</h2><section id="45283269-bc46-4553-b47c-f975011912ff" data-section-level="3" data-section-text="Incompressible fluid flow in a lid - driven cavity"><h3 id="incompressible-fluid-flow-in-a-lid-driven-cavity">Incompressible fluid flow in a lid-driven cavity</h3><p>In the following examples we present how the NavierStokesFV action can be utilized to simplify input files. We start with the simple lid-driven cavity problem with an <a href="../../../modules/navier_stokes/insfv.html">Incompressible Navier Stokes</a> formulation. The original description of the problem is available under the following <a href="../../../modules/navier_stokes/insfv.html">link</a>. First, we present the input file where the simulation is set up manually, by defining every kernel, boundary condition and material explicitly.</p><pre class="moose-pre" style="max-height:350px;"><code class="language-text">mu = 1
+rho = 1
+k = .01
+cp = 1
+velocity_interp_method = &#x27;rc&#x27;
+advected_interp_method = &#x27;average&#x27;
+
+[GlobalParams]
+  rhie_chow_user_object = &#x27;rc&#x27;
+[]
+
+[UserObjects]
+  [rc]
+    type = INSFVRhieChowInterpolator
+    u = vel_x
+    v = vel_y
+    pressure = pressure
+  []
+[]
+
+[Mesh]
+  [gen]
+    type = GeneratedMeshGenerator
+    dim = 2
+    xmin = 0
+    xmax = 1
+    ymin = 0
+    ymax = 1
+    nx = 32
+    ny = 32
+  []
+[]
+
+[Variables]
+  [vel_x]
+    type = INSFVVelocityVariable
+  []
+  [vel_y]
+    type = INSFVVelocityVariable
+  []
+  [pressure]
+    type = INSFVPressureVariable
+  []
+  [T_fluid]
+    type = INSFVEnergyVariable
+  []
+  [lambda]
+    family = SCALAR
+    order = FIRST
+  []
+[]
+
+[AuxVariables]
+  [U]
+    order = CONSTANT
+    family = MONOMIAL
+    fv = true
+  []
+[]
+
+[AuxKernels]
+  [mag]
+    type = VectorMagnitudeAux
+    variable = U
+    x = vel_x
+    y = vel_y
+  []
+[]
+
+[FVKernels]
+  [mass]
+    type = INSFVMassAdvection
+    variable = pressure
+    advected_interp_method = ${advected_interp_method}
+    velocity_interp_method = ${velocity_interp_method}
+    rho = ${rho}
+  []
+  [mean_zero_pressure]
+    type = FVIntegralValueConstraint
+    variable = pressure
+    lambda = lambda
+  []
+
+  [u_advection]
+    type = INSFVMomentumAdvection
+    variable = vel_x
+    velocity_interp_method = ${velocity_interp_method}
+    advected_interp_method = ${advected_interp_method}
+    rho = ${rho}
+    momentum_component = &#x27;x&#x27;
+  []
+
+  [u_viscosity]
+    type = INSFVMomentumDiffusion
+    variable = vel_x
+    mu = ${mu}
+    momentum_component = &#x27;x&#x27;
+  []
+
+  [u_pressure]
+    type = INSFVMomentumPressure
+    variable = vel_x
+    momentum_component = &#x27;x&#x27;
+    pressure = pressure
+  []
+
+  [v_advection]
+    type = INSFVMomentumAdvection
+    variable = vel_y
+    velocity_interp_method = ${velocity_interp_method}
+    advected_interp_method = ${advected_interp_method}
+    rho = ${rho}
+    momentum_component = &#x27;y&#x27;
+  []
+
+  [v_viscosity]
+    type = INSFVMomentumDiffusion
+    variable = vel_y
+    mu = ${mu}
+    momentum_component = &#x27;y&#x27;
+  []
+
+  [v_pressure]
+    type = INSFVMomentumPressure
+    variable = vel_y
+    momentum_component = &#x27;y&#x27;
+    pressure = pressure
+  []
+
+  [temp_conduction]
+    type = FVDiffusion
+    coeff = &#x27;k&#x27;
+    variable = T_fluid
+  []
+
+  [temp_advection]
+    type = INSFVEnergyAdvection
+    variable = T_fluid
+    velocity_interp_method = ${velocity_interp_method}
+    advected_interp_method = ${advected_interp_method}
+  []
+[]
+
+[FVBCs]
+  [top_x]
+    type = INSFVNoSlipWallBC
+    variable = vel_x
+    boundary = &#x27;top&#x27;
+    function = &#x27;lid_function&#x27;
+  []
+
+  [no_slip_x]
+    type = INSFVNoSlipWallBC
+    variable = vel_x
+    boundary = &#x27;left right bottom&#x27;
+    function = 0
+  []
+
+  [no_slip_y]
+    type = INSFVNoSlipWallBC
+    variable = vel_y
+    boundary = &#x27;left right top bottom&#x27;
+    function = 0
+  []
+
+  [T_hot]
+    type = FVDirichletBC
+    variable = T_fluid
+    boundary = &#x27;bottom&#x27;
+    value = 1
+  []
+
+  [T_cold]
+    type = FVDirichletBC
+    variable = T_fluid
+    boundary = &#x27;top&#x27;
+    value = 0
+  []
+[]
+
+[Materials]
+  [functor_constants]
+    type = ADGenericFunctorMaterial
+    prop_names = &#x27;cp k&#x27;
+    prop_values = &#x27;${cp} ${k}&#x27;
+  []
+  [ins_fv]
+    type = INSFVEnthalpyMaterial
+    temperature = &#x27;T_fluid&#x27;
+    rho = ${rho}
+  []
+[]
+
+[Functions]
+  [lid_function]
+    type = ParsedFunction
+    expression = &#x27;4*x*(1-x)&#x27;
+  []
+[]
+
+[Executioner]
+  type = Steady
+  solve_type = &#x27;NEWTON&#x27;
+  petsc_options_iname = &#x27;-pc_type -pc_factor_shift_type&#x27;
+  petsc_options_value = &#x27;lu NONZERO&#x27;
+  nl_rel_tol = 1e-12
+[]
+
+[Outputs]
+  exodus = true
+[]
+</code></pre><a class="moose-source-filename tooltipped modal-trigger" href="#f1e8502b-8032-437e-a7d4-851c3f5cc9c8">(moose/modules/navier_stokes/test/tests/finite_volume/ins/lid-driven/lid-driven-with-energy.i)</a><div class="card moose-alert moose-alert-note"><div class="card-title moose-alert-title"><i class="material-icons moose-inline-icon">comment</i><span class="moose-alert-title-brand">note</span></div><div class="card-content"><div class="moose-alert-content"><p>Careful! The utilization of central difference (<code>average</code>) advected interpolation may lead to oscillatory behavior in certain scenarios. Even though it is not the case for this example, if this phenomenon arises, we recommend using first order <code>upwind</code> or second order TVD chemes.</p><p></p></div></div></div><p>The same simulation can be set up using the action syntax which improves input file readability:</p><pre class="moose-pre" style="max-height:350px;"><code class="language-text">mu = 1
+rho = 1
+k = .01
+cp = 1
+
+[Mesh]
+  [gen]
+    type = GeneratedMeshGenerator
+    dim = 2
+    xmin = 0
+    xmax = 1
+    ymin = 0
+    ymax = 1
+    nx = 32
+    ny = 32
+  []
+[]
+
+[Modules]
+  [NavierStokesFV]
+    compressibility = &#x27;incompressible&#x27;
+    add_energy_equation = true
+
+    density = &#x27;rho&#x27;
+    dynamic_viscosity = &#x27;mu&#x27;
+    thermal_conductivity = &#x27;k&#x27;
+    specific_heat = &#x27;cp&#x27;
+
+    initial_pressure = 0.0
+    initial_temperature = 0.0
+
+    inlet_boundaries = &#x27;top&#x27;
+    momentum_inlet_types = &#x27;fixed-velocity&#x27;
+    momentum_inlet_function = &#x27;lid_function 0&#x27;
+    energy_inlet_types = &#x27;fixed-temperature&#x27;
+    energy_inlet_function = &#x27;0&#x27;
+
+    wall_boundaries = &#x27;left right bottom&#x27;
+    momentum_wall_types = &#x27;noslip noslip noslip&#x27;
+    energy_wall_types = &#x27;heatflux heatflux fixed-temperature&#x27;
+    energy_wall_function = &#x27;0 0 1&#x27;
+
+    pin_pressure = true
+    pinned_pressure_type = average
+    pinned_pressure_value = 0
+
+    mass_advection_interpolation = &#x27;average&#x27;
+    momentum_advection_interpolation = &#x27;average&#x27;
+    energy_advection_interpolation = &#x27;average&#x27;
+  []
+[]
+
+[AuxVariables]
+  [U]
+    order = CONSTANT
+    family = MONOMIAL
+    fv = true
+  []
+[]
+
+[AuxKernels]
+  [mag]
+    type = VectorMagnitudeAux
+    variable = U
+    x = vel_x
+    y = vel_y
+  []
+[]
+
+[Materials]
+  [functor_constants]
+    type = ADGenericFunctorMaterial
+    prop_names = &#x27;cp k rho mu&#x27;
+    prop_values = &#x27;${cp} ${k} ${rho} ${mu}&#x27;
+  []
+[]
+
+[Functions]
+  [lid_function]
+    type = ParsedFunction
+    expression = &#x27;4*x*(1-x)&#x27;
+  []
+[]
+
+[Executioner]
+  type = Steady
+  solve_type = &#x27;NEWTON&#x27;
+  petsc_options_iname = &#x27;-pc_type -pc_factor_shift_type&#x27;
+  petsc_options_value = &#x27;lu NONZERO&#x27;
+  nl_rel_tol = 1e-12
+[]
+
+[Outputs]
+  exodus = true
+[]
+</code></pre><a class="moose-source-filename tooltipped modal-trigger" href="#20a29e83-0ec6-437c-a41c-8877310f310e">(moose/modules/navier_stokes/test/tests/finite_volume/ins/lid-driven/lid-driven-with-energy-action.i)</a><p>It is visible that in this case we defined the <a href="#b09987ea-5fb3-4cb6-b39d-b2969ef2e45f" class="moose-modal-link modal-trigger">&quot;compressibility&quot;</a> parameter to be <code>incompressible</code>. Furthermore, the energy (enthalpy) equation is solved as well. The user can request this by setting <a href="#f6ff5e8e-2f63-4537-af19-bfebaf3e4a9c" class="moose-modal-link modal-trigger">&quot;add_energy_equation&quot;</a> to <code>true</code>. The boundary types are grouped into <strong>wall</strong>, <strong>inlet</strong> and <strong>outlet</strong> types. For more information on the available boundary types, see the list of parameters at the bottom of the page.</p></section><section id="5a7366b7-f368-46fe-a22d-949c03630739" data-section-level="3" data-section-text="Incompressible fluid flow in porous medium"><h3 id="incompressible-fluid-flow-in-porous-medium">Incompressible fluid flow in porous medium</h3><p>The following input file sets up a simulation of an incompressible fluid flow within a channel which contains a homogenized structure that is treated as a porous medium. The model accounts for the heat exchange between the fluid and the homogenized structure as well. For more description on the used model, visit the <a href="../../../modules/navier_stokes/pinsfv.html">Porous medium Incompressible Navier Stokes</a> page. First, the input file with the manually defined kernels and boundary conditions is presented:</p><pre class="moose-pre" style="max-height:350px;"><code class="language-text">mu = 1
+rho = 1
+k = 1e-3
+cp = 1
+u_inlet = 1
+T_inlet = 200
+advected_interp_method = &#x27;average&#x27;
+velocity_interp_method = &#x27;rc&#x27;
+
+[Mesh]
+  [mesh]
+    type = CartesianMeshGenerator
+    dim = 2
+    dx = &#x27;5 5&#x27;
+    dy = &#x27;1.0&#x27;
+    ix = &#x27;50 50&#x27;
+    iy = &#x27;20&#x27;
+    subdomain_id = &#x27;1 2&#x27;
+  []
+[]
+
+[GlobalParams]
+  rhie_chow_user_object = &#x27;rc&#x27;
+[]
+
+[UserObjects]
+  [rc]
+    type = PINSFVRhieChowInterpolator
+    u = superficial_vel_x
+    v = superficial_vel_y
+    pressure = pressure
+    porosity = porosity
+  []
+[]
+
+[Variables]
+  inactive = &#x27;T_solid&#x27;
+  [superficial_vel_x]
+    type = PINSFVSuperficialVelocityVariable
+    initial_condition = ${u_inlet}
+  []
+  [superficial_vel_y]
+    type = PINSFVSuperficialVelocityVariable
+    initial_condition = 1e-6
+  []
+  [pressure]
+    type = INSFVPressureVariable
+  []
+  [T_fluid]
+    type = INSFVEnergyVariable
+  []
+  [T_solid]
+    family = &#x27;MONOMIAL&#x27;
+    order = &#x27;CONSTANT&#x27;
+    fv = true
+  []
+[]
+
+[AuxVariables]
+  [T_solid]
+    family = &#x27;MONOMIAL&#x27;
+    order = &#x27;CONSTANT&#x27;
+    fv = true
+    initial_condition = 100
+  []
+  [porosity]
+    family = MONOMIAL
+    order = CONSTANT
+    fv = true
+    initial_condition = 0.5
+  []
+[]
+
+[FVKernels]
+  inactive = &#x27;solid_energy_diffusion solid_energy_convection&#x27;
+  [mass]
+    type = PINSFVMassAdvection
+    variable = pressure
+    advected_interp_method = ${advected_interp_method}
+    velocity_interp_method = ${velocity_interp_method}
+    rho = ${rho}
+  []
+
+  [u_advection]
+    type = PINSFVMomentumAdvection
+    variable = superficial_vel_x
+    advected_interp_method = ${advected_interp_method}
+    velocity_interp_method = ${velocity_interp_method}
+    rho = ${rho}
+    porosity = porosity
+    momentum_component = &#x27;x&#x27;
+  []
+  [u_viscosity]
+    type = PINSFVMomentumDiffusion
+    variable = superficial_vel_x
+    mu = ${mu}
+    porosity = porosity
+    momentum_component = &#x27;x&#x27;
+  []
+  [u_pressure]
+    type = PINSFVMomentumPressure
+    variable = superficial_vel_x
+    momentum_component = &#x27;x&#x27;
+    pressure = pressure
+    porosity = porosity
+  []
+
+  [v_advection]
+    type = PINSFVMomentumAdvection
+    variable = superficial_vel_y
+    advected_interp_method = ${advected_interp_method}
+    velocity_interp_method = ${velocity_interp_method}
+    rho = ${rho}
+    porosity = porosity
+    momentum_component = &#x27;y&#x27;
+  []
+  [v_viscosity]
+    type = PINSFVMomentumDiffusion
+    variable = superficial_vel_y
+    mu = ${mu}
+    porosity = porosity
+    momentum_component = &#x27;y&#x27;
+  []
+  [v_pressure]
+    type = PINSFVMomentumPressure
+    variable = superficial_vel_y
+    momentum_component = &#x27;y&#x27;
+    pressure = pressure
+    porosity = porosity
+  []
+
+  [energy_advection]
+    type = PINSFVEnergyAdvection
+    variable = T_fluid
+    velocity_interp_method = ${velocity_interp_method}
+    advected_interp_method = ${advected_interp_method}
+  []
+  [energy_diffusion]
+    type = PINSFVEnergyDiffusion
+    k = ${k}
+    variable = T_fluid
+    porosity = porosity
+  []
+  [energy_convection]
+    type = PINSFVEnergyAmbientConvection
+    variable = T_fluid
+    is_solid = false
+    T_fluid = &#x27;T_fluid&#x27;
+    T_solid = &#x27;T_solid&#x27;
+    h_solid_fluid = &#x27;h_cv&#x27;
+  []
+
+  [solid_energy_diffusion]
+    type = FVDiffusion
+    coeff = ${k}
+    variable = T_solid
+  []
+  [solid_energy_convection]
+    type = PINSFVEnergyAmbientConvection
+    variable = T_solid
+    is_solid = true
+    T_fluid = &#x27;T_fluid&#x27;
+    T_solid = &#x27;T_solid&#x27;
+    h_solid_fluid = &#x27;h_cv&#x27;
+  []
+[]
+
+[FVBCs]
+  inactive = &#x27;heated-side&#x27;
+  [inlet-u]
+    type = INSFVInletVelocityBC
+    boundary = &#x27;left&#x27;
+    variable = superficial_vel_x
+    function = ${u_inlet}
+  []
+  [inlet-v]
+    type = INSFVInletVelocityBC
+    boundary = &#x27;left&#x27;
+    variable = superficial_vel_y
+    function = 0
+  []
+  [inlet-T]
+    type = FVNeumannBC
+    variable = T_fluid
+    value = &#x27;${fparse u_inlet * rho * cp * T_inlet}&#x27;
+    boundary = &#x27;left&#x27;
+  []
+
+  [no-slip-u]
+    type = INSFVNoSlipWallBC
+    boundary = &#x27;top&#x27;
+    variable = superficial_vel_x
+    function = 0
+  []
+  [no-slip-v]
+    type = INSFVNoSlipWallBC
+    boundary = &#x27;top&#x27;
+    variable = superficial_vel_y
+    function = 0
+  []
+  [heated-side]
+    type = FVDirichletBC
+    boundary = &#x27;top&#x27;
+    variable = &#x27;T_solid&#x27;
+    value = 150
+  []
+
+  [symmetry-u]
+    type = PINSFVSymmetryVelocityBC
+    boundary = &#x27;bottom&#x27;
+    variable = superficial_vel_x
+    u = superficial_vel_x
+    v = superficial_vel_y
+    mu = ${mu}
+    momentum_component = &#x27;x&#x27;
+  []
+  [symmetry-v]
+    type = PINSFVSymmetryVelocityBC
+    boundary = &#x27;bottom&#x27;
+    variable = superficial_vel_y
+    u = superficial_vel_x
+    v = superficial_vel_y
+    mu = ${mu}
+    momentum_component = &#x27;y&#x27;
+  []
+  [symmetry-p]
+    type = INSFVSymmetryPressureBC
+    boundary = &#x27;bottom&#x27;
+    variable = pressure
+  []
+
+  [outlet-p]
+    type = INSFVOutletPressureBC
+    boundary = &#x27;right&#x27;
+    variable = pressure
+    function = 0.1
+  []
+[]
+
+[Materials]
+  [constants]
+    type = ADGenericFunctorMaterial
+    prop_names = &#x27;h_cv&#x27;
+    prop_values = &#x27;1&#x27;
+  []
+  [functor_constants]
+    type = ADGenericFunctorMaterial
+    prop_names = &#x27;cp&#x27;
+    prop_values = &#x27;${cp}&#x27;
+  []
+  [ins_fv]
+    type = INSFVEnthalpyMaterial
+    rho = ${rho}
+    temperature = &#x27;T_fluid&#x27;
+  []
+[]
+
+[Executioner]
+  type = Steady
+  solve_type = &#x27;NEWTON&#x27;
+  petsc_options_iname = &#x27;-pc_type -pc_factor_shift_type&#x27;
+  petsc_options_value = &#x27;lu NONZERO&#x27;
+  nl_rel_tol = 1e-14
+[]
+
+# Some basic Postprocessors to examine the solution
+[Postprocessors]
+  [inlet-p]
+    type = SideAverageValue
+    variable = pressure
+    boundary = &#x27;left&#x27;
+  []
+  [outlet-u]
+    type = SideAverageValue
+    variable = superficial_vel_x
+    boundary = &#x27;right&#x27;
+  []
+  [outlet-temp]
+    type = SideAverageValue
+    variable = T_fluid
+    boundary = &#x27;right&#x27;
+  []
+  [solid-temp]
+    type = ElementAverageValue
+    variable = T_solid
+  []
+[]
+
+[Outputs]
+  exodus = true
+  csv = false
+[]
+</code></pre><a class="moose-source-filename tooltipped modal-trigger" href="#58087c40-e6da-463e-880a-fd2d92352afd">(moose/modules/navier_stokes/test/tests/finite_volume/pins/channel-flow/heated/2d-rc-heated.i)</a><div class="card moose-alert moose-alert-note"><div class="card-title moose-alert-title"><i class="material-icons moose-inline-icon">comment</i><span class="moose-alert-title-brand">note</span></div><div class="card-content"><div class="moose-alert-content"><p>Careful! The utilization of central difference (<code>average</code>) advected interpolation may lead to oscillatory behavior in certain scenarios. Even though it is not the case for this example, if this phenomenon arises, we recommend using first order <code>upwind</code> or second order TVD chemes.</p><p></p></div></div></div><p>The same simulation can also be set up using the NavierStokesFV action syntax:</p><pre class="moose-pre" style="max-height:350px;"><code class="language-text">mu = 1
+rho = 1
+k = 1e-3
+cp = 1
+u_inlet = 1
+T_inlet = 200
+h_cv = 1.0
+
+[Mesh]
+  [mesh]
+    type = CartesianMeshGenerator
+    dim = 2
+    dx = &#x27;5 5&#x27;
+    dy = &#x27;1.0&#x27;
+    ix = &#x27;50 50&#x27;
+    iy = &#x27;20&#x27;
+    subdomain_id = &#x27;1 2&#x27;
+  []
+[]
+
+[Variables]
+  [T_solid]
+    type = MooseVariableFVReal
+  []
+[]
+
+[AuxVariables]
+  [porosity]
+    type = MooseVariableFVReal
+    initial_condition = 0.5
+  []
+[]
+
+[Modules]
+  [NavierStokesFV]
+    compressibility = &#x27;incompressible&#x27;
+    porous_medium_treatment = true
+    add_energy_equation = true
+
+    density = ${rho}
+    dynamic_viscosity = ${mu}
+    thermal_conductivity = ${k}
+    specific_heat = ${cp}
+    porosity = &#x27;porosity&#x27;
+
+    initial_velocity = &#x27;${u_inlet} 1e-6 0&#x27;
+    initial_pressure = 0.0
+    initial_temperature = 0.0
+
+    inlet_boundaries = &#x27;left&#x27;
+    momentum_inlet_types = &#x27;fixed-velocity&#x27;
+    momentum_inlet_function = &#x27;${u_inlet} 0&#x27;
+    energy_inlet_types = &#x27;heatflux&#x27;
+    energy_inlet_function = &#x27;${fparse u_inlet * rho * cp * T_inlet}&#x27;
+
+    wall_boundaries = &#x27;top bottom&#x27;
+    momentum_wall_types = &#x27;noslip symmetry&#x27;
+    energy_wall_types = &#x27;heatflux heatflux&#x27;
+    energy_wall_function = &#x27;0 0&#x27;
+
+    outlet_boundaries = &#x27;right&#x27;
+    momentum_outlet_types = &#x27;fixed-pressure&#x27;
+    pressure_function = &#x27;0.1&#x27;
+
+    ambient_convection_alpha = ${h_cv}
+    ambient_temperature = &#x27;T_solid&#x27;
+
+    mass_advection_interpolation = &#x27;average&#x27;
+    momentum_advection_interpolation = &#x27;average&#x27;
+    energy_advection_interpolation = &#x27;average&#x27;
+  []
+[]
+
+[FVKernels]
+  [solid_energy_diffusion]
+    type = FVDiffusion
+    coeff = ${k}
+    variable = T_solid
+  []
+  [solid_energy_convection]
+    type = PINSFVEnergyAmbientConvection
+    variable = &#x27;T_solid&#x27;
+    is_solid = true
+    T_fluid = &#x27;T_fluid&#x27;
+    T_solid = &#x27;T_solid&#x27;
+    h_solid_fluid = ${h_cv}
+  []
+[]
+
+[FVBCs]
+  [heated-side]
+    type = FVDirichletBC
+    boundary = &#x27;top&#x27;
+    variable = &#x27;T_solid&#x27;
+    value = 150
+  []
+[]
+
+[Executioner]
+  type = Steady
+  solve_type = &#x27;NEWTON&#x27;
+  petsc_options_iname = &#x27;-pc_type -pc_factor_shift_type&#x27;
+  petsc_options_value = &#x27;lu NONZERO&#x27;
+  nl_rel_tol = 1e-14
+[]
+
+# Some basic Postprocessors to examine the solution
+[Postprocessors]
+  [inlet-p]
+    type = SideAverageValue
+    variable = pressure
+    boundary = &#x27;left&#x27;
+  []
+  [outlet-u]
+    type = SideAverageValue
+    variable = superficial_vel_x
+    boundary = &#x27;right&#x27;
+  []
+  [outlet-temp]
+    type = SideAverageValue
+    variable = T_fluid
+    boundary = &#x27;right&#x27;
+  []
+  [solid-temp]
+    type = ElementAverageValue
+    variable = T_solid
+  []
+[]
+
+[Outputs]
+  exodus = true
+  csv = false
+[]
+</code></pre><a class="moose-source-filename tooltipped modal-trigger" href="#865c66fa-c18e-4844-b5f9-8feb4e8a21ed">(moose/modules/navier_stokes/test/tests/finite_volume/pins/channel-flow/heated/2d-rc-heated-action.i)</a><p>Compared to the previous example, we see that in this case the porous medium treatment is enabled by setting <a href="#c18fa809-9c4b-4f61-a914-1fbd33ec4369" class="moose-modal-link modal-trigger">&quot;porous_medium_treatment&quot;</a> to <code>true</code>. The corresponding porosity can be supplied through the <a href="#b223506f-38a3-44a1-b901-4fbefec1f6af" class="moose-modal-link modal-trigger">&quot;porosity&quot;</a> parameter. Furthermore, the heat exchange between the fluid and the homogenized structure is enabled using the <a href="#119e8a1b-20fa-4977-98d9-8b4506a50ff3" class="moose-modal-link modal-trigger">&quot;ambient_temperature&quot;</a> and <a href="#14a68434-0e9a-4f7f-8ddd-3bd197ab55bd" class="moose-modal-link modal-trigger">&quot;ambient_convection_alpha&quot;</a> parameters.</p></section><section id="389615a2-1144-4df7-ab40-9fb69def631d" data-section-level="3" data-section-text="Weakly - compressible fluid flow"><h3 id="weakly-compressible-fluid-flow">Weakly-compressible fluid flow</h3><p>The last example is dedicated to demonstrating a transient flow in a channel using a weakly-compressible approximation. The following examples shows how this simulation is set up by manually defining the kernels and boundary conditions. For more information on the weakly-compressible treatment, visit the <a href="../../../modules/navier_stokes/wcnsfv.html">Weakly-compressible Navier Stokes</a> page.</p><pre class="moose-pre" style="max-height:350px;"><code class="language-text">rho = &#x27;rho&#x27;
+l = 10
+velocity_interp_method = &#x27;rc&#x27;
+advected_interp_method = &#x27;average&#x27;
+
+# Artificial fluid properties
+# For a real case, use a GeneralFluidFunctorProperties and a viscosity rampdown
+# or initialize very well!
+k = 1
+cp = 1000
+mu = 1e2
+
+# Operating conditions
+inlet_temp = 300
+outlet_pressure = 1e5
+inlet_v = 0.001
+
+[Mesh]
+  [gen]
+    type = GeneratedMeshGenerator
+    dim = 2
+    xmin = 0
+    xmax = ${l}
+    ymin = 0
+    ymax = 1
+    nx = 20
+    ny = 10
+  []
+[]
+
+[GlobalParams]
+  rhie_chow_user_object = &#x27;rc&#x27;
+[]
+
+[UserObjects]
+  [rc]
+    type = INSFVRhieChowInterpolator
+    u = vel_x
+    v = vel_y
+    pressure = pressure
+  []
+[]
+
+[Variables]
+  [vel_x]
+    type = INSFVVelocityVariable
+    initial_condition = ${inlet_v}
+  []
+  [vel_y]
+    type = INSFVVelocityVariable
+    initial_condition = 1e-15
+  []
+  [pressure]
+    type = INSFVPressureVariable
+    initial_condition = ${outlet_pressure}
+  []
+  [T_fluid]
+    type = INSFVEnergyVariable
+    initial_condition = ${inlet_temp}
+  []
+[]
+
+[AuxVariables]
+  [mixing_length]
+    type = MooseVariableFVReal
+  []
+  [power_density]
+    type = MooseVariableFVReal
+    initial_condition = 1e4
+  []
+[]
+
+[FVKernels]
+  inactive = &#x27;u_turb v_turb temp_turb&#x27;
+  [mass_time]
+    type = WCNSFVMassTimeDerivative
+    variable = pressure
+    drho_dt = drho_dt
+  []
+  [mass]
+    type = INSFVMassAdvection
+    variable = pressure
+    advected_interp_method = ${advected_interp_method}
+    velocity_interp_method = ${velocity_interp_method}
+    rho = ${rho}
+  []
+
+  [u_time]
+    type = WCNSFVMomentumTimeDerivative
+    variable = vel_x
+    drho_dt = drho_dt
+    rho = rho
+    momentum_component = &#x27;x&#x27;
+  []
+  [u_advection]
+    type = INSFVMomentumAdvection
+    variable = vel_x
+    velocity_interp_method = ${velocity_interp_method}
+    advected_interp_method = ${advected_interp_method}
+    rho = ${rho}
+    momentum_component = &#x27;x&#x27;
+  []
+  [u_viscosity]
+    type = INSFVMomentumDiffusion
+    variable = vel_x
+    mu = ${mu}
+    momentum_component = &#x27;x&#x27;
+  []
+  [u_pressure]
+    type = INSFVMomentumPressure
+    variable = vel_x
+    momentum_component = &#x27;x&#x27;
+    pressure = pressure
+  []
+  [u_turb]
+    type = INSFVMixingLengthReynoldsStress
+    variable = vel_x
+    rho = ${rho}
+    mixing_length = &#x27;mixing_length&#x27;
+    momentum_component = &#x27;x&#x27;
+    u = vel_x
+    v = vel_y
+  []
+
+  [v_time]
+    type = WCNSFVMomentumTimeDerivative
+    variable = vel_y
+    drho_dt = drho_dt
+    rho = rho
+    momentum_component = &#x27;y&#x27;
+  []
+  [v_advection]
+    type = INSFVMomentumAdvection
+    variable = vel_y
+    velocity_interp_method = ${velocity_interp_method}
+    advected_interp_method = ${advected_interp_method}
+    rho = ${rho}
+    momentum_component = &#x27;y&#x27;
+  []
+  [v_viscosity]
+    type = INSFVMomentumDiffusion
+    variable = vel_y
+    momentum_component = &#x27;y&#x27;
+    mu = ${mu}
+  []
+  [v_pressure]
+    type = INSFVMomentumPressure
+    variable = vel_y
+    momentum_component = &#x27;y&#x27;
+    pressure = pressure
+  []
+  [v_turb]
+    type = INSFVMixingLengthReynoldsStress
+    variable = vel_y
+    rho = ${rho}
+    mixing_length = &#x27;mixing_length&#x27;
+    momentum_component = &#x27;y&#x27;
+    u = vel_x
+    v = vel_y
+  []
+
+  [temp_time]
+    type = WCNSFVEnergyTimeDerivative
+    variable = T_fluid
+    cp = cp
+    rho = rho
+    drho_dt = drho_dt
+  []
+  [temp_conduction]
+    type = FVDiffusion
+    coeff = &#x27;k&#x27;
+    variable = T_fluid
+  []
+  [temp_advection]
+    type = INSFVEnergyAdvection
+    variable = T_fluid
+    velocity_interp_method = ${velocity_interp_method}
+    advected_interp_method = ${advected_interp_method}
+  []
+  [heat_source]
+    type = FVCoupledForce
+    variable = T_fluid
+    v = power_density
+  []
+  [temp_turb]
+    type = WCNSFVMixingLengthEnergyDiffusion
+    variable = T_fluid
+    rho = rho
+    cp = cp
+    mixing_length = &#x27;mixing_length&#x27;
+    schmidt_number = 1
+    u = vel_x
+    v = vel_y
+  []
+[]
+
+[FVBCs]
+  [no_slip_x]
+    type = INSFVNoSlipWallBC
+    variable = vel_x
+    boundary = &#x27;top bottom&#x27;
+    function = 0
+  []
+
+  [no_slip_y]
+    type = INSFVNoSlipWallBC
+    variable = vel_y
+    boundary = &#x27;top bottom&#x27;
+    function = 0
+  []
+
+  # Inlet
+  [inlet_u]
+    type = INSFVInletVelocityBC
+    variable = vel_x
+    boundary = &#x27;left&#x27;
+    function = ${inlet_v}
+  []
+  [inlet_v]
+    type = INSFVInletVelocityBC
+    variable = vel_y
+    boundary = &#x27;left&#x27;
+    function = 0
+  []
+  [inlet_T]
+    type = FVDirichletBC
+    variable = T_fluid
+    boundary = &#x27;left&#x27;
+    value = ${inlet_temp}
+  []
+
+  [outlet_p]
+    type = INSFVOutletPressureBC
+    variable = pressure
+    boundary = &#x27;right&#x27;
+    function = ${outlet_pressure}
+  []
+[]
+
+[FluidProperties]
+  [fp]
+    type = FlibeFluidProperties
+  []
+[]
+
+[Materials]
+  [const_functor]
+    type = ADGenericFunctorMaterial
+    prop_names = &#x27;cp k&#x27;
+    prop_values = &#x27;${cp} ${k}&#x27;
+  []
+  [rho]
+    type = RhoFromPTFunctorMaterial
+    fp = fp
+    temperature = T_fluid
+    pressure = pressure
+  []
+  [ins_fv]
+    type = INSFVEnthalpyMaterial
+    temperature = &#x27;T_fluid&#x27;
+    rho = ${rho}
+  []
+[]
+
+[AuxKernels]
+  inactive = &#x27;mixing_len&#x27;
+  [mixing_len]
+    type = WallDistanceMixingLengthAux
+    walls = &#x27;top&#x27;
+    variable = mixing_length
+    execute_on = &#x27;initial&#x27;
+    delta = 0.5
+  []
+[]
+
+[Executioner]
+  type = Transient
+  solve_type = &#x27;NEWTON&#x27;
+  petsc_options_iname = &#x27;-pc_type -pc_factor_shift_type&#x27;
+  petsc_options_value = &#x27;lu       NONZERO&#x27;
+
+  [TimeStepper]
+    type = IterationAdaptiveDT
+    dt = 1e-3
+    optimal_iterations = 6
+  []
+  end_time = 15
+
+  nl_abs_tol = 1e-9
+  nl_max_its = 50
+  line_search = &#x27;none&#x27;
+
+  automatic_scaling = true
+  off_diagonals_in_auto_scaling = true
+  compute_scaling_once = false
+[]
+
+[Outputs]
+  exodus = true
+[]
+</code></pre><a class="moose-source-filename tooltipped modal-trigger" href="#9d95ffb3-fa44-4196-ac6a-718462a0d433">(moose/modules/navier_stokes/test/tests/finite_volume/wcns/channel-flow/2d-transient.i)</a><div class="card moose-alert moose-alert-note"><div class="card-title moose-alert-title"><i class="material-icons moose-inline-icon">comment</i><span class="moose-alert-title-brand">note</span></div><div class="card-content"><div class="moose-alert-content"><p>Careful! The utilization of central difference (<code>average</code>) advected interpolation may lead to oscillatory behavior in certain scenarios. Even though it is not the case for this example, if this phenomenon arises, we recommend using first order <code>upwind</code> or second order TVD chemes.</p><p></p></div></div></div><p>The same simulation can be set up using the action syntax as folows:</p><pre class="moose-pre" style="max-height:350px;"><code class="language-text">l = 10
+
+# Artificial fluid properties
+# For a real case, use a GeneralFluidFunctorProperties and a viscosity rampdown
+# or initialize very well!
+k = 1
+cp = 1000
+mu = 1e2
+
+# Operating conditions
+inlet_temp = 300
+outlet_pressure = 1e5
+inlet_v = 0.001
+
+[Mesh]
+  [gen]
+    type = GeneratedMeshGenerator
+    dim = 2
+    xmin = 0
+    xmax = ${l}
+    ymin = 0
+    ymax = 1
+    nx = 20
+    ny = 10
+  []
+[]
+
+[Modules]
+  [NavierStokesFV]
+    compressibility = &#x27;weakly-compressible&#x27;
+    add_energy_equation = true
+
+    density = &#x27;rho&#x27;
+    dynamic_viscosity = &#x27;mu&#x27;
+    thermal_conductivity = &#x27;k&#x27;
+    specific_heat = &#x27;cp&#x27;
+
+    initial_velocity = &#x27;${inlet_v} 1e-15 0&#x27;
+    initial_temperature = &#x27;${inlet_temp}&#x27;
+    initial_pressure = &#x27;${outlet_pressure}&#x27;
+
+    inlet_boundaries = &#x27;left&#x27;
+    momentum_inlet_types = &#x27;fixed-velocity&#x27;
+    momentum_inlet_function = &#x27;${inlet_v} 0&#x27;
+    energy_inlet_types = &#x27;fixed-temperature&#x27;
+    energy_inlet_function = &#x27;${inlet_temp}&#x27;
+
+    wall_boundaries = &#x27;top bottom&#x27;
+    momentum_wall_types = &#x27;noslip noslip&#x27;
+    energy_wall_types = &#x27;heatflux heatflux&#x27;
+    energy_wall_function = &#x27;0 0&#x27;
+
+    outlet_boundaries = &#x27;right&#x27;
+    momentum_outlet_types = &#x27;fixed-pressure&#x27;
+    pressure_function = &#x27;${outlet_pressure}&#x27;
+
+    external_heat_source = &#x27;power_density&#x27;
+
+    mass_advection_interpolation = &#x27;average&#x27;
+    momentum_advection_interpolation = &#x27;average&#x27;
+    energy_advection_interpolation = &#x27;average&#x27;
+  []
+[]
+
+[AuxVariables]
+  [power_density]
+    type = MooseVariableFVReal
+    initial_condition = 1e4
+  []
+[]
+
+[FluidProperties]
+  [fp]
+    type = FlibeFluidProperties
+  []
+[]
+
+[Materials]
+  [const_functor]
+    type = ADGenericFunctorMaterial
+    prop_names = &#x27;cp k mu&#x27;
+    prop_values = &#x27;${cp} ${k} ${mu}&#x27;
+  []
+  [rho]
+    type = RhoFromPTFunctorMaterial
+    fp = fp
+    temperature = T_fluid
+    pressure = pressure
+  []
+[]
+
+[Executioner]
+  type = Transient
+  solve_type = &#x27;NEWTON&#x27;
+  petsc_options_iname = &#x27;-pc_type -pc_factor_shift_type&#x27;
+  petsc_options_value = &#x27;lu       NONZERO&#x27;
+
+  [TimeStepper]
+    type = IterationAdaptiveDT
+    dt = 1e-3
+    optimal_iterations = 6
+  []
+  end_time = 15
+
+  nl_abs_tol = 1e-9
+  nl_max_its = 50
+  line_search = &#x27;none&#x27;
+
+  automatic_scaling = true
+  off_diagonals_in_auto_scaling = true
+  compute_scaling_once = false
+[]
+
+[Outputs]
+  exodus = true
+[]
+</code></pre><a class="moose-source-filename tooltipped modal-trigger" href="#457e282e-7a47-4f00-8f3d-275e85019459">(moose/modules/navier_stokes/test/tests/finite_volume/wcns/channel-flow/2d-transient-action.i)</a><p>We note that the weakly-compressible handling can be enabled by setting <a href="#9b6f7175-318e-4684-bcae-0bb80d916ac2" class="moose-modal-link modal-trigger">&quot;compressibility&quot;</a> to <code>weakly-compressible</code>. As shown in the example, an arbitrary energy source function can also be supplied to the incorporated energy equation using the <a href="#fe45845e-a2a6-485b-8179-3423492f9be6" class="moose-modal-link modal-trigger">&quot;external_heat_source&quot;</a> parameter.</p></section></section><section class="scrollspy" id="4b04191f-d4e8-40a8-b91d-2309007f2d54" data-section-level="2" data-section-text="Available Actions"><h2 id="available-actions">Available Actions</h2><ul class="moose-syntax-list collection with-header"><li class="collection-header">Navier Stokes App</li><li class="collection-item"><a href="../../../source/actions/NSFVAction.html">NSFVAction</a>This class allows us to set up Navier-Stokes equations for porous medium or clean fluid flows using incompressible or weakly compressible approximations with a finite volume discretization.</li></ul></section></section><div class="moose-modal modal" id="c3d94145-7f1b-4080-a1a9-9004cd9b7211"><div class="modal-content"><h4>(moose/modules/navier_stokes/include/base/NS.h)</h4><pre class="moose-pre"><code class="language-cpp">// This file is part of the MOOSE framework
+// https://www.mooseframework.org
+//
+// All rights reserved, see COPYRIGHT for full restrictions
+// https://github.com/idaholab/moose/blob/master/COPYRIGHT
+//
+// Licensed under LGPL 2.1, please see LICENSE for details
+// https://www.gnu.org/licenses/lgpl-2.1.html
+
+#pragma once
+
+#include &lt;string&gt;
+#include &quot;MooseTypes.h&quot;
+#include &quot;libmesh/vector_value.h&quot;
+#include &quot;HeatConductionNames.h&quot;
+
+namespace NS
+{
+using namespace HeatConduction;
+
+static const std::string directions[3] = {&quot;x&quot;, &quot;y&quot;, &quot;z&quot;};
+
+// geometric quantities
+static const std::string infinite_porosity = &quot;infinite_porosity&quot;;
+static const std::string axis = &quot;axis&quot;;
+static const std::string center = &quot;center&quot;;
+static const std::string wall_porosity = &quot;wall_porosity&quot;;
+static const std::string wall_distance = &quot;wall_distance&quot;;
+
+// Names defined in Navier-Stokes
+static const std::string density = &quot;rho&quot;;
+static const std::string superficial_density = &quot;superficial_rho&quot;;
+static const std::string momentum_x = &quot;rhou&quot;;
+static const std::string momentum_y = &quot;rhov&quot;;
+static const std::string momentum_z = &quot;rhow&quot;;
+static const std::string momentum_vector[3] = {momentum_x, momentum_y, momentum_z};
+static const std::string superficial_momentum_x = &quot;superficial_rhou&quot;;
+static const std::string superficial_momentum_y = &quot;superficial_rhov&quot;;
+static const std::string superficial_momentum_z = &quot;superficial_rhow&quot;;
+static const std::string superficial_momentum_vector[3] = {
+    superficial_momentum_x, superficial_momentum_y, superficial_momentum_z};
+
+static const std::string velocity = &quot;velocity&quot;;
+static const std::string velocity_x = &quot;vel_x&quot;;
+static const std::string velocity_y = &quot;vel_y&quot;;
+static const std::string velocity_z = &quot;vel_z&quot;;
+const std::string velocity_vector[3] = {velocity_x, velocity_y, velocity_z};
+static const std::string superficial_velocity_x = &quot;superficial_vel_x&quot;;
+static const std::string superficial_velocity_y = &quot;superficial_vel_y&quot;;
+static const std::string superficial_velocity_z = &quot;superficial_vel_z&quot;;
+static const std::string superficial_velocity = &quot;superficial_velocity&quot;;
+static const std::string superficial_velocity_vector[3] = {
+    superficial_velocity_x, superficial_velocity_y, superficial_velocity_z};
+static const std::string pressure = &quot;pressure&quot;;
+static const std::string temperature = &quot;temperature&quot;;
+
+static const std::string internal_energy = &quot;internal_energy&quot;;
+static const std::string specific_internal_energy = &quot;e&quot;;
+static const std::string specific_total_energy = &quot;et&quot;;
+static const std::string internal_energy_density = &quot;rho_e&quot;;
+static const std::string total_energy_density = &quot;rho_et&quot;;
+static const std::string superficial_total_energy_density = &quot;superficial_rho_et&quot;;
+
+static const std::string specific_enthalpy = &quot;h&quot;;
+static const std::string specific_total_enthalpy = &quot;ht&quot;;
+static const std::string enthalpy_density = &quot;rho_h&quot;;
+static const std::string total_enthalpy_density = &quot;rho_ht&quot;;
+static const std::string superficial_total_enthalpy_density = &quot;superficial_rho_ht&quot;;
+
+static const std::string mixing_length = &quot;mixing_length&quot;;
+static const std::string wall_shear_stress = &quot;wall_shear_stress&quot;;
+static const std::string wall_yplus = &quot;wall_yplus&quot;;
+static const std::string eddy_viscosity = &quot;eddy_viscosity&quot;;
+static const std::string total_viscosity = &quot;total_viscosity&quot;;
+
+static const std::string mach_number = &quot;Mach&quot;;
+static const std::string specific_volume = &quot;specific_volume&quot;;
+
+static const std::string momentum = &quot;momentum&quot;;
+static const std::string v = &quot;v&quot;;
+static const std::string acceleration = &quot;acceleration&quot;;
+
+static const std::string fluid = &quot;fp&quot;;
+
+// for Navier-Stokes material props representing gradients of nonlin+aux vars
+inline std::string
+grad(const std::string &amp; var)
+{
+  return &quot;grad_&quot; + var;
+}
+// for Navier-Stokes material props representing time derivatives of nonlin+aux vars
+inline std::string
+time_deriv(const std::string &amp; var)
+{
+  return &quot;d&quot; + var + &quot;_dt&quot;;
+}
+
+// Navier-Stokes Variables
+// Relating to porous media
+static const std::string porosity = &quot;porosity&quot;;
+static const std::string smoothed_porosity = &quot;smoothed_porosity&quot;;
+static const std::string T_fluid = &quot;T_fluid&quot;;
+static const std::string T_solid = &quot;T_solid&quot;;
+static const std::string heat_source = &quot;heat_source&quot;;
+
+// Navier-Stokes Materials
+static const std::string cL = &quot;Darcy_coefficient&quot;;
+static const std::string cQ = &quot;Forchheimer_coefficient&quot;;
+static const std::string alpha_boussinesq = &quot;alpha_b&quot;;
+static const std::string drhos_dTs = &quot;drhos_dTs&quot;;
+static const std::string dks_dTs = &quot;dks_dTs&quot;;
+static const std::string kappa = &quot;kappa&quot;;
+static const std::string kappa_s = &quot;kappa_s&quot;;
+static const std::string mu_eff = &quot;mu_eff&quot;;
+static const std::string rho_s = &quot;rho_s&quot;;
+static const std::string cp_s = &quot;cp_s&quot;;
+static const std::string k_s = &quot;k_s&quot;;
+static const std::string cp = &quot;cp&quot;;
+static const std::string cv = &quot;cv&quot;;
+static const std::string mu = &quot;mu&quot;;
+static const std::string k = &quot;k&quot;;
+static const std::string thermal_diffusivity = &quot;thermal_diffusivity&quot;;
+static const std::string alpha = &quot;alpha&quot;;
+static const std::string alpha_wall = &quot;alpha_wall&quot;;
+static const std::string solid = &quot;solid&quot;;
+static const std::string Prandtl = &quot;Pr&quot;;
+static const std::string Reynolds = &quot;Re&quot;;
+static const std::string Reynolds_hydraulic = &quot;Re_h&quot;;
+static const std::string Reynolds_interstitial = &quot;Re_i&quot;;
+static const std::string c = &quot;c&quot;;
+static const std::string speed = &quot;speed&quot;;
+static const std::string sound_speed = &quot;sound_speed&quot;;
+
+// other Navier-Stokes terms
+static const std::string component = &quot;component&quot;;
+static const std::string source_scaling = &quot;source_scaling&quot;;
+
+// SUPG terms
+static const std::string matrix_tau = &quot;matrix_tau&quot;;
+static const std::string vector_tau = &quot;vector_tau&quot;;
+static const std::string scalar_tau = &quot;scalar_tau&quot;;
+static const std::string diagonal_tau = &quot;diagonal_tau&quot;;
+static const std::string A = &quot;A&quot;;
+static const std::string R = &quot;R&quot;;
+static const std::string S = &quot;S&quot;;
+static const std::string dS_dTs = &quot;dS_dTs&quot;;
+static const std::string F = &quot;F&quot;;
+static const std::string G = &quot;G&quot;;
+static const std::string dUdt = &quot;dUdt&quot;;
+static const std::string C = &quot;C&quot;;
+static const std::string Z = &quot;Z&quot;;
+static const std::string K = &quot;K&quot;;
+static const std::string mass_flux = &quot;mass_flux&quot;;
+}
+
+namespace NS_DEFAULT_VALUES
+{
+static const Real infinite_porosity = 0.4;
+static const int bed_axis = 2;
+static const Real wall_porosity = 1.0;
+
+static const Real k_epsilon = 1e-6;
+static const Real vel_epsilon = 1e-8;
+
+static const RealVectorValue center(0.0, 0.0, 0.0);
+static const RealVectorValue acceleration(0.0, 0.0, 0.0);
+
+// assumed that the RZ geometry is not annular unless otherwise specified
+static const Real inner_radius = 0.0;
+}
+
+namespace NS_CONSTANTS
+{
+using namespace HeatConduction::Constants;
+}
+</code></pre></div><div class="modal-footer"><a class="modal-close btn-flat">Close</a></div></div><div class="moose-modal modal" id="4a33833b-474d-4a3a-bcdd-6fc07a878fe4"><div class="modal-content"><h4>(moose/modules/navier_stokes/include/base/NS.h)</h4><pre class="moose-pre"><code class="language-cpp">// This file is part of the MOOSE framework
+// https://www.mooseframework.org
+//
+// All rights reserved, see COPYRIGHT for full restrictions
+// https://github.com/idaholab/moose/blob/master/COPYRIGHT
+//
+// Licensed under LGPL 2.1, please see LICENSE for details
+// https://www.gnu.org/licenses/lgpl-2.1.html
+
+#pragma once
+
+#include &lt;string&gt;
+#include &quot;MooseTypes.h&quot;
+#include &quot;libmesh/vector_value.h&quot;
+#include &quot;HeatConductionNames.h&quot;
+
+namespace NS
+{
+using namespace HeatConduction;
+
+static const std::string directions[3] = {&quot;x&quot;, &quot;y&quot;, &quot;z&quot;};
+
+// geometric quantities
+static const std::string infinite_porosity = &quot;infinite_porosity&quot;;
+static const std::string axis = &quot;axis&quot;;
+static const std::string center = &quot;center&quot;;
+static const std::string wall_porosity = &quot;wall_porosity&quot;;
+static const std::string wall_distance = &quot;wall_distance&quot;;
+
+// Names defined in Navier-Stokes
+static const std::string density = &quot;rho&quot;;
+static const std::string superficial_density = &quot;superficial_rho&quot;;
+static const std::string momentum_x = &quot;rhou&quot;;
+static const std::string momentum_y = &quot;rhov&quot;;
+static const std::string momentum_z = &quot;rhow&quot;;
+static const std::string momentum_vector[3] = {momentum_x, momentum_y, momentum_z};
+static const std::string superficial_momentum_x = &quot;superficial_rhou&quot;;
+static const std::string superficial_momentum_y = &quot;superficial_rhov&quot;;
+static const std::string superficial_momentum_z = &quot;superficial_rhow&quot;;
+static const std::string superficial_momentum_vector[3] = {
+    superficial_momentum_x, superficial_momentum_y, superficial_momentum_z};
+
+static const std::string velocity = &quot;velocity&quot;;
+static const std::string velocity_x = &quot;vel_x&quot;;
+static const std::string velocity_y = &quot;vel_y&quot;;
+static const std::string velocity_z = &quot;vel_z&quot;;
+const std::string velocity_vector[3] = {velocity_x, velocity_y, velocity_z};
+static const std::string superficial_velocity_x = &quot;superficial_vel_x&quot;;
+static const std::string superficial_velocity_y = &quot;superficial_vel_y&quot;;
+static const std::string superficial_velocity_z = &quot;superficial_vel_z&quot;;
+static const std::string superficial_velocity = &quot;superficial_velocity&quot;;
+static const std::string superficial_velocity_vector[3] = {
+    superficial_velocity_x, superficial_velocity_y, superficial_velocity_z};
+static const std::string pressure = &quot;pressure&quot;;
+static const std::string temperature = &quot;temperature&quot;;
+
+static const std::string internal_energy = &quot;internal_energy&quot;;
+static const std::string specific_internal_energy = &quot;e&quot;;
+static const std::string specific_total_energy = &quot;et&quot;;
+static const std::string internal_energy_density = &quot;rho_e&quot;;
+static const std::string total_energy_density = &quot;rho_et&quot;;
+static const std::string superficial_total_energy_density = &quot;superficial_rho_et&quot;;
+
+static const std::string specific_enthalpy = &quot;h&quot;;
+static const std::string specific_total_enthalpy = &quot;ht&quot;;
+static const std::string enthalpy_density = &quot;rho_h&quot;;
+static const std::string total_enthalpy_density = &quot;rho_ht&quot;;
+static const std::string superficial_total_enthalpy_density = &quot;superficial_rho_ht&quot;;
+
+static const std::string mixing_length = &quot;mixing_length&quot;;
+static const std::string wall_shear_stress = &quot;wall_shear_stress&quot;;
+static const std::string wall_yplus = &quot;wall_yplus&quot;;
+static const std::string eddy_viscosity = &quot;eddy_viscosity&quot;;
+static const std::string total_viscosity = &quot;total_viscosity&quot;;
+
+static const std::string mach_number = &quot;Mach&quot;;
+static const std::string specific_volume = &quot;specific_volume&quot;;
+
+static const std::string momentum = &quot;momentum&quot;;
+static const std::string v = &quot;v&quot;;
+static const std::string acceleration = &quot;acceleration&quot;;
+
+static const std::string fluid = &quot;fp&quot;;
+
+// for Navier-Stokes material props representing gradients of nonlin+aux vars
+inline std::string
+grad(const std::string &amp; var)
+{
+  return &quot;grad_&quot; + var;
+}
+// for Navier-Stokes material props representing time derivatives of nonlin+aux vars
+inline std::string
+time_deriv(const std::string &amp; var)
+{
+  return &quot;d&quot; + var + &quot;_dt&quot;;
+}
+
+// Navier-Stokes Variables
+// Relating to porous media
+static const std::string porosity = &quot;porosity&quot;;
+static const std::string smoothed_porosity = &quot;smoothed_porosity&quot;;
+static const std::string T_fluid = &quot;T_fluid&quot;;
+static const std::string T_solid = &quot;T_solid&quot;;
+static const std::string heat_source = &quot;heat_source&quot;;
+
+// Navier-Stokes Materials
+static const std::string cL = &quot;Darcy_coefficient&quot;;
+static const std::string cQ = &quot;Forchheimer_coefficient&quot;;
+static const std::string alpha_boussinesq = &quot;alpha_b&quot;;
+static const std::string drhos_dTs = &quot;drhos_dTs&quot;;
+static const std::string dks_dTs = &quot;dks_dTs&quot;;
+static const std::string kappa = &quot;kappa&quot;;
+static const std::string kappa_s = &quot;kappa_s&quot;;
+static const std::string mu_eff = &quot;mu_eff&quot;;
+static const std::string rho_s = &quot;rho_s&quot;;
+static const std::string cp_s = &quot;cp_s&quot;;
+static const std::string k_s = &quot;k_s&quot;;
+static const std::string cp = &quot;cp&quot;;
+static const std::string cv = &quot;cv&quot;;
+static const std::string mu = &quot;mu&quot;;
+static const std::string k = &quot;k&quot;;
+static const std::string thermal_diffusivity = &quot;thermal_diffusivity&quot;;
+static const std::string alpha = &quot;alpha&quot;;
+static const std::string alpha_wall = &quot;alpha_wall&quot;;
+static const std::string solid = &quot;solid&quot;;
+static const std::string Prandtl = &quot;Pr&quot;;
+static const std::string Reynolds = &quot;Re&quot;;
+static const std::string Reynolds_hydraulic = &quot;Re_h&quot;;
+static const std::string Reynolds_interstitial = &quot;Re_i&quot;;
+static const std::string c = &quot;c&quot;;
+static const std::string speed = &quot;speed&quot;;
+static const std::string sound_speed = &quot;sound_speed&quot;;
+
+// other Navier-Stokes terms
+static const std::string component = &quot;component&quot;;
+static const std::string source_scaling = &quot;source_scaling&quot;;
+
+// SUPG terms
+static const std::string matrix_tau = &quot;matrix_tau&quot;;
+static const std::string vector_tau = &quot;vector_tau&quot;;
+static const std::string scalar_tau = &quot;scalar_tau&quot;;
+static const std::string diagonal_tau = &quot;diagonal_tau&quot;;
+static const std::string A = &quot;A&quot;;
+static const std::string R = &quot;R&quot;;
+static const std::string S = &quot;S&quot;;
+static const std::string dS_dTs = &quot;dS_dTs&quot;;
+static const std::string F = &quot;F&quot;;
+static const std::string G = &quot;G&quot;;
+static const std::string dUdt = &quot;dUdt&quot;;
+static const std::string C = &quot;C&quot;;
+static const std::string Z = &quot;Z&quot;;
+static const std::string K = &quot;K&quot;;
+static const std::string mass_flux = &quot;mass_flux&quot;;
+}
+
+namespace NS_DEFAULT_VALUES
+{
+static const Real infinite_porosity = 0.4;
+static const int bed_axis = 2;
+static const Real wall_porosity = 1.0;
+
+static const Real k_epsilon = 1e-6;
+static const Real vel_epsilon = 1e-8;
+
+static const RealVectorValue center(0.0, 0.0, 0.0);
+static const RealVectorValue acceleration(0.0, 0.0, 0.0);
+
+// assumed that the RZ geometry is not annular unless otherwise specified
+static const Real inner_radius = 0.0;
+}
+
+namespace NS_CONSTANTS
+{
+using namespace HeatConduction::Constants;
+}
+</code></pre></div><div class="modal-footer"><a class="modal-close btn-flat">Close</a></div></div><div class="moose-modal modal" id="9f533456-3a60-466b-803e-232e12b0f2e0"><div class="modal-content"><h4>(moose/modules/navier_stokes/include/base/NS.h)</h4><pre class="moose-pre"><code class="language-cpp">// This file is part of the MOOSE framework
+// https://www.mooseframework.org
+//
+// All rights reserved, see COPYRIGHT for full restrictions
+// https://github.com/idaholab/moose/blob/master/COPYRIGHT
+//
+// Licensed under LGPL 2.1, please see LICENSE for details
+// https://www.gnu.org/licenses/lgpl-2.1.html
+
+#pragma once
+
+#include &lt;string&gt;
+#include &quot;MooseTypes.h&quot;
+#include &quot;libmesh/vector_value.h&quot;
+#include &quot;HeatConductionNames.h&quot;
+
+namespace NS
+{
+using namespace HeatConduction;
+
+static const std::string directions[3] = {&quot;x&quot;, &quot;y&quot;, &quot;z&quot;};
+
+// geometric quantities
+static const std::string infinite_porosity = &quot;infinite_porosity&quot;;
+static const std::string axis = &quot;axis&quot;;
+static const std::string center = &quot;center&quot;;
+static const std::string wall_porosity = &quot;wall_porosity&quot;;
+static const std::string wall_distance = &quot;wall_distance&quot;;
+
+// Names defined in Navier-Stokes
+static const std::string density = &quot;rho&quot;;
+static const std::string superficial_density = &quot;superficial_rho&quot;;
+static const std::string momentum_x = &quot;rhou&quot;;
+static const std::string momentum_y = &quot;rhov&quot;;
+static const std::string momentum_z = &quot;rhow&quot;;
+static const std::string momentum_vector[3] = {momentum_x, momentum_y, momentum_z};
+static const std::string superficial_momentum_x = &quot;superficial_rhou&quot;;
+static const std::string superficial_momentum_y = &quot;superficial_rhov&quot;;
+static const std::string superficial_momentum_z = &quot;superficial_rhow&quot;;
+static const std::string superficial_momentum_vector[3] = {
+    superficial_momentum_x, superficial_momentum_y, superficial_momentum_z};
+
+static const std::string velocity = &quot;velocity&quot;;
+static const std::string velocity_x = &quot;vel_x&quot;;
+static const std::string velocity_y = &quot;vel_y&quot;;
+static const std::string velocity_z = &quot;vel_z&quot;;
+const std::string velocity_vector[3] = {velocity_x, velocity_y, velocity_z};
+static const std::string superficial_velocity_x = &quot;superficial_vel_x&quot;;
+static const std::string superficial_velocity_y = &quot;superficial_vel_y&quot;;
+static const std::string superficial_velocity_z = &quot;superficial_vel_z&quot;;
+static const std::string superficial_velocity = &quot;superficial_velocity&quot;;
+static const std::string superficial_velocity_vector[3] = {
+    superficial_velocity_x, superficial_velocity_y, superficial_velocity_z};
+static const std::string pressure = &quot;pressure&quot;;
+static const std::string temperature = &quot;temperature&quot;;
+
+static const std::string internal_energy = &quot;internal_energy&quot;;
+static const std::string specific_internal_energy = &quot;e&quot;;
+static const std::string specific_total_energy = &quot;et&quot;;
+static const std::string internal_energy_density = &quot;rho_e&quot;;
+static const std::string total_energy_density = &quot;rho_et&quot;;
+static const std::string superficial_total_energy_density = &quot;superficial_rho_et&quot;;
+
+static const std::string specific_enthalpy = &quot;h&quot;;
+static const std::string specific_total_enthalpy = &quot;ht&quot;;
+static const std::string enthalpy_density = &quot;rho_h&quot;;
+static const std::string total_enthalpy_density = &quot;rho_ht&quot;;
+static const std::string superficial_total_enthalpy_density = &quot;superficial_rho_ht&quot;;
+
+static const std::string mixing_length = &quot;mixing_length&quot;;
+static const std::string wall_shear_stress = &quot;wall_shear_stress&quot;;
+static const std::string wall_yplus = &quot;wall_yplus&quot;;
+static const std::string eddy_viscosity = &quot;eddy_viscosity&quot;;
+static const std::string total_viscosity = &quot;total_viscosity&quot;;
+
+static const std::string mach_number = &quot;Mach&quot;;
+static const std::string specific_volume = &quot;specific_volume&quot;;
+
+static const std::string momentum = &quot;momentum&quot;;
+static const std::string v = &quot;v&quot;;
+static const std::string acceleration = &quot;acceleration&quot;;
+
+static const std::string fluid = &quot;fp&quot;;
+
+// for Navier-Stokes material props representing gradients of nonlin+aux vars
+inline std::string
+grad(const std::string &amp; var)
+{
+  return &quot;grad_&quot; + var;
+}
+// for Navier-Stokes material props representing time derivatives of nonlin+aux vars
+inline std::string
+time_deriv(const std::string &amp; var)
+{
+  return &quot;d&quot; + var + &quot;_dt&quot;;
+}
+
+// Navier-Stokes Variables
+// Relating to porous media
+static const std::string porosity = &quot;porosity&quot;;
+static const std::string smoothed_porosity = &quot;smoothed_porosity&quot;;
+static const std::string T_fluid = &quot;T_fluid&quot;;
+static const std::string T_solid = &quot;T_solid&quot;;
+static const std::string heat_source = &quot;heat_source&quot;;
+
+// Navier-Stokes Materials
+static const std::string cL = &quot;Darcy_coefficient&quot;;
+static const std::string cQ = &quot;Forchheimer_coefficient&quot;;
+static const std::string alpha_boussinesq = &quot;alpha_b&quot;;
+static const std::string drhos_dTs = &quot;drhos_dTs&quot;;
+static const std::string dks_dTs = &quot;dks_dTs&quot;;
+static const std::string kappa = &quot;kappa&quot;;
+static const std::string kappa_s = &quot;kappa_s&quot;;
+static const std::string mu_eff = &quot;mu_eff&quot;;
+static const std::string rho_s = &quot;rho_s&quot;;
+static const std::string cp_s = &quot;cp_s&quot;;
+static const std::string k_s = &quot;k_s&quot;;
+static const std::string cp = &quot;cp&quot;;
+static const std::string cv = &quot;cv&quot;;
+static const std::string mu = &quot;mu&quot;;
+static const std::string k = &quot;k&quot;;
+static const std::string thermal_diffusivity = &quot;thermal_diffusivity&quot;;
+static const std::string alpha = &quot;alpha&quot;;
+static const std::string alpha_wall = &quot;alpha_wall&quot;;
+static const std::string solid = &quot;solid&quot;;
+static const std::string Prandtl = &quot;Pr&quot;;
+static const std::string Reynolds = &quot;Re&quot;;
+static const std::string Reynolds_hydraulic = &quot;Re_h&quot;;
+static const std::string Reynolds_interstitial = &quot;Re_i&quot;;
+static const std::string c = &quot;c&quot;;
+static const std::string speed = &quot;speed&quot;;
+static const std::string sound_speed = &quot;sound_speed&quot;;
+
+// other Navier-Stokes terms
+static const std::string component = &quot;component&quot;;
+static const std::string source_scaling = &quot;source_scaling&quot;;
+
+// SUPG terms
+static const std::string matrix_tau = &quot;matrix_tau&quot;;
+static const std::string vector_tau = &quot;vector_tau&quot;;
+static const std::string scalar_tau = &quot;scalar_tau&quot;;
+static const std::string diagonal_tau = &quot;diagonal_tau&quot;;
+static const std::string A = &quot;A&quot;;
+static const std::string R = &quot;R&quot;;
+static const std::string S = &quot;S&quot;;
+static const std::string dS_dTs = &quot;dS_dTs&quot;;
+static const std::string F = &quot;F&quot;;
+static const std::string G = &quot;G&quot;;
+static const std::string dUdt = &quot;dUdt&quot;;
+static const std::string C = &quot;C&quot;;
+static const std::string Z = &quot;Z&quot;;
+static const std::string K = &quot;K&quot;;
+static const std::string mass_flux = &quot;mass_flux&quot;;
+}
+
+namespace NS_DEFAULT_VALUES
+{
+static const Real infinite_porosity = 0.4;
+static const int bed_axis = 2;
+static const Real wall_porosity = 1.0;
+
+static const Real k_epsilon = 1e-6;
+static const Real vel_epsilon = 1e-8;
+
+static const RealVectorValue center(0.0, 0.0, 0.0);
+static const RealVectorValue acceleration(0.0, 0.0, 0.0);
+
+// assumed that the RZ geometry is not annular unless otherwise specified
+static const Real inner_radius = 0.0;
+}
+
+namespace NS_CONSTANTS
+{
+using namespace HeatConduction::Constants;
+}
+</code></pre></div><div class="modal-footer"><a class="modal-close btn-flat">Close</a></div></div><div class="moose-modal modal" id="c567bfd2-e53d-407a-8488-39b036b94790"><div class="modal-content"><h4>(moose/modules/navier_stokes/include/base/NS.h)</h4><pre class="moose-pre"><code class="language-cpp">// This file is part of the MOOSE framework
+// https://www.mooseframework.org
+//
+// All rights reserved, see COPYRIGHT for full restrictions
+// https://github.com/idaholab/moose/blob/master/COPYRIGHT
+//
+// Licensed under LGPL 2.1, please see LICENSE for details
+// https://www.gnu.org/licenses/lgpl-2.1.html
+
+#pragma once
+
+#include &lt;string&gt;
+#include &quot;MooseTypes.h&quot;
+#include &quot;libmesh/vector_value.h&quot;
+#include &quot;HeatConductionNames.h&quot;
+
+namespace NS
+{
+using namespace HeatConduction;
+
+static const std::string directions[3] = {&quot;x&quot;, &quot;y&quot;, &quot;z&quot;};
+
+// geometric quantities
+static const std::string infinite_porosity = &quot;infinite_porosity&quot;;
+static const std::string axis = &quot;axis&quot;;
+static const std::string center = &quot;center&quot;;
+static const std::string wall_porosity = &quot;wall_porosity&quot;;
+static const std::string wall_distance = &quot;wall_distance&quot;;
+
+// Names defined in Navier-Stokes
+static const std::string density = &quot;rho&quot;;
+static const std::string superficial_density = &quot;superficial_rho&quot;;
+static const std::string momentum_x = &quot;rhou&quot;;
+static const std::string momentum_y = &quot;rhov&quot;;
+static const std::string momentum_z = &quot;rhow&quot;;
+static const std::string momentum_vector[3] = {momentum_x, momentum_y, momentum_z};
+static const std::string superficial_momentum_x = &quot;superficial_rhou&quot;;
+static const std::string superficial_momentum_y = &quot;superficial_rhov&quot;;
+static const std::string superficial_momentum_z = &quot;superficial_rhow&quot;;
+static const std::string superficial_momentum_vector[3] = {
+    superficial_momentum_x, superficial_momentum_y, superficial_momentum_z};
+
+static const std::string velocity = &quot;velocity&quot;;
+static const std::string velocity_x = &quot;vel_x&quot;;
+static const std::string velocity_y = &quot;vel_y&quot;;
+static const std::string velocity_z = &quot;vel_z&quot;;
+const std::string velocity_vector[3] = {velocity_x, velocity_y, velocity_z};
+static const std::string superficial_velocity_x = &quot;superficial_vel_x&quot;;
+static const std::string superficial_velocity_y = &quot;superficial_vel_y&quot;;
+static const std::string superficial_velocity_z = &quot;superficial_vel_z&quot;;
+static const std::string superficial_velocity = &quot;superficial_velocity&quot;;
+static const std::string superficial_velocity_vector[3] = {
+    superficial_velocity_x, superficial_velocity_y, superficial_velocity_z};
+static const std::string pressure = &quot;pressure&quot;;
+static const std::string temperature = &quot;temperature&quot;;
+
+static const std::string internal_energy = &quot;internal_energy&quot;;
+static const std::string specific_internal_energy = &quot;e&quot;;
+static const std::string specific_total_energy = &quot;et&quot;;
+static const std::string internal_energy_density = &quot;rho_e&quot;;
+static const std::string total_energy_density = &quot;rho_et&quot;;
+static const std::string superficial_total_energy_density = &quot;superficial_rho_et&quot;;
+
+static const std::string specific_enthalpy = &quot;h&quot;;
+static const std::string specific_total_enthalpy = &quot;ht&quot;;
+static const std::string enthalpy_density = &quot;rho_h&quot;;
+static const std::string total_enthalpy_density = &quot;rho_ht&quot;;
+static const std::string superficial_total_enthalpy_density = &quot;superficial_rho_ht&quot;;
+
+static const std::string mixing_length = &quot;mixing_length&quot;;
+static const std::string wall_shear_stress = &quot;wall_shear_stress&quot;;
+static const std::string wall_yplus = &quot;wall_yplus&quot;;
+static const std::string eddy_viscosity = &quot;eddy_viscosity&quot;;
+static const std::string total_viscosity = &quot;total_viscosity&quot;;
+
+static const std::string mach_number = &quot;Mach&quot;;
+static const std::string specific_volume = &quot;specific_volume&quot;;
+
+static const std::string momentum = &quot;momentum&quot;;
+static const std::string v = &quot;v&quot;;
+static const std::string acceleration = &quot;acceleration&quot;;
+
+static const std::string fluid = &quot;fp&quot;;
+
+// for Navier-Stokes material props representing gradients of nonlin+aux vars
+inline std::string
+grad(const std::string &amp; var)
+{
+  return &quot;grad_&quot; + var;
+}
+// for Navier-Stokes material props representing time derivatives of nonlin+aux vars
+inline std::string
+time_deriv(const std::string &amp; var)
+{
+  return &quot;d&quot; + var + &quot;_dt&quot;;
+}
+
+// Navier-Stokes Variables
+// Relating to porous media
+static const std::string porosity = &quot;porosity&quot;;
+static const std::string smoothed_porosity = &quot;smoothed_porosity&quot;;
+static const std::string T_fluid = &quot;T_fluid&quot;;
+static const std::string T_solid = &quot;T_solid&quot;;
+static const std::string heat_source = &quot;heat_source&quot;;
+
+// Navier-Stokes Materials
+static const std::string cL = &quot;Darcy_coefficient&quot;;
+static const std::string cQ = &quot;Forchheimer_coefficient&quot;;
+static const std::string alpha_boussinesq = &quot;alpha_b&quot;;
+static const std::string drhos_dTs = &quot;drhos_dTs&quot;;
+static const std::string dks_dTs = &quot;dks_dTs&quot;;
+static const std::string kappa = &quot;kappa&quot;;
+static const std::string kappa_s = &quot;kappa_s&quot;;
+static const std::string mu_eff = &quot;mu_eff&quot;;
+static const std::string rho_s = &quot;rho_s&quot;;
+static const std::string cp_s = &quot;cp_s&quot;;
+static const std::string k_s = &quot;k_s&quot;;
+static const std::string cp = &quot;cp&quot;;
+static const std::string cv = &quot;cv&quot;;
+static const std::string mu = &quot;mu&quot;;
+static const std::string k = &quot;k&quot;;
+static const std::string thermal_diffusivity = &quot;thermal_diffusivity&quot;;
+static const std::string alpha = &quot;alpha&quot;;
+static const std::string alpha_wall = &quot;alpha_wall&quot;;
+static const std::string solid = &quot;solid&quot;;
+static const std::string Prandtl = &quot;Pr&quot;;
+static const std::string Reynolds = &quot;Re&quot;;
+static const std::string Reynolds_hydraulic = &quot;Re_h&quot;;
+static const std::string Reynolds_interstitial = &quot;Re_i&quot;;
+static const std::string c = &quot;c&quot;;
+static const std::string speed = &quot;speed&quot;;
+static const std::string sound_speed = &quot;sound_speed&quot;;
+
+// other Navier-Stokes terms
+static const std::string component = &quot;component&quot;;
+static const std::string source_scaling = &quot;source_scaling&quot;;
+
+// SUPG terms
+static const std::string matrix_tau = &quot;matrix_tau&quot;;
+static const std::string vector_tau = &quot;vector_tau&quot;;
+static const std::string scalar_tau = &quot;scalar_tau&quot;;
+static const std::string diagonal_tau = &quot;diagonal_tau&quot;;
+static const std::string A = &quot;A&quot;;
+static const std::string R = &quot;R&quot;;
+static const std::string S = &quot;S&quot;;
+static const std::string dS_dTs = &quot;dS_dTs&quot;;
+static const std::string F = &quot;F&quot;;
+static const std::string G = &quot;G&quot;;
+static const std::string dUdt = &quot;dUdt&quot;;
+static const std::string C = &quot;C&quot;;
+static const std::string Z = &quot;Z&quot;;
+static const std::string K = &quot;K&quot;;
+static const std::string mass_flux = &quot;mass_flux&quot;;
+}
+
+namespace NS_DEFAULT_VALUES
+{
+static const Real infinite_porosity = 0.4;
+static const int bed_axis = 2;
+static const Real wall_porosity = 1.0;
+
+static const Real k_epsilon = 1e-6;
+static const Real vel_epsilon = 1e-8;
+
+static const RealVectorValue center(0.0, 0.0, 0.0);
+static const RealVectorValue acceleration(0.0, 0.0, 0.0);
+
+// assumed that the RZ geometry is not annular unless otherwise specified
+static const Real inner_radius = 0.0;
+}
+
+namespace NS_CONSTANTS
+{
+using namespace HeatConduction::Constants;
+}
+</code></pre></div><div class="modal-footer"><a class="modal-close btn-flat">Close</a></div></div><div class="moose-modal modal" id="73b4fd54-54e0-4593-bd59-46e91566898f"><div class="modal-content"><h4>(moose/modules/navier_stokes/include/base/NS.h)</h4><pre class="moose-pre"><code class="language-cpp">// This file is part of the MOOSE framework
+// https://www.mooseframework.org
+//
+// All rights reserved, see COPYRIGHT for full restrictions
+// https://github.com/idaholab/moose/blob/master/COPYRIGHT
+//
+// Licensed under LGPL 2.1, please see LICENSE for details
+// https://www.gnu.org/licenses/lgpl-2.1.html
+
+#pragma once
+
+#include &lt;string&gt;
+#include &quot;MooseTypes.h&quot;
+#include &quot;libmesh/vector_value.h&quot;
+#include &quot;HeatConductionNames.h&quot;
+
+namespace NS
+{
+using namespace HeatConduction;
+
+static const std::string directions[3] = {&quot;x&quot;, &quot;y&quot;, &quot;z&quot;};
+
+// geometric quantities
+static const std::string infinite_porosity = &quot;infinite_porosity&quot;;
+static const std::string axis = &quot;axis&quot;;
+static const std::string center = &quot;center&quot;;
+static const std::string wall_porosity = &quot;wall_porosity&quot;;
+static const std::string wall_distance = &quot;wall_distance&quot;;
+
+// Names defined in Navier-Stokes
+static const std::string density = &quot;rho&quot;;
+static const std::string superficial_density = &quot;superficial_rho&quot;;
+static const std::string momentum_x = &quot;rhou&quot;;
+static const std::string momentum_y = &quot;rhov&quot;;
+static const std::string momentum_z = &quot;rhow&quot;;
+static const std::string momentum_vector[3] = {momentum_x, momentum_y, momentum_z};
+static const std::string superficial_momentum_x = &quot;superficial_rhou&quot;;
+static const std::string superficial_momentum_y = &quot;superficial_rhov&quot;;
+static const std::string superficial_momentum_z = &quot;superficial_rhow&quot;;
+static const std::string superficial_momentum_vector[3] = {
+    superficial_momentum_x, superficial_momentum_y, superficial_momentum_z};
+
+static const std::string velocity = &quot;velocity&quot;;
+static const std::string velocity_x = &quot;vel_x&quot;;
+static const std::string velocity_y = &quot;vel_y&quot;;
+static const std::string velocity_z = &quot;vel_z&quot;;
+const std::string velocity_vector[3] = {velocity_x, velocity_y, velocity_z};
+static const std::string superficial_velocity_x = &quot;superficial_vel_x&quot;;
+static const std::string superficial_velocity_y = &quot;superficial_vel_y&quot;;
+static const std::string superficial_velocity_z = &quot;superficial_vel_z&quot;;
+static const std::string superficial_velocity = &quot;superficial_velocity&quot;;
+static const std::string superficial_velocity_vector[3] = {
+    superficial_velocity_x, superficial_velocity_y, superficial_velocity_z};
+static const std::string pressure = &quot;pressure&quot;;
+static const std::string temperature = &quot;temperature&quot;;
+
+static const std::string internal_energy = &quot;internal_energy&quot;;
+static const std::string specific_internal_energy = &quot;e&quot;;
+static const std::string specific_total_energy = &quot;et&quot;;
+static const std::string internal_energy_density = &quot;rho_e&quot;;
+static const std::string total_energy_density = &quot;rho_et&quot;;
+static const std::string superficial_total_energy_density = &quot;superficial_rho_et&quot;;
+
+static const std::string specific_enthalpy = &quot;h&quot;;
+static const std::string specific_total_enthalpy = &quot;ht&quot;;
+static const std::string enthalpy_density = &quot;rho_h&quot;;
+static const std::string total_enthalpy_density = &quot;rho_ht&quot;;
+static const std::string superficial_total_enthalpy_density = &quot;superficial_rho_ht&quot;;
+
+static const std::string mixing_length = &quot;mixing_length&quot;;
+static const std::string wall_shear_stress = &quot;wall_shear_stress&quot;;
+static const std::string wall_yplus = &quot;wall_yplus&quot;;
+static const std::string eddy_viscosity = &quot;eddy_viscosity&quot;;
+static const std::string total_viscosity = &quot;total_viscosity&quot;;
+
+static const std::string mach_number = &quot;Mach&quot;;
+static const std::string specific_volume = &quot;specific_volume&quot;;
+
+static const std::string momentum = &quot;momentum&quot;;
+static const std::string v = &quot;v&quot;;
+static const std::string acceleration = &quot;acceleration&quot;;
+
+static const std::string fluid = &quot;fp&quot;;
+
+// for Navier-Stokes material props representing gradients of nonlin+aux vars
+inline std::string
+grad(const std::string &amp; var)
+{
+  return &quot;grad_&quot; + var;
+}
+// for Navier-Stokes material props representing time derivatives of nonlin+aux vars
+inline std::string
+time_deriv(const std::string &amp; var)
+{
+  return &quot;d&quot; + var + &quot;_dt&quot;;
+}
+
+// Navier-Stokes Variables
+// Relating to porous media
+static const std::string porosity = &quot;porosity&quot;;
+static const std::string smoothed_porosity = &quot;smoothed_porosity&quot;;
+static const std::string T_fluid = &quot;T_fluid&quot;;
+static const std::string T_solid = &quot;T_solid&quot;;
+static const std::string heat_source = &quot;heat_source&quot;;
+
+// Navier-Stokes Materials
+static const std::string cL = &quot;Darcy_coefficient&quot;;
+static const std::string cQ = &quot;Forchheimer_coefficient&quot;;
+static const std::string alpha_boussinesq = &quot;alpha_b&quot;;
+static const std::string drhos_dTs = &quot;drhos_dTs&quot;;
+static const std::string dks_dTs = &quot;dks_dTs&quot;;
+static const std::string kappa = &quot;kappa&quot;;
+static const std::string kappa_s = &quot;kappa_s&quot;;
+static const std::string mu_eff = &quot;mu_eff&quot;;
+static const std::string rho_s = &quot;rho_s&quot;;
+static const std::string cp_s = &quot;cp_s&quot;;
+static const std::string k_s = &quot;k_s&quot;;
+static const std::string cp = &quot;cp&quot;;
+static const std::string cv = &quot;cv&quot;;
+static const std::string mu = &quot;mu&quot;;
+static const std::string k = &quot;k&quot;;
+static const std::string thermal_diffusivity = &quot;thermal_diffusivity&quot;;
+static const std::string alpha = &quot;alpha&quot;;
+static const std::string alpha_wall = &quot;alpha_wall&quot;;
+static const std::string solid = &quot;solid&quot;;
+static const std::string Prandtl = &quot;Pr&quot;;
+static const std::string Reynolds = &quot;Re&quot;;
+static const std::string Reynolds_hydraulic = &quot;Re_h&quot;;
+static const std::string Reynolds_interstitial = &quot;Re_i&quot;;
+static const std::string c = &quot;c&quot;;
+static const std::string speed = &quot;speed&quot;;
+static const std::string sound_speed = &quot;sound_speed&quot;;
+
+// other Navier-Stokes terms
+static const std::string component = &quot;component&quot;;
+static const std::string source_scaling = &quot;source_scaling&quot;;
+
+// SUPG terms
+static const std::string matrix_tau = &quot;matrix_tau&quot;;
+static const std::string vector_tau = &quot;vector_tau&quot;;
+static const std::string scalar_tau = &quot;scalar_tau&quot;;
+static const std::string diagonal_tau = &quot;diagonal_tau&quot;;
+static const std::string A = &quot;A&quot;;
+static const std::string R = &quot;R&quot;;
+static const std::string S = &quot;S&quot;;
+static const std::string dS_dTs = &quot;dS_dTs&quot;;
+static const std::string F = &quot;F&quot;;
+static const std::string G = &quot;G&quot;;
+static const std::string dUdt = &quot;dUdt&quot;;
+static const std::string C = &quot;C&quot;;
+static const std::string Z = &quot;Z&quot;;
+static const std::string K = &quot;K&quot;;
+static const std::string mass_flux = &quot;mass_flux&quot;;
+}
+
+namespace NS_DEFAULT_VALUES
+{
+static const Real infinite_porosity = 0.4;
+static const int bed_axis = 2;
+static const Real wall_porosity = 1.0;
+
+static const Real k_epsilon = 1e-6;
+static const Real vel_epsilon = 1e-8;
+
+static const RealVectorValue center(0.0, 0.0, 0.0);
+static const RealVectorValue acceleration(0.0, 0.0, 0.0);
+
+// assumed that the RZ geometry is not annular unless otherwise specified
+static const Real inner_radius = 0.0;
+}
+
+namespace NS_CONSTANTS
+{
+using namespace HeatConduction::Constants;
+}
+</code></pre></div><div class="modal-footer"><a class="modal-close btn-flat">Close</a></div></div><div class="moose-modal modal" id="f1e8502b-8032-437e-a7d4-851c3f5cc9c8"><div class="modal-content"><h4>(moose/modules/navier_stokes/test/tests/finite_volume/ins/lid-driven/lid-driven-with-energy.i)</h4><pre class="moose-pre"><code class="language-text">mu = 1
+rho = 1
+k = .01
+cp = 1
+velocity_interp_method = &#x27;rc&#x27;
+advected_interp_method = &#x27;average&#x27;
+
+[GlobalParams]
+  rhie_chow_user_object = &#x27;rc&#x27;
+[]
+
+[UserObjects]
+  [rc]
+    type = INSFVRhieChowInterpolator
+    u = vel_x
+    v = vel_y
+    pressure = pressure
+  []
+[]
+
+[Mesh]
+  [gen]
+    type = GeneratedMeshGenerator
+    dim = 2
+    xmin = 0
+    xmax = 1
+    ymin = 0
+    ymax = 1
+    nx = 32
+    ny = 32
+  []
+[]
+
+[Variables]
+  [vel_x]
+    type = INSFVVelocityVariable
+  []
+  [vel_y]
+    type = INSFVVelocityVariable
+  []
+  [pressure]
+    type = INSFVPressureVariable
+  []
+  [T_fluid]
+    type = INSFVEnergyVariable
+  []
+  [lambda]
+    family = SCALAR
+    order = FIRST
+  []
+[]
+
+[AuxVariables]
+  [U]
+    order = CONSTANT
+    family = MONOMIAL
+    fv = true
+  []
+[]
+
+[AuxKernels]
+  [mag]
+    type = VectorMagnitudeAux
+    variable = U
+    x = vel_x
+    y = vel_y
+  []
+[]
+
+[FVKernels]
+  [mass]
+    type = INSFVMassAdvection
+    variable = pressure
+    advected_interp_method = ${advected_interp_method}
+    velocity_interp_method = ${velocity_interp_method}
+    rho = ${rho}
+  []
+  [mean_zero_pressure]
+    type = FVIntegralValueConstraint
+    variable = pressure
+    lambda = lambda
+  []
+
+  [u_advection]
+    type = INSFVMomentumAdvection
+    variable = vel_x
+    velocity_interp_method = ${velocity_interp_method}
+    advected_interp_method = ${advected_interp_method}
+    rho = ${rho}
+    momentum_component = &#x27;x&#x27;
+  []
+
+  [u_viscosity]
+    type = INSFVMomentumDiffusion
+    variable = vel_x
+    mu = ${mu}
+    momentum_component = &#x27;x&#x27;
+  []
+
+  [u_pressure]
+    type = INSFVMomentumPressure
+    variable = vel_x
+    momentum_component = &#x27;x&#x27;
+    pressure = pressure
+  []
+
+  [v_advection]
+    type = INSFVMomentumAdvection
+    variable = vel_y
+    velocity_interp_method = ${velocity_interp_method}
+    advected_interp_method = ${advected_interp_method}
+    rho = ${rho}
+    momentum_component = &#x27;y&#x27;
+  []
+
+  [v_viscosity]
+    type = INSFVMomentumDiffusion
+    variable = vel_y
+    mu = ${mu}
+    momentum_component = &#x27;y&#x27;
+  []
+
+  [v_pressure]
+    type = INSFVMomentumPressure
+    variable = vel_y
+    momentum_component = &#x27;y&#x27;
+    pressure = pressure
+  []
+
+  [temp_conduction]
+    type = FVDiffusion
+    coeff = &#x27;k&#x27;
+    variable = T_fluid
+  []
+
+  [temp_advection]
+    type = INSFVEnergyAdvection
+    variable = T_fluid
+    velocity_interp_method = ${velocity_interp_method}
+    advected_interp_method = ${advected_interp_method}
+  []
+[]
+
+[FVBCs]
+  [top_x]
+    type = INSFVNoSlipWallBC
+    variable = vel_x
+    boundary = &#x27;top&#x27;
+    function = &#x27;lid_function&#x27;
+  []
+
+  [no_slip_x]
+    type = INSFVNoSlipWallBC
+    variable = vel_x
+    boundary = &#x27;left right bottom&#x27;
+    function = 0
+  []
+
+  [no_slip_y]
+    type = INSFVNoSlipWallBC
+    variable = vel_y
+    boundary = &#x27;left right top bottom&#x27;
+    function = 0
+  []
+
+  [T_hot]
+    type = FVDirichletBC
+    variable = T_fluid
+    boundary = &#x27;bottom&#x27;
+    value = 1
+  []
+
+  [T_cold]
+    type = FVDirichletBC
+    variable = T_fluid
+    boundary = &#x27;top&#x27;
+    value = 0
+  []
+[]
+
+[Materials]
+  [functor_constants]
+    type = ADGenericFunctorMaterial
+    prop_names = &#x27;cp k&#x27;
+    prop_values = &#x27;${cp} ${k}&#x27;
+  []
+  [ins_fv]
+    type = INSFVEnthalpyMaterial
+    temperature = &#x27;T_fluid&#x27;
+    rho = ${rho}
+  []
+[]
+
+[Functions]
+  [lid_function]
+    type = ParsedFunction
+    expression = &#x27;4*x*(1-x)&#x27;
+  []
+[]
+
+[Executioner]
+  type = Steady
+  solve_type = &#x27;NEWTON&#x27;
+  petsc_options_iname = &#x27;-pc_type -pc_factor_shift_type&#x27;
+  petsc_options_value = &#x27;lu NONZERO&#x27;
+  nl_rel_tol = 1e-12
+[]
+
+[Outputs]
+  exodus = true
+[]
+</code></pre></div><div class="modal-footer"><a class="modal-close btn-flat">Close</a></div></div><div class="moose-modal modal" id="20a29e83-0ec6-437c-a41c-8877310f310e"><div class="modal-content"><h4>(moose/modules/navier_stokes/test/tests/finite_volume/ins/lid-driven/lid-driven-with-energy-action.i)</h4><pre class="moose-pre"><code class="language-text">mu = 1
+rho = 1
+k = .01
+cp = 1
+
+[Mesh]
+  [gen]
+    type = GeneratedMeshGenerator
+    dim = 2
+    xmin = 0
+    xmax = 1
+    ymin = 0
+    ymax = 1
+    nx = 32
+    ny = 32
+  []
+[]
+
+[Modules]
+  [NavierStokesFV]
+    compressibility = &#x27;incompressible&#x27;
+    add_energy_equation = true
+
+    density = &#x27;rho&#x27;
+    dynamic_viscosity = &#x27;mu&#x27;
+    thermal_conductivity = &#x27;k&#x27;
+    specific_heat = &#x27;cp&#x27;
+
+    initial_pressure = 0.0
+    initial_temperature = 0.0
+
+    inlet_boundaries = &#x27;top&#x27;
+    momentum_inlet_types = &#x27;fixed-velocity&#x27;
+    momentum_inlet_function = &#x27;lid_function 0&#x27;
+    energy_inlet_types = &#x27;fixed-temperature&#x27;
+    energy_inlet_function = &#x27;0&#x27;
+
+    wall_boundaries = &#x27;left right bottom&#x27;
+    momentum_wall_types = &#x27;noslip noslip noslip&#x27;
+    energy_wall_types = &#x27;heatflux heatflux fixed-temperature&#x27;
+    energy_wall_function = &#x27;0 0 1&#x27;
+
+    pin_pressure = true
+    pinned_pressure_type = average
+    pinned_pressure_value = 0
+
+    mass_advection_interpolation = &#x27;average&#x27;
+    momentum_advection_interpolation = &#x27;average&#x27;
+    energy_advection_interpolation = &#x27;average&#x27;
+  []
+[]
+
+[AuxVariables]
+  [U]
+    order = CONSTANT
+    family = MONOMIAL
+    fv = true
+  []
+[]
+
+[AuxKernels]
+  [mag]
+    type = VectorMagnitudeAux
+    variable = U
+    x = vel_x
+    y = vel_y
+  []
+[]
+
+[Materials]
+  [functor_constants]
+    type = ADGenericFunctorMaterial
+    prop_names = &#x27;cp k rho mu&#x27;
+    prop_values = &#x27;${cp} ${k} ${rho} ${mu}&#x27;
+  []
+[]
+
+[Functions]
+  [lid_function]
+    type = ParsedFunction
+    expression = &#x27;4*x*(1-x)&#x27;
+  []
+[]
+
+[Executioner]
+  type = Steady
+  solve_type = &#x27;NEWTON&#x27;
+  petsc_options_iname = &#x27;-pc_type -pc_factor_shift_type&#x27;
+  petsc_options_value = &#x27;lu NONZERO&#x27;
+  nl_rel_tol = 1e-12
+[]
+
+[Outputs]
+  exodus = true
+[]
+</code></pre></div><div class="modal-footer"><a class="modal-close btn-flat">Close</a></div></div><div class="moose-modal modal" id="b09987ea-5fb3-4cb6-b39d-b2969ef2e45f"><div class="modal-content"><h4>compressibility</h4><p class="moose-parameter-description-default"><span>Default:</span>incompressible</p><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>MooseEnum</p><p class="moose-parameter-description-options"><span>Options:</span>incompressible, weakly-compressible</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>No</p><p class="moose-parameter-description"><span>Description:</span>Compressibility constraint for the Navier-Stokes equations.</p></div></div><div class="moose-modal modal" id="f6ff5e8e-2f63-4537-af19-bfebaf3e4a9c"><div class="modal-content"><h4>add_energy_equation</h4><p class="moose-parameter-description-default"><span>Default:</span>False</p><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>bool</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>No</p><p class="moose-parameter-description"><span>Description:</span>True to add energy equation</p></div></div><div class="moose-modal modal" id="58087c40-e6da-463e-880a-fd2d92352afd"><div class="modal-content"><h4>(moose/modules/navier_stokes/test/tests/finite_volume/pins/channel-flow/heated/2d-rc-heated.i)</h4><pre class="moose-pre"><code class="language-text">mu = 1
+rho = 1
+k = 1e-3
+cp = 1
+u_inlet = 1
+T_inlet = 200
+advected_interp_method = &#x27;average&#x27;
+velocity_interp_method = &#x27;rc&#x27;
+
+[Mesh]
+  [mesh]
+    type = CartesianMeshGenerator
+    dim = 2
+    dx = &#x27;5 5&#x27;
+    dy = &#x27;1.0&#x27;
+    ix = &#x27;50 50&#x27;
+    iy = &#x27;20&#x27;
+    subdomain_id = &#x27;1 2&#x27;
+  []
+[]
+
+[GlobalParams]
+  rhie_chow_user_object = &#x27;rc&#x27;
+[]
+
+[UserObjects]
+  [rc]
+    type = PINSFVRhieChowInterpolator
+    u = superficial_vel_x
+    v = superficial_vel_y
+    pressure = pressure
+    porosity = porosity
+  []
+[]
+
+[Variables]
+  inactive = &#x27;T_solid&#x27;
+  [superficial_vel_x]
+    type = PINSFVSuperficialVelocityVariable
+    initial_condition = ${u_inlet}
+  []
+  [superficial_vel_y]
+    type = PINSFVSuperficialVelocityVariable
+    initial_condition = 1e-6
+  []
+  [pressure]
+    type = INSFVPressureVariable
+  []
+  [T_fluid]
+    type = INSFVEnergyVariable
+  []
+  [T_solid]
+    family = &#x27;MONOMIAL&#x27;
+    order = &#x27;CONSTANT&#x27;
+    fv = true
+  []
+[]
+
+[AuxVariables]
+  [T_solid]
+    family = &#x27;MONOMIAL&#x27;
+    order = &#x27;CONSTANT&#x27;
+    fv = true
+    initial_condition = 100
+  []
+  [porosity]
+    family = MONOMIAL
+    order = CONSTANT
+    fv = true
+    initial_condition = 0.5
+  []
+[]
+
+[FVKernels]
+  inactive = &#x27;solid_energy_diffusion solid_energy_convection&#x27;
+  [mass]
+    type = PINSFVMassAdvection
+    variable = pressure
+    advected_interp_method = ${advected_interp_method}
+    velocity_interp_method = ${velocity_interp_method}
+    rho = ${rho}
+  []
+
+  [u_advection]
+    type = PINSFVMomentumAdvection
+    variable = superficial_vel_x
+    advected_interp_method = ${advected_interp_method}
+    velocity_interp_method = ${velocity_interp_method}
+    rho = ${rho}
+    porosity = porosity
+    momentum_component = &#x27;x&#x27;
+  []
+  [u_viscosity]
+    type = PINSFVMomentumDiffusion
+    variable = superficial_vel_x
+    mu = ${mu}
+    porosity = porosity
+    momentum_component = &#x27;x&#x27;
+  []
+  [u_pressure]
+    type = PINSFVMomentumPressure
+    variable = superficial_vel_x
+    momentum_component = &#x27;x&#x27;
+    pressure = pressure
+    porosity = porosity
+  []
+
+  [v_advection]
+    type = PINSFVMomentumAdvection
+    variable = superficial_vel_y
+    advected_interp_method = ${advected_interp_method}
+    velocity_interp_method = ${velocity_interp_method}
+    rho = ${rho}
+    porosity = porosity
+    momentum_component = &#x27;y&#x27;
+  []
+  [v_viscosity]
+    type = PINSFVMomentumDiffusion
+    variable = superficial_vel_y
+    mu = ${mu}
+    porosity = porosity
+    momentum_component = &#x27;y&#x27;
+  []
+  [v_pressure]
+    type = PINSFVMomentumPressure
+    variable = superficial_vel_y
+    momentum_component = &#x27;y&#x27;
+    pressure = pressure
+    porosity = porosity
+  []
+
+  [energy_advection]
+    type = PINSFVEnergyAdvection
+    variable = T_fluid
+    velocity_interp_method = ${velocity_interp_method}
+    advected_interp_method = ${advected_interp_method}
+  []
+  [energy_diffusion]
+    type = PINSFVEnergyDiffusion
+    k = ${k}
+    variable = T_fluid
+    porosity = porosity
+  []
+  [energy_convection]
+    type = PINSFVEnergyAmbientConvection
+    variable = T_fluid
+    is_solid = false
+    T_fluid = &#x27;T_fluid&#x27;
+    T_solid = &#x27;T_solid&#x27;
+    h_solid_fluid = &#x27;h_cv&#x27;
+  []
+
+  [solid_energy_diffusion]
+    type = FVDiffusion
+    coeff = ${k}
+    variable = T_solid
+  []
+  [solid_energy_convection]
+    type = PINSFVEnergyAmbientConvection
+    variable = T_solid
+    is_solid = true
+    T_fluid = &#x27;T_fluid&#x27;
+    T_solid = &#x27;T_solid&#x27;
+    h_solid_fluid = &#x27;h_cv&#x27;
+  []
+[]
+
+[FVBCs]
+  inactive = &#x27;heated-side&#x27;
+  [inlet-u]
+    type = INSFVInletVelocityBC
+    boundary = &#x27;left&#x27;
+    variable = superficial_vel_x
+    function = ${u_inlet}
+  []
+  [inlet-v]
+    type = INSFVInletVelocityBC
+    boundary = &#x27;left&#x27;
+    variable = superficial_vel_y
+    function = 0
+  []
+  [inlet-T]
+    type = FVNeumannBC
+    variable = T_fluid
+    value = &#x27;${fparse u_inlet * rho * cp * T_inlet}&#x27;
+    boundary = &#x27;left&#x27;
+  []
+
+  [no-slip-u]
+    type = INSFVNoSlipWallBC
+    boundary = &#x27;top&#x27;
+    variable = superficial_vel_x
+    function = 0
+  []
+  [no-slip-v]
+    type = INSFVNoSlipWallBC
+    boundary = &#x27;top&#x27;
+    variable = superficial_vel_y
+    function = 0
+  []
+  [heated-side]
+    type = FVDirichletBC
+    boundary = &#x27;top&#x27;
+    variable = &#x27;T_solid&#x27;
+    value = 150
+  []
+
+  [symmetry-u]
+    type = PINSFVSymmetryVelocityBC
+    boundary = &#x27;bottom&#x27;
+    variable = superficial_vel_x
+    u = superficial_vel_x
+    v = superficial_vel_y
+    mu = ${mu}
+    momentum_component = &#x27;x&#x27;
+  []
+  [symmetry-v]
+    type = PINSFVSymmetryVelocityBC
+    boundary = &#x27;bottom&#x27;
+    variable = superficial_vel_y
+    u = superficial_vel_x
+    v = superficial_vel_y
+    mu = ${mu}
+    momentum_component = &#x27;y&#x27;
+  []
+  [symmetry-p]
+    type = INSFVSymmetryPressureBC
+    boundary = &#x27;bottom&#x27;
+    variable = pressure
+  []
+
+  [outlet-p]
+    type = INSFVOutletPressureBC
+    boundary = &#x27;right&#x27;
+    variable = pressure
+    function = 0.1
+  []
+[]
+
+[Materials]
+  [constants]
+    type = ADGenericFunctorMaterial
+    prop_names = &#x27;h_cv&#x27;
+    prop_values = &#x27;1&#x27;
+  []
+  [functor_constants]
+    type = ADGenericFunctorMaterial
+    prop_names = &#x27;cp&#x27;
+    prop_values = &#x27;${cp}&#x27;
+  []
+  [ins_fv]
+    type = INSFVEnthalpyMaterial
+    rho = ${rho}
+    temperature = &#x27;T_fluid&#x27;
+  []
+[]
+
+[Executioner]
+  type = Steady
+  solve_type = &#x27;NEWTON&#x27;
+  petsc_options_iname = &#x27;-pc_type -pc_factor_shift_type&#x27;
+  petsc_options_value = &#x27;lu NONZERO&#x27;
+  nl_rel_tol = 1e-14
+[]
+
+# Some basic Postprocessors to examine the solution
+[Postprocessors]
+  [inlet-p]
+    type = SideAverageValue
+    variable = pressure
+    boundary = &#x27;left&#x27;
+  []
+  [outlet-u]
+    type = SideAverageValue
+    variable = superficial_vel_x
+    boundary = &#x27;right&#x27;
+  []
+  [outlet-temp]
+    type = SideAverageValue
+    variable = T_fluid
+    boundary = &#x27;right&#x27;
+  []
+  [solid-temp]
+    type = ElementAverageValue
+    variable = T_solid
+  []
+[]
+
+[Outputs]
+  exodus = true
+  csv = false
+[]
+</code></pre></div><div class="modal-footer"><a class="modal-close btn-flat">Close</a></div></div><div class="moose-modal modal" id="865c66fa-c18e-4844-b5f9-8feb4e8a21ed"><div class="modal-content"><h4>(moose/modules/navier_stokes/test/tests/finite_volume/pins/channel-flow/heated/2d-rc-heated-action.i)</h4><pre class="moose-pre"><code class="language-text">mu = 1
+rho = 1
+k = 1e-3
+cp = 1
+u_inlet = 1
+T_inlet = 200
+h_cv = 1.0
+
+[Mesh]
+  [mesh]
+    type = CartesianMeshGenerator
+    dim = 2
+    dx = &#x27;5 5&#x27;
+    dy = &#x27;1.0&#x27;
+    ix = &#x27;50 50&#x27;
+    iy = &#x27;20&#x27;
+    subdomain_id = &#x27;1 2&#x27;
+  []
+[]
+
+[Variables]
+  [T_solid]
+    type = MooseVariableFVReal
+  []
+[]
+
+[AuxVariables]
+  [porosity]
+    type = MooseVariableFVReal
+    initial_condition = 0.5
+  []
+[]
+
+[Modules]
+  [NavierStokesFV]
+    compressibility = &#x27;incompressible&#x27;
+    porous_medium_treatment = true
+    add_energy_equation = true
+
+    density = ${rho}
+    dynamic_viscosity = ${mu}
+    thermal_conductivity = ${k}
+    specific_heat = ${cp}
+    porosity = &#x27;porosity&#x27;
+
+    initial_velocity = &#x27;${u_inlet} 1e-6 0&#x27;
+    initial_pressure = 0.0
+    initial_temperature = 0.0
+
+    inlet_boundaries = &#x27;left&#x27;
+    momentum_inlet_types = &#x27;fixed-velocity&#x27;
+    momentum_inlet_function = &#x27;${u_inlet} 0&#x27;
+    energy_inlet_types = &#x27;heatflux&#x27;
+    energy_inlet_function = &#x27;${fparse u_inlet * rho * cp * T_inlet}&#x27;
+
+    wall_boundaries = &#x27;top bottom&#x27;
+    momentum_wall_types = &#x27;noslip symmetry&#x27;
+    energy_wall_types = &#x27;heatflux heatflux&#x27;
+    energy_wall_function = &#x27;0 0&#x27;
+
+    outlet_boundaries = &#x27;right&#x27;
+    momentum_outlet_types = &#x27;fixed-pressure&#x27;
+    pressure_function = &#x27;0.1&#x27;
+
+    ambient_convection_alpha = ${h_cv}
+    ambient_temperature = &#x27;T_solid&#x27;
+
+    mass_advection_interpolation = &#x27;average&#x27;
+    momentum_advection_interpolation = &#x27;average&#x27;
+    energy_advection_interpolation = &#x27;average&#x27;
+  []
+[]
+
+[FVKernels]
+  [solid_energy_diffusion]
+    type = FVDiffusion
+    coeff = ${k}
+    variable = T_solid
+  []
+  [solid_energy_convection]
+    type = PINSFVEnergyAmbientConvection
+    variable = &#x27;T_solid&#x27;
+    is_solid = true
+    T_fluid = &#x27;T_fluid&#x27;
+    T_solid = &#x27;T_solid&#x27;
+    h_solid_fluid = ${h_cv}
+  []
+[]
+
+[FVBCs]
+  [heated-side]
+    type = FVDirichletBC
+    boundary = &#x27;top&#x27;
+    variable = &#x27;T_solid&#x27;
+    value = 150
+  []
+[]
+
+[Executioner]
+  type = Steady
+  solve_type = &#x27;NEWTON&#x27;
+  petsc_options_iname = &#x27;-pc_type -pc_factor_shift_type&#x27;
+  petsc_options_value = &#x27;lu NONZERO&#x27;
+  nl_rel_tol = 1e-14
+[]
+
+# Some basic Postprocessors to examine the solution
+[Postprocessors]
+  [inlet-p]
+    type = SideAverageValue
+    variable = pressure
+    boundary = &#x27;left&#x27;
+  []
+  [outlet-u]
+    type = SideAverageValue
+    variable = superficial_vel_x
+    boundary = &#x27;right&#x27;
+  []
+  [outlet-temp]
+    type = SideAverageValue
+    variable = T_fluid
+    boundary = &#x27;right&#x27;
+  []
+  [solid-temp]
+    type = ElementAverageValue
+    variable = T_solid
+  []
+[]
+
+[Outputs]
+  exodus = true
+  csv = false
+[]
+</code></pre></div><div class="modal-footer"><a class="modal-close btn-flat">Close</a></div></div><div class="moose-modal modal" id="c18fa809-9c4b-4f61-a914-1fbd33ec4369"><div class="modal-content"><h4>porous_medium_treatment</h4><p class="moose-parameter-description-default"><span>Default:</span>False</p><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>bool</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>No</p><p class="moose-parameter-description"><span>Description:</span>Whether to use porous medium kernels or not.</p></div></div><div class="moose-modal modal" id="b223506f-38a3-44a1-b901-4fbefec1f6af"><div class="modal-content"><h4>porosity</h4><p class="moose-parameter-description-default"><span>Default:</span>porosity</p><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>MooseFunctorName</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>No</p><p class="moose-parameter-description"><span>Description:</span>The name of the auxiliary variable for the porosity field.</p></div></div><div class="moose-modal modal" id="119e8a1b-20fa-4977-98d9-8b4506a50ff3"><div class="modal-content"><h4>ambient_temperature</h4><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>std::vector&lt;MooseFunctorName&gt;</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>No</p><p class="moose-parameter-description"><span>Description:</span>The ambient temperature for each block in 'ambient_convection_blocks'.</p></div></div><div class="moose-modal modal" id="14a68434-0e9a-4f7f-8ddd-3bd197ab55bd"><div class="modal-content"><h4>ambient_convection_alpha</h4><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>std::vector&lt;MooseFunctorName&gt;</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>No</p><p class="moose-parameter-description"><span>Description:</span>The heat exchange coefficients for each block in 'ambient_convection_blocks'.</p></div></div><div class="moose-modal modal" id="9d95ffb3-fa44-4196-ac6a-718462a0d433"><div class="modal-content"><h4>(moose/modules/navier_stokes/test/tests/finite_volume/wcns/channel-flow/2d-transient.i)</h4><pre class="moose-pre"><code class="language-text">rho = &#x27;rho&#x27;
+l = 10
+velocity_interp_method = &#x27;rc&#x27;
+advected_interp_method = &#x27;average&#x27;
+
+# Artificial fluid properties
+# For a real case, use a GeneralFluidFunctorProperties and a viscosity rampdown
+# or initialize very well!
+k = 1
+cp = 1000
+mu = 1e2
+
+# Operating conditions
+inlet_temp = 300
+outlet_pressure = 1e5
+inlet_v = 0.001
+
+[Mesh]
+  [gen]
+    type = GeneratedMeshGenerator
+    dim = 2
+    xmin = 0
+    xmax = ${l}
+    ymin = 0
+    ymax = 1
+    nx = 20
+    ny = 10
+  []
+[]
+
+[GlobalParams]
+  rhie_chow_user_object = &#x27;rc&#x27;
+[]
+
+[UserObjects]
+  [rc]
+    type = INSFVRhieChowInterpolator
+    u = vel_x
+    v = vel_y
+    pressure = pressure
+  []
+[]
+
+[Variables]
+  [vel_x]
+    type = INSFVVelocityVariable
+    initial_condition = ${inlet_v}
+  []
+  [vel_y]
+    type = INSFVVelocityVariable
+    initial_condition = 1e-15
+  []
+  [pressure]
+    type = INSFVPressureVariable
+    initial_condition = ${outlet_pressure}
+  []
+  [T_fluid]
+    type = INSFVEnergyVariable
+    initial_condition = ${inlet_temp}
+  []
+[]
+
+[AuxVariables]
+  [mixing_length]
+    type = MooseVariableFVReal
+  []
+  [power_density]
+    type = MooseVariableFVReal
+    initial_condition = 1e4
+  []
+[]
+
+[FVKernels]
+  inactive = &#x27;u_turb v_turb temp_turb&#x27;
+  [mass_time]
+    type = WCNSFVMassTimeDerivative
+    variable = pressure
+    drho_dt = drho_dt
+  []
+  [mass]
+    type = INSFVMassAdvection
+    variable = pressure
+    advected_interp_method = ${advected_interp_method}
+    velocity_interp_method = ${velocity_interp_method}
+    rho = ${rho}
+  []
+
+  [u_time]
+    type = WCNSFVMomentumTimeDerivative
+    variable = vel_x
+    drho_dt = drho_dt
+    rho = rho
+    momentum_component = &#x27;x&#x27;
+  []
+  [u_advection]
+    type = INSFVMomentumAdvection
+    variable = vel_x
+    velocity_interp_method = ${velocity_interp_method}
+    advected_interp_method = ${advected_interp_method}
+    rho = ${rho}
+    momentum_component = &#x27;x&#x27;
+  []
+  [u_viscosity]
+    type = INSFVMomentumDiffusion
+    variable = vel_x
+    mu = ${mu}
+    momentum_component = &#x27;x&#x27;
+  []
+  [u_pressure]
+    type = INSFVMomentumPressure
+    variable = vel_x
+    momentum_component = &#x27;x&#x27;
+    pressure = pressure
+  []
+  [u_turb]
+    type = INSFVMixingLengthReynoldsStress
+    variable = vel_x
+    rho = ${rho}
+    mixing_length = &#x27;mixing_length&#x27;
+    momentum_component = &#x27;x&#x27;
+    u = vel_x
+    v = vel_y
+  []
+
+  [v_time]
+    type = WCNSFVMomentumTimeDerivative
+    variable = vel_y
+    drho_dt = drho_dt
+    rho = rho
+    momentum_component = &#x27;y&#x27;
+  []
+  [v_advection]
+    type = INSFVMomentumAdvection
+    variable = vel_y
+    velocity_interp_method = ${velocity_interp_method}
+    advected_interp_method = ${advected_interp_method}
+    rho = ${rho}
+    momentum_component = &#x27;y&#x27;
+  []
+  [v_viscosity]
+    type = INSFVMomentumDiffusion
+    variable = vel_y
+    momentum_component = &#x27;y&#x27;
+    mu = ${mu}
+  []
+  [v_pressure]
+    type = INSFVMomentumPressure
+    variable = vel_y
+    momentum_component = &#x27;y&#x27;
+    pressure = pressure
+  []
+  [v_turb]
+    type = INSFVMixingLengthReynoldsStress
+    variable = vel_y
+    rho = ${rho}
+    mixing_length = &#x27;mixing_length&#x27;
+    momentum_component = &#x27;y&#x27;
+    u = vel_x
+    v = vel_y
+  []
+
+  [temp_time]
+    type = WCNSFVEnergyTimeDerivative
+    variable = T_fluid
+    cp = cp
+    rho = rho
+    drho_dt = drho_dt
+  []
+  [temp_conduction]
+    type = FVDiffusion
+    coeff = &#x27;k&#x27;
+    variable = T_fluid
+  []
+  [temp_advection]
+    type = INSFVEnergyAdvection
+    variable = T_fluid
+    velocity_interp_method = ${velocity_interp_method}
+    advected_interp_method = ${advected_interp_method}
+  []
+  [heat_source]
+    type = FVCoupledForce
+    variable = T_fluid
+    v = power_density
+  []
+  [temp_turb]
+    type = WCNSFVMixingLengthEnergyDiffusion
+    variable = T_fluid
+    rho = rho
+    cp = cp
+    mixing_length = &#x27;mixing_length&#x27;
+    schmidt_number = 1
+    u = vel_x
+    v = vel_y
+  []
+[]
+
+[FVBCs]
+  [no_slip_x]
+    type = INSFVNoSlipWallBC
+    variable = vel_x
+    boundary = &#x27;top bottom&#x27;
+    function = 0
+  []
+
+  [no_slip_y]
+    type = INSFVNoSlipWallBC
+    variable = vel_y
+    boundary = &#x27;top bottom&#x27;
+    function = 0
+  []
+
+  # Inlet
+  [inlet_u]
+    type = INSFVInletVelocityBC
+    variable = vel_x
+    boundary = &#x27;left&#x27;
+    function = ${inlet_v}
+  []
+  [inlet_v]
+    type = INSFVInletVelocityBC
+    variable = vel_y
+    boundary = &#x27;left&#x27;
+    function = 0
+  []
+  [inlet_T]
+    type = FVDirichletBC
+    variable = T_fluid
+    boundary = &#x27;left&#x27;
+    value = ${inlet_temp}
+  []
+
+  [outlet_p]
+    type = INSFVOutletPressureBC
+    variable = pressure
+    boundary = &#x27;right&#x27;
+    function = ${outlet_pressure}
+  []
+[]
+
+[FluidProperties]
+  [fp]
+    type = FlibeFluidProperties
+  []
+[]
+
+[Materials]
+  [const_functor]
+    type = ADGenericFunctorMaterial
+    prop_names = &#x27;cp k&#x27;
+    prop_values = &#x27;${cp} ${k}&#x27;
+  []
+  [rho]
+    type = RhoFromPTFunctorMaterial
+    fp = fp
+    temperature = T_fluid
+    pressure = pressure
+  []
+  [ins_fv]
+    type = INSFVEnthalpyMaterial
+    temperature = &#x27;T_fluid&#x27;
+    rho = ${rho}
+  []
+[]
+
+[AuxKernels]
+  inactive = &#x27;mixing_len&#x27;
+  [mixing_len]
+    type = WallDistanceMixingLengthAux
+    walls = &#x27;top&#x27;
+    variable = mixing_length
+    execute_on = &#x27;initial&#x27;
+    delta = 0.5
+  []
+[]
+
+[Executioner]
+  type = Transient
+  solve_type = &#x27;NEWTON&#x27;
+  petsc_options_iname = &#x27;-pc_type -pc_factor_shift_type&#x27;
+  petsc_options_value = &#x27;lu       NONZERO&#x27;
+
+  [TimeStepper]
+    type = IterationAdaptiveDT
+    dt = 1e-3
+    optimal_iterations = 6
+  []
+  end_time = 15
+
+  nl_abs_tol = 1e-9
+  nl_max_its = 50
+  line_search = &#x27;none&#x27;
+
+  automatic_scaling = true
+  off_diagonals_in_auto_scaling = true
+  compute_scaling_once = false
+[]
+
+[Outputs]
+  exodus = true
+[]
+</code></pre></div><div class="modal-footer"><a class="modal-close btn-flat">Close</a></div></div><div class="moose-modal modal" id="457e282e-7a47-4f00-8f3d-275e85019459"><div class="modal-content"><h4>(moose/modules/navier_stokes/test/tests/finite_volume/wcns/channel-flow/2d-transient-action.i)</h4><pre class="moose-pre"><code class="language-text">l = 10
+
+# Artificial fluid properties
+# For a real case, use a GeneralFluidFunctorProperties and a viscosity rampdown
+# or initialize very well!
+k = 1
+cp = 1000
+mu = 1e2
+
+# Operating conditions
+inlet_temp = 300
+outlet_pressure = 1e5
+inlet_v = 0.001
+
+[Mesh]
+  [gen]
+    type = GeneratedMeshGenerator
+    dim = 2
+    xmin = 0
+    xmax = ${l}
+    ymin = 0
+    ymax = 1
+    nx = 20
+    ny = 10
+  []
+[]
+
+[Modules]
+  [NavierStokesFV]
+    compressibility = &#x27;weakly-compressible&#x27;
+    add_energy_equation = true
+
+    density = &#x27;rho&#x27;
+    dynamic_viscosity = &#x27;mu&#x27;
+    thermal_conductivity = &#x27;k&#x27;
+    specific_heat = &#x27;cp&#x27;
+
+    initial_velocity = &#x27;${inlet_v} 1e-15 0&#x27;
+    initial_temperature = &#x27;${inlet_temp}&#x27;
+    initial_pressure = &#x27;${outlet_pressure}&#x27;
+
+    inlet_boundaries = &#x27;left&#x27;
+    momentum_inlet_types = &#x27;fixed-velocity&#x27;
+    momentum_inlet_function = &#x27;${inlet_v} 0&#x27;
+    energy_inlet_types = &#x27;fixed-temperature&#x27;
+    energy_inlet_function = &#x27;${inlet_temp}&#x27;
+
+    wall_boundaries = &#x27;top bottom&#x27;
+    momentum_wall_types = &#x27;noslip noslip&#x27;
+    energy_wall_types = &#x27;heatflux heatflux&#x27;
+    energy_wall_function = &#x27;0 0&#x27;
+
+    outlet_boundaries = &#x27;right&#x27;
+    momentum_outlet_types = &#x27;fixed-pressure&#x27;
+    pressure_function = &#x27;${outlet_pressure}&#x27;
+
+    external_heat_source = &#x27;power_density&#x27;
+
+    mass_advection_interpolation = &#x27;average&#x27;
+    momentum_advection_interpolation = &#x27;average&#x27;
+    energy_advection_interpolation = &#x27;average&#x27;
+  []
+[]
+
+[AuxVariables]
+  [power_density]
+    type = MooseVariableFVReal
+    initial_condition = 1e4
+  []
+[]
+
+[FluidProperties]
+  [fp]
+    type = FlibeFluidProperties
+  []
+[]
+
+[Materials]
+  [const_functor]
+    type = ADGenericFunctorMaterial
+    prop_names = &#x27;cp k mu&#x27;
+    prop_values = &#x27;${cp} ${k} ${mu}&#x27;
+  []
+  [rho]
+    type = RhoFromPTFunctorMaterial
+    fp = fp
+    temperature = T_fluid
+    pressure = pressure
+  []
+[]
+
+[Executioner]
+  type = Transient
+  solve_type = &#x27;NEWTON&#x27;
+  petsc_options_iname = &#x27;-pc_type -pc_factor_shift_type&#x27;
+  petsc_options_value = &#x27;lu       NONZERO&#x27;
+
+  [TimeStepper]
+    type = IterationAdaptiveDT
+    dt = 1e-3
+    optimal_iterations = 6
+  []
+  end_time = 15
+
+  nl_abs_tol = 1e-9
+  nl_max_its = 50
+  line_search = &#x27;none&#x27;
+
+  automatic_scaling = true
+  off_diagonals_in_auto_scaling = true
+  compute_scaling_once = false
+[]
+
+[Outputs]
+  exodus = true
+[]
+</code></pre></div><div class="modal-footer"><a class="modal-close btn-flat">Close</a></div></div><div class="moose-modal modal" id="9b6f7175-318e-4684-bcae-0bb80d916ac2"><div class="modal-content"><h4>compressibility</h4><p class="moose-parameter-description-default"><span>Default:</span>incompressible</p><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>MooseEnum</p><p class="moose-parameter-description-options"><span>Options:</span>incompressible, weakly-compressible</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>No</p><p class="moose-parameter-description"><span>Description:</span>Compressibility constraint for the Navier-Stokes equations.</p></div></div><div class="moose-modal modal" id="fe45845e-a2a6-485b-8179-3423492f9be6"><div class="modal-content"><h4>external_heat_source</h4><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>MooseFunctorName</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>No</p><p class="moose-parameter-description"><span>Description:</span>The name of a functor which contains the external heat source for the energy equation.</p></div></div></div><div class="col hide-on-med-and-down l2"><div class="toc-wrapper pin-top"><ul class="section table-of-contents"><li><a href="#4388766a-24e3-4ac0-af56-c56a37f83d65" class="tooltipped" data-position="left" data-tooltip="Overview">Overview</a></li><li><a href="#eaebbb31-171e-4902-94db-9da552cf3663" class="tooltipped" data-position="left" data-tooltip="Automatically defined variables">Automatically defined variables</a></li><li><a href="#5912a57a-14bd-4885-b946-03e7382022e5" class="tooltipped" data-position="left" data-tooltip="Bernoulli pressure jump treatment">Bernoulli pressure jump treatment</a></li><li><a href="#50514149-2c59-45c7-b817-d1696612f473" class="tooltipped" data-position="left" data-tooltip="Examples">Examples</a></li><li><a href="#4b04191f-d4e8-40a8-b91d-2309007f2d54" class="tooltipped" data-position="left" data-tooltip="Available Actions">Available Actions</a></li></ul></div></div></div></div></main></div></body><script type="text/javascript" src="../../../contrib/materialize/materialize.min.js"></script><script type="text/javascript" src="../../../contrib/clipboard/clipboard.min.js"></script><script type="text/javascript" src="../../../contrib/prism/prism.min.js"></script><script type="text/javascript" src="../../../js/init.js"></script><script type="text/javascript" src="../../../js/navigation.js"></script><script type="text/javascript" src="../../../contrib/fuse/fuse.min.js"></script><script type="text/javascript" src="../../../js/search_index.js"></script><script type="text/javascript" src="../../../js/sqa_moose.js"></script>

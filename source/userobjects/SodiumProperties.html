@@ -1,0 +1,208 @@
+<!DOCTYPE html><head><meta charset="UTF-8"><title>Sodium Fluid Properties | Eel</title><link href="../../contrib/materialize/materialize.min.css" type="text/css" rel="stylesheet" media="screen,projection"></link><link href="../../contrib/prism/prism.min.css" type="text/css" rel="stylesheet"></link><link href="../../css/moose.css" type="text/css" rel="stylesheet"></link><link href="../../css/devel_moose.css" type="text/css" rel="stylesheet"></link><link href="../../css/alert_moose.css" type="text/css" rel="stylesheet"></link><link href="../../css/content_moose.css" type="text/css" rel="stylesheet"></link><link href="../../css/sqa_moose.css" type="text/css" rel="stylesheet"></link><link href="../../css/civet_moose.css" type="text/css" rel="stylesheet"></link><script type="text/javascript" src="../../contrib/jquery/jquery.min.js"></script></head><body><div class="page-wrap"><header><nav><div class="nav-wrapper container"><a href="../../index.html" class="left moose-logo hide-on-med-and-down" id="home-button">Eel</a><a href="https://github.com/hugary1995/eel" class="right"><img src="../../media/framework/github-logo.png" class="github-mark"></img><img src="../../media/framework/github-mark.png" class="github-logo"></img></a><ul class="right hide-on-med-and-down"><li><a href="../../eel.html">Documentation</a></li></ul><a href="#" class="sidenav-trigger" data-target="3b3f70e3-13eb-4f6e-83f4-bc5021fb40ec"><i class="material-icons">menu</i></a><ul class="sidenav" id="3b3f70e3-13eb-4f6e-83f4-bc5021fb40ec"><li><a href="../../eel.html">Documentation</a></li></ul><a href="#moose-search" class="modal-trigger"><i class="material-icons">search</i></a></div></nav><div class="modal modal-fixed-footer moose-search-modal" id="moose-search"><div class="modal-content container moose-search-modal-content"><div class="row"><div class="col l12"><div class="input-field"><input type_="text" onkeyup="mooseSearch()" placeholder="/index.md" id="moose-search-box"></input></div></div><div><div class="col s12" id="moose-search-results"></div></div></div></div><div class="modal-footer"><a href="#!" class="modal-close btn-flat">Close</a></div></div></header><main class="main"><div class="container"><div class="row"><div class="col hide-on-med-and-down l12"><nav class="breadcrumb-nav"><div class="nav-wrapper"><a href=".." class="breadcrumb">source</a><span class="breadcrumb">userobjects</span><a href="#" class="breadcrumb">SodiumProperties</a></div></nav></div></div><div class="row"><div class="moose-content col s12 m12 l10"><section id="b895aca1-add9-40d7-9d18-a9a6771b82d0" data-section-level="1" data-section-text="Sodium Fluid Properties"><h1 id="sodium-fluid-properties">Sodium Fluid Properties</h1><p>Fluid properties for sodium</p><p><code>SodiumProperties</code> inherits from the base class <code>FluidProperties</code> and provides the needed functionality for determining sodium fluid properties that may be used for coolant channel simulations.</p><p>The following methods are provided in this class:</p><ul class="browser-default"><li><p>Thermal Conductivity: <code>k(temperature)</code> </p></li><li><p>Enthalpy: <code>h(temperature)</code> </p></li><li><p>Heat capacity: <code>heatCapacity(temperature)</code> </p></li><li><p>Temperature: <code>temperature(h)</code> </p></li><li><p>Density: <code>rho(temperature)</code> </p></li><li><p>Derivative of Density w.r.t temperature: <code>drho_dT(temperature)</code> </p></li><li><p>Derivative of Density w.r.t enthalpy: <code>drho_dh(h)</code></p></li></ul><p>Properties of liquid sodium are obtained from <a href="#Fink:1995bf">Fink and Leibowitz (1995)</a>.</p><pre class="moose-pre" style="max-height:350px;"><code class="language-text">[FluidProperties/sodium]
+  [FluidProperties/sodium]
+    type = SodiumProperties
+  []
+[]
+</code></pre><a class="moose-source-filename tooltipped modal-trigger" href="#f7efc75d-9833-4efb-81e3-8a596cc218b2">(moose/modules/fluid_properties/test/tests/sodium/exact.i)</a><section class="scrollspy" id="9fa4283a-9ed4-42db-a1e3-a5835a0a8570" data-section-level="2" data-section-text="Input Parameters"><h2 id="input-parameters">Input Parameters</h2><section id="b73f79f9-58a7-4f7d-b256-f5e9ca2bdb35" data-section-level="3" data-section-text="Optional Parameters" data-details-open="open"><details class="moose-section-content" open="open"><ul class="collapsible" data-collapsible="expandable"><li><div class="collapsible-header"><span class="moose-parameter-name">execute_on</span><span class="moose-parameter-header-default">TIMESTEP_END</span><span class="moose-parameter-header-description">The list of flag(s) indicating when this object should be executed, the available options include NONE, INITIAL, LINEAR, NONLINEAR, TIMESTEP_END, TIMESTEP_BEGIN, MULTIAPP_FIXED_POINT_END, MULTIAPP_FIXED_POINT_BEGIN, FINAL, CUSTOM, ALWAYS.</span></div><div class="collapsible-body"><p class="moose-parameter-description-default"><span>Default:</span>TIMESTEP_END</p><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>ExecFlagEnum</p><p class="moose-parameter-description-options"><span>Options:</span>NONE, INITIAL, LINEAR, NONLINEAR, TIMESTEP_END, TIMESTEP_BEGIN, MULTIAPP_FIXED_POINT_END, MULTIAPP_FIXED_POINT_BEGIN, FINAL, CUSTOM, ALWAYS</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>No</p><p class="moose-parameter-description"><span>Description:</span>The list of flag(s) indicating when this object should be executed, the available options include NONE, INITIAL, LINEAR, NONLINEAR, TIMESTEP_END, TIMESTEP_BEGIN, MULTIAPP_FIXED_POINT_END, MULTIAPP_FIXED_POINT_BEGIN, FINAL, CUSTOM, ALWAYS.</p></div></li><li><div class="collapsible-header"><span class="moose-parameter-name">prop_getter_suffix</span><span class="moose-parameter-header-description">An optional suffix parameter that can be appended to any attempt to retrieve/get material properties. The suffix will be prepended with a '_' character.</span></div><div class="collapsible-body"><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>MaterialPropertyName</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>No</p><p class="moose-parameter-description"><span>Description:</span>An optional suffix parameter that can be appended to any attempt to retrieve/get material properties. The suffix will be prepended with a '_' character.</p></div></li><li><div class="collapsible-header"><span class="moose-parameter-name">specific_heat</span><span class="moose-parameter-header-description">Optional value for specific heat that overrides interal calculations</span></div><div class="collapsible-body"><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>double</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>No</p><p class="moose-parameter-description"><span>Description:</span>Optional value for specific heat that overrides interal calculations</p></div></li><li><div class="collapsible-header"><span class="moose-parameter-name">thermal_conductivity</span><span class="moose-parameter-header-description">Optional value for thermal conductivity that overrides interal calculations</span></div><div class="collapsible-body"><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>double</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>No</p><p class="moose-parameter-description"><span>Description:</span>Optional value for thermal conductivity that overrides interal calculations</p></div></li></ul><summary><h3 data-details-open="open"><span class="moose-section-icon"></span>Optional Parameters</h3></summary></details></section><section id="0100a811-18f8-4d62-849b-f9d24f44fc03" data-section-level="3" data-section-text="Advanced Parameters" data-details-open="close"><details class="moose-section-content"><ul class="collapsible" data-collapsible="expandable"><li><div class="collapsible-header"><span class="moose-parameter-name">allow_duplicate_execution_on_initial</span><span class="moose-parameter-header-default">False</span><span class="moose-parameter-header-description">In the case where this UserObject is depended upon by an initial condition, allow it to be executed twice during the initial setup (once before the IC and again after mesh adaptivity (if applicable).</span></div><div class="collapsible-body"><p class="moose-parameter-description-default"><span>Default:</span>False</p><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>bool</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>No</p><p class="moose-parameter-description"><span>Description:</span>In the case where this UserObject is depended upon by an initial condition, allow it to be executed twice during the initial setup (once before the IC and again after mesh adaptivity (if applicable).</p></div></li><li><div class="collapsible-header"><span class="moose-parameter-name">allow_imperfect_jacobians</span><span class="moose-parameter-header-default">False</span><span class="moose-parameter-header-description">true to allow unimplemented property derivative terms to be set to zero for the AD API</span></div><div class="collapsible-body"><p class="moose-parameter-description-default"><span>Default:</span>False</p><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>bool</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>No</p><p class="moose-parameter-description"><span>Description:</span>true to allow unimplemented property derivative terms to be set to zero for the AD API</p></div></li><li><div class="collapsible-header"><span class="moose-parameter-name">control_tags</span><span class="moose-parameter-header-description">Adds user-defined labels for accessing object parameters via control logic.</span></div><div class="collapsible-body"><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>std::vector&lt;std::string&gt;</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>No</p><p class="moose-parameter-description"><span>Description:</span>Adds user-defined labels for accessing object parameters via control logic.</p></div></li><li><div class="collapsible-header"><span class="moose-parameter-name">enable</span><span class="moose-parameter-header-default">True</span><span class="moose-parameter-header-description">Set the enabled status of the MooseObject.</span></div><div class="collapsible-body"><p class="moose-parameter-description-default"><span>Default:</span>True</p><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>bool</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>Yes</p><p class="moose-parameter-description"><span>Description:</span>Set the enabled status of the MooseObject.</p></div></li><li><div class="collapsible-header"><span class="moose-parameter-name">execution_order_group</span><span class="moose-parameter-header-default">0</span><span class="moose-parameter-header-description">Execution order groups are executed in increasing order (e.g., the lowest number is executed first). Note that negative group numbers may be used to execute groups before the default (0) group. Please refer to the user object documentation for ordering of user object execution within a group.</span></div><div class="collapsible-body"><p class="moose-parameter-description-default"><span>Default:</span>0</p><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>int</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>No</p><p class="moose-parameter-description"><span>Description:</span>Execution order groups are executed in increasing order (e.g., the lowest number is executed first). Note that negative group numbers may be used to execute groups before the default (0) group. Please refer to the user object documentation for ordering of user object execution within a group.</p></div></li><li><div class="collapsible-header"><span class="moose-parameter-name">force_postaux</span><span class="moose-parameter-header-default">False</span><span class="moose-parameter-header-description">Forces the UserObject to be executed in POSTAUX</span></div><div class="collapsible-body"><p class="moose-parameter-description-default"><span>Default:</span>False</p><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>bool</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>No</p><p class="moose-parameter-description"><span>Description:</span>Forces the UserObject to be executed in POSTAUX</p></div></li><li><div class="collapsible-header"><span class="moose-parameter-name">force_preaux</span><span class="moose-parameter-header-default">False</span><span class="moose-parameter-header-description">Forces the UserObject to be executed in PREAUX</span></div><div class="collapsible-body"><p class="moose-parameter-description-default"><span>Default:</span>False</p><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>bool</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>No</p><p class="moose-parameter-description"><span>Description:</span>Forces the UserObject to be executed in PREAUX</p></div></li><li><div class="collapsible-header"><span class="moose-parameter-name">force_preic</span><span class="moose-parameter-header-default">False</span><span class="moose-parameter-header-description">Forces the UserObject to be executed in PREIC during initial setup</span></div><div class="collapsible-body"><p class="moose-parameter-description-default"><span>Default:</span>False</p><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>bool</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>No</p><p class="moose-parameter-description"><span>Description:</span>Forces the UserObject to be executed in PREIC during initial setup</p></div></li><li><div class="collapsible-header"><span class="moose-parameter-name">fp_type</span><span class="moose-parameter-header-description">Type of the fluid property object</span></div><div class="collapsible-body"><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>FPType</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>No</p><p class="moose-parameter-description"><span>Description:</span>Type of the fluid property object</p></div></li><li><div class="collapsible-header"><span class="moose-parameter-name">use_displaced_mesh</span><span class="moose-parameter-header-default">False</span><span class="moose-parameter-header-description">Whether or not this object should use the displaced mesh for computation.  Note that in the case this is true but no displacements are provided in the Mesh block the undisplaced mesh will still be used.</span></div><div class="collapsible-body"><p class="moose-parameter-description-default"><span>Default:</span>False</p><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>bool</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>No</p><p class="moose-parameter-description"><span>Description:</span>Whether or not this object should use the displaced mesh for computation.  Note that in the case this is true but no displacements are provided in the Mesh block the undisplaced mesh will still be used.</p></div></li></ul><summary><h3 data-details-open="close"><span class="moose-section-icon"></span>Advanced Parameters</h3></summary></details></section></section><section class="scrollspy" id="25cf389e-8b36-433a-bf04-d3d2d65884e1" data-section-level="2" data-section-text="References"><h2 id="references">References</h2><div class="moose-bibliography"><ol><li id="Fink:1995bf">J&nbsp;K Fink and L&nbsp;Leibowitz.
+<span class="bibtex-protected">Thermodynamic and transport properties of sodium liquid and vapor</span>.
+Technical Report, Argonne National Laboratory (ANL), Argonne, IL, January 1995.<a href="#4ce288ad-75d8-4f50-b865-d09cad3033ec" class="modal-trigger moose-bibtex-modal" style="padding-left:10px;">[BibTeX]</a><div class="modal" id="4ce288ad-75d8-4f50-b865-d09cad3033ec"><div class="modal-content"><pre style="line-height:1.25;"><code class="language-latex">@techreport{Fink:1995bf,
+    author = "Fink, J K and Leibowitz, L",
+    title = "{Thermodynamic and transport properties of sodium liquid and vapor}",
+    institution = "Argonne National Laboratory (ANL), Argonne, IL",
+    year = "1995",
+    month = "January"
+}
+</code></pre></div></div></li></ol></div></section></section><div class="moose-modal modal" id="f7efc75d-9833-4efb-81e3-8a596cc218b2"><div class="modal-content"><h4>(moose/modules/fluid_properties/test/tests/sodium/exact.i)</h4><pre class="moose-pre"><code class="language-text"># Test implementation of sodium properties by comparison to analytical functions.
+
+[Mesh]
+  type = GeneratedMesh
+  dim = 1
+[]
+
+[Problem]
+  solve = false
+[]
+
+[AuxVariables]
+  [./temperature]
+  [../]
+[]
+
+[AuxKernels]
+  [./temperature_aux]
+    type = FunctionAux
+    variable = temperature
+    function = &#x27;400 + 200 * t&#x27;
+  [../]
+[]
+
+[Functions]
+  [./k]
+    type = ParsedFunction
+    symbol_names = &#x27;T&#x27;
+    symbol_values = &#x27;temperature&#x27;
+    expression = &#x27;124.67 - 0.11381 * T + 5.5226e-5 * T^2 - 1.1842e-8 * T^3&#x27;
+  [../]
+  [./h]
+    type = ParsedFunction
+    symbol_names = &#x27;T&#x27;
+    symbol_values = &#x27;temperature&#x27;
+    expression = &#x27;1.0e3 * (-365.77 + 1.6582 * T - 4.2395e-4 * T^2 + 1.4847e-7 * T^3 + 2992.6 / T)&#x27;
+  [../]
+  [./cp]
+    type = ParsedFunction
+    symbol_names = &#x27;T&#x27;
+    symbol_values = &#x27;temperature&#x27;
+    expression = &#x27;1.0e3 * (1.6582 - 8.4790e-4 * T + 4.4541e-7 * T^2 - 2992.6 / T^2)&#x27;
+  [../]
+  [./rho]
+    type = ParsedFunction
+    symbol_names = &#x27;T&#x27;
+    symbol_values = &#x27;temperature&#x27;
+    expression = &#x27;219.0 + 275.32 * (1.0 - T / 2503.7) + 511.58 * (1.0 - T / 2503.7)^(0.5)&#x27;
+  [../]
+  [./drho_dT]
+    type = ParsedFunction
+    symbol_names = &#x27;T&#x27;
+    symbol_values = &#x27;temperature&#x27;
+    expression = &#x27;-(2.0 * 275.32 + 511.58 / (1.0 - T / 2503.7)^(0.5)) / 2.0 / 2503.7&#x27;
+  [../]
+  [./drho_dh]
+    type = ParsedFunction
+    symbol_names = &#x27;drho_dT_exact cp_exact&#x27;
+    symbol_values = &#x27;drho_dT_exact cp_exact&#x27;
+    expression = &#x27;drho_dT_exact/cp_exact&#x27;
+  [../]
+[]
+
+[FluidProperties/sodium]
+  type = SodiumProperties
+[]
+
+[Materials]
+  [./fp_mat]
+    type = SodiumPropertiesMaterial
+    temperature = temperature
+    outputs = all
+  [../]
+[]
+
+
+[Executioner]
+  type = Transient
+
+  num_steps = 10
+[]
+
+[Postprocessors]
+  [./temperature]
+    type = ElementAverageValue
+    variable = temperature
+    outputs = none
+  [../]
+  [./k_exact]
+    type = FunctionValuePostprocessor
+    function = k
+    outputs = none
+  [../]
+  [./h_exact]
+    type = FunctionValuePostprocessor
+    function = h
+    outputs = none
+  [../]
+  [./cp_exact]
+    type = FunctionValuePostprocessor
+    function = cp
+    outputs = none
+  [../]
+  [./rho_exact]
+    type = FunctionValuePostprocessor
+    function = rho
+    outputs = none
+  [../]
+  [./drho_dT_exact]
+    type = FunctionValuePostprocessor
+    function = drho_dT
+    outputs = none
+  [../]
+  [./drho_dh_exact]
+    type = FunctionValuePostprocessor
+    function = drho_dh
+    outputs = none
+  [../]
+  [./k_avg]
+    type = ElementAverageValue
+    variable = k
+    outputs = none
+  [../]
+  [./h_avg]
+    type = ElementAverageValue
+    variable = h
+    outputs = none
+  [../]
+  [./cp_avg]
+    type = ElementAverageValue
+    variable = cp
+    outputs = none
+  [../]
+  [./t_from_h_avg]
+    type = ElementAverageValue
+    variable = temperature
+    outputs = none
+  [../]
+  [./rho_avg]
+    type = ElementAverageValue
+    variable = rho
+    outputs = none
+  [../]
+  [./drho_dT_avg]
+    type = ElementAverageValue
+    variable = drho_dT
+    outputs = none
+  [../]
+  [./drho_dh_avg]
+    type = ElementAverageValue
+    variable = drho_dh
+    outputs = none
+  [../]
+  [./k_diff]
+    type = DifferencePostprocessor
+    value1 = k_exact
+    value2 = k_avg
+  [../]
+  [./h_diff]
+    type = DifferencePostprocessor
+    value1 = h_exact
+    value2 = h_avg
+  [../]
+  [./cp_diff]
+    type = DifferencePostprocessor
+    value1 = cp_exact
+    value2 = cp_avg
+  [../]
+  [./t_from_h_diff]
+    type = DifferencePostprocessor
+    value1 = temperature
+    value2 = t_from_h_avg
+  [../]
+  [./rho_avg_diff]
+    type = DifferencePostprocessor
+    value1 = rho_exact
+    value2 = rho_avg
+  [../]
+  [./drho_dT_avg_diff]
+    type = DifferencePostprocessor
+    value1 = drho_dT_exact
+    value2 = drho_dT_avg
+  [../]
+  [./drho_dh_avg_diff]
+    type = DifferencePostprocessor
+    value1 = drho_dh_exact
+    value2 = drho_dh_avg
+  [../]
+[]
+
+[Outputs]
+  csv = true
+[]
+</code></pre></div><div class="modal-footer"><a class="modal-close btn-flat">Close</a></div></div></div><div class="col hide-on-med-and-down l2"><div class="toc-wrapper pin-top"><ul class="section table-of-contents"><li><a href="#9fa4283a-9ed4-42db-a1e3-a5835a0a8570" class="tooltipped" data-position="left" data-tooltip="Input Parameters">Input Parameters</a></li><li><a href="#25cf389e-8b36-433a-bf04-d3d2d65884e1" class="tooltipped" data-position="left" data-tooltip="References">References</a></li></ul></div></div></div></div></main></div></body><script type="text/javascript" src="../../contrib/materialize/materialize.min.js"></script><script type="text/javascript" src="../../contrib/clipboard/clipboard.min.js"></script><script type="text/javascript" src="../../contrib/prism/prism.min.js"></script><script type="text/javascript" src="../../js/init.js"></script><script type="text/javascript" src="../../js/navigation.js"></script><script type="text/javascript" src="../../contrib/fuse/fuse.min.js"></script><script type="text/javascript" src="../../js/search_index.js"></script><script type="text/javascript" src="../../js/sqa_moose.js"></script>

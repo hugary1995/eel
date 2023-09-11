@@ -1,0 +1,213 @@
+<!DOCTYPE html><head><meta charset="UTF-8"><title>framework_srs.md | Eel</title><link href="../contrib/materialize/materialize.min.css" type="text/css" rel="stylesheet" media="screen,projection"></link><link href="../contrib/prism/prism.min.css" type="text/css" rel="stylesheet"></link><link href="../css/moose.css" type="text/css" rel="stylesheet"></link><link href="../css/devel_moose.css" type="text/css" rel="stylesheet"></link><link href="../css/alert_moose.css" type="text/css" rel="stylesheet"></link><link href="../css/content_moose.css" type="text/css" rel="stylesheet"></link><link href="../css/sqa_moose.css" type="text/css" rel="stylesheet"></link><link href="../css/civet_moose.css" type="text/css" rel="stylesheet"></link><script type="text/javascript" src="../contrib/jquery/jquery.min.js"></script></head><body><div class="page-wrap"><header><nav><div class="nav-wrapper container"><a href="../index.html" class="left moose-logo hide-on-med-and-down" id="home-button">Eel</a><a href="https://github.com/hugary1995/eel" class="right"><img src="../media/framework/github-logo.png" class="github-mark"></img><img src="../media/framework/github-mark.png" class="github-logo"></img></a><ul class="right hide-on-med-and-down"><li><a href="../eel.html">Documentation</a></li></ul><a href="#" class="sidenav-trigger" data-target="681d2e23-63ca-42b3-b15e-8dfbcdd7f5a8"><i class="material-icons">menu</i></a><ul class="sidenav" id="681d2e23-63ca-42b3-b15e-8dfbcdd7f5a8"><li><a href="../eel.html">Documentation</a></li></ul><a href="#moose-search" class="modal-trigger"><i class="material-icons">search</i></a></div></nav><div class="modal modal-fixed-footer moose-search-modal" id="moose-search"><div class="modal-content container moose-search-modal-content"><div class="row"><div class="col l12"><div class="input-field"><input type_="text" onkeyup="mooseSearch()" placeholder="/index.md" id="moose-search-box"></input></div></div><div><div class="col s12" id="moose-search-results"></div></div></div></div><div class="modal-footer"><a href="#!" class="modal-close btn-flat">Close</a></div></div></header><main class="main"><div class="container"><div class="row"><div class="col hide-on-med-and-down l12"><nav class="breadcrumb-nav"><div class="nav-wrapper"><a href="." class="breadcrumb">sqa</a><a href="#" class="breadcrumb">framework_srs</a></div></nav></div></div><div class="row"><div class="moose-content col s12 m12 l10"><p class="moose-disabled">!template load file=srs.md.template project=Framework category=framework</p><p class="moose-disabled">
+
+!template! item key=system-purpose
+!include sqa/system_purpose.md
+!template-end!</p><p class="moose-disabled">
+
+!template! item key=system-scope
+!include sqa/system_scope.md
+!template-end!</p><p class="moose-disabled">
+
+!template! item key=system-context
+!! system-context-begin
+[!ac](MOOSE) is a command-line driven application. This is typical for high-performance software
+that is designed to run across several nodes of a cluster system. As such, all of the usage
+of the software is through any standard terminal program generally available on all supported
+operating systems. Similarly, for the purpose of interacting through the software, there is only
+a single user, &quot;the user&quot;, which interacts with the software through the command-line. MOOSE does
+not maintain any back-end database or interact with any system daemons. It is an executable,
+which may be launched from the command line and writes out various result files as it runs.
+
+!media media/sqa/usage_diagram_uml.svg
+       id=usage_diagram
+       caption=Usage of [!ac](MOOSE) and [!ac](MOOSE)-based applications.
+       style=width:50%;
+!! system-context-finish
+!template-end!</p><p class="moose-disabled">
+
+!template! item key=system-functions
+!! system-functions-begin
+Since [!ac](MOOSE) is a command-line driven application, all functionality provided in the framework
+is operated through the use of standard UNIX command line flags and the extendable MOOSE input file.
+The framework is completely extendable so individual design pages should be consulted for specific
+behaviors of each user-defined object.
+!! system-functions-finish
+!template-end!</p><p class="moose-disabled">
+
+!template! item key=user-characteristics
+!! user-characteristics-begin
+
+- +Framework Developers+: These are the core developers of the framework. They will be responsible
+  for following and enforcing the appropriate software development standards. They will be
+  responsible for designing, implementing and maintaining the software.
+
+- +Developers+: A Scientist or Engineer that utilizes the framework to build their own
+  application. This user will typically have a background in modeling and simulation techniques
+  and/or numerical analysis but may only have a limited skill-set when it comes to object-oriented
+  coding and the C++ language. This is our primary focus group. In many cases these developers will
+  be encouraged to give their code back to the framework maintainers.
+
+- +Analysts+: These are users that will run the code and perform various analysis on the simulations
+  they perform.  These users may interact with developers of the system requesting new features and
+  reporting bugs found and will typically make heavy use of the input file format.
+
+!! user-characteristics-finish
+!template-end!</p><p class="moose-disabled">
+
+!template! item key=assumptions-and-dependencies
+!include sqa/assumptions_and_dependencies.md
+!template-end!</p><p class="moose-disabled">
+
+!template! item key=definitions
+!! definitions-begin
+
+- +Verification+: (1) The process of: evaluating a system or component to determine whether the
+  products of a given development phase satisfy the conditions imposed at the start of that
+  phase. (2) Formal proof of program correctness (e.g., requirements, design, implementation
+  reviews, system tests) [!citep](ISO-systems-software).
+
+!! definitions-finish
+!template-end!</p><p class="moose-disabled">
+
+!template! item key=acronyms
+!acronym list
+!template-end!</p><p class="moose-disabled">
+
+!template! item key=minimum-requirements
+!! minimum-requirements-begin
+
+!include sqa/minimum_requirements.md start=### Minimum System Requirements include-start=False
+
+!! minimum-requirements-finish
+!template-end!</p><p class="moose-disabled">
+
+!template item key=functional-requirements
+!sqa requirements link=False collections=FUNCTIONAL category={{category}}</p><p class="moose-disabled">
+
+!template item key=usability-requirements
+!sqa requirements link=False collections=USABILITY category={{category}}</p><p class="moose-disabled">
+
+!template item key=performance-requirements
+!sqa requirements link=False collections=PERFORMANCE category={{category}}</p><p class="moose-disabled">
+
+!template item key=system-interfaces-requirements
+!sqa requirements link=False collections=SYSTEM category={{category}}</p><p class="moose-disabled">
+
+!template! item key=human-system-integration
+!! human-system-integration-begin
+[!ac](MOOSE) is a command line driven application which conforms to all standard terminal
+behaviors. Specific human system interaction accommodations shall be a function of the end-user&#x27;s
+terminal. MOOSE does support optional coloring within the terminal&#x27;s ability to display color,
+which may be disabled.
+!! human-system-integration-finish
+!template-end!</p><p class="moose-disabled">
+
+
+!template! item key=maintainability
+!! maintainability-begin
+
+- The latest working version (defined as the version that passes all tests in the current regression
+  test suite) shall be publicly available at all times through the repository host provider.
+- Flaws identified in the system shall be reported and tracked in a ticket or issue based system. The
+  technical lead will determine the severity and priority of all reported issues and assign resources
+  at their discretion to resolve identified issues.
+- The software maintainers will entertain all proposed changes to the system in a timely manner
+  (within two business days).
+- The core framework in its entirety will be made publicly available under the [!ac](LGPL)
+  version 2.0 license.
+
+!! maintainability-finish
+!template-end!</p><p class="moose-disabled">
+
+
+!template! item key=reliability
+!! reliability-begin
+The regression test suite will cover at least 80% of all lines of code at all times. Known
+regressions will be recorded and tracked (see [#maintainability]) to an independent and
+satisfactory resolution.
+!! reliability-finish
+!template-end!</p><p class="moose-disabled">
+
+!template! item key=information-management
+!! information-management-begin
+The core framework in its entirety will be made publicly available on an appropriate repository
+hosting site. Day-to-day backups and security services will be provided by the hosting service. More
+information about MOOSE backups of the public repository on [!ac](INL)-hosted services can be found
+on the following page: [sqa/github_backup.md]
+!! information-management-finish
+!template-end!</p><p class="moose-disabled">
+
+!template! item key=verification
+!! verification-begin
+The regression test suite will employ several verification tests using comparison against known
+analytical solutions, the method of manufactured solutions, and convergence rate analysis.
+!! verification-finish
+!template-end!</p><p class="moose-disabled">
+
+!template! item key=system-modes
+!! system-modes-begin
+[!ac](MOOSE) applications normally run in normal execution  mode when an input file is supplied. However,
+there are a few other modes that can be triggered with various command line flags as indicated here:
+
+| Command Line Flag | Description of mode |
+| :- | :- |
+| `-i &lt;input_file&gt;` | Normal execution mode |
+| `--split-mesh &lt;splits&gt;` | Read the mesh block splitting the mesh into two or more pieces for use in a subsequent run |
+| `--use-split` | (implies -i flag) Execute the the simulation but use pre-split mesh files instead of the mesh from the input file |
+| `--yaml` | Output all object descriptions and available parameters in YAML format |
+| `--json` | Output all object descriptions and available parameters in JSON format |
+| `--syntax` | Output all registered syntax |
+| `--registry` | Output all known objects and actions |
+| `--registry-hit` | Output all known objects and actions in HIT format |
+| `--mesh-only` (implies -i flag) | Run only the mesh related tasks and output the final mesh that would be used for the simulation |
+| `--start-in-debugger &lt;debugger&gt;` | Start the simulation attached to the supplied debugger |
+
+!alert note
+The list of system-modes may not be extensive as the system is designed to be extendable to end-user applications.
+The complete list of command line options for applications can be obtained by running the executable with
+zero arguments. See the [command line usage](command_line_usage.md optional=True).
+!! system-modes-finish
+!template-end!</p><p class="moose-disabled">
+
+!template! item key=physical-characteristics
+!! physical-characteristics-begin
+[!ac](MOOSE) is software only with no associated physical media. See [#system-requirements] for a description
+of the minimum required hardware necessary for running a [!ac](MOOSE)-based application.
+!! physical-characteristics-finish
+!template-end!</p><p class="moose-disabled">
+
+!template! item key=environmental-conditions
+!! environmental-conditions-begin
+Not Applicable
+!! environmental-conditions-finish
+!template-end!</p><p class="moose-disabled">
+
+!template! item key=system-security
+!! system-security-begin
+[!ac](MOOSE) based applications have no requirements or special needs related to system security. The framework
+is designed to run completely in user-space with no elevated privileges required nor recommended.
+!! system-security-finish
+!template-end!</p><p class="moose-disabled">
+
+!template! item key=policies-and-regulations
+!! policies-and-regulations-begin
+[!ac](MOOSE)-based applications must comply with all export control restrictions.
+!! policies-and-regulations-finish
+!template-end!</p><p class="moose-disabled">
+
+!template! item key=system-life-cycle
+!! system-life-cycle-begin
+[!ac](MOOSE)-based development follows various agile methods. The system is continuously built and deployed in
+a piecemeal fashion since objects within the system are more or less independent. Every new object requires a test,
+which in turn requires an associated requirement and design description. Some [!ac](MOOSE)-based development
+teams follow the [!ac](NQA-1) standards.
+!! system-life-cycle-finish
+!template-end!</p><p class="moose-disabled">
+
+!template! item key=packaging
+!! packaging-begin
+No special requirements are needed for packaging or shipping any media containing [!ac](MOOSE) source code. However,
+some [!ac](MOOSE)-based applications may be export-controlled, in which case all export control restrictions must
+be adhered to when packaging and shipping media.
+!! packaging-finish
+!template-end!</p></div><div class="col hide-on-med-and-down l2"><div class="toc-wrapper pin-top"><ul class="section table-of-contents"></ul></div></div></div></div></main></div></body><script type="text/javascript" src="../contrib/materialize/materialize.min.js"></script><script type="text/javascript" src="../contrib/clipboard/clipboard.min.js"></script><script type="text/javascript" src="../contrib/prism/prism.min.js"></script><script type="text/javascript" src="../js/init.js"></script><script type="text/javascript" src="../js/navigation.js"></script><script type="text/javascript" src="../contrib/fuse/fuse.min.js"></script><script type="text/javascript" src="../js/search_index.js"></script><script type="text/javascript" src="../js/sqa_moose.js"></script>

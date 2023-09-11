@@ -1,0 +1,3789 @@
+<!DOCTYPE html><head><meta charset="UTF-8"><title>OpenBC | Eel</title><link href="../../contrib/materialize/materialize.min.css" type="text/css" rel="stylesheet" media="screen,projection"></link><link href="../../contrib/prism/prism.min.css" type="text/css" rel="stylesheet"></link><link href="../../css/moose.css" type="text/css" rel="stylesheet"></link><link href="../../css/devel_moose.css" type="text/css" rel="stylesheet"></link><link href="../../css/alert_moose.css" type="text/css" rel="stylesheet"></link><link href="../../css/content_moose.css" type="text/css" rel="stylesheet"></link><link href="../../css/sqa_moose.css" type="text/css" rel="stylesheet"></link><link href="../../css/civet_moose.css" type="text/css" rel="stylesheet"></link><script type="text/javascript" src="../../contrib/jquery/jquery.min.js"></script></head><body><div class="page-wrap"><header><nav><div class="nav-wrapper container"><a href="../../index.html" class="left moose-logo hide-on-med-and-down" id="home-button">Eel</a><a href="https://github.com/hugary1995/eel" class="right"><img src="../../media/framework/github-logo.png" class="github-mark"></img><img src="../../media/framework/github-mark.png" class="github-logo"></img></a><ul class="right hide-on-med-and-down"><li><a href="../../eel.html">Documentation</a></li></ul><a href="#" class="sidenav-trigger" data-target="14c7b391-7964-4eea-938f-a7898850c702"><i class="material-icons">menu</i></a><ul class="sidenav" id="14c7b391-7964-4eea-938f-a7898850c702"><li><a href="../../eel.html">Documentation</a></li></ul><a href="#moose-search" class="modal-trigger"><i class="material-icons">search</i></a></div></nav><div class="modal modal-fixed-footer moose-search-modal" id="moose-search"><div class="modal-content container moose-search-modal-content"><div class="row"><div class="col l12"><div class="input-field"><input type_="text" onkeyup="mooseSearch()" placeholder="/index.md" id="moose-search-box"></input></div></div><div><div class="col s12" id="moose-search-results"></div></div></div></div><div class="modal-footer"><a href="#!" class="modal-close btn-flat">Close</a></div></div></header><main class="main"><div class="container"><div class="row"><div class="col hide-on-med-and-down l12"><nav class="breadcrumb-nav"><div class="nav-wrapper"><a href=".." class="breadcrumb">source</a><span class="breadcrumb">bcs</span><a href="#" class="breadcrumb">OpenBC</a></div></nav></div></div><div class="row"><div class="moose-content col s12 m12 l10"><section id="aa930a0b-f231-49d1-a41c-4cb220e3b060" data-section-level="1" data-section-text="OpenBC"><h1 id="openbc">OpenBC</h1><div class="card moose-alert moose-alert-construction"><div class="card-title moose-alert-title"><i class="material-icons moose-inline-icon">build</i><span class="moose-alert-title-brand">construction:</span>Undocumented Class</div><div class="card-content"><div class="moose-alert-content"><p>The OpenBC has not been documented. The content listed below should be used as a starting point for documenting the class, which includes the typical automatic documentation associated with a MooseObject; however, what is contained is ultimately determined by what is necessary to make the documentation clear for users.</p></div></div></div><p>An open BC where matters can freely flow in and out.</p><section class="scrollspy" id="59aeb35d-5598-4297-8a4f-d1ddf4ce9705" data-section-level="2" data-section-text="Overview"><h2 id="overview">Overview</h2><p></p></section><section class="scrollspy" id="1c0a4f3e-49d3-4ee3-8473-2af20922a688" data-section-level="2" data-section-text="Example Input File Syntax"><h2 id="example-input-file-syntax">Example Input File Syntax</h2><p></p></section><section class="scrollspy" id="ba1d3664-7ac8-46d9-8bb0-f2d758039dfc" data-section-level="2" data-section-text="Input Parameters"><h2 id="input-parameters">Input Parameters</h2><section id="ede20dca-1903-4269-bbf7-f8209de2cd9b" data-section-level="3" data-section-text="Required Parameters" data-details-open="open"><details class="moose-section-content" open="open"><ul class="collapsible" data-collapsible="expandable"><li><div class="collapsible-header"><span class="moose-parameter-name">boundary</span><span class="moose-parameter-header-description">The list of boundary IDs from the mesh where this object applies</span></div><div class="collapsible-body"><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>std::vector&lt;BoundaryName&gt;</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>No</p><p class="moose-parameter-description"><span>Description:</span>The list of boundary IDs from the mesh where this object applies</p></div></li><li><div class="collapsible-header"><span class="moose-parameter-name">flux</span><span class="moose-parameter-header-description">The flux</span></div><div class="collapsible-body"><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>MaterialPropertyName</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>No</p><p class="moose-parameter-description"><span>Description:</span>The flux</p></div></li><li><div class="collapsible-header"><span class="moose-parameter-name">variable</span><span class="moose-parameter-header-description">The name of the variable that this residual object operates on</span></div><div class="collapsible-body"><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>NonlinearVariableName</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>No</p><p class="moose-parameter-description"><span>Description:</span>The name of the variable that this residual object operates on</p></div></li></ul><summary><h3 data-details-open="open"><span class="moose-section-icon"></span>Required Parameters</h3></summary></details></section><section id="7953781e-e933-4e49-9a08-aef71cec5c50" data-section-level="3" data-section-text="Optional Parameters" data-details-open="open"><details class="moose-section-content" open="open"><ul class="collapsible" data-collapsible="expandable"><li><div class="collapsible-header"><span class="moose-parameter-name">displacements</span><span class="moose-parameter-header-description">The displacements</span></div><div class="collapsible-body"><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>std::vector&lt;VariableName&gt;</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>No</p><p class="moose-parameter-description"><span>Description:</span>The displacements</p></div></li><li><div class="collapsible-header"><span class="moose-parameter-name">prop_getter_suffix</span><span class="moose-parameter-header-description">An optional suffix parameter that can be appended to any attempt to retrieve/get material properties. The suffix will be prepended with a '_' character.</span></div><div class="collapsible-body"><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>MaterialPropertyName</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>No</p><p class="moose-parameter-description"><span>Description:</span>An optional suffix parameter that can be appended to any attempt to retrieve/get material properties. The suffix will be prepended with a '_' character.</p></div></li></ul><summary><h3 data-details-open="open"><span class="moose-section-icon"></span>Optional Parameters</h3></summary></details></section><section id="2137a99c-ea37-4a72-b57b-2d9f32fa6258" data-section-level="3" data-section-text="Tagging Parameters" data-details-open="close"><details class="moose-section-content"><ul class="collapsible" data-collapsible="expandable"><li><div class="collapsible-header"><span class="moose-parameter-name">absolute_value_vector_tags</span><span class="moose-parameter-header-description">The tags for the vectors this residual object should fill with the absolute value of the residual contribution</span></div><div class="collapsible-body"><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>std::vector&lt;TagName&gt;</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>No</p><p class="moose-parameter-description"><span>Description:</span>The tags for the vectors this residual object should fill with the absolute value of the residual contribution</p></div></li><li><div class="collapsible-header"><span class="moose-parameter-name">extra_matrix_tags</span><span class="moose-parameter-header-description">The extra tags for the matrices this Kernel should fill</span></div><div class="collapsible-body"><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>std::vector&lt;TagName&gt;</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>No</p><p class="moose-parameter-description"><span>Description:</span>The extra tags for the matrices this Kernel should fill</p></div></li><li><div class="collapsible-header"><span class="moose-parameter-name">extra_vector_tags</span><span class="moose-parameter-header-description">The extra tags for the vectors this Kernel should fill</span></div><div class="collapsible-body"><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>std::vector&lt;TagName&gt;</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>No</p><p class="moose-parameter-description"><span>Description:</span>The extra tags for the vectors this Kernel should fill</p></div></li><li><div class="collapsible-header"><span class="moose-parameter-name">matrix_tags</span><span class="moose-parameter-header-default">system</span><span class="moose-parameter-header-description">The tag for the matrices this Kernel should fill</span></div><div class="collapsible-body"><p class="moose-parameter-description-default"><span>Default:</span>system</p><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>MultiMooseEnum</p><p class="moose-parameter-description-options"><span>Options:</span>nontime, system</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>No</p><p class="moose-parameter-description"><span>Description:</span>The tag for the matrices this Kernel should fill</p></div></li><li><div class="collapsible-header"><span class="moose-parameter-name">vector_tags</span><span class="moose-parameter-header-default">nontime</span><span class="moose-parameter-header-description">The tag for the vectors this Kernel should fill</span></div><div class="collapsible-body"><p class="moose-parameter-description-default"><span>Default:</span>nontime</p><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>MultiMooseEnum</p><p class="moose-parameter-description-options"><span>Options:</span>nontime, time</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>No</p><p class="moose-parameter-description"><span>Description:</span>The tag for the vectors this Kernel should fill</p></div></li></ul><summary><h3 data-details-open="close"><span class="moose-section-icon"></span>Tagging Parameters</h3></summary></details></section><section id="970c753f-a552-40e0-b19a-15db353f1d2a" data-section-level="3" data-section-text="Advanced Parameters" data-details-open="close"><details class="moose-section-content"><ul class="collapsible" data-collapsible="expandable"><li><div class="collapsible-header"><span class="moose-parameter-name">control_tags</span><span class="moose-parameter-header-description">Adds user-defined labels for accessing object parameters via control logic.</span></div><div class="collapsible-body"><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>std::vector&lt;std::string&gt;</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>No</p><p class="moose-parameter-description"><span>Description:</span>Adds user-defined labels for accessing object parameters via control logic.</p></div></li><li><div class="collapsible-header"><span class="moose-parameter-name">diag_save_in</span><span class="moose-parameter-header-description">The name of auxiliary variables to save this BC's diagonal jacobian contributions to.  Everything about that variable must match everything about this variable (the type, what blocks it's on, etc.)</span></div><div class="collapsible-body"><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>std::vector&lt;AuxVariableName&gt;</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>No</p><p class="moose-parameter-description"><span>Description:</span>The name of auxiliary variables to save this BC's diagonal jacobian contributions to.  Everything about that variable must match everything about this variable (the type, what blocks it's on, etc.)</p></div></li><li><div class="collapsible-header"><span class="moose-parameter-name">enable</span><span class="moose-parameter-header-default">True</span><span class="moose-parameter-header-description">Set the enabled status of the MooseObject.</span></div><div class="collapsible-body"><p class="moose-parameter-description-default"><span>Default:</span>True</p><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>bool</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>Yes</p><p class="moose-parameter-description"><span>Description:</span>Set the enabled status of the MooseObject.</p></div></li><li><div class="collapsible-header"><span class="moose-parameter-name">implicit</span><span class="moose-parameter-header-default">True</span><span class="moose-parameter-header-description">Determines whether this object is calculated using an implicit or explicit form</span></div><div class="collapsible-body"><p class="moose-parameter-description-default"><span>Default:</span>True</p><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>bool</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>No</p><p class="moose-parameter-description"><span>Description:</span>Determines whether this object is calculated using an implicit or explicit form</p></div></li><li><div class="collapsible-header"><span class="moose-parameter-name">save_in</span><span class="moose-parameter-header-description">The name of auxiliary variables to save this BC's residual contributions to.  Everything about that variable must match everything about this variable (the type, what blocks it's on, etc.)</span></div><div class="collapsible-body"><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>std::vector&lt;AuxVariableName&gt;</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>No</p><p class="moose-parameter-description"><span>Description:</span>The name of auxiliary variables to save this BC's residual contributions to.  Everything about that variable must match everything about this variable (the type, what blocks it's on, etc.)</p></div></li><li><div class="collapsible-header"><span class="moose-parameter-name">seed</span><span class="moose-parameter-header-default">0</span><span class="moose-parameter-header-description">The seed for the master random number generator</span></div><div class="collapsible-body"><p class="moose-parameter-description-default"><span>Default:</span>0</p><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>unsigned int</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>No</p><p class="moose-parameter-description"><span>Description:</span>The seed for the master random number generator</p></div></li><li><div class="collapsible-header"><span class="moose-parameter-name">use_displaced_mesh</span><span class="moose-parameter-header-default">False</span><span class="moose-parameter-header-description">Whether or not this object should use the displaced mesh for computation.  Note that in the case this is true but no displacements are provided in the Mesh block the undisplaced mesh will still be used.</span></div><div class="collapsible-body"><p class="moose-parameter-description-default"><span>Default:</span>False</p><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>bool</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>No</p><p class="moose-parameter-description"><span>Description:</span>Whether or not this object should use the displaced mesh for computation.  Note that in the case this is true but no displacements are provided in the Mesh block the undisplaced mesh will still be used.</p></div></li></ul><summary><h3 data-details-open="close"><span class="moose-section-icon"></span>Advanced Parameters</h3></summary></details></section></section><section class="scrollspy" id="002cf1cb-f232-429a-989c-4f005c0aa6d4" data-section-level="2" data-section-text="Input Files"><h2 id="input-files">Input Files</h2><ul class="moose-list-inputs browser-default"><li><a class="moose-source-filename tooltipped modal-trigger" href="#0b114c6f-48e2-4148-b352-c8f607d8b2ff">(test/tests/chemical-electrical/diffusion_vs_migration.i)</a></li><li><a class="moose-source-filename tooltipped modal-trigger" href="#dfa75e85-96d9-47f2-bc47-08b3c6b79287">(examples/LiB/CC_discharging.i)</a></li><li><a class="moose-source-filename tooltipped modal-trigger" href="#0647c1b2-46ac-4cac-906f-da05053eeca3">(test/tests/chemical-electrical-thermal/thermal_effects.i)</a></li><li><a class="moose-source-filename tooltipped modal-trigger" href="#5f02a7ab-7901-440b-8abb-a9e88c740e18">(examples/LiB/CC_charging.i)</a></li><li><a class="moose-source-filename tooltipped modal-trigger" href="#66acb5ab-be03-4e8a-ad83-4a68bb6c11a5">(test/tests/chemical-electrical-thermal-mechanical/pressure.i)</a></li><li><a class="moose-source-filename tooltipped modal-trigger" href="#c44e2f49-d31a-470b-b6a6-faf935ff9e9c">(examples/LiB/CV_charging.i)</a></li></ul></section></section><div class="moose-modal modal" id="0b114c6f-48e2-4148-b352-c8f607d8b2ff"><div class="modal-content"><h4>(test/tests/chemical-electrical/diffusion_vs_migration.i)</h4><pre class="moose-pre"><code class="language-text">m = 1 # larger m means more migration compared to diffusion
+R = 8.3145 #mJ/mmol/K
+F = 96485 #mC/mmol
+
+I = 3e-3 #mA
+width = 0.03 #mm
+in = &#x27;${fparse -I/width}&#x27;
+t0 = &#x27;${fparse -1e-2/in}&#x27;
+dt = &#x27;${fparse t0/100}&#x27;
+Vmax = 4.3 #V
+
+vf_se = 0.3
+vf_cp = 0.5
+vf_ca = 0.2
+
+sigma_a = 0.2 #mS/mm
+sigma_se = 0.1 #mS/mm
+sigma_cp = 0.05 #mS/mm
+sigma_ca = 0.2 #mS/mm
+sigma_e = ${sigma_se}
+sigma_c = &#x27;${fparse vf_se*sigma_se + vf_cp*sigma_cp + vf_ca*sigma_ca}&#x27;
+
+l0 = 0
+l1 = 0.04
+l2 = 0.07
+l3 = 0.12
+
+cmax = 1e-3 #mmol/mm^3
+c0_a = 1e-4
+c0_e = 5e-4
+c0_c = 1e-3
+
+M_a = 8e-11
+M_se = &#x27;${fparse sigma_se/F/F/m}&#x27;
+M_cp = 4e-14
+M_ca = 1e-13
+M_e = ${M_se}
+M_c = &#x27;${fparse vf_se*M_se + vf_cp*M_cp + vf_ca*M_ca}&#x27;
+
+T0 = 300 #K
+
+i0_a = 1e-1 #mA/mm^2
+i0_c = 1e-1 #mA/mm^2
+
+[GlobalParams]
+  energy_densities = &#x27;dot(psi_c) q zeta m&#x27;
+[]
+
+[Mesh]
+  [battery]
+    type = GeneratedMeshGenerator
+    dim = 2
+    xmin = ${l0}
+    xmax = ${l3}
+    ymin = 0
+    ymax = ${width}
+    nx = 60
+    ny = 15
+  []
+  [anode]
+    type = SubdomainBoundingBoxGenerator
+    input = battery
+    block_id = 1
+    block_name = anode
+    bottom_left = &#x27;${l0} 0 0&#x27;
+    top_right = &#x27;${l1} ${width} 0&#x27;
+  []
+  [elyte]
+    type = SubdomainBoundingBoxGenerator
+    input = anode
+    block_id = 2
+    block_name = elyte
+    bottom_left = &#x27;${l1} 0 0&#x27;
+    top_right = &#x27;${l2} ${width} 0&#x27;
+  []
+  [cathode]
+    type = SubdomainBoundingBoxGenerator
+    input = elyte
+    block_id = 3
+    block_name = cathode
+    bottom_left = &#x27;${l2} 0 0&#x27;
+    top_right = &#x27;${l3} ${width} 0&#x27;
+  []
+  [anode_elyte]
+    type = BreakMeshByBlockGenerator
+    input = cathode
+    block_pairs = &#x27;1 2&#x27;
+    add_interface_on_two_sides = true
+    split_interface = true
+  []
+  [cathode_elyte]
+    type = BreakMeshByBlockGenerator
+    input = anode_elyte
+    block_pairs = &#x27;2 3&#x27;
+    add_interface_on_two_sides = true
+    split_interface = true
+  []
+[]
+
+[Variables]
+  [Phi]
+  []
+  [c]
+  []
+[]
+
+[AuxVariables]
+  [c_ref]
+  []
+  [T]
+    initial_condition = ${T0}
+  []
+[]
+
+[ICs]
+  [c_a]
+    type = ConstantIC
+    variable = c
+    value = ${c0_a}
+    block = &#x27;anode&#x27;
+  []
+  [c_e]
+    type = ConstantIC
+    variable = c
+    value = ${c0_e}
+    block = &#x27;elyte&#x27;
+  []
+  [c_c]
+    type = ConstantIC
+    variable = c
+    value = ${c0_c}
+    block = &#x27;cathode&#x27;
+  []
+  [c_ref_a]
+    type = ConstantIC
+    variable = c_ref
+    value = ${c0_a}
+    block = &#x27;anode&#x27;
+  []
+  [c_ref_e]
+    type = ConstantIC
+    variable = c_ref
+    value = ${c0_e}
+    block = &#x27;elyte&#x27;
+  []
+  [c_ref_c]
+    type = ConstantIC
+    variable = c_ref
+    value = ${c0_c}
+    block = &#x27;cathode&#x27;
+  []
+[]
+
+[Kernels]
+  # Charge balance
+  [charge_balance]
+    type = RankOneDivergence
+    variable = Phi
+    vector = i
+  []
+  # Mass balance
+  [mass_balance_1]
+    type = TimeDerivative
+    variable = c
+  []
+  [mass_balance_2]
+    type = RankOneDivergence
+    variable = c
+    vector = j
+  []
+[]
+
+[InterfaceKernels]
+  [negative_current]
+    type = MaterialInterfaceNeumannBC
+    variable = Phi
+    neighbor_var = Phi
+    prop = ie
+    factor = -1
+    factor_neighbor = 1
+    boundary = &#x27;cathode_elyte&#x27;
+  []
+  [positive_current]
+    type = MaterialInterfaceNeumannBC
+    variable = Phi
+    neighbor_var = Phi
+    prop = ie
+    boundary = &#x27;anode_elyte&#x27;
+  []
+[]
+
+[Functions]
+  [in]
+    type = PiecewiseLinear
+    x = &#x27;0 ${t0}&#x27;
+    y = &#x27;0 ${in}&#x27;
+  []
+[]
+
+[BCs]
+  [left]
+    type = FunctionNeumannBC
+    variable = Phi
+    boundary = left
+    function = in
+  []
+  [right]
+    type = DirichletBC
+    variable = Phi
+    boundary = right
+    value = 0
+  []
+  [open]
+    type = OpenBC
+    variable = c
+    flux = jm
+    boundary = &#x27;left right&#x27;
+  []
+[]
+
+[Materials]
+  # Electrodynamics
+  [conductivity]
+    type = ADPiecewiseConstantByBlockMaterial
+    prop_name = &#x27;sigma&#x27;
+    subdomain_to_prop_value = &#x27;anode ${sigma_a} elyte ${sigma_e} cathode ${sigma_c}&#x27;
+  []
+  [charge_transport]
+    type = BulkChargeTransport
+    electrical_energy_density = q
+    electric_potential = Phi
+    electric_conductivity = sigma
+    temperature = T
+  []
+  [current_density]
+    type = CurrentDensity
+    current_density = i
+    electric_potential = Phi
+  []
+
+  # Migration
+  [migration]
+    type = Migration
+    electrochemical_energy_density = m
+    electric_potential = Phi
+    chemical_potential = mu
+    electric_conductivity = sigma
+    faraday_constant = ${F}
+  []
+  [migration_flux]
+    type = MassFlux
+    mass_flux = jm
+    energy_densities = &#x27;m&#x27;
+    chemical_potential = mu
+  []
+
+  # Chemical reactions
+  [diffusivity]
+    type = ADPiecewiseConstantByBlockMaterial
+    prop_name = &#x27;M&#x27;
+    subdomain_to_prop_value = &#x27;anode ${M_a} elyte ${M_e} cathode ${M_c}&#x27;
+  []
+  [chemical_energy]
+    type = EntropicChemicalEnergyDensity
+    chemical_energy_density = psi_c
+    concentration = c
+    ideal_gas_constant = ${R}
+    temperature = T
+    reference_concentration = c_ref
+    reference_chemical_potential = 1e3
+  []
+  [chemical_potential]
+    type = ChemicalPotential
+    chemical_potential = mu
+    concentration = c
+  []
+  [diffusion]
+    type = MassDiffusion
+    dual_chemical_energy_density = zeta
+    chemical_potential = mu
+    mobility = M
+  []
+  [mass_flux]
+    type = MassFlux
+    mass_flux = j
+    chemical_potential = mu
+  []
+
+  # Redox
+  [ramp]
+    type = ADGenericFunctionMaterial
+    prop_names = &#x27;ramp&#x27;
+    prop_values = &#x27;if(t&lt;${t0},t/${t0},1)&#x27;
+  []
+  [OCP_anode_graphite]
+    type = ADParsedMaterial
+    property_name = U
+    expression = &#x27;x:=c/${cmax}; -(122.12*x^6-321.81*x^5+315.59*x^4-141.26*x^3+28.218*x^2-1.9057*x+0.0785)*ramp&#x27;
+    coupled_variables = c
+    material_property_names = &#x27;ramp&#x27;
+    boundary = &#x27;anode_elyte&#x27;
+  []
+  [OCP_cathode_NMC111]
+    type = ADParsedMaterial
+    property_name = U
+    expression = &#x27;x:=c/${cmax}; (6.0826-6.9922*x+7.1062*x^2-5.4549e-5*exp(124.23*x-114.2593)-2.5947*x^3)*ramp&#x27;
+    coupled_variables = c
+    material_property_names = &#x27;ramp&#x27;
+    boundary = &#x27;cathode_elyte&#x27;
+  []
+  [charge_transfer_anode_elyte]
+    type = ChargeTransferReaction
+    charge_transfer_current_density = ie
+    charge_transfer_mass_flux = je
+    charge_transfer_heat_flux = he
+    electric_potential = Phi
+    neighbor_electric_potential = Phi
+    charge_transfer_coefficient = 0.5
+    exchange_current_density = ${i0_a}
+    faraday_constant = ${F}
+    ideal_gas_constant = ${R}
+    temperature = T
+    open_circuit_potential = U
+    boundary = &#x27;anode_elyte&#x27;
+  []
+  [charge_transfer_cathode_elyte]
+    type = ChargeTransferReaction
+    charge_transfer_current_density = ie
+    charge_transfer_mass_flux = je
+    charge_transfer_heat_flux = he
+    electric_potential = Phi
+    neighbor_electric_potential = Phi
+    charge_transfer_coefficient = 0.5
+    exchange_current_density = ${i0_c}
+    faraday_constant = ${F}
+    ideal_gas_constant = ${R}
+    temperature = T
+    open_circuit_potential = U
+    boundary = &#x27;cathode_elyte&#x27;
+  []
+[]
+
+[Postprocessors]
+  [V_l]
+    type = SideAverageValue
+    variable = Phi
+    boundary = left
+    outputs = none
+    execute_on = &#x27;INITIAL TIMESTEP_END&#x27;
+  []
+  [V_r]
+    type = SideAverageValue
+    variable = Phi
+    boundary = right
+    outputs = none
+    execute_on = &#x27;INITIAL TIMESTEP_END&#x27;
+  []
+  [V]
+    type = ParsedPostprocessor
+    function = &#x27;V_r - V_l&#x27;
+    pp_names = &#x27;V_l V_r&#x27;
+    execute_on = &#x27;INITIAL TIMESTEP_END&#x27;
+  []
+  [in]
+    type = FunctionValuePostprocessor
+    function = in
+    outputs = none
+    execute_on = &#x27;INITIAL TIMESTEP_END&#x27;
+  []
+  [dt]
+    type = TimestepSize
+    outputs = none
+    execute_on = &#x27;INITIAL TIMESTEP_END&#x27;
+  []
+  [dC]
+    type = ParsedPostprocessor
+    function = &#x27;-dt*in*${width}&#x27;
+    pp_names = &#x27;dt in&#x27;
+    outputs = none
+    execute_on = &#x27;INITIAL TIMESTEP_END&#x27;
+  []
+  [C]
+    type = CumulativeValuePostprocessor
+    postprocessor = dC
+    execute_on = &#x27;INITIAL TIMESTEP_END&#x27;
+  []
+  [c_a_max]
+    type = NodalExtremeValue
+    variable = c
+    value_type = max
+    block = anode
+  []
+  [c_c_min]
+    type = NodalExtremeValue
+    variable = c
+    value_type = min
+    block = cathode
+  []
+  [mass_a]
+    type = ElementIntegralVariablePostprocessor
+    variable = c
+    block = anode
+    execute_on = &#x27;INITIAL TIMESTEP_END&#x27;
+  []
+  [mass_e]
+    type = ElementIntegralVariablePostprocessor
+    variable = c
+    block = elyte
+    execute_on = &#x27;INITIAL TIMESTEP_END&#x27;
+  []
+  [mass_c]
+    type = ElementIntegralVariablePostprocessor
+    variable = c
+    block = cathode
+    execute_on = &#x27;INITIAL TIMESTEP_END&#x27;
+  []
+[]
+
+[UserObjects]
+  [kill]
+    type = Terminator
+    expression = &#x27;V &gt;= ${Vmax}&#x27;
+    message = &#x27;Voltage reached Vmax&#x27;
+  []
+[]
+
+[Executioner]
+  type = Transient
+  solve_type = NEWTON
+
+  petsc_options_iname = &#x27;-pc_type&#x27;
+  petsc_options_value = &#x27;lu&#x27;
+  automatic_scaling = true
+  line_search = none
+
+  nl_rel_tol = 1e-6
+  nl_abs_tol = 1e-10
+  nl_max_its = 20
+  l_max_its = 150
+
+  [Predictor]
+    type = SimplePredictor
+    scale = 1
+    skip_after_failed_timestep = true
+  []
+
+  [TimeStepper]
+    type = IterationAdaptiveDT
+    dt = ${dt}
+    optimal_iterations = 7
+    iteration_window = 2
+    growth_factor = 1.2
+    cutback_factor = 0.5
+    cutback_factor_at_failure = 0.2
+    linear_iteration_ratio = 1000000
+  []
+  dtmax = 1
+  end_time = 100000
+[]
+
+[Outputs]
+  file_base = &#x27;diffusion_vs_migration&#x27;
+  exodus = true
+  print_linear_residuals = false
+[]
+</code></pre></div><div class="modal-footer"><a class="modal-close btn-flat">Close</a></div></div><div class="moose-modal modal" id="dfa75e85-96d9-47f2-bc47-08b3c6b79287"><div class="modal-content"><h4>(examples/LiB/CC_discharging.i)</h4><pre class="moose-pre"><code class="language-text">I = 3e-3 #mA
+width = 0.03 #mm
+in = &#x27;${fparse I/width}&#x27;
+t0 = &#x27;${fparse 1e-2/in}&#x27;
+dt = &#x27;${fparse t0/100}&#x27;
+
+sigma_a = 1e0 #mS/mm
+sigma_e = 1e-1 #mS/mm
+sigma_c = 1e-2 #mS/mm
+
+l0 = 0
+l1 = 0.04
+l2 = 0.07
+l3 = 0.12
+
+cmin = 1e-4 #mmol/mm^3
+cmax = 1e-3 #mmol/mm^3
+D_a = 1e-3 #mm^2/s
+D_e = 1e-4 #mm^2/s
+D_c = 5e-5 #mm^2/s
+
+R = 8.3145 #mJ/mmol/K
+T0 = 300 #K
+F = 96485 #mC/mmol
+
+i0_a = 1e-1 #mA/mm^2
+i0_c = 1e-1 #mA/mm^2
+
+E_c = 1e5
+E_e = 1e4
+E_a = 2e5
+nu_c = 0.3
+nu_e = 0.25
+nu_a = 0.3
+
+u_penalty = 1e8
+
+Omega = 60
+beta = 1e-3
+CTE = 1e-5
+
+rho = 2.5e-9 #Mg/mm^3
+cv = 2.7e8 #mJ/Mg/K
+kappa = 2e-4 #mJ/mm/K/s
+
+T_penalty = 2e-1
+
+[GlobalParams]
+  energy_densities = &#x27;dot(psi_m) dot(psi_c) chi q zeta m&#x27;
+  deformation_gradient = F
+  mechanical_deformation_gradient = Fm
+  eigen_deformation_gradient = Fg
+  swelling_deformation_gradient = Fs
+  thermal_deformation_gradient = Ft
+[]
+
+[Problem]
+  restart_file_base = &#x27;CV_charging_I_${I}_cp/LATEST&#x27;
+[]
+
+[Mesh]
+  [battery]
+    type = GeneratedMeshGenerator
+    dim = 2
+    xmin = ${l0}
+    xmax = ${l3}
+    ymin = 0
+    ymax = ${width}
+    nx = 60
+    ny = 15
+  []
+  [anode]
+    type = SubdomainBoundingBoxGenerator
+    input = battery
+    block_id = 1
+    block_name = anode
+    bottom_left = &#x27;${l0} 0 0&#x27;
+    top_right = &#x27;${l1} ${width} 0&#x27;
+  []
+  [elyte]
+    type = SubdomainBoundingBoxGenerator
+    input = anode
+    block_id = 2
+    block_name = elyte
+    bottom_left = &#x27;${l1} 0 0&#x27;
+    top_right = &#x27;${l2} ${width} 0&#x27;
+  []
+  [cathode]
+    type = SubdomainBoundingBoxGenerator
+    input = elyte
+    block_id = 3
+    block_name = cathode
+    bottom_left = &#x27;${l2} 0 0&#x27;
+    top_right = &#x27;${l3} ${width} 0&#x27;
+  []
+  [interfaces]
+    type = BreakMeshByBlockGenerator
+    input = cathode
+    add_interface_on_two_sides = true
+    split_interface = true
+  []
+[]
+
+[Variables]
+  [Phi]
+  []
+  [c]
+  []
+  [disp_x]
+  []
+  [disp_y]
+  []
+  [T]
+  []
+[]
+
+[AuxVariables]
+  [c_ref]
+  []
+  [T_ref]
+    initial_condition = ${T0}
+  []
+  [Phi0]
+  []
+[]
+
+[ICs]
+  [c_ref_min]
+    type = ConstantIC
+    variable = c_ref
+    value = ${cmin}
+    block = &#x27;anode&#x27;
+  []
+  [c_ref_mid]
+    type = ConstantIC
+    variable = c_ref
+    value = &#x27;${fparse (cmax+cmin)/2}&#x27;
+    block = &#x27;elyte&#x27;
+  []
+  [c_ref_max]
+    type = ConstantIC
+    variable = c_ref
+    value = ${cmax}
+    block = &#x27;cathode&#x27;
+  []
+[]
+
+[Kernels]
+  # Charge balance
+  [charge_balance]
+    type = RankOneDivergence
+    variable = Phi
+    vector = i
+  []
+  # Mass balance
+  [mass_balance_1]
+    type = TimeDerivative
+    variable = c
+  []
+  [mass_balance_2]
+    type = RankOneDivergence
+    variable = c
+    vector = j
+  []
+  # Momentum balance
+  [momentum_balance_x]
+    type = RankTwoDivergence
+    variable = disp_x
+    component = 0
+    tensor = pk1
+    factor = -1
+  []
+  [momentum_balance_y]
+    type = RankTwoDivergence
+    variable = disp_y
+    component = 1
+    tensor = pk1
+    factor = -1
+  []
+  # Energy balance
+  [energy_balance_1]
+    type = EnergyBalanceTimeDerivative
+    variable = T
+    density = rho
+    specific_heat = cv
+  []
+  [energy_balance_2]
+    type = RankOneDivergence
+    variable = T
+    vector = h
+  []
+  [heat_source]
+    type = MaterialSource
+    variable = T
+    prop = r
+    coefficient = -1
+  []
+[]
+
+[InterfaceKernels]
+  [negative_current]
+    type = MaterialInterfaceNeumannBC
+    variable = Phi
+    neighbor_var = Phi
+    prop = ie
+    factor = -1
+    boundary = &#x27;elyte_anode cathode_elyte&#x27;
+  []
+  [positive_current]
+    type = MaterialInterfaceNeumannBC
+    variable = Phi
+    neighbor_var = Phi
+    prop = ie
+    boundary = &#x27;anode_elyte elyte_cathode&#x27;
+  []
+  [heat]
+    type = MaterialInterfaceNeumannBC
+    variable = T
+    neighbor_var = T
+    prop = he
+    factor = 1
+    boundary = &#x27;anode_elyte elyte_cathode elyte_anode cathode_elyte&#x27;
+  []
+  [continuity_disp_x]
+    type = InterfaceContinuity
+    variable = disp_x
+    neighbor_var = disp_x
+    penalty = ${u_penalty}
+    boundary = &#x27;anode_elyte elyte_cathode&#x27;
+  []
+  [continuity_disp_y]
+    type = InterfaceContinuity
+    variable = disp_y
+    neighbor_var = disp_y
+    penalty = ${u_penalty}
+    boundary = &#x27;anode_elyte elyte_cathode&#x27;
+  []
+  [continuity_T]
+    type = InterfaceContinuity
+    variable = T
+    neighbor_var = T
+    penalty = ${T_penalty}
+    boundary = &#x27;anode_elyte elyte_cathode&#x27;
+  []
+[]
+
+[Functions]
+  [in]
+    type = PiecewiseLinear
+    x = &#x27;0 ${t0}&#x27;
+    y = &#x27;0 ${in}&#x27;
+  []
+[]
+
+[BCs]
+  [left]
+    type = FunctionNeumannBC
+    variable = Phi
+    boundary = left
+    function = in
+  []
+  [right]
+    type = DirichletBC
+    variable = Phi
+    boundary = right
+    value = 0
+  []
+  [fix_x]
+    type = DirichletBC
+    variable = disp_x
+    value = 0
+    boundary = &#x27;left right&#x27;
+  []
+  [fix_y]
+    type = DirichletBC
+    variable = disp_y
+    value = 0
+    boundary = &#x27;bottom&#x27;
+  []
+  [open]
+    type = OpenBC
+    variable = c
+    flux = jm
+    boundary = &#x27;left right&#x27;
+  []
+[]
+
+[Constraints]
+  [y]
+    type = EqualValueBoundaryConstraint
+    variable = disp_y
+    penalty = ${u_penalty}
+    secondary = top
+  []
+[]
+
+[Materials]
+  # Electrodynamics
+  [conductivity]
+    type = ADPiecewiseConstantByBlockMaterial
+    prop_name = &#x27;sigma&#x27;
+    subdomain_to_prop_value = &#x27;anode ${sigma_a} elyte ${sigma_e} cathode ${sigma_c}&#x27;
+  []
+  [charge_transport]
+    type = BulkChargeTransport
+    electrical_energy_density = q
+    electric_potential = Phi
+    electric_conductivity = sigma
+    temperature = T
+  []
+  [current_density]
+    type = CurrentDensity
+    current_density = i
+    electric_potential = Phi
+  []
+
+  # Chemical reactions
+  [diffusivity]
+    type = ADPiecewiseConstantByBlockMaterial
+    prop_name = &#x27;D&#x27;
+    subdomain_to_prop_value = &#x27;anode ${D_a} elyte ${D_e} cathode ${D_c}&#x27;
+  []
+  [mobility]
+    type = ADParsedMaterial
+    f_name = M
+    args = &#x27;c_ref T_ref&#x27;
+    material_property_names = &#x27;D&#x27;
+    function = &#x27;D*c_ref/${R}/T_ref&#x27;
+  []
+  [chemical_energy]
+    type = EntropicChemicalEnergyDensity
+    chemical_energy_density = psi_c
+    concentration = c
+    ideal_gas_constant = ${R}
+    temperature = T
+    reference_concentration = c_ref
+  []
+  [chemical_potential]
+    type = ChemicalPotential
+    chemical_potential = mu
+    concentration = c
+  []
+  [diffusion]
+    type = MassDiffusion
+    dual_chemical_energy_density = zeta
+    chemical_potential = mu
+    mobility = M
+  []
+  [mass_flux]
+    type = MassFlux
+    mass_flux = j
+    chemical_potential = mu
+  []
+
+  # Migration
+  [migration]
+    type = Migration
+    electrochemical_energy_density = m
+    electric_potential = Phi
+    chemical_potential = mu
+    electric_conductivity = sigma
+    faraday_constant = ${F}
+  []
+  [migration_flux]
+    type = MassFlux
+    mass_flux = jm
+    energy_densities = &#x27;m&#x27;
+    chemical_potential = mu
+  []
+
+  # Redox
+  [OCP_anode_graphite]
+    type = ADParsedMaterial
+    f_name = U
+    function = &#x27;x:=c/${cmax}; -(122.12*x^6-321.81*x^5+315.59*x^4-141.26*x^3+28.218*x^2-1.9057*x+0.0785)&#x27;
+    args = c
+    block = &#x27;anode&#x27;
+  []
+  [OCP_cathode_NMC111]
+    type = ADParsedMaterial
+    f_name = U
+    function = &#x27;x:=c/${cmax}; (6.0826-6.9922*x+7.1062*x^2-5.4549e-5*exp(124.23*x-114.2593)-2.5947*x^3)&#x27;
+    args = c
+    block = &#x27;cathode&#x27;
+  []
+  [charge_transfer_anode_elyte]
+    type = ChargeTransferReaction
+    electrode = true
+    charge_transfer_current_density = ie
+    charge_transfer_mass_flux = je
+    charge_transfer_heat_flux = he
+    electric_potential = Phi
+    neighbor_electric_potential = Phi
+    charge_transfer_coefficient = 0.5
+    exchange_current_density = ${i0_a}
+    faraday_constant = ${F}
+    ideal_gas_constant = ${R}
+    temperature = T
+    open_circuit_potential = U
+    boundary = &#x27;anode_elyte&#x27;
+  []
+  [charge_transfer_elyte_anode]
+    type = ChargeTransferReaction
+    electrode = false
+    charge_transfer_current_density = ie
+    charge_transfer_mass_flux = je
+    charge_transfer_heat_flux = he
+    electric_potential = Phi
+    neighbor_electric_potential = Phi
+    charge_transfer_coefficient = 0.5
+    exchange_current_density = ${i0_a}
+    faraday_constant = ${F}
+    ideal_gas_constant = ${R}
+    temperature = T
+    open_circuit_potential = U
+    boundary = &#x27;elyte_anode&#x27;
+  []
+  [charge_transfer_cathode_elyte]
+    type = ChargeTransferReaction
+    electrode = true
+    charge_transfer_current_density = ie
+    charge_transfer_mass_flux = je
+    charge_transfer_heat_flux = he
+    electric_potential = Phi
+    neighbor_electric_potential = Phi
+    charge_transfer_coefficient = 0.5
+    exchange_current_density = ${i0_c}
+    faraday_constant = ${F}
+    ideal_gas_constant = ${R}
+    temperature = T
+    open_circuit_potential = U
+    boundary = &#x27;cathode_elyte&#x27;
+  []
+  [charge_transfer_elyte_cathode]
+    type = ChargeTransferReaction
+    electrode = false
+    charge_transfer_current_density = ie
+    charge_transfer_mass_flux = je
+    charge_transfer_heat_flux = he
+    electric_potential = Phi
+    neighbor_electric_potential = Phi
+    charge_transfer_coefficient = 0.5
+    exchange_current_density = ${i0_c}
+    faraday_constant = ${F}
+    ideal_gas_constant = ${R}
+    temperature = T
+    open_circuit_potential = U
+    boundary = &#x27;elyte_cathode&#x27;
+  []
+
+  # Thermal
+  [thermal_properties]
+    type = ADGenericConstantMaterial
+    prop_names = &#x27;rho cv kappa&#x27;
+    prop_values = &#x27;${rho} ${cv} ${kappa}&#x27;
+  []
+  [heat_conduction]
+    type = FourierPotential
+    thermal_energy_density = chi
+    thermal_conductivity = kappa
+    temperature = T
+  []
+  [heat_flux]
+    type = HeatFlux
+    heat_flux = h
+    temperature = T
+  []
+  [heat_source]
+    type = VariationalHeatSource
+    heat_source = r
+    temperature = T
+  []
+
+  # Mechanical
+  [stiffness_c]
+    type = ADGenericConstantMaterial
+    prop_names = &#x27;lambda G&#x27;
+    prop_values = &#x27;${fparse E_c*nu_c/(1+nu_c)/(1-2*nu_c)} ${fparse E_c/2/(1+nu_c)}&#x27;
+    block = cathode
+  []
+  [stiffness_e]
+    type = ADGenericConstantMaterial
+    prop_names = &#x27;lambda G&#x27;
+    prop_values = &#x27;${fparse E_e*nu_e/(1+nu_e)/(1-2*nu_e)} ${fparse E_e/2/(1+nu_e)}&#x27;
+    block = elyte
+  []
+  [stiffness_a]
+    type = ADGenericConstantMaterial
+    prop_names = &#x27;lambda G&#x27;
+    prop_values = &#x27;${fparse E_a*nu_a/(1+nu_a)/(1-2*nu_a)} ${fparse E_a/2/(1+nu_a)}&#x27;
+    block = anode
+  []
+  [swelling_coefficient]
+    type = ADGenericConstantMaterial
+    prop_names = &#x27;beta&#x27;
+    prop_values = &#x27;${beta}&#x27;
+  []
+  [swelling]
+    type = SwellingDeformationGradient
+    concentration = c
+    reference_concentration = c_ref
+    molar_volume = ${Omega}
+    swelling_coefficient = beta
+  []
+  [thermal_expansion]
+    type = ThermalDeformationGradient
+    temperature = T
+    reference_temperature = T_ref
+    CTE = ${CTE}
+  []
+  [defgrad]
+    type = MechanicalDeformationGradient
+    displacements = &#x27;disp_x disp_y&#x27;
+  []
+  [neohookean]
+    type = NeoHookeanSolid
+    elastic_energy_density = psi_m
+    lambda = lambda
+    shear_modulus = G
+    concentration = c
+    temperature = T
+  []
+  [pk1]
+    type = FirstPiolaKirchhoffStress
+    first_piola_kirchhoff_stress = pk1
+    deformation_gradient_rate = dot(F)
+  []
+[]
+
+[Postprocessors]
+  [V_l]
+    type = SideAverageValue
+    variable = Phi
+    boundary = left
+    outputs = none
+    execute_on = &#x27;INITIAL TIMESTEP_END&#x27;
+  []
+  [V_r]
+    type = SideAverageValue
+    variable = Phi
+    boundary = right
+    outputs = none
+    execute_on = &#x27;INITIAL TIMESTEP_END&#x27;
+  []
+  [V]
+    type = ParsedPostprocessor
+    function = &#x27;V_r - V_l&#x27;
+    pp_names = &#x27;V_l V_r&#x27;
+    execute_on = &#x27;INITIAL TIMESTEP_END&#x27;
+  []
+  [I]
+    type = ADSideIntegralMaterialProperty
+    property = i
+    component = 0
+    boundary = right
+    execute_on = &#x27;INITIAL TIMESTEP_END&#x27;
+  []
+  [dt]
+    type = TimestepSize
+    outputs = none
+    execute_on = &#x27;INITIAL TIMESTEP_END&#x27;
+  []
+  [dC]
+    type = ParsedPostprocessor
+    function = &#x27;-dt*I&#x27;
+    pp_names = &#x27;dt I&#x27;
+    outputs = none
+    execute_on = &#x27;INITIAL TIMESTEP_END&#x27;
+  []
+  [C]
+    type = CumulativeValuePostprocessor
+    postprocessor = dC
+    execute_on = &#x27;INITIAL TIMESTEP_END&#x27;
+  []
+  [c_a_max]
+    type = NodalExtremeValue
+    variable = c
+    value_type = max
+    block = anode
+    execute_on = &#x27;INITIAL TIMESTEP_END&#x27;
+  []
+  [c_c_min]
+    type = NodalExtremeValue
+    variable = c
+    value_type = min
+    block = cathode
+    execute_on = &#x27;INITIAL TIMESTEP_END&#x27;
+  []
+  [c_a_min]
+    type = NodalExtremeValue
+    variable = c
+    value_type = min
+    block = anode
+    execute_on = &#x27;INITIAL TIMESTEP_END&#x27;
+  []
+  [c_c_max]
+    type = NodalExtremeValue
+    variable = c
+    value_type = max
+    block = cathode
+    execute_on = &#x27;INITIAL TIMESTEP_END&#x27;
+  []
+  [mass_a]
+    type = ElementIntegralVariablePostprocessor
+    variable = c
+    block = anode
+    execute_on = &#x27;INITIAL TIMESTEP_END&#x27;
+  []
+  [mass_e]
+    type = ElementIntegralVariablePostprocessor
+    variable = c
+    block = elyte
+    execute_on = &#x27;INITIAL TIMESTEP_END&#x27;
+  []
+  [mass_c]
+    type = ElementIntegralVariablePostprocessor
+    variable = c
+    block = cathode
+    execute_on = &#x27;INITIAL TIMESTEP_END&#x27;
+  []
+[]
+
+[UserObjects]
+  [kill_a]
+    type = Terminator
+    expression = &#x27;c_a_min &lt;= ${cmin}&#x27;
+    message = &#x27;Concentration in anode is below the minimum allowable value.&#x27;
+  []
+  [kill_c]
+    type = Terminator
+    expression = &#x27;c_c_max &gt;= ${cmax}&#x27;
+    message = &#x27;Concentration in cathode exceeds the maximum allowable value.&#x27;
+  []
+[]
+
+[Executioner]
+  type = Transient
+  solve_type = NEWTON
+
+  petsc_options_iname = &#x27;-pc_type&#x27;
+  petsc_options_value = &#x27;lu&#x27;
+  automatic_scaling = true
+
+  nl_rel_tol = 1e-6
+  nl_abs_tol = 1e-10
+  nl_max_its = 20
+
+  [Predictor]
+    type = SimplePredictor
+    scale = 1
+    skip_after_failed_timestep = true
+  []
+  [TimeStepper]
+    type = IterationAdaptiveDT
+    dt = ${dt}
+    optimal_iterations = 7
+    iteration_window = 2
+    growth_factor = 1.2
+    cutback_factor = 0.5
+    cutback_factor_at_failure = 0.2
+    linear_iteration_ratio = 1000000
+  []
+  start_time = 0
+  end_time = 100000
+[]
+
+[Outputs]
+  file_base = &#x27;CC_discharging_I_${I}&#x27;
+  csv = true
+  exodus = true
+  print_linear_residuals = false
+  checkpoint = true
+[]
+</code></pre></div><div class="modal-footer"><a class="modal-close btn-flat">Close</a></div></div><div class="moose-modal modal" id="0647c1b2-46ac-4cac-906f-da05053eeca3"><div class="modal-content"><h4>(test/tests/chemical-electrical-thermal/thermal_effects.i)</h4><pre class="moose-pre"><code class="language-text">R = 8.3145 #mJ/mmol/K
+F = 96485 #mC/mmol
+
+I = 3e-3 #mA
+width = 0.03 #mm
+in = &#x27;${fparse -I/width}&#x27;
+t0 = &#x27;${fparse -1e-2/in}&#x27;
+dt = &#x27;${fparse t0/100}&#x27;
+Vmax = 4.3 #V
+
+vf_se = 0.3
+vf_cp = 0.5
+vf_ca = 0.2
+
+sigma_a = 0.2 #mS/mm
+sigma_se = 0.1 #mS/mm
+sigma_cp = 0.05 #mS/mm
+sigma_ca = 0.2 #mS/mm
+sigma_e = ${sigma_se}
+sigma_c = &#x27;${fparse vf_se*sigma_se + vf_cp*sigma_cp + vf_ca*sigma_ca}&#x27;
+
+l0 = 0
+l1 = 0.04
+l2 = 0.07
+l3 = 0.12
+
+cmax = 1e-3 #mmol/mm^3
+c0_a = 1e-4
+c0_e = 5e-4
+c0_c = 1e-3
+
+M_a = 8e-11
+M_se = 1e-11
+M_cp = 4e-14
+M_ca = 1e-13
+M_e = ${M_se}
+M_c = &#x27;${fparse vf_se*M_se + vf_cp*M_cp + vf_ca*M_ca}&#x27;
+
+T0 = 300 #K
+
+i0_a = 0.1 #mA/mm^2
+i0_c = 0.1 #mA/mm^2
+
+rho = 2.5e-9 #Mg/mm^3
+cv = 2.7e8 #mJ/Mg/K
+kappa = 2e-4 #mJ/mm/K/s
+hconv = 9.5e-3 #mJ/mm^2/K/s
+
+T_penalty = 2e-1
+
+[GlobalParams]
+  energy_densities = &#x27;dot(psi_c) q zeta chi m&#x27;
+[]
+
+[Mesh]
+  [battery]
+    type = GeneratedMeshGenerator
+    dim = 2
+    xmin = ${l0}
+    xmax = ${l3}
+    ymin = 0
+    ymax = ${width}
+    nx = 60
+    ny = 15
+  []
+  [anode]
+    type = SubdomainBoundingBoxGenerator
+    input = battery
+    block_id = 1
+    block_name = anode
+    bottom_left = &#x27;${l0} 0 0&#x27;
+    top_right = &#x27;${l1} ${width} 0&#x27;
+  []
+  [elyte]
+    type = SubdomainBoundingBoxGenerator
+    input = anode
+    block_id = 2
+    block_name = elyte
+    bottom_left = &#x27;${l1} 0 0&#x27;
+    top_right = &#x27;${l2} ${width} 0&#x27;
+  []
+  [cathode]
+    type = SubdomainBoundingBoxGenerator
+    input = elyte
+    block_id = 3
+    block_name = cathode
+    bottom_left = &#x27;${l2} 0 0&#x27;
+    top_right = &#x27;${l3} ${width} 0&#x27;
+  []
+  [anode_elyte]
+    type = BreakMeshByBlockGenerator
+    input = cathode
+    block_pairs = &#x27;1 2&#x27;
+    add_interface_on_two_sides = true
+    split_interface = true
+  []
+  [cathode_elyte]
+    type = BreakMeshByBlockGenerator
+    input = anode_elyte
+    block_pairs = &#x27;2 3&#x27;
+    add_interface_on_two_sides = true
+    split_interface = true
+  []
+[]
+
+[Variables]
+  [Phi]
+  []
+  [c]
+  []
+  [T]
+    initial_condition = ${T0}
+  []
+[]
+
+[AuxVariables]
+  [c_ref]
+  []
+  [T_ref]
+    initial_condition = ${T0}
+  []
+[]
+
+[ICs]
+  [c_a]
+    type = ConstantIC
+    variable = c
+    value = ${c0_a}
+    block = &#x27;anode&#x27;
+  []
+  [c_e]
+    type = ConstantIC
+    variable = c
+    value = ${c0_e}
+    block = &#x27;elyte&#x27;
+  []
+  [c_c]
+    type = ConstantIC
+    variable = c
+    value = ${c0_c}
+    block = &#x27;cathode&#x27;
+  []
+  [c_ref_a]
+    type = ConstantIC
+    variable = c_ref
+    value = ${c0_a}
+    block = &#x27;anode&#x27;
+  []
+  [c_ref_e]
+    type = ConstantIC
+    variable = c_ref
+    value = ${c0_e}
+    block = &#x27;elyte&#x27;
+  []
+  [c_ref_c]
+    type = ConstantIC
+    variable = c_ref
+    value = ${c0_c}
+    block = &#x27;cathode&#x27;
+  []
+[]
+
+[Kernels]
+  # Charge balance
+  [charge_balance]
+    type = RankOneDivergence
+    variable = Phi
+    vector = i
+  []
+  # Mass balance
+  [mass_balance_1]
+    type = TimeDerivative
+    variable = c
+  []
+  [mass_balance_2]
+    type = RankOneDivergence
+    variable = c
+    vector = j
+  []
+  # Energy balance
+  [energy_balance_1]
+    type = EnergyBalanceTimeDerivative
+    variable = T
+    density = rho
+    specific_heat = cv
+  []
+  [energy_balance_2]
+    type = RankOneDivergence
+    variable = T
+    vector = h
+  []
+  [heat_source]
+    type = MaterialSource
+    variable = T
+    prop = r
+    coefficient = -1
+  []
+[]
+
+[InterfaceKernels]
+  [negative_current]
+    type = MaterialInterfaceNeumannBC
+    variable = Phi
+    neighbor_var = Phi
+    prop = ie
+    factor = -1
+    factor_neighbor = 1
+    boundary = &#x27;cathode_elyte&#x27;
+  []
+  [positive_current]
+    type = MaterialInterfaceNeumannBC
+    variable = Phi
+    neighbor_var = Phi
+    prop = ie
+    boundary = &#x27;anode_elyte&#x27;
+  []
+  [heat]
+    type = MaterialInterfaceNeumannBC
+    variable = T
+    neighbor_var = T
+    prop = he
+    factor = 1
+    factor_neighbor = 1
+    boundary = &#x27;anode_elyte cathode_elyte&#x27;
+  []
+  [continuity_T]
+    type = InterfaceContinuity
+    variable = T
+    neighbor_var = T
+    penalty = ${T_penalty}
+    boundary = &#x27;anode_elyte cathode_elyte&#x27;
+  []
+[]
+
+[Functions]
+  [in]
+    type = PiecewiseLinear
+    x = &#x27;0 ${t0}&#x27;
+    y = &#x27;0 ${in}&#x27;
+  []
+[]
+
+[BCs]
+  [left]
+    type = FunctionNeumannBC
+    variable = Phi
+    boundary = left
+    function = in
+  []
+  [right]
+    type = DirichletBC
+    variable = Phi
+    boundary = right
+    value = 0
+  []
+  [open]
+    type = OpenBC
+    variable = c
+    flux = jm
+    boundary = &#x27;left right&#x27;
+  []
+  [hconv]
+    type = ADMatNeumannBC
+    variable = T
+    boundary = &#x27;left right&#x27;
+    value = -1
+    boundary_material = qconv
+  []
+[]
+
+[Materials]
+  # Electrodynamics
+  [conductivity]
+    type = ADPiecewiseConstantByBlockMaterial
+    prop_name = &#x27;sigma&#x27;
+    subdomain_to_prop_value = &#x27;anode ${sigma_a} elyte ${sigma_e} cathode ${sigma_c}&#x27;
+  []
+  [charge_transport]
+    type = BulkChargeTransport
+    electrical_energy_density = q
+    electric_potential = Phi
+    electric_conductivity = sigma
+    temperature = T
+  []
+  [current_density]
+    type = CurrentDensity
+    current_density = i
+    electric_potential = Phi
+  []
+
+  # Migration
+  [migration]
+    type = Migration
+    electrochemical_energy_density = m
+    electric_potential = Phi
+    chemical_potential = mu
+    electric_conductivity = sigma
+    faraday_constant = ${F}
+  []
+  [migration_flux]
+    type = MassFlux
+    mass_flux = jm
+    energy_densities = &#x27;m&#x27;
+    chemical_potential = mu
+  []
+
+  # Chemical reactions
+  [diffusivity]
+    type = ADPiecewiseConstantByBlockMaterial
+    prop_name = &#x27;M&#x27;
+    subdomain_to_prop_value = &#x27;anode ${M_a} elyte ${M_e} cathode ${M_c}&#x27;
+  []
+  [chemical_energy]
+    type = EntropicChemicalEnergyDensity
+    chemical_energy_density = psi_c
+    concentration = c
+    ideal_gas_constant = ${R}
+    temperature = T
+    reference_concentration = c_ref
+    reference_chemical_potential = 1e3
+  []
+  [chemical_potential]
+    type = ChemicalPotential
+    chemical_potential = mu
+    concentration = c
+  []
+  [diffusion]
+    type = MassDiffusion
+    dual_chemical_energy_density = zeta
+    chemical_potential = mu
+    mobility = M
+  []
+  [mass_flux]
+    type = MassFlux
+    mass_flux = j
+    chemical_potential = mu
+  []
+
+  # Redox
+  [ramp]
+    type = ADGenericFunctionMaterial
+    prop_names = &#x27;ramp&#x27;
+    prop_values = &#x27;if(t&lt;${t0},t/${t0},1)&#x27;
+  []
+  [OCP_anode_graphite]
+    type = ADParsedMaterial
+    property_name = U
+    expression = &#x27;x:=c/${cmax}; -(122.12*x^6-321.81*x^5+315.59*x^4-141.26*x^3+28.218*x^2-1.9057*x+0.0785)*ramp&#x27;
+    coupled_variables = c
+    material_property_names = &#x27;ramp&#x27;
+    boundary = &#x27;anode_elyte&#x27;
+  []
+  [OCP_cathode_NMC111]
+    type = ADParsedMaterial
+    property_name = U
+    expression = &#x27;x:=c/${cmax}; (6.0826-6.9922*x+7.1062*x^2-5.4549e-5*exp(124.23*x-114.2593)-2.5947*x^3)*ramp&#x27;
+    coupled_variables = c
+    material_property_names = &#x27;ramp&#x27;
+    boundary = &#x27;cathode_elyte&#x27;
+  []
+  [charge_transfer_anode_elyte]
+    type = ChargeTransferReaction
+    charge_transfer_current_density = ie
+    charge_transfer_mass_flux = je
+    charge_transfer_heat_flux = he
+    electric_potential = Phi
+    neighbor_electric_potential = Phi
+    charge_transfer_coefficient = 0.5
+    exchange_current_density = ${i0_a}
+    faraday_constant = ${F}
+    ideal_gas_constant = ${R}
+    temperature = T
+    open_circuit_potential = U
+    boundary = &#x27;anode_elyte&#x27;
+  []
+  [charge_transfer_cathode_elyte]
+    type = ChargeTransferReaction
+    charge_transfer_current_density = ie
+    charge_transfer_mass_flux = je
+    charge_transfer_heat_flux = he
+    electric_potential = Phi
+    neighbor_electric_potential = Phi
+    charge_transfer_coefficient = 0.5
+    exchange_current_density = ${i0_c}
+    faraday_constant = ${F}
+    ideal_gas_constant = ${R}
+    temperature = T
+    open_circuit_potential = U
+    boundary = &#x27;cathode_elyte&#x27;
+  []
+
+  # Thermal
+  [thermal_properties]
+    type = ADGenericConstantMaterial
+    prop_names = &#x27;rho cv kappa&#x27;
+    prop_values = &#x27;${rho} ${cv} ${kappa}&#x27;
+  []
+  [heat_conduction]
+    type = FourierPotential
+    thermal_energy_density = chi
+    thermal_conductivity = kappa
+    temperature = T
+  []
+  [heat_flux]
+    type = HeatFlux
+    heat_flux = h
+    temperature = T
+  []
+  [heat_source]
+    type = VariationalHeatSource
+    heat_source = r
+    temperature = T
+  []
+  [qconv]
+    type = ADParsedMaterial
+    property_name = qconv
+    expression = &#x27;htc*(T-T_inf)&#x27;
+    coupled_variables = &#x27;T&#x27;
+    constant_names = &#x27;htc T_inf&#x27;
+    constant_expressions = &#x27;${hconv} ${T0}&#x27;
+    boundary = &#x27;left right&#x27;
+  []
+  [enthalpy]
+    type = ADParsedMaterial
+    f_name = enthalpy
+    function = &#x27;rho*cv*(T-T_ref)&#x27;
+    args = &#x27;T T_ref&#x27;
+    material_property_names = &#x27;rho cv&#x27;
+  []
+[]
+
+[Postprocessors]
+  [V_l]
+    type = SideAverageValue
+    variable = Phi
+    boundary = left
+    outputs = none
+    execute_on = &#x27;INITIAL TIMESTEP_END&#x27;
+  []
+  [V_r]
+    type = SideAverageValue
+    variable = Phi
+    boundary = right
+    outputs = none
+    execute_on = &#x27;INITIAL TIMESTEP_END&#x27;
+  []
+  [V]
+    type = ParsedPostprocessor
+    function = &#x27;V_r - V_l&#x27;
+    pp_names = &#x27;V_l V_r&#x27;
+    execute_on = &#x27;INITIAL TIMESTEP_END&#x27;
+  []
+  [in]
+    type = FunctionValuePostprocessor
+    function = in
+    outputs = none
+    execute_on = &#x27;INITIAL TIMESTEP_END&#x27;
+  []
+  [dt]
+    type = TimestepSize
+    outputs = none
+    execute_on = &#x27;INITIAL TIMESTEP_END&#x27;
+  []
+  [dC]
+    type = ParsedPostprocessor
+    function = &#x27;-dt*in*${width}&#x27;
+    pp_names = &#x27;dt in&#x27;
+    outputs = none
+    execute_on = &#x27;INITIAL TIMESTEP_END&#x27;
+  []
+  [C]
+    type = CumulativeValuePostprocessor
+    postprocessor = dC
+    execute_on = &#x27;INITIAL TIMESTEP_END&#x27;
+  []
+  [c_a_max]
+    type = NodalExtremeValue
+    variable = c
+    value_type = max
+    block = anode
+  []
+  [c_c_min]
+    type = NodalExtremeValue
+    variable = c
+    value_type = min
+    block = cathode
+  []
+  [mass_a]
+    type = ElementIntegralVariablePostprocessor
+    variable = c
+    block = anode
+    execute_on = &#x27;INITIAL TIMESTEP_END&#x27;
+  []
+  [mass_e]
+    type = ElementIntegralVariablePostprocessor
+    variable = c
+    block = elyte
+    execute_on = &#x27;INITIAL TIMESTEP_END&#x27;
+  []
+  [mass_c]
+    type = ElementIntegralVariablePostprocessor
+    variable = c
+    block = cathode
+    execute_on = &#x27;INITIAL TIMESTEP_END&#x27;
+  []
+  [H_a]
+    type = ADElementIntegralMaterialProperty
+    mat_prop = enthalpy
+    block = anode
+    execute_on = &#x27;INITIAL TIMESTEP_END&#x27;
+  []
+  [H_e]
+    type = ADElementIntegralMaterialProperty
+    mat_prop = enthalpy
+    block = elyte
+    execute_on = &#x27;INITIAL TIMESTEP_END&#x27;
+  []
+  [H_c]
+    type = ADElementIntegralMaterialProperty
+    mat_prop = enthalpy
+    block = cathode
+    execute_on = &#x27;INITIAL TIMESTEP_END&#x27;
+  []
+[]
+
+[UserObjects]
+  [kill]
+    type = Terminator
+    expression = &#x27;V &gt;= ${Vmax}&#x27;
+    message = &#x27;Voltage reached Vmax&#x27;
+  []
+[]
+
+[Executioner]
+  type = Transient
+  solve_type = NEWTON
+
+  petsc_options_iname = &#x27;-pc_type&#x27;
+  petsc_options_value = &#x27;lu&#x27;
+  automatic_scaling = true
+  line_search = none
+
+  nl_rel_tol = 1e-6
+  nl_abs_tol = 1e-10
+  nl_max_its = 20
+  l_max_its = 150
+
+  [Predictor]
+    type = SimplePredictor
+    scale = 1
+    skip_after_failed_timestep = true
+  []
+
+  [TimeStepper]
+    type = IterationAdaptiveDT
+    dt = ${dt}
+    optimal_iterations = 7
+    iteration_window = 2
+    growth_factor = 1.2
+    cutback_factor = 0.5
+    cutback_factor_at_failure = 0.2
+    linear_iteration_ratio = 1000000
+  []
+  dtmax = 1
+  end_time = 100000
+[]
+
+[Outputs]
+  exodus = true
+  print_linear_residuals = false
+[]
+</code></pre></div><div class="modal-footer"><a class="modal-close btn-flat">Close</a></div></div><div class="moose-modal modal" id="5f02a7ab-7901-440b-8abb-a9e88c740e18"><div class="modal-content"><h4>(examples/LiB/CC_charging.i)</h4><pre class="moose-pre"><code class="language-text">I = 3e-3 #mA
+width = 0.03 #mm
+in = &#x27;${fparse -I/width}&#x27;
+t0 = &#x27;${fparse -1e-2/in}&#x27;
+dt = &#x27;${fparse t0/100}&#x27;
+
+sigma_a = 1e0 #mS/mm
+sigma_e = 1e-1 #mS/mm
+sigma_c = 1e-2 #mS/mm
+
+l0 = 0
+l1 = 0.04
+l2 = 0.07
+l3 = 0.12
+
+cmin = 1e-4 #mmol/mm^3
+cmax = 1e-3 #mmol/mm^3
+D_a = 1e-3 #mm^2/s
+D_e = 1e-4 #mm^2/s
+D_c = 5e-5 #mm^2/s
+
+R = 8.3145 #mJ/mmol/K
+T0 = 300 #K
+F = 96485 #mC/mmol
+
+i0_a = 1e-1 #mA/mm^2
+i0_c = 1e-1 #mA/mm^2
+
+E_c = 1e5
+E_e = 1e4
+E_a = 2e5
+nu_c = 0.3
+nu_e = 0.25
+nu_a = 0.3
+
+u_penalty = 1e8
+
+Omega = 60
+beta = 1e-3
+CTE = 1e-5
+
+rho = 2.5e-9 #Mg/mm^3
+cv = 2.7e8 #mJ/Mg/K
+kappa = 2e-4 #mJ/mm/K/s
+
+T_penalty = 2e-1
+
+[GlobalParams]
+  energy_densities = &#x27;dot(psi_m) dot(psi_c) chi q zeta m&#x27;
+  deformation_gradient = F
+  mechanical_deformation_gradient = Fm
+  eigen_deformation_gradient = Fg
+  swelling_deformation_gradient = Fs
+  thermal_deformation_gradient = Ft
+[]
+
+[Mesh]
+  [battery]
+    type = GeneratedMeshGenerator
+    dim = 2
+    xmin = ${l0}
+    xmax = ${l3}
+    ymin = 0
+    ymax = ${width}
+    nx = 60
+    ny = 15
+  []
+  [anode]
+    type = SubdomainBoundingBoxGenerator
+    input = battery
+    block_id = 1
+    block_name = anode
+    bottom_left = &#x27;${l0} 0 0&#x27;
+    top_right = &#x27;${l1} ${width} 0&#x27;
+  []
+  [elyte]
+    type = SubdomainBoundingBoxGenerator
+    input = anode
+    block_id = 2
+    block_name = elyte
+    bottom_left = &#x27;${l1} 0 0&#x27;
+    top_right = &#x27;${l2} ${width} 0&#x27;
+  []
+  [cathode]
+    type = SubdomainBoundingBoxGenerator
+    input = elyte
+    block_id = 3
+    block_name = cathode
+    bottom_left = &#x27;${l2} 0 0&#x27;
+    top_right = &#x27;${l3} ${width} 0&#x27;
+  []
+  [interfaces]
+    type = BreakMeshByBlockGenerator
+    input = cathode
+    add_interface_on_two_sides = true
+    split_interface = true
+  []
+[]
+
+[Variables]
+  [Phi]
+  []
+  [c]
+  []
+  [disp_x]
+  []
+  [disp_y]
+  []
+  [T]
+    initial_condition = ${T0}
+  []
+[]
+
+[AuxVariables]
+  [c_ref]
+  []
+  [T_ref]
+    initial_condition = ${T0}
+  []
+[]
+
+[ICs]
+  [c_min]
+    type = ConstantIC
+    variable = c
+    value = ${cmin}
+    block = &#x27;anode&#x27;
+  []
+  [c_mid]
+    type = ConstantIC
+    variable = c
+    value = &#x27;${fparse (cmax+cmin)/2}&#x27;
+    block = &#x27;elyte&#x27;
+  []
+  [c_max]
+    type = ConstantIC
+    variable = c
+    value = ${cmax}
+    block = &#x27;cathode&#x27;
+  []
+  [c_ref_min]
+    type = ConstantIC
+    variable = c_ref
+    value = ${cmin}
+    block = &#x27;anode&#x27;
+  []
+  [c_ref_mid]
+    type = ConstantIC
+    variable = c_ref
+    value = &#x27;${fparse (cmax+cmin)/2}&#x27;
+    block = &#x27;elyte&#x27;
+  []
+  [c_ref_max]
+    type = ConstantIC
+    variable = c_ref
+    value = ${cmax}
+    block = &#x27;cathode&#x27;
+  []
+[]
+
+[Kernels]
+  # Charge balance
+  [charge_balance]
+    type = RankOneDivergence
+    variable = Phi
+    vector = i
+  []
+  # Mass balance
+  [mass_balance_1]
+    type = TimeDerivative
+    variable = c
+  []
+  [mass_balance_2]
+    type = RankOneDivergence
+    variable = c
+    vector = j
+  []
+  # Momentum balance
+  [momentum_balance_x]
+    type = RankTwoDivergence
+    variable = disp_x
+    component = 0
+    tensor = pk1
+    factor = -1
+  []
+  [momentum_balance_y]
+    type = RankTwoDivergence
+    variable = disp_y
+    component = 1
+    tensor = pk1
+    factor = -1
+  []
+  # Energy balance
+  [energy_balance_1]
+    type = EnergyBalanceTimeDerivative
+    variable = T
+    density = rho
+    specific_heat = cv
+  []
+  [energy_balance_2]
+    type = RankOneDivergence
+    variable = T
+    vector = h
+  []
+  [heat_source]
+    type = MaterialSource
+    variable = T
+    prop = r
+    coefficient = -1
+  []
+[]
+
+[InterfaceKernels]
+  [negative_current]
+    type = MaterialInterfaceNeumannBC
+    variable = Phi
+    neighbor_var = Phi
+    prop = ie
+    factor = -1
+    boundary = &#x27;elyte_anode cathode_elyte&#x27;
+  []
+  [positive_current]
+    type = MaterialInterfaceNeumannBC
+    variable = Phi
+    neighbor_var = Phi
+    prop = ie
+    boundary = &#x27;anode_elyte elyte_cathode&#x27;
+  []
+  [heat]
+    type = MaterialInterfaceNeumannBC
+    variable = T
+    neighbor_var = T
+    prop = he
+    factor = 1
+    boundary = &#x27;anode_elyte elyte_cathode elyte_anode cathode_elyte&#x27;
+  []
+  [continuity_disp_x]
+    type = InterfaceContinuity
+    variable = disp_x
+    neighbor_var = disp_x
+    penalty = ${u_penalty}
+    boundary = &#x27;anode_elyte elyte_cathode&#x27;
+  []
+  [continuity_disp_y]
+    type = InterfaceContinuity
+    variable = disp_y
+    neighbor_var = disp_y
+    penalty = ${u_penalty}
+    boundary = &#x27;anode_elyte elyte_cathode&#x27;
+  []
+  [continuity_T]
+    type = InterfaceContinuity
+    variable = T
+    neighbor_var = T
+    penalty = ${T_penalty}
+    boundary = &#x27;anode_elyte elyte_cathode&#x27;
+  []
+[]
+
+[Functions]
+  [in]
+    type = PiecewiseLinear
+    x = &#x27;0 ${t0}&#x27;
+    y = &#x27;0 ${in}&#x27;
+  []
+[]
+
+[BCs]
+  [left]
+    type = FunctionNeumannBC
+    variable = Phi
+    boundary = left
+    function = in
+  []
+  [right]
+    type = DirichletBC
+    variable = Phi
+    boundary = right
+    value = 0
+  []
+  [fix_x]
+    type = DirichletBC
+    variable = disp_x
+    value = 0
+    boundary = &#x27;left right&#x27;
+  []
+  [fix_y]
+    type = DirichletBC
+    variable = disp_y
+    value = 0
+    boundary = &#x27;bottom&#x27;
+  []
+  [open]
+    type = OpenBC
+    variable = c
+    flux = jm
+    boundary = &#x27;left right&#x27;
+  []
+[]
+
+[Constraints]
+  [y]
+    type = EqualValueBoundaryConstraint
+    variable = disp_y
+    penalty = ${u_penalty}
+    secondary = top
+  []
+[]
+
+[Materials]
+  # Electrodynamics
+  [conductivity]
+    type = ADPiecewiseConstantByBlockMaterial
+    prop_name = &#x27;sigma&#x27;
+    subdomain_to_prop_value = &#x27;anode ${sigma_a} elyte ${sigma_e} cathode ${sigma_c}&#x27;
+  []
+  [charge_transport]
+    type = BulkChargeTransport
+    electrical_energy_density = q
+    electric_potential = Phi
+    electric_conductivity = sigma
+    temperature = T
+  []
+  [current_density]
+    type = CurrentDensity
+    current_density = i
+    electric_potential = Phi
+  []
+
+  # Chemical reactions
+  [diffusivity]
+    type = ADPiecewiseConstantByBlockMaterial
+    prop_name = &#x27;D&#x27;
+    subdomain_to_prop_value = &#x27;anode ${D_a} elyte ${D_e} cathode ${D_c}&#x27;
+  []
+  [mobility]
+    type = ADParsedMaterial
+    f_name = M
+    args = &#x27;c_ref T_ref&#x27;
+    material_property_names = &#x27;D&#x27;
+    function = &#x27;D*c_ref/${R}/T_ref&#x27;
+  []
+  [chemical_energy]
+    type = EntropicChemicalEnergyDensity
+    chemical_energy_density = psi_c
+    concentration = c
+    ideal_gas_constant = ${R}
+    temperature = T
+    reference_concentration = c_ref
+  []
+  [chemical_potential]
+    type = ChemicalPotential
+    chemical_potential = mu
+    concentration = c
+  []
+  [diffusion]
+    type = MassDiffusion
+    dual_chemical_energy_density = zeta
+    chemical_potential = mu
+    mobility = M
+  []
+  [mass_flux]
+    type = MassFlux
+    mass_flux = j
+    chemical_potential = mu
+  []
+
+  # Migration
+  [migration]
+    type = Migration
+    electrochemical_energy_density = m
+    electric_potential = Phi
+    chemical_potential = mu
+    electric_conductivity = sigma
+    faraday_constant = ${F}
+  []
+  [migration_flux]
+    type = MassFlux
+    mass_flux = jm
+    energy_densities = &#x27;m&#x27;
+    chemical_potential = mu
+  []
+
+  # Redox
+  [ramp]
+    type = ADGenericFunctionMaterial
+    prop_names = &#x27;ramp&#x27;
+    prop_values = &#x27;if(t&lt;${t0},t/${t0},1)&#x27;
+  []
+  [OCP_anode_graphite]
+    type = ADParsedMaterial
+    f_name = U
+    function = &#x27;x:=c/${cmax}; -(122.12*x^6-321.81*x^5+315.59*x^4-141.26*x^3+28.218*x^2-1.9057*x+0.0785)*ramp&#x27;
+    args = c
+    material_property_names = &#x27;ramp&#x27;
+    block = &#x27;anode&#x27;
+  []
+  [OCP_cathode_NMC111]
+    type = ADParsedMaterial
+    f_name = U
+    function = &#x27;x:=c/${cmax}; (6.0826-6.9922*x+7.1062*x^2-5.4549e-5*exp(124.23*x-114.2593)-2.5947*x^3)*ramp&#x27;
+    args = c
+    material_property_names = &#x27;ramp&#x27;
+    block = &#x27;cathode&#x27;
+  []
+  [charge_transfer_anode_elyte]
+    type = ChargeTransferReaction
+    electrode = true
+    charge_transfer_current_density = ie
+    charge_transfer_mass_flux = je
+    charge_transfer_heat_flux = he
+    electric_potential = Phi
+    neighbor_electric_potential = Phi
+    charge_transfer_coefficient = 0.5
+    exchange_current_density = ${i0_a}
+    faraday_constant = ${F}
+    ideal_gas_constant = ${R}
+    temperature = T
+    open_circuit_potential = U
+    boundary = &#x27;anode_elyte&#x27;
+  []
+  [charge_transfer_elyte_anode]
+    type = ChargeTransferReaction
+    electrode = false
+    charge_transfer_current_density = ie
+    charge_transfer_mass_flux = je
+    charge_transfer_heat_flux = he
+    electric_potential = Phi
+    neighbor_electric_potential = Phi
+    charge_transfer_coefficient = 0.5
+    exchange_current_density = ${i0_a}
+    faraday_constant = ${F}
+    ideal_gas_constant = ${R}
+    temperature = T
+    open_circuit_potential = U
+    boundary = &#x27;elyte_anode&#x27;
+  []
+  [charge_transfer_cathode_elyte]
+    type = ChargeTransferReaction
+    electrode = true
+    charge_transfer_current_density = ie
+    charge_transfer_mass_flux = je
+    charge_transfer_heat_flux = he
+    electric_potential = Phi
+    neighbor_electric_potential = Phi
+    charge_transfer_coefficient = 0.5
+    exchange_current_density = ${i0_c}
+    faraday_constant = ${F}
+    ideal_gas_constant = ${R}
+    temperature = T
+    open_circuit_potential = U
+    boundary = &#x27;cathode_elyte&#x27;
+  []
+  [charge_transfer_elyte_cathode]
+    type = ChargeTransferReaction
+    electrode = false
+    charge_transfer_current_density = ie
+    charge_transfer_mass_flux = je
+    charge_transfer_heat_flux = he
+    electric_potential = Phi
+    neighbor_electric_potential = Phi
+    charge_transfer_coefficient = 0.5
+    exchange_current_density = ${i0_c}
+    faraday_constant = ${F}
+    ideal_gas_constant = ${R}
+    temperature = T
+    open_circuit_potential = U
+    boundary = &#x27;elyte_cathode&#x27;
+  []
+
+  # Thermal
+  [thermal_properties]
+    type = ADGenericConstantMaterial
+    prop_names = &#x27;rho cv kappa&#x27;
+    prop_values = &#x27;${rho} ${cv} ${kappa}&#x27;
+  []
+  [heat_conduction]
+    type = FourierPotential
+    thermal_energy_density = chi
+    thermal_conductivity = kappa
+    temperature = T
+  []
+  [heat_flux]
+    type = HeatFlux
+    heat_flux = h
+    temperature = T
+  []
+  [heat_source]
+    type = VariationalHeatSource
+    heat_source = r
+    temperature = T
+  []
+
+  # Mechanical
+  [stiffness_c]
+    type = ADGenericConstantMaterial
+    prop_names = &#x27;lambda G&#x27;
+    prop_values = &#x27;${fparse E_c*nu_c/(1+nu_c)/(1-2*nu_c)} ${fparse E_c/2/(1+nu_c)}&#x27;
+    block = cathode
+  []
+  [stiffness_e]
+    type = ADGenericConstantMaterial
+    prop_names = &#x27;lambda G&#x27;
+    prop_values = &#x27;${fparse E_e*nu_e/(1+nu_e)/(1-2*nu_e)} ${fparse E_e/2/(1+nu_e)}&#x27;
+    block = elyte
+  []
+  [stiffness_a]
+    type = ADGenericConstantMaterial
+    prop_names = &#x27;lambda G&#x27;
+    prop_values = &#x27;${fparse E_a*nu_a/(1+nu_a)/(1-2*nu_a)} ${fparse E_a/2/(1+nu_a)}&#x27;
+    block = anode
+  []
+  [swelling_coefficient]
+    type = ADGenericConstantMaterial
+    prop_names = &#x27;beta&#x27;
+    prop_values = &#x27;${beta}&#x27;
+  []
+  [swelling]
+    type = SwellingDeformationGradient
+    concentration = c
+    reference_concentration = c_ref
+    molar_volume = ${Omega}
+    swelling_coefficient = beta
+  []
+  [thermal_expansion]
+    type = ThermalDeformationGradient
+    temperature = T
+    reference_temperature = T_ref
+    CTE = ${CTE}
+  []
+  [defgrad]
+    type = MechanicalDeformationGradient
+    displacements = &#x27;disp_x disp_y&#x27;
+  []
+  [neohookean]
+    type = NeoHookeanSolid
+    elastic_energy_density = psi_m
+    lambda = lambda
+    shear_modulus = G
+    concentration = c
+    temperature = T
+  []
+  [pk1]
+    type = FirstPiolaKirchhoffStress
+    first_piola_kirchhoff_stress = pk1
+    deformation_gradient_rate = dot(F)
+  []
+[]
+
+[Postprocessors]
+  [V_l]
+    type = SideAverageValue
+    variable = Phi
+    boundary = left
+    outputs = none
+    execute_on = &#x27;INITIAL TIMESTEP_END&#x27;
+  []
+  [V_r]
+    type = SideAverageValue
+    variable = Phi
+    boundary = right
+    outputs = none
+    execute_on = &#x27;INITIAL TIMESTEP_END&#x27;
+  []
+  [V]
+    type = ParsedPostprocessor
+    function = &#x27;V_r - V_l&#x27;
+    pp_names = &#x27;V_l V_r&#x27;
+    execute_on = &#x27;INITIAL TIMESTEP_END&#x27;
+  []
+  [I]
+    type = ADSideIntegralMaterialProperty
+    property = i
+    component = 0
+    boundary = right
+    execute_on = &#x27;INITIAL TIMESTEP_END&#x27;
+  []
+  [dt]
+    type = TimestepSize
+    outputs = none
+    execute_on = &#x27;INITIAL TIMESTEP_END&#x27;
+  []
+  [dC]
+    type = ParsedPostprocessor
+    function = &#x27;-dt*I&#x27;
+    pp_names = &#x27;dt I&#x27;
+    outputs = none
+    execute_on = &#x27;INITIAL TIMESTEP_END&#x27;
+  []
+  [C]
+    type = CumulativeValuePostprocessor
+    postprocessor = dC
+    execute_on = &#x27;INITIAL TIMESTEP_END&#x27;
+  []
+  [c_a_max]
+    type = NodalExtremeValue
+    variable = c
+    value_type = max
+    block = anode
+    execute_on = &#x27;INITIAL TIMESTEP_END&#x27;
+  []
+  [c_c_min]
+    type = NodalExtremeValue
+    variable = c
+    value_type = min
+    block = cathode
+    execute_on = &#x27;INITIAL TIMESTEP_END&#x27;
+  []
+  [c_a_min]
+    type = NodalExtremeValue
+    variable = c
+    value_type = min
+    block = anode
+    execute_on = &#x27;INITIAL TIMESTEP_END&#x27;
+  []
+  [c_c_max]
+    type = NodalExtremeValue
+    variable = c
+    value_type = max
+    block = cathode
+    execute_on = &#x27;INITIAL TIMESTEP_END&#x27;
+  []
+  [mass_a]
+    type = ElementIntegralVariablePostprocessor
+    variable = c
+    block = anode
+    execute_on = &#x27;INITIAL TIMESTEP_END&#x27;
+  []
+  [mass_e]
+    type = ElementIntegralVariablePostprocessor
+    variable = c
+    block = elyte
+    execute_on = &#x27;INITIAL TIMESTEP_END&#x27;
+  []
+  [mass_c]
+    type = ElementIntegralVariablePostprocessor
+    variable = c
+    block = cathode
+    execute_on = &#x27;INITIAL TIMESTEP_END&#x27;
+  []
+[]
+
+[UserObjects]
+  [kill_a]
+    type = Terminator
+    expression = &#x27;c_a_max &gt;= ${cmax}&#x27;
+    message = &#x27;Concentration in anode exceeds the maximum allowable value.&#x27;
+  []
+  [kill_c]
+    type = Terminator
+    expression = &#x27;c_c_min &lt;= ${cmin}&#x27;
+    message = &#x27;Concentration in cathode is below the minimum allowable value.&#x27;
+  []
+[]
+
+[Executioner]
+  type = Transient
+  solve_type = NEWTON
+
+  petsc_options_iname = &#x27;-pc_type&#x27;
+  petsc_options_value = &#x27;lu&#x27;
+  automatic_scaling = true
+  line_search = none
+
+  nl_rel_tol = 1e-6
+  nl_abs_tol = 1e-10
+  nl_max_its = 20
+
+  [Predictor]
+    type = SimplePredictor
+    scale = 1
+    skip_after_failed_timestep = true
+  []
+  [TimeStepper]
+    type = IterationAdaptiveDT
+    dt = ${dt}
+    optimal_iterations = 7
+    iteration_window = 2
+    growth_factor = 1.2
+    cutback_factor = 0.5
+    cutback_factor_at_failure = 0.2
+    linear_iteration_ratio = 1000000
+  []
+  end_time = 100000
+[]
+
+[Outputs]
+  file_base = &#x27;CC_charging_I_${I}&#x27;
+  csv = true
+  exodus = true
+  print_linear_residuals = false
+  checkpoint = true
+[]
+</code></pre></div><div class="modal-footer"><a class="modal-close btn-flat">Close</a></div></div><div class="moose-modal modal" id="66acb5ab-be03-4e8a-ad83-4a68bb6c11a5"><div class="modal-content"><h4>(test/tests/chemical-electrical-thermal-mechanical/pressure.i)</h4><pre class="moose-pre"><code class="language-text">R = 8.3145 #mJ/mmol/K
+F = 96485 #mC/mmol
+
+I = 3e-3 #mA
+width = 0.03 #mm
+in = &#x27;${fparse -I/width}&#x27;
+t0 = &#x27;${fparse -1e-2/in}&#x27;
+dt = &#x27;${fparse t0/100}&#x27;
+Vmax = 4.3 #V
+
+vf_se = 0.3
+vf_cp = 0.5
+vf_ca = 0.2
+
+sigma_a = 0.2 #mS/mm
+sigma_se = 0.1 #mS/mm
+sigma_cp = 0.05 #mS/mm
+sigma_ca = 0.2 #mS/mm
+sigma_e = ${sigma_se}
+sigma_c = &#x27;${fparse vf_se*sigma_se + vf_cp*sigma_cp + vf_ca*sigma_ca}&#x27;
+
+l0 = 0
+l1 = 0.04
+l2 = 0.07
+l3 = 0.12
+
+cmax = 1e-3 #mmol/mm^3
+c0_a = 1e-4
+c0_e = 5e-4
+c0_c = 1e-3
+
+M_a = 8e-11
+M_se = 1e-11
+M_cp = 4e-14
+M_ca = 1e-13
+M_e = ${M_se}
+M_c = &#x27;${fparse vf_se*M_se + vf_cp*M_cp + vf_ca*M_ca}&#x27;
+
+T0 = 300 #K
+
+i0_a = 0.1 #mA/mm^2
+i0_c = 0.1 #mA/mm^2
+
+rho = 2.5e-9 #Mg/mm^3
+cv = 2.7e8 #mJ/Mg/K
+kappa = 2e-4 #mJ/mm/K/s
+hconv = 9.5e-3 #mJ/mm^2/K/s
+
+T_penalty = 2e-1
+
+E_e = 1e4
+E_a = 2e5
+nu_e = 0.25
+nu_a = 0.3
+nu_c = 0.3
+
+d = 0
+E_e_bar = &#x27;${fparse E_e/(1-nu_e*nu_e)}&#x27;
+E_c_bar = &#x27;${fparse (1+d)/(1-d)*E_e_bar}&#x27;
+E_c = &#x27;${fparse (1-nu_c*nu_c)*E_c_bar}&#x27;
+
+Omega = 140
+beta = 1
+CTE = 1e-5
+
+u_penalty = 1e8
+
+P = 10
+center = 0.12
+spread = 0.01
+
+[GlobalParams]
+  energy_densities = &#x27;dot(psi_m) dot(psi_c) q zeta chi m&#x27;
+  displacements = &#x27;disp_x disp_y&#x27;
+  deformation_gradient = F
+  mechanical_deformation_gradient = Fm
+  eigen_deformation_gradient = Fg
+  swelling_deformation_gradient = Fs
+  thermal_deformation_gradient = Ft
+[]
+
+[Mesh]
+  [battery]
+    type = GeneratedMeshGenerator
+    dim = 2
+    xmin = ${l0}
+    xmax = ${l3}
+    ymin = 0
+    ymax = ${width}
+    nx = 60
+    ny = 15
+  []
+  [anode]
+    type = SubdomainBoundingBoxGenerator
+    input = battery
+    block_id = 1
+    block_name = anode
+    bottom_left = &#x27;${l0} 0 0&#x27;
+    top_right = &#x27;${l1} ${width} 0&#x27;
+  []
+  [elyte]
+    type = SubdomainBoundingBoxGenerator
+    input = anode
+    block_id = 2
+    block_name = elyte
+    bottom_left = &#x27;${l1} 0 0&#x27;
+    top_right = &#x27;${l2} ${width} 0&#x27;
+  []
+  [cathode]
+    type = SubdomainBoundingBoxGenerator
+    input = elyte
+    block_id = 3
+    block_name = cathode
+    bottom_left = &#x27;${l2} 0 0&#x27;
+    top_right = &#x27;${l3} ${width} 0&#x27;
+  []
+  [anode_elyte]
+    type = BreakMeshByBlockGenerator
+    input = cathode
+    block_pairs = &#x27;1 2&#x27;
+    add_interface_on_two_sides = true
+    split_interface = true
+  []
+  [cathode_elyte]
+    type = BreakMeshByBlockGenerator
+    input = anode_elyte
+    block_pairs = &#x27;2 3&#x27;
+    add_interface_on_two_sides = true
+    split_interface = true
+  []
+[]
+
+[Variables]
+  [Phi]
+  []
+  [c]
+  []
+  [T]
+    initial_condition = ${T0}
+  []
+  [disp_x]
+  []
+  [disp_y]
+  []
+[]
+
+[AuxVariables]
+  [c_ref]
+  []
+  [T_ref]
+    initial_condition = ${T0}
+  []
+  [j]
+    order = CONSTANT
+    family = MONOMIAL
+    [AuxKernel]
+      type = ADMaterialRealVectorValueAux
+      property = j
+      component = 0
+    []
+  []
+[]
+
+[ICs]
+  [c_a]
+    type = ConstantIC
+    variable = c
+    value = ${c0_a}
+    block = &#x27;anode&#x27;
+  []
+  [c_e]
+    type = ConstantIC
+    variable = c
+    value = ${c0_e}
+    block = &#x27;elyte&#x27;
+  []
+  [c_c]
+    type = ConstantIC
+    variable = c
+    value = ${c0_c}
+    block = &#x27;cathode&#x27;
+  []
+  [c_ref_a]
+    type = ConstantIC
+    variable = c_ref
+    value = ${c0_a}
+    block = &#x27;anode&#x27;
+  []
+  [c_ref_e]
+    type = ConstantIC
+    variable = c_ref
+    value = ${c0_e}
+    block = &#x27;elyte&#x27;
+  []
+  [c_ref_c]
+    type = ConstantIC
+    variable = c_ref
+    value = ${c0_c}
+    block = &#x27;cathode&#x27;
+  []
+[]
+
+[Kernels]
+  # Charge balance
+  [charge_balance]
+    type = RankOneDivergence
+    variable = Phi
+    vector = i
+    use_displaced_mesh = true
+  []
+  # Mass balance
+  [mass_balance_1]
+    type = TimeDerivative
+    variable = c
+  []
+  [mass_balance_2]
+    type = RankOneDivergence
+    variable = c
+    vector = j
+    use_displaced_mesh = true
+  []
+  # Energy balance
+  [energy_balance_1]
+    type = EnergyBalanceTimeDerivative
+    variable = T
+    density = rho
+    specific_heat = cv
+  []
+  [energy_balance_2]
+    type = RankOneDivergence
+    variable = T
+    vector = h
+    use_displaced_mesh = true
+  []
+  [heat_source]
+    type = MaterialSource
+    variable = T
+    prop = r
+    coefficient = -1
+  []
+  # Momentum balance
+  [momentum_balance_x]
+    type = RankTwoDivergence
+    variable = disp_x
+    component = 0
+    tensor = pk1
+    factor = -1
+  []
+  [momentum_balance_y]
+    type = RankTwoDivergence
+    variable = disp_y
+    component = 1
+    tensor = pk1
+    factor = -1
+  []
+[]
+
+[InterfaceKernels]
+  [negative_current]
+    type = MaterialInterfaceNeumannBC
+    variable = Phi
+    neighbor_var = Phi
+    prop = ie
+    factor = -1
+    factor_neighbor = 1
+    boundary = &#x27;cathode_elyte&#x27;
+  []
+  [positive_current]
+    type = MaterialInterfaceNeumannBC
+    variable = Phi
+    neighbor_var = Phi
+    prop = ie
+    boundary = &#x27;anode_elyte&#x27;
+  []
+  [heat]
+    type = MaterialInterfaceNeumannBC
+    variable = T
+    neighbor_var = T
+    prop = he
+    factor = 1
+    factor_neighbor = 1
+    boundary = &#x27;anode_elyte cathode_elyte&#x27;
+  []
+  [continuity_T]
+    type = InterfaceContinuity
+    variable = T
+    neighbor_var = T
+    penalty = ${T_penalty}
+    boundary = &#x27;anode_elyte elyte_cathode&#x27;
+  []
+  [continuity_disp_x]
+    type = InterfaceContinuity
+    variable = disp_x
+    neighbor_var = disp_x
+    penalty = ${u_penalty}
+    boundary = &#x27;anode_elyte elyte_cathode&#x27;
+  []
+  [continuity_disp_y]
+    type = InterfaceContinuity
+    variable = disp_y
+    neighbor_var = disp_y
+    penalty = ${u_penalty}
+    boundary = &#x27;anode_elyte elyte_cathode&#x27;
+  []
+[]
+
+[Functions]
+  [in]
+    type = PiecewiseLinear
+    x = &#x27;0 ${t0}&#x27;
+    y = &#x27;0 ${in}&#x27;
+  []
+[]
+
+[BCs]
+  [left]
+    type = FunctionNeumannBC
+    variable = Phi
+    boundary = left
+    function = in
+  []
+  [right]
+    type = DirichletBC
+    variable = Phi
+    boundary = right
+    value = 0
+  []
+  [open]
+    type = OpenBC
+    variable = c
+    flux = jm
+    boundary = &#x27;left right&#x27;
+  []
+  [hconv]
+    type = ADMatNeumannBC
+    variable = T
+    boundary = &#x27;left right&#x27;
+    value = -1
+    boundary_material = qconv
+  []
+  [fix_x]
+    type = DirichletBC
+    variable = disp_x
+    value = 0
+    boundary = &#x27;left right&#x27;
+  []
+  [fix_y]
+    type = DirichletBC
+    variable = disp_y
+    value = 0
+    boundary = &#x27;bottom&#x27;
+  []
+  [traction]
+    enable = false
+    type = FunctionNeumannBC
+    variable = disp_y
+    boundary = &#x27;top&#x27;
+    function = &#x27;-if(t&lt;${t0},t/${t0}*${P},${P})/${spread}/sqrt(2*pi)*exp(-0.5*(x-${center})^2/${spread}^2)&#x27;
+  []
+[]
+
+[Constraints]
+  [y]
+    enable = false
+    type = EqualValueBoundaryConstraint
+    variable = disp_y
+    penalty = ${u_penalty}
+    secondary = top
+  []
+[]
+
+[Materials]
+  # Electrodynamics
+  [conductivity]
+    type = ADPiecewiseConstantByBlockMaterial
+    prop_name = &#x27;sigma&#x27;
+    subdomain_to_prop_value = &#x27;anode ${sigma_a} elyte ${sigma_e} cathode ${sigma_c}&#x27;
+  []
+  [charge_transport]
+    type = BulkChargeTransport
+    electrical_energy_density = q
+    electric_potential = Phi
+    electric_conductivity = sigma
+    temperature = T
+  []
+  [current_density]
+    type = CurrentDensity
+    current_density = i
+    electric_potential = Phi
+  []
+
+  # Migration
+  [migration]
+    type = Migration
+    electrochemical_energy_density = m
+    electric_potential = Phi
+    chemical_potential = mu
+    electric_conductivity = sigma
+    faraday_constant = ${F}
+  []
+  [migration_flux]
+    type = MassFlux
+    mass_flux = jm
+    energy_densities = &#x27;m&#x27;
+    chemical_potential = mu
+  []
+
+  # Chemical reactions
+  [diffusivity]
+    type = ADPiecewiseConstantByBlockMaterial
+    prop_name = &#x27;M&#x27;
+    subdomain_to_prop_value = &#x27;anode ${M_a} elyte ${M_e} cathode ${M_c}&#x27;
+  []
+  [chemical_energy]
+    type = EntropicChemicalEnergyDensity
+    chemical_energy_density = psi_c
+    concentration = c
+    ideal_gas_constant = ${R}
+    temperature = T
+    reference_concentration = c_ref
+    reference_chemical_potential = 1e3
+  []
+  [chemical_potential]
+    type = ChemicalPotential
+    chemical_potential = mu
+    concentration = c
+  []
+  [diffusion]
+    type = MassDiffusion
+    dual_chemical_energy_density = zeta
+    chemical_potential = mu
+    mobility = M
+  []
+  [mass_flux]
+    type = MassFlux
+    mass_flux = j
+    chemical_potential = mu
+  []
+
+  # Redox
+  [ramp]
+    type = ADGenericFunctionMaterial
+    prop_names = &#x27;ramp&#x27;
+    prop_values = &#x27;if(t&lt;${t0},t/${t0},1)&#x27;
+  []
+  [OCP_anode_graphite]
+    type = ADParsedMaterial
+    property_name = U
+    expression = &#x27;x:=c/${cmax}; -(122.12*x^6-321.81*x^5+315.59*x^4-141.26*x^3+28.218*x^2-1.9057*x+0.0785)*ramp&#x27;
+    coupled_variables = c
+    material_property_names = &#x27;ramp&#x27;
+    boundary = &#x27;anode_elyte&#x27;
+  []
+  [OCP_cathode_NMC111]
+    type = ADParsedMaterial
+    property_name = U
+    expression = &#x27;x:=c/${cmax}; (6.0826-6.9922*x+7.1062*x^2-5.4549e-5*exp(124.23*x-114.2593)-2.5947*x^3)*ramp&#x27;
+    coupled_variables = c
+    material_property_names = &#x27;ramp&#x27;
+    boundary = &#x27;cathode_elyte&#x27;
+  []
+  [charge_transfer_anode_elyte]
+    type = ChargeTransferReaction
+    charge_transfer_current_density = ie
+    charge_transfer_mass_flux = je
+    charge_transfer_heat_flux = he
+    electric_potential = Phi
+    neighbor_electric_potential = Phi
+    charge_transfer_coefficient = 0.5
+    exchange_current_density = ${i0_a}
+    faraday_constant = ${F}
+    ideal_gas_constant = ${R}
+    temperature = T
+    open_circuit_potential = U
+    boundary = &#x27;anode_elyte&#x27;
+  []
+  [charge_transfer_cathode_elyte]
+    type = ChargeTransferReaction
+    charge_transfer_current_density = ie
+    charge_transfer_mass_flux = je
+    charge_transfer_heat_flux = he
+    electric_potential = Phi
+    neighbor_electric_potential = Phi
+    charge_transfer_coefficient = 0.5
+    exchange_current_density = ${i0_c}
+    faraday_constant = ${F}
+    ideal_gas_constant = ${R}
+    temperature = T
+    open_circuit_potential = U
+    boundary = &#x27;cathode_elyte&#x27;
+  []
+
+  # Thermal
+  [thermal_properties]
+    type = ADGenericConstantMaterial
+    prop_names = &#x27;rho cv kappa&#x27;
+    prop_values = &#x27;${rho} ${cv} ${kappa}&#x27;
+  []
+  [heat_conduction]
+    type = FourierPotential
+    thermal_energy_density = chi
+    thermal_conductivity = kappa
+    temperature = T
+  []
+  [heat_flux]
+    type = HeatFlux
+    heat_flux = h
+    temperature = T
+  []
+  [heat_source]
+    type = VariationalHeatSource
+    heat_source = r
+    temperature = T
+  []
+  [qconv]
+    type = ADParsedMaterial
+    property_name = qconv
+    expression = &#x27;htc*(T-T_inf)&#x27;
+    coupled_variables = &#x27;T&#x27;
+    constant_names = &#x27;htc T_inf&#x27;
+    constant_expressions = &#x27;${hconv} ${T0}&#x27;
+    boundary = &#x27;left right&#x27;
+  []
+
+  # Mechanical
+  [stiffness_c]
+    type = ADGenericConstantMaterial
+    prop_names = &#x27;lambda G&#x27;
+    prop_values = &#x27;${fparse E_c*nu_c/(1+nu_c)/(1-2*nu_c)} ${fparse E_c/2/(1+nu_c)}&#x27;
+    block = cathode
+  []
+  [stiffness_e]
+    type = ADGenericConstantMaterial
+    prop_names = &#x27;lambda G&#x27;
+    prop_values = &#x27;${fparse E_e*nu_e/(1+nu_e)/(1-2*nu_e)} ${fparse E_e/2/(1+nu_e)}&#x27;
+    block = elyte
+  []
+  [stiffness_a]
+    type = ADGenericConstantMaterial
+    prop_names = &#x27;lambda G&#x27;
+    prop_values = &#x27;${fparse E_a*nu_a/(1+nu_a)/(1-2*nu_a)} ${fparse E_a/2/(1+nu_a)}&#x27;
+    block = anode
+  []
+  [swelling_coefficient]
+    type = ADGenericConstantMaterial
+    prop_names = &#x27;beta&#x27;
+    prop_values = &#x27;${beta}&#x27;
+  []
+  [swelling]
+    type = SwellingDeformationGradient
+    concentration = c
+    reference_concentration = c_ref
+    molar_volume = ${Omega}
+    swelling_coefficient = beta
+  []
+  [thermal_expansion]
+    type = ThermalDeformationGradient
+    temperature = T
+    reference_temperature = T_ref
+    CTE = ${CTE}
+  []
+  [defgrad]
+    type = MechanicalDeformationGradient
+    displacements = &#x27;disp_x disp_y&#x27;
+  []
+  [neohookean]
+    type = NeoHookeanSolid
+    elastic_energy_density = psi_m
+    lambda = lambda
+    shear_modulus = G
+    concentration = c
+    temperature = T
+    non_swelling_pressure = p
+    output_properties = &#x27;p&#x27;
+    outputs = exodus
+  []
+  [pk1]
+    type = FirstPiolaKirchhoffStress
+    first_piola_kirchhoff_stress = pk1
+    deformation_gradient_rate = dot(F)
+  []
+[]
+
+[Postprocessors]
+  [V_l]
+    type = SideAverageValue
+    variable = Phi
+    boundary = left
+    outputs = none
+    execute_on = &#x27;INITIAL TIMESTEP_END&#x27;
+  []
+  [V_r]
+    type = SideAverageValue
+    variable = Phi
+    boundary = right
+    outputs = none
+    execute_on = &#x27;INITIAL TIMESTEP_END&#x27;
+  []
+  [V]
+    type = ParsedPostprocessor
+    function = &#x27;V_r - V_l&#x27;
+    pp_names = &#x27;V_l V_r&#x27;
+    execute_on = &#x27;INITIAL TIMESTEP_END&#x27;
+  []
+  [in]
+    type = FunctionValuePostprocessor
+    function = in
+    outputs = none
+    execute_on = &#x27;INITIAL TIMESTEP_END&#x27;
+  []
+  [dt]
+    type = TimestepSize
+    outputs = none
+    execute_on = &#x27;INITIAL TIMESTEP_END&#x27;
+  []
+  [dC]
+    type = ParsedPostprocessor
+    function = &#x27;-dt*in*${width}&#x27;
+    pp_names = &#x27;dt in&#x27;
+    outputs = none
+    execute_on = &#x27;INITIAL TIMESTEP_END&#x27;
+  []
+  [C]
+    type = CumulativeValuePostprocessor
+    postprocessor = dC
+    execute_on = &#x27;INITIAL TIMESTEP_END&#x27;
+  []
+  [c_a_max]
+    type = NodalExtremeValue
+    variable = c
+    value_type = max
+    block = anode
+  []
+  [c_c_min]
+    type = NodalExtremeValue
+    variable = c
+    value_type = min
+    block = cathode
+  []
+  [mass_a]
+    type = ElementIntegralVariablePostprocessor
+    variable = c
+    block = anode
+    execute_on = &#x27;INITIAL TIMESTEP_END&#x27;
+  []
+  [mass_e]
+    type = ElementIntegralVariablePostprocessor
+    variable = c
+    block = elyte
+    execute_on = &#x27;INITIAL TIMESTEP_END&#x27;
+  []
+  [mass_c]
+    type = ElementIntegralVariablePostprocessor
+    variable = c
+    block = cathode
+    execute_on = &#x27;INITIAL TIMESTEP_END&#x27;
+  []
+  [E_c_bar]
+    type = ParsedPostprocessor
+    function = &#x27;${E_c_bar}&#x27;
+    execute_on = INITIAL
+    pp_names = &#x27;&#x27;
+  []
+[]
+
+[UserObjects]
+  [kill]
+    type = Terminator
+    expression = &#x27;V &gt;= ${Vmax}&#x27;
+    message = &#x27;Voltage reached Vmax&#x27;
+  []
+[]
+
+[Executioner]
+  type = Transient
+  solve_type = NEWTON
+
+  petsc_options_iname = &#x27;-pc_type&#x27;
+  petsc_options_value = &#x27;lu&#x27;
+  automatic_scaling = true
+  line_search = none
+
+  nl_rel_tol = 1e-6
+  nl_abs_tol = 1e-10
+  nl_max_its = 20
+  l_max_its = 150
+
+  [Predictor]
+    type = SimplePredictor
+    scale = 1
+    skip_after_failed_timestep = true
+  []
+
+  [TimeStepper]
+    type = IterationAdaptiveDT
+    dt = ${dt}
+    optimal_iterations = 7
+    iteration_window = 2
+    growth_factor = 1.2
+    cutback_factor = 0.5
+    cutback_factor_at_failure = 0.2
+    linear_iteration_ratio = 1000000
+  []
+  dtmax = 1
+  end_time = 100000
+[]
+
+[Outputs]
+  exodus = true
+  print_linear_residuals = false
+[]
+</code></pre></div><div class="modal-footer"><a class="modal-close btn-flat">Close</a></div></div><div class="moose-modal modal" id="c44e2f49-d31a-470b-b6a6-faf935ff9e9c"><div class="modal-content"><h4>(examples/LiB/CV_charging.i)</h4><pre class="moose-pre"><code class="language-text">I = 3e-3 #mA
+width = 0.03 #mm
+in = &#x27;${fparse -I/width}&#x27;
+t0 = &#x27;${fparse -1e-2/in}&#x27;
+dt = &#x27;${fparse t0/100}&#x27;
+
+sigma_a = 1e0 #mS/mm
+sigma_e = 1e-1 #mS/mm
+sigma_c = 1e-2 #mS/mm
+
+l0 = 0
+l1 = 0.04
+l2 = 0.07
+l3 = 0.12
+
+cmin = 1e-4 #mmol/mm^3
+cmax = 1e-3 #mmol/mm^3
+D_a = 1e-3 #mm^2/s
+D_e = 1e-4 #mm^2/s
+D_c = 5e-5 #mm^2/s
+
+R = 8.3145 #mJ/mmol/K
+T0 = 300 #K
+F = 96485 #mC/mmol
+
+i0_a = 1e-1 #mA/mm^2
+i0_c = 1e-1 #mA/mm^2
+
+E_c = 1e5
+E_e = 1e4
+E_a = 2e5
+nu_c = 0.3
+nu_e = 0.25
+nu_a = 0.3
+
+u_penalty = 1e8
+
+Omega = 60
+beta = 1e-3
+CTE = 1e-5
+
+rho = 2.5e-9 #Mg/mm^3
+cv = 2.7e8 #mJ/Mg/K
+kappa = 2e-4 #mJ/mm/K/s
+
+T_penalty = 2e-1
+
+[GlobalParams]
+  energy_densities = &#x27;dot(psi_m) dot(psi_c) chi q zeta m&#x27;
+  deformation_gradient = F
+  mechanical_deformation_gradient = Fm
+  eigen_deformation_gradient = Fg
+  swelling_deformation_gradient = Fs
+  thermal_deformation_gradient = Ft
+[]
+
+[Problem]
+  restart_file_base = &#x27;CC_charging_I_${I}_cp/LATEST&#x27;
+[]
+
+[Mesh]
+  [battery]
+    type = GeneratedMeshGenerator
+    dim = 2
+    xmin = ${l0}
+    xmax = ${l3}
+    ymin = 0
+    ymax = ${width}
+    nx = 60
+    ny = 15
+  []
+  [anode]
+    type = SubdomainBoundingBoxGenerator
+    input = battery
+    block_id = 1
+    block_name = anode
+    bottom_left = &#x27;${l0} 0 0&#x27;
+    top_right = &#x27;${l1} ${width} 0&#x27;
+  []
+  [elyte]
+    type = SubdomainBoundingBoxGenerator
+    input = anode
+    block_id = 2
+    block_name = elyte
+    bottom_left = &#x27;${l1} 0 0&#x27;
+    top_right = &#x27;${l2} ${width} 0&#x27;
+  []
+  [cathode]
+    type = SubdomainBoundingBoxGenerator
+    input = elyte
+    block_id = 3
+    block_name = cathode
+    bottom_left = &#x27;${l2} 0 0&#x27;
+    top_right = &#x27;${l3} ${width} 0&#x27;
+  []
+  [interfaces]
+    type = BreakMeshByBlockGenerator
+    input = cathode
+    add_interface_on_two_sides = true
+    split_interface = true
+  []
+[]
+
+[Variables]
+  [Phi]
+  []
+  [c]
+  []
+  [disp_x]
+  []
+  [disp_y]
+  []
+  [T]
+  []
+[]
+
+[AuxVariables]
+  [c_ref]
+  []
+  [T_ref]
+    initial_condition = ${T0}
+  []
+  [Phi0]
+  []
+[]
+
+[ICs]
+  [c_ref_min]
+    type = ConstantIC
+    variable = c_ref
+    value = ${cmin}
+    block = &#x27;anode&#x27;
+  []
+  [c_ref_mid]
+    type = ConstantIC
+    variable = c_ref
+    value = &#x27;${fparse (cmax+cmin)/2}&#x27;
+    block = &#x27;elyte&#x27;
+  []
+  [c_ref_max]
+    type = ConstantIC
+    variable = c_ref
+    value = ${cmax}
+    block = &#x27;cathode&#x27;
+  []
+[]
+
+[AuxKernels]
+  [Phi0]
+    type = ParsedAux
+    variable = Phi0
+    function = &#x27;Phi&#x27;
+    args = &#x27;Phi&#x27;
+    execute_on = &#x27;INITIAL&#x27;
+  []
+[]
+
+[Kernels]
+  # Charge balance
+  [charge_balance]
+    type = RankOneDivergence
+    variable = Phi
+    vector = i
+  []
+  # Mass balance
+  [mass_balance_1]
+    type = TimeDerivative
+    variable = c
+  []
+  [mass_balance_2]
+    type = RankOneDivergence
+    variable = c
+    vector = j
+  []
+  # Momentum balance
+  [momentum_balance_x]
+    type = RankTwoDivergence
+    variable = disp_x
+    component = 0
+    tensor = pk1
+    factor = -1
+  []
+  [momentum_balance_y]
+    type = RankTwoDivergence
+    variable = disp_y
+    component = 1
+    tensor = pk1
+    factor = -1
+  []
+  # Energy balance
+  [energy_balance_1]
+    type = EnergyBalanceTimeDerivative
+    variable = T
+    density = rho
+    specific_heat = cv
+  []
+  [energy_balance_2]
+    type = RankOneDivergence
+    variable = T
+    vector = h
+  []
+  [heat_source]
+    type = MaterialSource
+    variable = T
+    prop = r
+    coefficient = -1
+  []
+[]
+
+[InterfaceKernels]
+  [negative_current]
+    type = MaterialInterfaceNeumannBC
+    variable = Phi
+    neighbor_var = Phi
+    prop = ie
+    factor = -1
+    boundary = &#x27;elyte_anode cathode_elyte&#x27;
+  []
+  [positive_current]
+    type = MaterialInterfaceNeumannBC
+    variable = Phi
+    neighbor_var = Phi
+    prop = ie
+    boundary = &#x27;anode_elyte elyte_cathode&#x27;
+  []
+  [heat]
+    type = MaterialInterfaceNeumannBC
+    variable = T
+    neighbor_var = T
+    prop = he
+    factor = 1
+    boundary = &#x27;anode_elyte elyte_cathode elyte_anode cathode_elyte&#x27;
+  []
+  [continuity_disp_x]
+    type = InterfaceContinuity
+    variable = disp_x
+    neighbor_var = disp_x
+    penalty = ${u_penalty}
+    boundary = &#x27;anode_elyte elyte_cathode&#x27;
+  []
+  [continuity_disp_y]
+    type = InterfaceContinuity
+    variable = disp_y
+    neighbor_var = disp_y
+    penalty = ${u_penalty}
+    boundary = &#x27;anode_elyte elyte_cathode&#x27;
+  []
+  [continuity_T]
+    type = InterfaceContinuity
+    variable = T
+    neighbor_var = T
+    penalty = ${T_penalty}
+    boundary = &#x27;anode_elyte elyte_cathode&#x27;
+  []
+[]
+
+[Functions]
+  [in]
+    type = PiecewiseLinear
+    x = &#x27;0 ${t0}&#x27;
+    y = &#x27;0 ${in}&#x27;
+  []
+[]
+
+[BCs]
+  [Phi]
+    type = CoupledVarDirichletBC
+    variable = Phi
+    boundary = &#x27;left right&#x27;
+    value = Phi0
+  []
+  [fix_x]
+    type = DirichletBC
+    variable = disp_x
+    value = 0
+    boundary = &#x27;left right&#x27;
+  []
+  [fix_y]
+    type = DirichletBC
+    variable = disp_y
+    value = 0
+    boundary = &#x27;bottom&#x27;
+  []
+  [open]
+    type = OpenBC
+    variable = c
+    flux = jm
+    boundary = &#x27;left right&#x27;
+  []
+[]
+
+[Constraints]
+  [y]
+    type = EqualValueBoundaryConstraint
+    variable = disp_y
+    penalty = ${u_penalty}
+    secondary = top
+  []
+[]
+
+[Materials]
+  # Electrodynamics
+  [conductivity]
+    type = ADPiecewiseConstantByBlockMaterial
+    prop_name = &#x27;sigma&#x27;
+    subdomain_to_prop_value = &#x27;anode ${sigma_a} elyte ${sigma_e} cathode ${sigma_c}&#x27;
+  []
+  [charge_transport]
+    type = BulkChargeTransport
+    electrical_energy_density = q
+    electric_potential = Phi
+    electric_conductivity = sigma
+    temperature = T
+  []
+  [current_density]
+    type = CurrentDensity
+    current_density = i
+    electric_potential = Phi
+  []
+
+  # Chemical reactions
+  [diffusivity]
+    type = ADPiecewiseConstantByBlockMaterial
+    prop_name = &#x27;D&#x27;
+    subdomain_to_prop_value = &#x27;anode ${D_a} elyte ${D_e} cathode ${D_c}&#x27;
+  []
+  [mobility]
+    type = ADParsedMaterial
+    f_name = M
+    args = &#x27;c_ref T_ref&#x27;
+    material_property_names = &#x27;D&#x27;
+    function = &#x27;D*c_ref/${R}/T_ref&#x27;
+  []
+  [chemical_energy]
+    type = EntropicChemicalEnergyDensity
+    chemical_energy_density = psi_c
+    concentration = c
+    ideal_gas_constant = ${R}
+    temperature = T
+    reference_concentration = c_ref
+  []
+  [chemical_potential]
+    type = ChemicalPotential
+    chemical_potential = mu
+    concentration = c
+  []
+  [diffusion]
+    type = MassDiffusion
+    dual_chemical_energy_density = zeta
+    chemical_potential = mu
+    mobility = M
+  []
+  [mass_flux]
+    type = MassFlux
+    mass_flux = j
+    chemical_potential = mu
+  []
+
+  # Migration
+  [migration]
+    type = Migration
+    electrochemical_energy_density = m
+    electric_potential = Phi
+    chemical_potential = mu
+    electric_conductivity = sigma
+    faraday_constant = ${F}
+  []
+  [migration_flux]
+    type = MassFlux
+    mass_flux = jm
+    energy_densities = &#x27;m&#x27;
+    chemical_potential = mu
+  []
+
+  # Redox
+  [OCP_anode_graphite]
+    type = ADParsedMaterial
+    f_name = U
+    function = &#x27;x:=c/${cmax}; -(122.12*x^6-321.81*x^5+315.59*x^4-141.26*x^3+28.218*x^2-1.9057*x+0.0785)&#x27;
+    args = c
+    block = &#x27;anode&#x27;
+  []
+  [OCP_cathode_NMC111]
+    type = ADParsedMaterial
+    f_name = U
+    function = &#x27;x:=c/${cmax}; (6.0826-6.9922*x+7.1062*x^2-5.4549e-5*exp(124.23*x-114.2593)-2.5947*x^3)&#x27;
+    args = c
+    block = &#x27;cathode&#x27;
+  []
+  [charge_transfer_anode_elyte]
+    type = ChargeTransferReaction
+    electrode = true
+    charge_transfer_current_density = ie
+    charge_transfer_mass_flux = je
+    charge_transfer_heat_flux = he
+    electric_potential = Phi
+    neighbor_electric_potential = Phi
+    charge_transfer_coefficient = 0.5
+    exchange_current_density = ${i0_a}
+    faraday_constant = ${F}
+    ideal_gas_constant = ${R}
+    temperature = T
+    open_circuit_potential = U
+    boundary = &#x27;anode_elyte&#x27;
+  []
+  [charge_transfer_elyte_anode]
+    type = ChargeTransferReaction
+    electrode = false
+    charge_transfer_current_density = ie
+    charge_transfer_mass_flux = je
+    charge_transfer_heat_flux = he
+    electric_potential = Phi
+    neighbor_electric_potential = Phi
+    charge_transfer_coefficient = 0.5
+    exchange_current_density = ${i0_a}
+    faraday_constant = ${F}
+    ideal_gas_constant = ${R}
+    temperature = T
+    open_circuit_potential = U
+    boundary = &#x27;elyte_anode&#x27;
+  []
+  [charge_transfer_cathode_elyte]
+    type = ChargeTransferReaction
+    electrode = true
+    charge_transfer_current_density = ie
+    charge_transfer_mass_flux = je
+    charge_transfer_heat_flux = he
+    electric_potential = Phi
+    neighbor_electric_potential = Phi
+    charge_transfer_coefficient = 0.5
+    exchange_current_density = ${i0_c}
+    faraday_constant = ${F}
+    ideal_gas_constant = ${R}
+    temperature = T
+    open_circuit_potential = U
+    boundary = &#x27;cathode_elyte&#x27;
+  []
+  [charge_transfer_elyte_cathode]
+    type = ChargeTransferReaction
+    electrode = false
+    charge_transfer_current_density = ie
+    charge_transfer_mass_flux = je
+    charge_transfer_heat_flux = he
+    electric_potential = Phi
+    neighbor_electric_potential = Phi
+    charge_transfer_coefficient = 0.5
+    exchange_current_density = ${i0_c}
+    faraday_constant = ${F}
+    ideal_gas_constant = ${R}
+    temperature = T
+    open_circuit_potential = U
+    boundary = &#x27;elyte_cathode&#x27;
+  []
+
+  # Thermal
+  [thermal_properties]
+    type = ADGenericConstantMaterial
+    prop_names = &#x27;rho cv kappa&#x27;
+    prop_values = &#x27;${rho} ${cv} ${kappa}&#x27;
+  []
+  [heat_conduction]
+    type = FourierPotential
+    thermal_energy_density = chi
+    thermal_conductivity = kappa
+    temperature = T
+  []
+  [heat_flux]
+    type = HeatFlux
+    heat_flux = h
+    temperature = T
+  []
+  [heat_source]
+    type = VariationalHeatSource
+    heat_source = r
+    temperature = T
+  []
+
+  # Mechanical
+  [stiffness_c]
+    type = ADGenericConstantMaterial
+    prop_names = &#x27;lambda G&#x27;
+    prop_values = &#x27;${fparse E_c*nu_c/(1+nu_c)/(1-2*nu_c)} ${fparse E_c/2/(1+nu_c)}&#x27;
+    block = cathode
+  []
+  [stiffness_e]
+    type = ADGenericConstantMaterial
+    prop_names = &#x27;lambda G&#x27;
+    prop_values = &#x27;${fparse E_e*nu_e/(1+nu_e)/(1-2*nu_e)} ${fparse E_e/2/(1+nu_e)}&#x27;
+    block = elyte
+  []
+  [stiffness_a]
+    type = ADGenericConstantMaterial
+    prop_names = &#x27;lambda G&#x27;
+    prop_values = &#x27;${fparse E_a*nu_a/(1+nu_a)/(1-2*nu_a)} ${fparse E_a/2/(1+nu_a)}&#x27;
+    block = anode
+  []
+  [swelling_coefficient]
+    type = ADGenericConstantMaterial
+    prop_names = &#x27;beta&#x27;
+    prop_values = &#x27;${beta}&#x27;
+  []
+  [swelling]
+    type = SwellingDeformationGradient
+    concentration = c
+    reference_concentration = c_ref
+    molar_volume = ${Omega}
+    swelling_coefficient = beta
+  []
+  [thermal_expansion]
+    type = ThermalDeformationGradient
+    temperature = T
+    reference_temperature = T_ref
+    CTE = ${CTE}
+  []
+  [defgrad]
+    type = MechanicalDeformationGradient
+    displacements = &#x27;disp_x disp_y&#x27;
+  []
+  [neohookean]
+    type = NeoHookeanSolid
+    elastic_energy_density = psi_m
+    lambda = lambda
+    shear_modulus = G
+    concentration = c
+    temperature = T
+  []
+  [pk1]
+    type = FirstPiolaKirchhoffStress
+    first_piola_kirchhoff_stress = pk1
+    deformation_gradient_rate = dot(F)
+  []
+[]
+
+[Postprocessors]
+  [V_l]
+    type = SideAverageValue
+    variable = Phi
+    boundary = left
+    outputs = none
+    execute_on = &#x27;INITIAL TIMESTEP_END&#x27;
+  []
+  [V_r]
+    type = SideAverageValue
+    variable = Phi
+    boundary = right
+    outputs = none
+    execute_on = &#x27;INITIAL TIMESTEP_END&#x27;
+  []
+  [V]
+    type = ParsedPostprocessor
+    function = &#x27;V_r - V_l&#x27;
+    pp_names = &#x27;V_l V_r&#x27;
+    execute_on = &#x27;INITIAL TIMESTEP_END&#x27;
+  []
+  [I]
+    type = ADSideIntegralMaterialProperty
+    property = i
+    component = 0
+    boundary = right
+    execute_on = &#x27;INITIAL TIMESTEP_END&#x27;
+  []
+  [dt]
+    type = TimestepSize
+    outputs = none
+    execute_on = &#x27;INITIAL TIMESTEP_END&#x27;
+  []
+  [dC]
+    type = ParsedPostprocessor
+    function = &#x27;-dt*I&#x27;
+    pp_names = &#x27;dt I&#x27;
+    outputs = none
+    execute_on = &#x27;INITIAL TIMESTEP_END&#x27;
+  []
+  [C]
+    type = CumulativeValuePostprocessor
+    postprocessor = dC
+    execute_on = &#x27;INITIAL TIMESTEP_END&#x27;
+  []
+  [c_a_max]
+    type = NodalExtremeValue
+    variable = c
+    value_type = max
+    block = anode
+    execute_on = &#x27;INITIAL TIMESTEP_END&#x27;
+  []
+  [c_c_min]
+    type = NodalExtremeValue
+    variable = c
+    value_type = min
+    block = cathode
+    execute_on = &#x27;INITIAL TIMESTEP_END&#x27;
+  []
+  [c_a_min]
+    type = NodalExtremeValue
+    variable = c
+    value_type = min
+    block = anode
+    execute_on = &#x27;INITIAL TIMESTEP_END&#x27;
+  []
+  [c_c_max]
+    type = NodalExtremeValue
+    variable = c
+    value_type = max
+    block = cathode
+    execute_on = &#x27;INITIAL TIMESTEP_END&#x27;
+  []
+  [mass_a]
+    type = ElementIntegralVariablePostprocessor
+    variable = c
+    block = anode
+    execute_on = &#x27;INITIAL TIMESTEP_END&#x27;
+  []
+  [mass_e]
+    type = ElementIntegralVariablePostprocessor
+    variable = c
+    block = elyte
+    execute_on = &#x27;INITIAL TIMESTEP_END&#x27;
+  []
+  [mass_c]
+    type = ElementIntegralVariablePostprocessor
+    variable = c
+    block = cathode
+    execute_on = &#x27;INITIAL TIMESTEP_END&#x27;
+  []
+[]
+
+[UserObjects]
+  [kill_i]
+    type = Terminator
+    expression = &#x27;-I &lt;= 1e-6&#x27;
+    message = &#x27;No current.&#x27;
+  []
+[]
+
+[Executioner]
+  type = Transient
+  solve_type = NEWTON
+
+  petsc_options_iname = &#x27;-pc_type&#x27;
+  petsc_options_value = &#x27;lu&#x27;
+  automatic_scaling = true
+
+  nl_rel_tol = 1e-6
+  nl_abs_tol = 1e-10
+  nl_max_its = 20
+
+  [Predictor]
+    type = SimplePredictor
+    scale = 1
+    skip_after_failed_timestep = true
+  []
+  [TimeStepper]
+    type = IterationAdaptiveDT
+    dt = ${dt}
+    optimal_iterations = 7
+    iteration_window = 2
+    growth_factor = 1.2
+    cutback_factor = 0.5
+    cutback_factor_at_failure = 0.2
+    linear_iteration_ratio = 1000000
+  []
+  start_time = 0
+  end_time = 100000
+
+  steady_state_start_time = 10
+  steady_state_detection = true
+[]
+
+[Outputs]
+  file_base = &#x27;CV_charging_I_${I}&#x27;
+  csv = true
+  exodus = true
+  print_linear_residuals = false
+  checkpoint = true
+[]
+</code></pre></div><div class="modal-footer"><a class="modal-close btn-flat">Close</a></div></div></div><div class="col hide-on-med-and-down l2"><div class="toc-wrapper pin-top"><ul class="section table-of-contents"><li><a href="#59aeb35d-5598-4297-8a4f-d1ddf4ce9705" class="tooltipped" data-position="left" data-tooltip="Overview">Overview</a></li><li><a href="#1c0a4f3e-49d3-4ee3-8473-2af20922a688" class="tooltipped" data-position="left" data-tooltip="Example Input File Syntax">Example Input File Syntax</a></li><li><a href="#ba1d3664-7ac8-46d9-8bb0-f2d758039dfc" class="tooltipped" data-position="left" data-tooltip="Input Parameters">Input Parameters</a></li><li><a href="#002cf1cb-f232-429a-989c-4f005c0aa6d4" class="tooltipped" data-position="left" data-tooltip="Input Files">Input Files</a></li></ul></div></div></div></div></main></div></body><script type="text/javascript" src="../../contrib/materialize/materialize.min.js"></script><script type="text/javascript" src="../../contrib/clipboard/clipboard.min.js"></script><script type="text/javascript" src="../../contrib/prism/prism.min.js"></script><script type="text/javascript" src="../../js/init.js"></script><script type="text/javascript" src="../../js/navigation.js"></script><script type="text/javascript" src="../../contrib/fuse/fuse.min.js"></script><script type="text/javascript" src="../../js/search_index.js"></script><script type="text/javascript" src="../../js/sqa_moose.js"></script>

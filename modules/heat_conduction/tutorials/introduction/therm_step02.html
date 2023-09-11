@@ -1,0 +1,192 @@
+<!DOCTYPE html><head><meta charset="UTF-8"><title>Step 2 Adding boundary conditions | Eel</title><link href="../../../../contrib/materialize/materialize.min.css" type="text/css" rel="stylesheet" media="screen,projection"></link><link href="../../../../contrib/prism/prism.min.css" type="text/css" rel="stylesheet"></link><link href="../../../../css/moose.css" type="text/css" rel="stylesheet"></link><link href="../../../../css/devel_moose.css" type="text/css" rel="stylesheet"></link><link href="../../../../css/alert_moose.css" type="text/css" rel="stylesheet"></link><link href="../../../../css/content_moose.css" type="text/css" rel="stylesheet"></link><link href="../../../../css/sqa_moose.css" type="text/css" rel="stylesheet"></link><link href="../../../../css/civet_moose.css" type="text/css" rel="stylesheet"></link><script type="text/javascript" src="../../../../contrib/jquery/jquery.min.js"></script></head><body><div class="page-wrap"><header><nav><div class="nav-wrapper container"><a href="../../../../index.html" class="left moose-logo hide-on-med-and-down" id="home-button">Eel</a><a href="https://github.com/hugary1995/eel" class="right"><img src="../../../../media/framework/github-logo.png" class="github-mark"></img><img src="../../../../media/framework/github-mark.png" class="github-logo"></img></a><ul class="right hide-on-med-and-down"><li><a href="../../../../eel.html">Documentation</a></li></ul><a href="#" class="sidenav-trigger" data-target="27c6d0e0-fc56-4887-be20-30ae1076e248"><i class="material-icons">menu</i></a><ul class="sidenav" id="27c6d0e0-fc56-4887-be20-30ae1076e248"><li><a href="../../../../eel.html">Documentation</a></li></ul><a href="#moose-search" class="modal-trigger"><i class="material-icons">search</i></a></div></nav><div class="modal modal-fixed-footer moose-search-modal" id="moose-search"><div class="modal-content container moose-search-modal-content"><div class="row"><div class="col l12"><div class="input-field"><input type_="text" onkeyup="mooseSearch()" placeholder="/index.md" id="moose-search-box"></input></div></div><div><div class="col s12" id="moose-search-results"></div></div></div></div><div class="modal-footer"><a href="#!" class="modal-close btn-flat">Close</a></div></div></header><main class="main"><div class="container"><div class="row"><div class="col hide-on-med-and-down l12"><nav class="breadcrumb-nav"><div class="nav-wrapper"><span class="breadcrumb">modules</span><a href="../.." class="breadcrumb">heat_conduction</a><span class="breadcrumb">tutorials</span><a href="." class="breadcrumb">introduction</a><a href="#" class="breadcrumb">therm_step02</a></div></nav></div></div><div class="row"><div class="moose-content col s12 m12 l10"><section id="8047a5c8-cda3-4784-bd42-80e0433c9b6c" data-section-level="1" data-section-text="Step 2 - Adding boundary conditions"><h1 id="step-2-adding-boundary-conditions">Step 2 - Adding boundary conditions</h1><p>In the previous step we set up a basic thermal simulation that did... nothing. In this step will prescribe values for the temperature on the left and right sides of the block.</p><pre class="moose-pre" style="max-height:350px;"><code class="language-text">#
+# Single block thermal input with boundary conditions
+# https://mooseframework.inl.gov/modules/heat_conduction/tutorials/introduction/therm_step02.html
+#
+
+[Mesh]
+  [generated]
+    type = GeneratedMeshGenerator
+    dim = 2
+    nx = 10
+    ny = 10
+    xmax = 2
+    ymax = 1
+  []
+[]
+
+[Variables]
+  [T]
+  []
+[]
+
+[Kernels]
+  [heat_conduction]
+    type = HeatConduction
+    variable = T
+  []
+[]
+
+[Materials]
+  [thermal]
+    type = HeatConductionMaterial
+    thermal_conductivity = 45.0
+  []
+[]
+
+[BCs]
+  [t_left]
+    type = DirichletBC
+    variable = T
+    value = 300
+    boundary = &#x27;left&#x27;
+  []
+  [t_right]
+    type = FunctionDirichletBC
+    variable = T
+    function = &#x27;300+5*t&#x27;
+    boundary = &#x27;right&#x27;
+  []
+[]
+
+[Executioner]
+  type = Transient
+  end_time = 5
+  dt = 1
+[]
+
+[Outputs]
+  exodus = true
+[]
+</code></pre><a class="moose-source-filename tooltipped modal-trigger" href="#8e7cf64f-9b79-45ab-ac4b-99fc016f1f7e">(moose/modules/heat_conduction/tutorials/introduction/therm_step02.i)</a><section class="scrollspy" id="05dc4b37-4313-4385-af44-ff807c179729" data-section-level="2" data-section-text="Input file"><h2 id="input-file">Input file</h2><section id="92590a32-6eb4-4464-b904-fef06a613e5e" data-section-level="3" data-section-text="BCs"><h3><code>BCs</code></h3><p>BCs stands for <em>boundary conditions</em>. Those apply to the boundaries (or sidesets) of the simulation domain. In all boundary condition objects you will see the mandatory <code>boundary</code> parameter, which expects a list of sideset names or IDs.</p><pre class="moose-pre" style="max-height:350px;"><code class="language-text">[BCs]
+  [t_left]
+    type = DirichletBC
+    variable = T
+    value = 300
+    boundary = &#x27;left&#x27;
+  []
+  [t_right]
+    type = FunctionDirichletBC
+    variable = T
+    function = &#x27;300+5*t&#x27;
+    boundary = &#x27;right&#x27;
+  []
+[]
+</code></pre><a class="moose-source-filename tooltipped modal-trigger" href="#12ce1c1b-edfc-437b-bd40-9151c267ee94">(moose/modules/heat_conduction/tutorials/introduction/therm_step02.i)</a><section id="1d495824-004e-42d9-b495-ed613767dd49" data-section-level="4" data-section-text="DirichletBC"><h4><code>DirichletBC</code></h4><p>The two Dirichlet boundary conditions are set on the <em>left</em> and <em>right</em> surfaces of the simulation domain. These prescribe the values of the <code>T</code> variable on those surfaces. The <code>GeneratedMeshGenerator</code> that was used to create this simple block mesh defines boundaries named <code>top</code>, <code>bottom</code>, <code>left</code>, and <code>right</code> on the boundaries of that block. Additional boundaries can be added using other MeshGenerators, or boundaries can be defined with an external meshing tool.</p><p>In this case, the temperature on the left boundary is fixed to a constant value of 300 using the <a href="../../../../source/bcs/DirichletBC.html"><code>DirichletBC</code></a> </p></section><section id="cfc4151f-5fa7-4231-9d53-1d2e5bfbdc5f" data-section-level="4" data-section-text="FunctionDirichletBC"><h4><code>FunctionDirichletBC</code></h4><p>The temperature on the right boundary is defined using a time-dependent function using the <a href="../../../../source/bcs/FunctionDirichletBC.html"><code>FunctionDirichletBC</code></a>. As its name implies, this is a Dirichlet boundary condition that is defined using a function rather than a constant value. In this case, an expression for an analytic function is provided for the <code>function</code> parameter. Alternatively, the name of a separately defined <code>Function</code> can be provided. A wide variety of function types  <a href="supplemental02a.html">is available</a>.</p></section><section id="8870af25-d4aa-4625-bead-777379cf89ce" data-section-level="4" data-section-text="Other boundary conditions"><h4 id="other-boundary-conditions">Other boundary conditions</h4><p>A number of <a href="supplemental02b.html">other boundary conditions</a> are available. Some of these are generic boundary conditions that can be applied to any problem, while some are physics-specific.</p></section></section><section class="scrollspy" id="470fb0f8-737a-4179-8239-0258bde8e1b4" data-section-level="2" data-section-text="Questions"><h2 id="questions">Questions</h2><p>Before running the model, consider what the expected solution to this problem with only the conduction term should be.</p><p><a href="answer02a.html">Click here for the answer.</a></p><p>Now go ahead and run the input and visualize the result to see if it matches the behavior you would expect.</p><section id="1b98964a-d00b-4638-8f91-7c3101992f13" data-section-level="3" data-section-text="Exploring parameters"><h3 id="exploring-parameters">Exploring parameters</h3><p>Experiment with different settings for the thermal conductivity of the material and the applied boundary conditions. What happens if you change the thermal conductivity?</p><p><a href="answer02b.html">Click here for the answer.</a></p></section><section id="86d19d97-10c5-4f2b-8278-ae9cf406eed7" data-section-level="3" data-section-text="Sidebar :"><h3 id="sidebar">Sidebar:</h3><blockquote><p>For a problem like this, it can be very helpful to plot out values of the solution sampled along a line.</p></blockquote><p><a href="therm_step02a.html">Click here for the sidebar on plotting along a line.</a></p><p>Once you&#x27;ve answered the questions and run this example we will move on to <a href="therm_step03.html">Step 3</a>, where additional terms will be added to the heat equation. </p></section></section></section></section><div class="moose-modal modal" id="8e7cf64f-9b79-45ab-ac4b-99fc016f1f7e"><div class="modal-content"><h4>(moose/modules/heat_conduction/tutorials/introduction/therm_step02.i)</h4><pre class="moose-pre"><code class="language-text">#
+# Single block thermal input with boundary conditions
+# https://mooseframework.inl.gov/modules/heat_conduction/tutorials/introduction/therm_step02.html
+#
+
+[Mesh]
+  [generated]
+    type = GeneratedMeshGenerator
+    dim = 2
+    nx = 10
+    ny = 10
+    xmax = 2
+    ymax = 1
+  []
+[]
+
+[Variables]
+  [T]
+  []
+[]
+
+[Kernels]
+  [heat_conduction]
+    type = HeatConduction
+    variable = T
+  []
+[]
+
+[Materials]
+  [thermal]
+    type = HeatConductionMaterial
+    thermal_conductivity = 45.0
+  []
+[]
+
+[BCs]
+  [t_left]
+    type = DirichletBC
+    variable = T
+    value = 300
+    boundary = &#x27;left&#x27;
+  []
+  [t_right]
+    type = FunctionDirichletBC
+    variable = T
+    function = &#x27;300+5*t&#x27;
+    boundary = &#x27;right&#x27;
+  []
+[]
+
+[Executioner]
+  type = Transient
+  end_time = 5
+  dt = 1
+[]
+
+[Outputs]
+  exodus = true
+[]
+</code></pre></div><div class="modal-footer"><a class="modal-close btn-flat">Close</a></div></div><div class="moose-modal modal" id="12ce1c1b-edfc-437b-bd40-9151c267ee94"><div class="modal-content"><h4>(moose/modules/heat_conduction/tutorials/introduction/therm_step02.i)</h4><pre class="moose-pre"><code class="language-text">#
+# Single block thermal input with boundary conditions
+# https://mooseframework.inl.gov/modules/heat_conduction/tutorials/introduction/therm_step02.html
+#
+
+[Mesh]
+  [generated]
+    type = GeneratedMeshGenerator
+    dim = 2
+    nx = 10
+    ny = 10
+    xmax = 2
+    ymax = 1
+  []
+[]
+
+[Variables]
+  [T]
+  []
+[]
+
+[Kernels]
+  [heat_conduction]
+    type = HeatConduction
+    variable = T
+  []
+[]
+
+[Materials]
+  [thermal]
+    type = HeatConductionMaterial
+    thermal_conductivity = 45.0
+  []
+[]
+
+[BCs]
+  [t_left]
+    type = DirichletBC
+    variable = T
+    value = 300
+    boundary = &#x27;left&#x27;
+  []
+  [t_right]
+    type = FunctionDirichletBC
+    variable = T
+    function = &#x27;300+5*t&#x27;
+    boundary = &#x27;right&#x27;
+  []
+[]
+
+[Executioner]
+  type = Transient
+  end_time = 5
+  dt = 1
+[]
+
+[Outputs]
+  exodus = true
+[]
+</code></pre></div><div class="modal-footer"><a class="modal-close btn-flat">Close</a></div></div></div><div class="col hide-on-med-and-down l2"><div class="toc-wrapper pin-top"><ul class="section table-of-contents"><li><a href="#05dc4b37-4313-4385-af44-ff807c179729" class="tooltipped" data-position="left" data-tooltip="Input file">Input file</a></li><li><a href="#470fb0f8-737a-4179-8239-0258bde8e1b4" class="tooltipped" data-position="left" data-tooltip="Questions">Questions</a></li></ul></div></div></div></div></main></div></body><script type="text/javascript" src="../../../../contrib/materialize/materialize.min.js"></script><script type="text/javascript" src="../../../../contrib/clipboard/clipboard.min.js"></script><script type="text/javascript" src="../../../../contrib/prism/prism.min.js"></script><script type="text/javascript" src="../../../../js/init.js"></script><script type="text/javascript" src="../../../../js/navigation.js"></script><script type="text/javascript" src="../../../../contrib/fuse/fuse.min.js"></script><script type="text/javascript" src="../../../../js/search_index.js"></script><script type="text/javascript" src="../../../../js/sqa_moose.js"></script>

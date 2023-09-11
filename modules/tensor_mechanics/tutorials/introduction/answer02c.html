@@ -1,0 +1,150 @@
+<!DOCTYPE html><head><meta charset="UTF-8"><title>Input file | Eel</title><link href="../../../../contrib/materialize/materialize.min.css" type="text/css" rel="stylesheet" media="screen,projection"></link><link href="../../../../contrib/prism/prism.min.css" type="text/css" rel="stylesheet"></link><link href="../../../../css/moose.css" type="text/css" rel="stylesheet"></link><link href="../../../../css/devel_moose.css" type="text/css" rel="stylesheet"></link><link href="../../../../css/alert_moose.css" type="text/css" rel="stylesheet"></link><link href="../../../../css/content_moose.css" type="text/css" rel="stylesheet"></link><link href="../../../../css/sqa_moose.css" type="text/css" rel="stylesheet"></link><link href="../../../../css/civet_moose.css" type="text/css" rel="stylesheet"></link><script type="text/javascript" src="../../../../contrib/jquery/jquery.min.js"></script></head><body><div class="page-wrap"><header><nav><div class="nav-wrapper container"><a href="../../../../index.html" class="left moose-logo hide-on-med-and-down" id="home-button">Eel</a><a href="https://github.com/hugary1995/eel" class="right"><img src="../../../../media/framework/github-logo.png" class="github-mark"></img><img src="../../../../media/framework/github-mark.png" class="github-logo"></img></a><ul class="right hide-on-med-and-down"><li><a href="../../../../eel.html">Documentation</a></li></ul><a href="#" class="sidenav-trigger" data-target="5268390b-9d25-4f41-8b2e-dd79a56d30ea"><i class="material-icons">menu</i></a><ul class="sidenav" id="5268390b-9d25-4f41-8b2e-dd79a56d30ea"><li><a href="../../../../eel.html">Documentation</a></li></ul><a href="#moose-search" class="modal-trigger"><i class="material-icons">search</i></a></div></nav><div class="modal modal-fixed-footer moose-search-modal" id="moose-search"><div class="modal-content container moose-search-modal-content"><div class="row"><div class="col l12"><div class="input-field"><input type_="text" onkeyup="mooseSearch()" placeholder="/index.md" id="moose-search-box"></input></div></div><div><div class="col s12" id="moose-search-results"></div></div></div></div><div class="modal-footer"><a href="#!" class="modal-close btn-flat">Close</a></div></div></header><main class="main"><div class="container"><div class="row"><div class="col hide-on-med-and-down l12"><nav class="breadcrumb-nav"><div class="nav-wrapper"><span class="breadcrumb">modules</span><a href="../.." class="breadcrumb">tensor_mechanics</a><span class="breadcrumb">tutorials</span><a href="." class="breadcrumb">introduction</a><a href="#" class="breadcrumb">answer02c</a></div></nav></div></div><div class="row"><div class="moose-content col s12 m12 l10"><blockquote><p>If you created a large strain version of the input, try and convert it to use MOOSE&#x27;s automatic differentiation system. A few places to look at:</p><ul class="browser-default"><li><p><a href="#ccfa38c2-5ceb-43f3-b06a-8b2c55779fe3" class="moose-modal-link modal-trigger">&quot;use_automatic_differentiation&quot;</a> in the tensor mechanics master action </p></li><li><p><a href="#ca2880ee-5d4e-47ab-8b5a-50aececeb5b5" class="moose-modal-link modal-trigger">&quot;use_automatic_differentiation&quot;</a> in the Pressure BC action </p></li><li><p><a href="../../../../source/bcs/ADDirichletBC.html">ADDirichletBC</a> </p></li><li><p><a href="../../../../source/materials/ComputeIsotropicElasticityTensor.html">ADComputeIsotropicElasticityTensor</a> </p></li><li><p><a href="../../../../source/materials/ADComputeFiniteStrainElasticStress.html">ADComputeFiniteStrainElasticStress</a></p></li></ul></blockquote><p>Here is the converted input:</p><pre class="moose-pre" style="max-height:350px;"><code class="language-text">[GlobalParams]
+  displacements = &#x27;disp_x disp_y&#x27;
+[]
+
+[Mesh]
+  [generated]
+    type = GeneratedMeshGenerator
+    dim = 2
+    nx = 10
+    ny = 10
+    xmax = 2
+    ymax = 1
+  []
+[]
+
+[Modules/TensorMechanics/Master]
+  [all]
+    add_variables = true
+    # we added this in the first exercise problem
+    strain = FINITE
+    # enable the use of automatic differentiation objects
+    use_automatic_differentiation = true
+  []
+[]
+
+[BCs]
+  [bottom_x]
+    # we use the AD version of this boundary condition here...
+    type = ADDirichletBC
+    variable = disp_x
+    boundary = bottom
+    value = 0
+  []
+  [bottom_y]
+    # ...and here
+    type = ADDirichletBC
+    variable = disp_y
+    boundary = bottom
+    value = 0
+  []
+  [Pressure]
+    [top]
+      boundary = top
+      function = 1e7*t
+      # make the action add AD versions of the boundary condition objects
+      use_automatic_differentiation = true
+    []
+  []
+[]
+
+[Materials]
+  [elasticity]
+    type = ADComputeIsotropicElasticityTensor
+    youngs_modulus = 1e9
+    poissons_ratio = 0.3
+  []
+  [stress]
+    type = ADComputeFiniteStrainElasticStress
+  []
+[]
+
+[Executioner]
+  type = Transient
+  # MOOSE automatically sets up SMP/full=true with NEWTON
+  solve_type = NEWTON
+  petsc_options_iname = &#x27;-pc_type&#x27;
+  petsc_options_value = &#x27;lu&#x27;
+  end_time = 5
+  dt = 1
+[]
+
+[Outputs]
+  exodus = true
+[]
+</code></pre><a class="moose-source-filename tooltipped modal-trigger" href="#18572664-2472-47ca-9ed3-af6064fa8512">(moose/modules/tensor_mechanics/tutorials/introduction/mech_step02a.i)</a><section class="scrollspy" id="e3b10c1b-82df-4cbb-9fdf-03963fe46b4d" data-section-level="2" data-section-text="Input file"><h2 id="input-file">Input file</h2><section id="a1c273b5-f90d-4ecd-9ab0-b3582804c323" data-section-level="3" data-section-text="TensorMechanics Action Master"><h3 id="tensormechanics-action">TensorMechanics <code>Master</code> Action</h3><p>Adding <code>use_automatic_differentiation = true</code> here causes the action to build the automatic differentiation (AD) enabled versions of the materials, kernels, and output objects it sets up.</p></section><section id="2d260894-c588-4474-be1d-e737402c694f" data-section-level="3" data-section-text="BCs"><h3><code>BCs</code></h3><p>We replaced <code>DirichletBC</code> with the AD-enabled <code>ADDirichletBC</code> object. Note that in general it is fine to mix AD and non-AD objects, although you might then end up with a less than perfect Jacobian. Also keep in mind that you cannot use AD and non-AD versions of <em>material properties</em> (such as the stiffness tensor or the strain) interchangeably. If an object requests an AD property you need to use the AD-enabled version of the material to provide it.</p><p>In the <code>Pressure</code> action we also supplied <code>use_automatic_differentiation = true</code> to have the action build the AD-enabled versions of the individual boundary condition objects that act on the displacement variables in the problem.</p></section><section id="8e9d64a3-5c2d-4ed7-b3f7-a3a30ade33a2" data-section-level="3" data-section-text="Materials"><h3><code>Materials</code></h3><p>As mentioned above, when using AD-enabled kernels (added through the master action), we must supply them with AD-enabled material properties. That&#x27;s why we select the AD-enabled objects to compute stiffness tensor and stress. (The AD-enabled strain calculator is automatically added by the master action.)</p><p>Note that in <a href="answer02a.html">the first exercise</a> we switched to a large strain formulation. In case you didn&#x27;t make that change use <code>ADComputeLinearElasticStress</code> here and make sure you do not have <code>strain =
+FINITE</code> in the master action.</p></section><section id="c90f98db-17cc-43c3-a9d9-61ab5893a68a" data-section-level="3" data-section-text="Executioner"><h3><code>Executioner</code></h3><p>We select <code>Newton</code> as the solve type. MOOSE actually sets up the appropriate preconditioning block for us automatically in this case, which is why we removed it from the input file here.</p><blockquote><p>What did you observe when you ran the converted example?</p></blockquote><p>You should see a substantial reduction in linear iterations. This is an indication that the new Jacobian matrix generated by automatic differentiation is more accurate than the hand coded Jacobians in the non-AD version.</p><blockquote><p>Rerun the problem again with a Young&#x27;s modulus of <code>1e8</code>.</p></blockquote><p>Again each non-linear iteration converges with just two linear iterations, but the problem is still exhibiting a lot of non-linear steps and even some cut time steps due to the nonlinearity of the large deformation formulation. </p></section></section><div class="moose-modal modal" id="ccfa38c2-5ceb-43f3-b06a-8b2c55779fe3"><div class="modal-content"><h4>use_automatic_differentiation</h4><p class="moose-parameter-description-default"><span>Default:</span>False</p><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>bool</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>No</p><p class="moose-parameter-description"><span>Description:</span>Flag to use automatic differentiation (AD) objects when possible</p></div></div><div class="moose-modal modal" id="ca2880ee-5d4e-47ab-8b5a-50aececeb5b5"><div class="modal-content"><h4>use_automatic_differentiation</h4><p class="moose-parameter-description-default"><span>Default:</span>False</p><p class="moose-parameter-description-cpptype"><span>C++ Type:</span>bool</p><p class="moose-parameter-description-controllable"><span>Controllable:</span>No</p><p class="moose-parameter-description"><span>Description:</span>Flag to use automatic differentiation (AD) objects when possible</p></div></div><div class="moose-modal modal" id="18572664-2472-47ca-9ed3-af6064fa8512"><div class="modal-content"><h4>(moose/modules/tensor_mechanics/tutorials/introduction/mech_step02a.i)</h4><pre class="moose-pre"><code class="language-text">[GlobalParams]
+  displacements = &#x27;disp_x disp_y&#x27;
+[]
+
+[Mesh]
+  [generated]
+    type = GeneratedMeshGenerator
+    dim = 2
+    nx = 10
+    ny = 10
+    xmax = 2
+    ymax = 1
+  []
+[]
+
+[Modules/TensorMechanics/Master]
+  [all]
+    add_variables = true
+    # we added this in the first exercise problem
+    strain = FINITE
+    # enable the use of automatic differentiation objects
+    use_automatic_differentiation = true
+  []
+[]
+
+[BCs]
+  [bottom_x]
+    # we use the AD version of this boundary condition here...
+    type = ADDirichletBC
+    variable = disp_x
+    boundary = bottom
+    value = 0
+  []
+  [bottom_y]
+    # ...and here
+    type = ADDirichletBC
+    variable = disp_y
+    boundary = bottom
+    value = 0
+  []
+  [Pressure]
+    [top]
+      boundary = top
+      function = 1e7*t
+      # make the action add AD versions of the boundary condition objects
+      use_automatic_differentiation = true
+    []
+  []
+[]
+
+[Materials]
+  [elasticity]
+    type = ADComputeIsotropicElasticityTensor
+    youngs_modulus = 1e9
+    poissons_ratio = 0.3
+  []
+  [stress]
+    type = ADComputeFiniteStrainElasticStress
+  []
+[]
+
+[Executioner]
+  type = Transient
+  # MOOSE automatically sets up SMP/full=true with NEWTON
+  solve_type = NEWTON
+  petsc_options_iname = &#x27;-pc_type&#x27;
+  petsc_options_value = &#x27;lu&#x27;
+  end_time = 5
+  dt = 1
+[]
+
+[Outputs]
+  exodus = true
+[]
+</code></pre></div><div class="modal-footer"><a class="modal-close btn-flat">Close</a></div></div></div><div class="col hide-on-med-and-down l2"><div class="toc-wrapper pin-top"><ul class="section table-of-contents"><li><a href="#e3b10c1b-82df-4cbb-9fdf-03963fe46b4d" class="tooltipped" data-position="left" data-tooltip="Input file">Input file</a></li></ul></div></div></div></div></main></div></body><script type="text/javascript" src="../../../../contrib/materialize/materialize.min.js"></script><script type="text/javascript" src="../../../../contrib/clipboard/clipboard.min.js"></script><script type="text/javascript" src="../../../../contrib/prism/prism.min.js"></script><script type="text/javascript" src="../../../../js/init.js"></script><script type="text/javascript" src="../../../../js/navigation.js"></script><script type="text/javascript" src="../../../../contrib/fuse/fuse.min.js"></script><script type="text/javascript" src="../../../../js/search_index.js"></script><script type="text/javascript" src="../../../../js/sqa_moose.js"></script>
