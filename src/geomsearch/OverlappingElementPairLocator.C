@@ -58,4 +58,14 @@ OverlappingElementPairLocator::reinit()
       _element_pair_info.emplace(pair, info);
     }
   }
+
+  // Loop over primary elements to add ghosting
+  for (const auto primary_elem :
+       as_range(_mesh->getMesh().active_subdomain_elements_begin(_primary),
+                _mesh->getMesh().active_subdomain_elements_end(_primary)))
+  {
+    for (auto && [e1, e2] : _overlapping_elem_pairs)
+      if (primary_elem->id() == e1->id())
+        _fe_problem->addGhostedElem(e2->id());
+  }
 }

@@ -1,7 +1,7 @@
 matrix_a = 1 # mm
 matrix_t = 0.02 # mm
 matrix_n = 100
-matrix_nt = 2
+matrix_nt = 4
 
 fiber_a = 0.8 # mm
 
@@ -183,7 +183,6 @@ Ey = 1
 []
 
 [Outputs]
-  file_base = 'results/3D_ECR_${ECR}'
   csv = true
   exodus = true
 []

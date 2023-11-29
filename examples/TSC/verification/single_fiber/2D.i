@@ -102,7 +102,7 @@ Ey = 1
     variable = Phi
     primary = matrix
     secondary = fiber
-    resistance = '${fparse ECR/4/matrix_t}'
+    resistance = '${fparse ECR/2/matrix_t}'
   []
 []
 
@@ -208,7 +208,6 @@ Ey = 1
 []
 
 [Outputs]
-  file_base = 'results/2D_ECR_${ECR}'
   csv = true
   exodus = true
 []

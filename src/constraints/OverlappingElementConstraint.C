@@ -11,13 +11,6 @@ OverlappingElementConstraint::validParams()
   params.addRequiredParam<SubdomainName>("secondary", "secondary block id");
   params.suppressParameter<unsigned int>("interface_id");
 
-  params.addRelationshipManager("GhostOverlappingElements",
-                                Moose::RelationshipManagerType::GEOMETRIC |
-                                    Moose::RelationshipManagerType::ALGEBRAIC |
-                                    Moose::RelationshipManagerType::COUPLING,
-                                [](const InputParameters & obj_params, InputParameters & rm_params)
-                                { rm_params.applyParameters(obj_params); });
-
   return params;
 }
 
