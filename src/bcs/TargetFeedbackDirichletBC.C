@@ -46,6 +46,7 @@ TargetFeedbackDirichletBC::timestepSetup()
     }
 
   if (_status == FeedBackStatus::MAINTAIN)
+  {
     if (_monitor < _target - _window)
     {
       _status = FeedBackStatus::COMPENSATE;
@@ -58,6 +59,7 @@ TargetFeedbackDirichletBC::timestepSetup()
       _console << "IDLE" << std::endl;
       return;
     }
+  }
 
   if (_status == FeedBackStatus::COMPENSATE && _monitor > _target)
     if (_monitor > _target + _window)
