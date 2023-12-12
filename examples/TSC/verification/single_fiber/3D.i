@@ -8,7 +8,6 @@ fiber_a = 0.8 # mm
 sigma_matrix = 20 # S/mm, electrical conductivity
 sigma_fiber = 2000 # S/mm, electrical conductivity
 ECR = 1e-3 # Ohm mm^2, contact resistance
-Ey = 1
 
 [GlobalParams]
   energy_densities = 'E'
@@ -81,21 +80,6 @@ Ey = 1
   []
 []
 
-[BCs]
-  [ground]
-    type = DirichletBC
-    variable = Phi
-    boundary = 'matrix_bottom'
-    value = 0
-  []
-  [CV]
-    type = DirichletBC
-    variable = Phi
-    boundary = 'matrix_top'
-    value = '${fparse Ey*matrix_a}'
-  []
-[]
-
 [Materials]
   [electric_constants_matrix]
     type = ADGenericConstantMaterial
@@ -164,21 +148,6 @@ Ey = 1
     function = 'Iy / ${matrix_a} / ${matrix_t}'
     execute_on = 'INITIAL TIMESTEP_END'
     outputs = none
-  []
-[]
-
-[Postprocessors]
-  [sigma_yy]
-    type = ParsedPostprocessor
-    pp_names = 'iy'
-    function = 'iy / ${Ey}'
-    execute_on = 'INITIAL TIMESTEP_END'
-  []
-  [sigma_xy]
-    type = ParsedPostprocessor
-    pp_names = 'ix'
-    function = 'ix / ${Ey}'
-    execute_on = 'INITIAL TIMESTEP_END'
   []
 []
 

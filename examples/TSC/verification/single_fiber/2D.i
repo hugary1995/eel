@@ -11,8 +11,12 @@ fiber_A = '${fparse matrix_t*matrix_t}' # mm^2, fiber cross-sectional area
 sigma_fiber = 2000 # 7.1e6 # S/mm, electrical conductivity https://pubs.acs.org/doi/10.1021/nl048687z
 
 ECR = 1e-3 # Ohm mm^2, contact resistance
+ECRc = 1e-2 # Ohm mm^2, contact resistance
+k = 1
+H = '${fparse 1/(1+(ECR/ECRc)^(-2*k))}'
 
-Ey = 1
+sigma_fiber_eff = '${fparse sigma_fiber*(1-H)}'
+ECR_eff = '${fparse if(ECR*(1-H)<1e-8,1e-8,ECR*(1-H))}'
 
 [GlobalParams]
   energy_densities = 'E'
@@ -75,6 +79,15 @@ Ey = 1
 [AuxVariables]
   [ir]
   []
+  # [sigma]
+  #   order = CONSTANT
+  #   family = MONOMIAL
+  #   [AuxKernel]
+  #     type = ADMaterialRealAux
+  #     property = sigma
+  #     execute_on = 'INITIAL TIMESTEP_END'
+  #   []
+  # []
 []
 
 [Kernels]
@@ -102,22 +115,7 @@ Ey = 1
     variable = Phi
     primary = matrix
     secondary = fiber
-    resistance = '${fparse ECR/2/matrix_t}'
-  []
-[]
-
-[BCs]
-  [ground]
-    type = DirichletBC
-    variable = Phi
-    boundary = 'matrix_bottom'
-    value = 0
-  []
-  [CV]
-    type = DirichletBC
-    variable = Phi
-    boundary = 'matrix_top'
-    value = '${fparse Ey*matrix_a}'
+    resistance = '${fparse ECR_eff/2/matrix_t}'
   []
 []
 
@@ -131,7 +129,7 @@ Ey = 1
   [electric_constants_fiber]
     type = ADGenericConstantMaterial
     prop_names = 'sigma'
-    prop_values = '${sigma_fiber}'
+    prop_values = '${sigma_fiber_eff}'
     block = fiber
   []
   [charge_transport_matrix]
@@ -162,6 +160,16 @@ Ey = 1
 []
 
 [Postprocessors]
+  [sigma_fiber_effective]
+    type = ConstantPostprocessor
+    value = '${sigma_fiber_eff}'
+    execute_on = 'INITIAL'
+  []
+  [ECR_effective]
+    type = ConstantPostprocessor
+    value = '${ECR_eff}'
+    execute_on = 'INITIAL'
+  []
   [Ix]
     type = NodalSum
     variable = ir
@@ -189,21 +197,6 @@ Ey = 1
     function = 'Iy / ${matrix_a} / ${matrix_t}'
     execute_on = 'INITIAL TIMESTEP_END'
     outputs = none
-  []
-[]
-
-[Postprocessors]
-  [sigma_yy]
-    type = ParsedPostprocessor
-    pp_names = 'iy'
-    function = 'iy / ${Ey}'
-    execute_on = 'INITIAL TIMESTEP_END'
-  []
-  [sigma_xy]
-    type = ParsedPostprocessor
-    pp_names = 'ix'
-    function = 'ix / ${Ey}'
-    execute_on = 'INITIAL TIMESTEP_END'
   []
 []
 

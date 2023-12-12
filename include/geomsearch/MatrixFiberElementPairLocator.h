@@ -9,13 +9,13 @@
 #include "Assembly.h"
 #include "FEProblemBase.h"
 
-class OverlappingElementPairLocator : public ElementPairLocator
+class MatrixFiberElementPairLocator : public ElementPairLocator
 {
 public:
-  OverlappingElementPairLocator(MooseMesh * mesh,
+  MatrixFiberElementPairLocator(MooseMesh * mesh,
                                 Assembly * assembly,
                                 FEProblemBase * feproblem,
-                                const SubdomainID primary,
+                                const BoundaryID primary,
                                 const SubdomainID secondary);
 
   virtual void reinit() override;
@@ -23,10 +23,14 @@ public:
   virtual const std::vector<Point> & secondaryQPoints() const { return _secondary_qpoints; }
 
 protected:
+  const Elem * findPrimaryElem(const Point & p,
+                               const std::unordered_set<dof_id_type> & elem_ids) const;
+  void addElemPair(const Elem * secondary_elem,
+                   const std::unordered_set<dof_id_type> & primary_elems);
   MooseMesh * _mesh;
   Assembly * _assembly;
   FEProblemBase * _fe_problem;
-  const SubdomainID _primary;
+  const BoundaryID _primary;
   const SubdomainID _secondary;
 
 private:

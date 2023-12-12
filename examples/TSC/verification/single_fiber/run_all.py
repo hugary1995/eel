@@ -5,7 +5,7 @@ import shutil
 from pathlib import Path
 
 
-def run(input, dir, ECR):
+def run(input, BC, dir, ECR):
     command = [
         "mpiexec",
         "-n",
@@ -13,8 +13,9 @@ def run(input, dir, ECR):
         "../../../../eel-opt",
         "-i",
         input,
+        BC,
         "ECR={}".format(ECR),
-        "Outputs/file_base='{}/ECR_{}'".format(dir, ECR),
+        "Outputs/file_base='{}/{}_ECR_{}'".format(dir, BC.split(".")[0], ECR),
     ]
     print(" ".join(command))
     subprocess.run(
@@ -32,6 +33,8 @@ if __name__ == "__main__":
     parser.add_argument("--D3-in")
     parser.add_argument("--D2-out", default="results/2D")
     parser.add_argument("--D3-out", default="results/3D")
+    parser.add_argument("--BC-x")
+    parser.add_argument("--BC-y")
     parser.add_argument("--log-ECR-min", default=-6, type=float)
     parser.add_argument("--log-ECR-max", default=2, type=float)
     parser.add_argument("--num-points", default=20, type=int)
@@ -54,7 +57,13 @@ if __name__ == "__main__":
 
     for ECR in np.logspace(args.log_ECR_min, args.log_ECR_max, args.num_points):
         if args.D2_in:
-            run(args.D2_in, dir2, ECR)
+            if args.BC_x:
+                run(args.D2_in, args.BC_x, dir2, ECR)
+            if args.BC_y:
+                run(args.D2_in, args.BC_y, dir2, ECR)
 
         if args.D3_in:
-            run(args.D3_in, dir3, ECR)
+            if args.BC_x:
+                run(args.D3_in, args.BC_x, dir3, ECR)
+            if args.BC_y:
+                run(args.D3_in, args.BC_y, dir3, ECR)

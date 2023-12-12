@@ -23,6 +23,7 @@ OverlappingElementPairLocator::reinit()
 {
   _overlapping_elem_pairs.clear();
   _element_pair_info.clear();
+  _secondary_qpoints.clear();
 
   auto pl = _mesh->getPointLocator();
   pl->enable_out_of_mesh_mode();
@@ -56,6 +57,7 @@ OverlappingElementPairLocator::reinit()
           primary_elem, secondary_elem, qpoints, qpoints, JxW, JxW, normal, normal);
       _overlapping_elem_pairs.push_back(pair);
       _element_pair_info.emplace(pair, info);
+      _secondary_qpoints.push_back(qpoints[i]);
     }
   }
 
