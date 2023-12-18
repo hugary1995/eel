@@ -75,5 +75,8 @@ DeformationGradient::computeQpProperties()
   if (_volumetric_locking_correction)
     _F[_qp] *= std::cbrt(_J_avg / _F[_qp].det());
 
-  _F_dot[_qp] = (_F[_qp] - _F_old[_qp]) / _dt;
+  if (_dt > 0)
+    _F_dot[_qp] = (_F[_qp] - _F_old[_qp]) / _dt;
+  else
+    _F_dot[_qp].zero();
 }
