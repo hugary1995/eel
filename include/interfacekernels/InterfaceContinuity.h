@@ -4,6 +4,8 @@
 
 #include "ADInterfaceKernel.h"
 
+class Function;
+
 class InterfaceContinuity : public ADInterfaceKernel
 {
 public:
@@ -14,5 +16,5 @@ public:
 protected:
   virtual ADReal computeQpResidual(Moose::DGResidualType type) override;
 
-  const Real _penalty;
+  const Function & _penalty;
 };

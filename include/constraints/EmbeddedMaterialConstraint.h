@@ -5,6 +5,8 @@
 
 #include "OverlappingElementConstraint.h"
 
+class Function;
+
 class EmbeddedMaterialConstraint : public OverlappingElementConstraint
 {
 public:
@@ -16,5 +18,5 @@ protected:
   virtual Real computeQpResidual(Moose::DGResidualType type) override;
   virtual Real computeQpJacobian(Moose::DGJacobianType type) override;
 
-  const Real _R;
+  const Function & _R;
 };

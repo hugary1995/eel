@@ -27,10 +27,11 @@ InterfaceCoupledVarContinuity::computeQpResidual(Moose::DGResidualType type)
   switch (type)
   {
     case Moose::Element:
-      return _test[_i][_qp] * _penalty * (_v[_qp] - _v_neighbor[_qp]);
+      return _test[_i][_qp] * _penalty.value(_t, _q_point[_qp]) * (_v[_qp] - _v_neighbor[_qp]);
 
     case Moose::Neighbor:
-      return -_test_neighbor[_i][_qp] * _penalty * (_v[_qp] - _v_neighbor[_qp]);
+      return -_test_neighbor[_i][_qp] * _penalty.value(_t, _q_point[_qp]) *
+             (_v[_qp] - _v_neighbor[_qp]);
   }
 
   return 0;

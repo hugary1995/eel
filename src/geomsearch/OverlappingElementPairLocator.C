@@ -43,21 +43,24 @@ OverlappingElementPairLocator::reinit()
     // For each quadrature point, find the overlapping primary element, i.e. the element on the
     // primary subdomain that contains the quadrature point.
     const std::set<subdomain_id_type> allowed_subdomains{_primary};
+    std::set<const Elem *> primary_elems;
     for (auto i : index_range(qpoints))
     {
-      const auto primary_elem = (*pl)(qpoints[i], &allowed_subdomains);
-      if (!primary_elem)
+      (*pl)(qpoints[i], primary_elems, &allowed_subdomains);
+      if (primary_elems.empty())
         mooseError("Cannot locate primary element for secondary element ",
                    secondary_elem->id(),
                    " at its quadrature point ",
                    qpoints[i]);
-
-      std::pair<const Elem *, const Elem *> pair{primary_elem, secondary_elem};
-      ElementPairInfo info(
-          primary_elem, secondary_elem, qpoints, qpoints, JxW, JxW, normal, normal);
-      _overlapping_elem_pairs.push_back(pair);
-      _element_pair_info.emplace(pair, info);
-      _secondary_qpoints.push_back(qpoints[i]);
+      for (auto primary_elem : primary_elems)
+      {
+        std::pair<const Elem *, const Elem *> pair{primary_elem, secondary_elem};
+        ElementPairInfo info(
+            primary_elem, secondary_elem, qpoints, qpoints, JxW, JxW, normal, normal);
+        _overlapping_elem_pairs.push_back(pair);
+        _element_pair_info.emplace(pair, info);
+        _secondary_qpoints.push_back(qpoints[i]);
+      }
     }
   }
 
