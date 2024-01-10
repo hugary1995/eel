@@ -3,6 +3,7 @@
 #pragma once
 
 #include "MathUtils.h"
+#include "PermutationTensor.h"
 
 namespace MathUtils
 {
@@ -31,6 +32,17 @@ inline ADReal
 inner(const ADRankTwoTensor & a, const ADRankTwoTensor & b)
 {
   return a.doubleContraction(b);
+}
+
+inline ADRankThreeTensor
+leviCivita()
+{
+  ADRankThreeTensor e;
+  for (auto i : make_range(3))
+    for (auto j : make_range(3))
+      for (auto k : make_range(3))
+        e(i, j, k) = PermutationTensor::eps(i, j, k);
+  return e;
 }
 
 }

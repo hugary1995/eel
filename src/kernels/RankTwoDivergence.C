@@ -30,5 +30,10 @@ RankTwoDivergence::RankTwoDivergence(const InputParameters & params)
 ADReal
 RankTwoDivergence::computeQpResidual()
 {
-  return -_factor * _tensor[_qp].row(_component) * _grad_test[_i][_qp];
+  ADReal res = _tensor[_qp].row(_component) * _grad_test[_i][_qp];
+
+  if (getBlockCoordSystem() != Moose::COORD_RZ && _component == 0)
+    res += _test[_i][_qp] / _q_point[_qp](0) * _tensor[_qp](2, 2);
+
+  return -_factor * res;
 }
