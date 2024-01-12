@@ -4,12 +4,18 @@ omega = '${fparse 2*pi*f}'
 
 # magnetic permeability
 mu_air = 1.26e-6
-mu_workpiece = '${fparse 10*mu_air}'
+mu_pipe = '${fparse 10*mu_air}'
+mu_PCM = '${fparse 1*mu_air}'
+mu_container = '${fparse 10*mu_air}'
+mu_insulation = '${fparse 1*mu_air}'
 mu_coil = '${fparse 1*mu_air}'
 
 # electrical conducitivity
-sigma_workpiece = 1e7
 sigma_air = 1e-9 # 1e-13~1e-9
+sigma_pipe = 1e7
+sigma_PCM = 1e6
+sigma_container = 1e7
+sigma_insulation = 1e3
 sigma_coil = 6e7
 
 # applied current density
@@ -17,54 +23,9 @@ ix = 1e4
 iy = 0
 
 [Mesh]
-  [main_domain]
-    type = GeneratedMeshGenerator
-    dim = 2
-    xmax = 0.1
-    ymax = 0.4
-    nx = 200
-    ny = 100
-  []
-  [extended_domain]
-    type = GeneratedMeshGenerator
-    dim = 2
-    xmin = 0.1
-    xmax = 1
-    ymax = 0.4
-    nx = 100
-    ny = 100
-    boundary_id_offset = 100
-    boundary_name_prefix = extended
-  []
-  [domain]
-    type = StitchedMeshGenerator
-    inputs = 'main_domain extended_domain'
-    clear_stitched_boundary_ids = true
-    stitch_boundaries_pairs = 'right extended_left'
-  []
-  [air]
-    type = SubdomainBoundingBoxGenerator
-    input = domain
-    block_id = 0
-    block_name = air
-    bottom_left = '0 0 0'
-    top_right = '0.1 0.4 0'
-  []
-  [workpiece]
-    type = SubdomainBoundingBoxGenerator
-    input = air
-    block_id = 1
-    block_name = workpiece
-    bottom_left = '0 0 0'
-    top_right = '0.05 0.4 0'
-  []
-  [coil]
-    type = SubdomainBoundingBoxGenerator
-    input = workpiece
-    block_id = 2
-    block_name = coil
-    bottom_left = '0.07 0 0'
-    top_right = '0.08 0.4 0'
+  [fmg]
+    type = FileMeshGenerator
+    file = 'gold/domain.msh'
   []
   coord_type = RZ
 []
@@ -178,11 +139,29 @@ iy = 0
 []
 
 [Materials]
-  [workpiece]
+  [pipe]
     type = ADGenericConstantMaterial
     prop_names = 'mu sigma'
-    prop_values = '${mu_workpiece} ${sigma_workpiece}'
-    block = 'workpiece'
+    prop_values = '${mu_pipe} ${sigma_pipe}'
+    block = 'pipe'
+  []
+  [PCM]
+    type = ADGenericConstantMaterial
+    prop_names = 'mu sigma'
+    prop_values = '${mu_PCM} ${sigma_PCM}'
+    block = 'PCM'
+  []
+  [container]
+    type = ADGenericConstantMaterial
+    prop_names = 'mu sigma'
+    prop_values = '${mu_container} ${sigma_container}'
+    block = 'container'
+  []
+  [insulation]
+    type = ADGenericConstantMaterial
+    prop_names = 'mu sigma'
+    prop_values = '${mu_insulation} ${sigma_insulation}'
+    block = 'insulation'
   []
   [air]
     type = ADGenericConstantMaterial
@@ -242,18 +221,6 @@ iy = 0
   []
 []
 
-[VectorPostprocessors]
-  [current]
-    type = LineValueSampler
-    variable = ie
-    sort_by = x
-    num_points = 1000
-    start_point = '0 0 0'
-    end_point = '0.05 0 0'
-    execute_on = 'TIMESTEP_END'
-  []
-[]
-
 [Executioner]
   type = Transient
   solve_type = NEWTON
@@ -280,8 +247,4 @@ iy = 0
 [Outputs]
   exodus = true
   print_linear_residuals = false
-  [csv]
-    type = CSV
-    execute_on = 'TIMESTEP_END'
-  []
 []

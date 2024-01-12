@@ -38,7 +38,7 @@ MagnetizingTensor::computeQpProperties()
   auto grad_A = ADRankTwoTensor::initializeFromRows(
       (*_grad_A[0])[_qp], (*_grad_A[1])[_qp], (*_grad_A[2])[_qp]);
 
-  if (getBlockCoordSystem() != Moose::COORD_RZ)
+  if (getBlockCoordSystem() == Moose::COORD_RZ)
     grad_A(2, 2) = (*_A[0])[_qp] / _q_point[_qp](0);
 
   _H[_qp] = 1 / _mu[_qp] * grad_A;
