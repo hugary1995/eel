@@ -1,10 +1,10 @@
 # frequency
-f = 100
+f = 30000
 omega = '${fparse 2*pi*f}'
 
 # magnetic permeability
 mu_air = 1.26e-6
-mu_workpiece = '${fparse 10*mu_air}'
+mu_workpiece = '${fparse 1*mu_air}'
 mu_coil = '${fparse 1*mu_air}'
 
 # electrical conducitivity

@@ -4,22 +4,25 @@ omega = '${fparse 2*pi*f}'
 
 # magnetic permeability
 mu_air = 1.26e-6
-mu_pipe = '${fparse 10*mu_air}'
+mu_pipe = '${fparse 1.004*mu_air}'
 mu_PCM = '${fparse 1*mu_air}'
-mu_container = '${fparse 10*mu_air}'
+mu_container = '${fparse 1.004*mu_air}'
 mu_insulation = '${fparse 1*mu_air}'
 mu_coil = '${fparse 1*mu_air}'
 
 # electrical conducitivity
 sigma_air = 1e-9 # 1e-13~1e-9
-sigma_pipe = 1e7
-sigma_PCM = 1e6
-sigma_container = 1e7
-sigma_insulation = 1e3
-sigma_coil = 6e7
+sigma_pipe = 750750.75 # S/m
+sigma_PCM = 23810 # S/m (from Bob's measurement in radial direction)
+sigma_container = 750750.75 # S/m
+sigma_insulation = 1e3 # S/m
+sigma_coil = 6e7 # S/m
 
 # applied current density
-ix = 1e4
+V = 208 # Volt
+R_coil = 0.4108 # m
+n_coil = 10
+ix = '${fparse sigma_coil*V/2/pi/R_coil/n_coil}'
 iy = 0
 
 [Mesh]
@@ -42,6 +45,9 @@ iy = 0
 []
 
 [AuxVariables]
+  [T]
+    block = 'pipe PCM container insulation'
+  []
   [q]
     family = MONOMIAL
     order = CONSTANT
@@ -50,6 +56,7 @@ iy = 0
       property = q
       execute_on = 'TIMESTEP_END'
     []
+    block = 'pipe PCM container insulation'
   []
   [ie]
     family = MONOMIAL
@@ -193,15 +200,10 @@ iy = 0
     expression = 'omega * sigma'
     material_property_names = 'omega sigma'
   []
-  [t]
-    type = ADGenericFunctionMaterial
-    prop_names = 't'
-    prop_values = 't'
-  []
   [frequency]
     type = ADGenericFunctionMaterial
     prop_names = 'omega'
-    prop_values = 't*${omega}'
+    prop_values = '${omega}'
   []
   [current]
     type = EddyCurrent
@@ -218,6 +220,7 @@ iy = 0
     electrical_conductivity = sigma
     magnetic_vector_potential_real = 'Are_x Are_y'
     magnetic_vector_potential_imaginary = 'Aim_x Aim_y'
+    block = 'pipe PCM container insulation'
   []
 []
 
@@ -240,8 +243,7 @@ iy = 0
   l_max_its = 300
   l_tol = 1e-06
 
-  dt = 0.05
-  end_time = 1
+  dt = 1e12
 []
 
 [Outputs]

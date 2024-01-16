@@ -2,7 +2,7 @@ r_pipe = 0.01;
 t_pipe = 0.025;
 t_PCM = 0.3;
 t_container = 0.025;
-t_insulation = 0.05;
+t_insulation = 0.0254;
 t = r_pipe + t_pipe + t_PCM + t_container + t_insulation;
 
 H_PCM = 1;
@@ -11,7 +11,7 @@ H = H_PCM + 2*t_insulation + 2*t_container;
 r_coil = 0.02;
 n_coil = 10;
 s_coil = H/(n_coil-1);
-coil_center_x = t + 0.05;
+coil_center_x = t + 0.0254;
 coil_center_y = -H/2:H/2:s_coil;
 
 t_air_x = 1;
@@ -137,3 +137,6 @@ Physical Surface("container") = {3};
 Physical Surface("insulation") = {4};
 Physical Surface("coil") = {18:54:4};
 Physical Surface("air") = {58};
+
+Physical Line("insulation_surface") = {16};
+Physical Line("pipe_surface") = {1};
