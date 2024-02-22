@@ -1,5 +1,5 @@
 # frequency
-f = 30000
+f = 150000
 omega = '${fparse 2*pi*f}'
 
 # magnetic permeability
@@ -9,11 +9,11 @@ mu_coil = '${fparse 1*mu_air}'
 
 # electrical conducitivity
 sigma_workpiece = 1e7
-sigma_air = 1e-9 # 1e-13~1e-9
+sigma_air = 1e-13 # 1e-13~1e-9
 sigma_coil = 6e7
 
 # applied current density
-ix = 1e4
+ix = 1e9
 iy = 0
 
 [Mesh]
@@ -21,18 +21,18 @@ iy = 0
     type = GeneratedMeshGenerator
     dim = 2
     xmax = 0.1
-    ymax = 0.4
-    nx = 200
-    ny = 100
+    ymax = 0.1
+    nx = 400
+    ny = 25
   []
   [extended_domain]
     type = GeneratedMeshGenerator
     dim = 2
     xmin = 0.1
     xmax = 1
-    ymax = 0.4
+    ymax = 0.1
     nx = 100
-    ny = 100
+    ny = 25
     boundary_id_offset = 100
     boundary_name_prefix = extended
   []
@@ -48,7 +48,7 @@ iy = 0
     block_id = 0
     block_name = air
     bottom_left = '0 0 0'
-    top_right = '0.1 0.4 0'
+    top_right = '0.1 0.1 0'
   []
   [workpiece]
     type = SubdomainBoundingBoxGenerator
@@ -56,7 +56,7 @@ iy = 0
     block_id = 1
     block_name = workpiece
     bottom_left = '0 0 0'
-    top_right = '0.05 0.4 0'
+    top_right = '0.05 0.1 0'
   []
   [coil]
     type = SubdomainBoundingBoxGenerator
@@ -64,7 +64,7 @@ iy = 0
     block_id = 2
     block_name = coil
     bottom_left = '0.07 0 0'
-    top_right = '0.08 0.4 0'
+    top_right = '0.08 0.1 0'
   []
   coord_type = RZ
 []
@@ -213,11 +213,13 @@ iy = 0
     property_name = ind_coef
     expression = 'omega * sigma'
     material_property_names = 'omega sigma'
+    block = 'workpiece air'
   []
-  [t]
-    type = ADGenericFunctionMaterial
-    prop_names = 't'
-    prop_values = 't'
+  [induction_coef_coil]
+    type = ADGenericConstantMaterial
+    prop_names = 'ind_coef'
+    prop_values = '0'
+    block = 'coil'
   []
   [frequency]
     type = ADGenericFunctionMaterial
@@ -251,6 +253,27 @@ iy = 0
     start_point = '0 0 0'
     end_point = '0.05 0 0'
     execute_on = 'TIMESTEP_END'
+  []
+[]
+
+[Postprocessors]
+  [power_workpiece]
+    type = ADElementIntegralMaterialProperty
+    mat_prop = q
+    block = 'workpiece'
+    execute_on = 'INITIAL TIMESTEP_END'
+  []
+  [power_air]
+    type = ADElementIntegralMaterialProperty
+    mat_prop = q
+    block = 'air'
+    execute_on = 'INITIAL TIMESTEP_END'
+  []
+  [power_coil]
+    type = ADElementIntegralMaterialProperty
+    mat_prop = q
+    block = 'coil'
+    execute_on = 'INITIAL TIMESTEP_END'
   []
 []
 

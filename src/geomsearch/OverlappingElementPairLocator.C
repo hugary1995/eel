@@ -3,11 +3,12 @@
 
 #include "OverlappingElementPairLocator.h"
 
-OverlappingElementPairLocator::OverlappingElementPairLocator(MooseMesh * mesh,
-                                                             Assembly * assembly,
-                                                             FEProblemBase * fe_problem,
-                                                             const SubdomainID primary,
-                                                             const SubdomainID secondary)
+OverlappingElementPairLocator::OverlappingElementPairLocator(
+    MooseMesh * mesh,
+    Assembly * assembly,
+    FEProblemBase * fe_problem,
+    const SubdomainID primary,
+    const std::vector<SubdomainID> & secondary)
   : ElementPairLocator(0),
     _mesh(mesh),
     _assembly(assembly),
@@ -27,39 +28,47 @@ OverlappingElementPairLocator::reinit()
 
   auto pl = _mesh->getPointLocator();
   pl->enable_out_of_mesh_mode();
-  _assembly->setCurrentSubdomainID(_secondary);
 
-  // Loop over secondary elements
-  for (const auto secondary_elem :
-       as_range(_mesh->getMesh().active_subdomain_elements_begin(_secondary),
-                _mesh->getMesh().active_subdomain_elements_end(_secondary)))
+  const std::set<subdomain_id_type> allowed_subdomains{_primary};
+  std::set<const Elem *> primary_elems;
+  std::map<const Elem *, std::set<const Elem *>> connectivity;
+
+  for (auto i : index_range(_secondary))
   {
-    // Get the quadrature points and weights on the secondary element
-    _assembly->reinit(secondary_elem);
-    const auto qpoints = _assembly->qPoints().stdVector();
-    const auto JxW = _assembly->JxW().stdVector();
-    const Point normal;
+    _assembly->setCurrentSubdomainID(_secondary[i]);
 
-    // For each quadrature point, find the overlapping primary element, i.e. the element on the
-    // primary subdomain that contains the quadrature point.
-    const std::set<subdomain_id_type> allowed_subdomains{_primary};
-    std::set<const Elem *> primary_elems;
-    for (auto i : index_range(qpoints))
+    // Loop over secondary elements
+    for (const auto secondary_elem :
+         as_range(_mesh->getMesh().active_subdomain_elements_begin(_secondary[i]),
+                  _mesh->getMesh().active_subdomain_elements_end(_secondary[i])))
     {
-      (*pl)(qpoints[i], primary_elems, &allowed_subdomains);
-      if (primary_elems.empty())
-        mooseError("Cannot locate primary element for secondary element ",
-                   secondary_elem->id(),
-                   " at its quadrature point ",
-                   qpoints[i]);
-      for (auto primary_elem : primary_elems)
+      // Get the quadrature points and weights on the secondary element
+      _assembly->reinit(secondary_elem);
+      const auto qpoints = _assembly->qPoints().stdVector();
+      const auto JxW = _assembly->JxW().stdVector();
+      const Point normal;
+
+      // For each quadrature point, find the overlapping primary element, i.e. the element on the
+      // primary subdomain that contains the quadrature point.
+      for (auto i : index_range(qpoints))
       {
-        std::pair<const Elem *, const Elem *> pair{primary_elem, secondary_elem};
-        ElementPairInfo info(
-            primary_elem, secondary_elem, qpoints, qpoints, JxW, JxW, normal, normal);
-        _overlapping_elem_pairs.push_back(pair);
-        _element_pair_info.emplace(pair, info);
-        _secondary_qpoints.push_back(qpoints[i]);
+        (*pl)(qpoints[i], primary_elems, &allowed_subdomains);
+        if (primary_elems.empty())
+          mooseError("Cannot locate primary element for secondary element ",
+                     secondary_elem->id(),
+                     " at its quadrature point ",
+                     qpoints[i]);
+        for (auto primary_elem : primary_elems)
+        {
+          std::pair<const Elem *, const Elem *> pair{primary_elem, secondary_elem};
+          ElementPairInfo info(
+              primary_elem, secondary_elem, qpoints, qpoints, JxW, JxW, normal, normal);
+          _overlapping_elem_pairs.push_back(pair);
+          _element_pair_info.emplace(pair, info);
+          _secondary_qpoints.push_back(qpoints[i]);
+
+          connectivity[primary_elem].insert(secondary_elem);
+        }
       }
     }
   }
@@ -68,9 +77,6 @@ OverlappingElementPairLocator::reinit()
   for (const auto primary_elem :
        as_range(_mesh->getMesh().active_subdomain_elements_begin(_primary),
                 _mesh->getMesh().active_subdomain_elements_end(_primary)))
-  {
-    for (auto && [e1, e2] : _overlapping_elem_pairs)
-      if (primary_elem->id() == e1->id())
-        _fe_problem->addGhostedElem(e2->id());
-  }
+    for (auto && sec : connectivity[primary_elem])
+      _fe_problem->addGhostedElem(sec->id());
 }

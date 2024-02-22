@@ -24,5 +24,10 @@ RankOneDivergence::RankOneDivergence(const InputParameters & params)
 ADReal
 RankOneDivergence::computeQpResidual()
 {
-  return -_factor * _vector[_qp] * _grad_test[_i][_qp];
+  ADReal res = _vector[_qp] * _grad_test[_i][_qp];
+
+  if (getBlockCoordSystem() == Moose::COORD_RZ)
+    res += _test[_i][_qp] / _q_point[_qp](0) * _vector[_qp](2);
+
+  return -_factor * res;
 }

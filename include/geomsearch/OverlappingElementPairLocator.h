@@ -16,7 +16,7 @@ public:
                                 Assembly * assembly,
                                 FEProblemBase * feproblem,
                                 const SubdomainID primary,
-                                const SubdomainID secondary);
+                                const std::vector<SubdomainID> & secondary);
 
   virtual void reinit() override;
   virtual void update() override { reinit(); }
@@ -27,7 +27,7 @@ protected:
   Assembly * _assembly;
   FEProblemBase * _fe_problem;
   const SubdomainID _primary;
-  const SubdomainID _secondary;
+  const std::vector<SubdomainID> _secondary;
 
 private:
   std::list<std::pair<const Elem *, const Elem *>> _overlapping_elem_pairs;

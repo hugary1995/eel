@@ -1,34 +1,39 @@
-# frequency
-f = 100
-omega = '${fparse 2*pi*f}'
-
 # magnetic permeability
 mu_air = 1.26e-6
-mu_pipe = '${fparse 1.004*mu_air}'
-mu_PCM = '${fparse 1*mu_air}'
+mu_tube = '${fparse 1.004*mu_air}'
+mu_PCMGF = '${fparse 1*mu_air}'
 mu_container = '${fparse 1.004*mu_air}'
 mu_insulation = '${fparse 1*mu_air}'
 mu_coil = '${fparse 1*mu_air}'
 
 # electrical conducitivity
-sigma_air = 1e-9 # 1e-13~1e-9
-sigma_pipe = 750750.75 # S/m
-sigma_PCM = 23810 # S/m (from Bob's measurement in radial direction)
-sigma_container = 750750.75 # S/m
+sigma_air = 1e-12 # 1e-13~1e-9
+sigma_tube_T = '255.2222222 366.3333333 477.4444444 588.5555556 671.8888889 699.6666667 727.4444444 810.7777778 921.8888889 1033 1144.111111 1255.222222'
+sigma_tube = '1351351.351 1219512.195 1111111.111 1030927.835 980392.1569 970873.7864 961538.4615 925925.9259 892857.1429 869565.2174 854700.8547 833333.3333' # S/m
+sigma_PCMGF = 23810 # S/m (from Bob's measurement in radial direction)
+sigma_container_T = '255.2222222 366.3333333 477.4444444 588.5555556 671.8888889 699.6666667 727.4444444 810.7777778 921.8888889 1033 1144.111111 1255.222222'
+sigma_container = '1351351.351 1219512.195 1111111.111 1030927.835 980392.1569 970873.7864 961538.4615 925925.9259 892857.1429 869565.2174 854700.8547 833333.3333' # S/m
 sigma_insulation = 1e3 # S/m
-sigma_coil = 6e7 # S/m
 
 # applied current density
-V = 208 # Volt
-R_coil = 0.4108 # m
-n_coil = 10
-ix = '${fparse sigma_coil*V/2/pi/R_coil/n_coil}'
+ix = ${i}
 iy = 0
 
 [Mesh]
-  [fmg]
+  [fmg0]
     type = FileMeshGenerator
-    file = 'gold/domain.msh'
+    file = 'gold/model_v002.exo'
+  []
+  [fmg]
+    type = MeshRepairGenerator
+    input = fmg0
+    fix_elements_orientation = true
+  []
+  [scale]
+    type = TransformGenerator
+    input = fmg
+    transform = SCALE
+    vector_value = '1e-3 1e-3 1e-3'
   []
   coord_type = RZ
 []
@@ -46,7 +51,7 @@ iy = 0
 
 [AuxVariables]
   [T]
-    block = 'pipe PCM container insulation'
+    block = 'tube PCMGF container_pipe container_plate insulation'
   []
   [q]
     family = MONOMIAL
@@ -56,7 +61,7 @@ iy = 0
       property = q
       execute_on = 'TIMESTEP_END'
     []
-    block = 'pipe PCM container insulation'
+    block = 'tube PCMGF container_pipe container_plate insulation'
   []
   [ie]
     family = MONOMIAL
@@ -146,23 +151,39 @@ iy = 0
 []
 
 [Materials]
-  [pipe]
+  [tube]
     type = ADGenericConstantMaterial
-    prop_names = 'mu sigma'
-    prop_values = '${mu_pipe} ${sigma_pipe}'
-    block = 'pipe'
+    prop_names = 'mu'
+    prop_values = '${mu_tube}'
+    block = 'tube'
   []
-  [PCM]
+  [tube_sigma]
+    type = ADPiecewiseLinearInterpolationMaterial
+    property = 'sigma'
+    variable = 'T'
+    x = ${sigma_tube_T}
+    y = ${sigma_tube}
+    block = 'tube'
+  []
+  [PCMGF]
     type = ADGenericConstantMaterial
     prop_names = 'mu sigma'
-    prop_values = '${mu_PCM} ${sigma_PCM}'
-    block = 'PCM'
+    prop_values = '${mu_PCMGF} ${sigma_PCMGF}'
+    block = 'PCMGF'
   []
   [container]
     type = ADGenericConstantMaterial
-    prop_names = 'mu sigma'
-    prop_values = '${mu_container} ${sigma_container}'
-    block = 'container'
+    prop_names = 'mu'
+    prop_values = '${mu_container}'
+    block = 'container_pipe container_plate'
+  []
+  [container_sigma]
+    type = ADPiecewiseLinearInterpolationMaterial
+    property = 'sigma'
+    variable = 'T'
+    x = ${sigma_container_T}
+    y = ${sigma_container}
+    block = 'container_pipe container_plate'
   []
   [insulation]
     type = ADGenericConstantMaterial
@@ -220,7 +241,16 @@ iy = 0
     electrical_conductivity = sigma
     magnetic_vector_potential_real = 'Are_x Are_y'
     magnetic_vector_potential_imaginary = 'Aim_x Aim_y'
-    block = 'pipe PCM container insulation'
+    # block = 'tube PCMGF container_pipe container_plate insulation'
+  []
+[]
+
+[Postprocessors]
+  [power]
+    type = ADElementIntegralMaterialProperty
+    mat_prop = q
+    # block = 'tube PCMGF container_pipe container_plate insulation'
+    execute_on = 'INITIAL TIMESTEP_END'
   []
 []
 

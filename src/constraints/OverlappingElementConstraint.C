@@ -8,7 +8,7 @@ OverlappingElementConstraint::validParams()
 {
   InputParameters params = ElemElemConstraint::validParams();
   params.addRequiredParam<SubdomainName>("primary", "primary block id");
-  params.addRequiredParam<SubdomainName>("secondary", "secondary block id");
+  params.addRequiredParam<std::vector<SubdomainName>>("secondary", "list of secondary block ids");
   params.suppressParameter<unsigned int>("interface_id");
 
   return params;
@@ -16,9 +16,11 @@ OverlappingElementConstraint::validParams()
 
 OverlappingElementConstraint::OverlappingElementConstraint(const InputParameters & parameters)
   : ElemElemConstraint(parameters),
-    _primary(_mesh.getSubdomainID(getParam<SubdomainName>("primary"))),
-    _secondary(_mesh.getSubdomainID(getParam<SubdomainName>("secondary")))
+    _primary(_mesh.getSubdomainID(getParam<SubdomainName>("primary")))
 {
+  for (auto sec : getParam<std::vector<SubdomainName>>("secondary"))
+    _secondary.push_back(_mesh.getSubdomainID(sec));
+
   auto oepl = std::make_shared<OverlappingElementPairLocator>(
       &_mesh, &_assembly, &_fe_problem, _primary, _secondary);
   oepl->reinit();

@@ -3,8 +3,9 @@
 # frequency
 f = 100
 omega = '${fparse 2*pi*f}'
+tramp = 60
 
-tcharge = 10800 # 3hr*3600
+tcharge = 28800 # 8hr*3600
 end_time = '${tcharge}'
 
 dtmax = 60
@@ -42,41 +43,38 @@ T_inf_tube = 300
 T0 = 300
 
 # applied current density
-V = 100 # Volt
+V = 15 # Volt
 R_coil = 0.23775 # m
 n_coil = 9
 sigma_coil = 5.8e7 # S/m
 i = '${fparse sigma_coil*V/2/pi/R_coil/n_coil}'
-# r_coil = 0.0127 # m
-# coil_ratio = 0.1 # 90% of coil cross-section is hollow for coolant run-through
-# I = '${fparse i*pi*r_coil^2*coil_ratio}'
-# P = '${fparse V*I}'
+r_coil = 0.0127 # m
+I = '${fparse i*pi*r_coil^2}'
+P = '${fparse V*I}'
+
+# magnetic permeability
+mu_air = 1.26e-6
+mu_tube = '${fparse 1.004*mu_air}'
+mu_PCMGF = '${fparse 1*mu_air}'
+mu_container = '${fparse 1.004*mu_air}'
+mu_insulation = '${fparse 1*mu_air}'
+mu_coil = '${fparse 1*mu_air}'
+
+# electrical conducitivity
+sigma_air = 1e-12 # 1e-13~1e-9
+sigma_tube_T = '255.2222222 366.3333333 477.4444444 588.5555556 671.8888889 699.6666667 727.4444444 810.7777778 921.8888889 1033 1144.111111 1255.222222'
+sigma_tube = '1351351.351 1219512.195 1111111.111 1030927.835 980392.1569 970873.7864 961538.4615 925925.9259 892857.1429 869565.2174 854700.8547 833333.3333' # S/m
+sigma_PCMGF = 23810 # S/m (from Bob's measurement in radial direction)
+sigma_container_T = '255.2222222 366.3333333 477.4444444 588.5555556 671.8888889 699.6666667 727.4444444 810.7777778 921.8888889 1033 1144.111111 1255.222222'
+sigma_container = '1351351.351 1219512.195 1111111.111 1030927.835 980392.1569 970873.7864 961538.4615 925925.9259 892857.1429 869565.2174 854700.8547 833333.3333' # S/m
+sigma_insulation = 1e3 # S/m
+
+# applied current density
+ix = ${i}
+iy = 0
 
 [GlobalParams]
   energy_densities = 'H'
-[]
-
-[MultiApps]
-  [induction]
-    type = TransientMultiApp
-    input_files = 'induction.i'
-    cli_args = 'omega=${omega};i=${i};sigma_coil=${sigma_coil}'
-  []
-[]
-
-[Transfers]
-  [to_T]
-    type = MultiAppShapeEvaluationTransfer
-    to_multi_app = 'induction'
-    source_variable = 'T'
-    variable = 'T'
-  []
-  [from_q]
-    type = MultiAppShapeEvaluationTransfer
-    from_multi_app = 'induction'
-    source_variable = 'q'
-    variable = 'q'
-  []
 []
 
 [Mesh]
@@ -95,26 +93,38 @@ i = '${fparse sigma_coil*V/2/pi/R_coil/n_coil}'
     transform = SCALE
     vector_value = '1e-3 1e-3 1e-3'
   []
-  [delete]
-    type = BlockDeletionGenerator
-    input = scale
-    block = 'coil air'
-  []
   coord_type = RZ
+[]
+
+[Functions]
+  [ix]
+    type = ParsedFunction
+    expression = 'if(t<${tramp}, ${ix}/${tramp}*t, ${ix})'
+  []
+  [iy]
+    type = ParsedFunction
+    expression = 'if(t<${tramp}, ${iy}/${tramp}*t, ${iy})'
+  []
 []
 
 [Variables]
   [T]
     initial_condition = ${T0}
+    block = 'tube PCMGF container_pipe container_plate insulation'
+  []
+  [Are_x]
+  []
+  [Aim_x]
+  []
+  [Are_y]
+  []
+  [Aim_y]
   []
 []
 
 [AuxVariables]
-  [q]
-    order = CONSTANT
-    family = MONOMIAL
-  []
   [T_old]
+    block = 'tube PCMGF container_pipe container_plate insulation'
     [AuxKernel]
       type = ParsedAux
       expression = 'T'
@@ -141,16 +151,96 @@ i = '${fparse sigma_coil*V/2/pi/R_coil/n_coil}'
     variable = T
     density = rho
     specific_heat = cp
+    block = 'tube PCMGF container_pipe container_plate insulation'
   []
   [energy_balance_2]
     type = RankOneDivergence
     variable = T
     vector = h
+    block = 'tube PCMGF container_pipe container_plate insulation'
   []
   [heat_source]
-    type = CoupledForce
+    type = MaterialSource
     variable = T
-    v = q
+    prop = q
+    coefficient = -1
+    block = 'tube PCMGF container_pipe container_plate insulation'
+  []
+[]
+
+[Kernels]
+  # Real part
+  [real_Hdiv_x]
+    type = RankTwoDivergence
+    variable = Are_x
+    tensor = Hre
+    component = 0
+    factor = -1
+  []
+  [real_Hdiv_y]
+    type = RankTwoDivergence
+    variable = Are_y
+    tensor = Hre
+    component = 1
+    factor = -1
+  []
+  [real_induction_x]
+    type = MaterialReaction
+    variable = Are_x
+    coupled_variable = Aim_x
+    prop = ind_coef
+    coefficient = -1
+  []
+  [real_induction_y]
+    type = MaterialReaction
+    variable = Are_y
+    coupled_variable = Aim_y
+    prop = ind_coef
+    coefficient = -1
+  []
+  [applied_current_x]
+    type = MaterialSource
+    variable = Are_x
+    prop = ix
+    coefficient = 1
+    block = 'coil'
+  []
+  [applied_current_y]
+    type = MaterialSource
+    variable = Are_y
+    prop = iy
+    coefficient = 1
+    block = 'coil'
+  []
+
+  # Imaginary part
+  [imag_Hdiv_x]
+    type = RankTwoDivergence
+    variable = Aim_x
+    tensor = Him
+    component = 0
+    factor = -1
+  []
+  [imag_Hdiv_y]
+    type = RankTwoDivergence
+    variable = Aim_y
+    tensor = Him
+    component = 1
+    factor = -1
+  []
+  [imag_induction_x]
+    type = MaterialReaction
+    variable = Aim_x
+    coupled_variable = Are_x
+    prop = ind_coef
+    coefficient = 1
+  []
+  [imag_induction_y]
+    type = MaterialReaction
+    variable = Aim_y
+    coupled_variable = Are_y
+    prop = ind_coef
+    coefficient = 1
   []
 []
 
@@ -259,6 +349,7 @@ i = '${fparse sigma_coil*V/2/pi/R_coil/n_coil}'
     type = HeatFlux
     heat_flux = h
     temperature = T
+    block = 'tube PCMGF container_pipe container_plate insulation'
   []
   [qconv_insul]
     type = ADParsedMaterial
@@ -284,6 +375,115 @@ i = '${fparse sigma_coil*V/2/pi/R_coil/n_coil}'
     expression = 'rho*cp*(T-T_old)/2'
     material_property_names = 'rho cp'
     coupled_variables = 'T T_old'
+    block = 'tube PCMGF container_pipe container_plate insulation'
+  []
+[]
+
+[Materials]
+  [tube_mu]
+    type = ADGenericConstantMaterial
+    prop_names = 'mu'
+    prop_values = '${mu_tube}'
+    block = 'tube'
+  []
+  [tube_sigma]
+    type = ADPiecewiseLinearInterpolationMaterial
+    property = 'sigma'
+    variable = 'T'
+    x = ${sigma_tube_T}
+    y = ${sigma_tube}
+    block = 'tube'
+  []
+  [PCMGF_mu_sigma]
+    type = ADGenericConstantMaterial
+    prop_names = 'mu sigma'
+    prop_values = '${mu_PCMGF} ${sigma_PCMGF}'
+    block = 'PCMGF'
+  []
+  [container_mu]
+    type = ADGenericConstantMaterial
+    prop_names = 'mu'
+    prop_values = '${mu_container}'
+    block = 'container_pipe container_plate'
+  []
+  [container_sigma]
+    type = ADPiecewiseLinearInterpolationMaterial
+    property = 'sigma'
+    variable = 'T'
+    x = ${sigma_container_T}
+    y = ${sigma_container}
+    block = 'container_pipe container_plate'
+  []
+  [insulation_mu_sigma]
+    type = ADGenericConstantMaterial
+    prop_names = 'mu sigma'
+    prop_values = '${mu_insulation} ${sigma_insulation}'
+    block = 'insulation'
+  []
+  [air_mu_sigma]
+    type = ADGenericConstantMaterial
+    prop_names = 'mu sigma'
+    prop_values = '${mu_air} ${sigma_air}'
+    block = 'air'
+  []
+  [coil_mu_sigma]
+    type = ADGenericConstantMaterial
+    prop_names = 'mu sigma'
+    prop_values = '${mu_coil} ${sigma_coil}'
+    block = 'coil'
+  []
+  [magnetizing_field_real]
+    type = MagnetizingTensor
+    magnetizing_tensor = Hre
+    magnetic_vector_potential = 'Are_x Are_y'
+    magnetic_permeability = mu
+  []
+  [magnetizing_field_imag]
+    type = MagnetizingTensor
+    magnetizing_tensor = Him
+    magnetic_vector_potential = 'Aim_x Aim_y'
+    magnetic_permeability = mu
+  []
+  [induction_coef]
+    type = ADParsedMaterial
+    property_name = ind_coef
+    expression = 'omega * sigma'
+    material_property_names = 'omega sigma'
+    block = 'tube PCMGF container_pipe container_plate insulation air'
+  []
+  [induction_coef_coil]
+    type = ADGenericConstantMaterial
+    prop_names = 'ind_coef'
+    prop_values = '0'
+    block = 'coil'
+  []
+  [frequency]
+    type = ADGenericFunctionMaterial
+    prop_names = 'omega'
+    prop_values = '${omega}'
+  []
+  [i]
+    type = ADGenericFunctionMaterial
+    prop_names = 'ix iy'
+    prop_values = 'ix iy'
+    block = 'coil'
+  []
+  [current]
+    type = EddyCurrent
+    current_density = ie
+    frequency = omega
+    electrical_conductivity = sigma
+    magnetic_vector_potential_real = 'Are_x Are_y'
+    magnetic_vector_potential_imaginary = 'Aim_x Aim_y'
+  []
+  [heat]
+    type = InductionHeating
+    heat_source = q
+    frequency = omega
+    electrical_conductivity = sigma
+    magnetic_vector_potential_real = 'Are_x Are_y'
+    magnetic_vector_potential_imaginary = 'Aim_x Aim_y'
+    block = 'tube PCMGF container_pipe container_plate insulation'
   []
 []
 
@@ -366,9 +566,25 @@ i = '${fparse sigma_coil*V/2/pi/R_coil/n_coil}'
     postprocessor = 'dH_insulation'
     execute_on = 'INITIAL TIMESTEP_END'
   []
+  [P]
+    type = FunctionValuePostprocessor
+    function = '${P}'
+    execute_on = 'INITIAL'
+  []
+  [E]
+    type = TimeIntegratedPostprocessor
+    value = P
+    execute_on = 'INITIAL TIMESTEP_END'
+  []
+  [H]
+    type = ParsedPostprocessor
+    pp_names = 'H_tube H_PCMGF H_container H_insulation'
+    function = 'H_tube+H_PCMGF+H_container+H_insulation'
+  []
   [power]
-    type = ElementIntegralVariablePostprocessor
-    variable = q
+    type = ADElementIntegralMaterialProperty
+    mat_prop = q
+    block = 'tube PCMGF container_pipe container_plate insulation'
     execute_on = 'INITIAL TIMESTEP_END'
   []
 []
@@ -386,21 +602,25 @@ i = '${fparse sigma_coil*V/2/pi/R_coil/n_coil}'
   type = Transient
   solve_type = NEWTON
 
+  petsc_options = '-ksp_converged_reason'
   petsc_options_iname = '-pc_type'
   petsc_options_value = 'lu'
   automatic_scaling = true
 
+  reuse_preconditioner = true
+  reuse_preconditioner_max_linear_its = 25
+
   end_time = ${end_time}
   dtmax = ${dtmax}
-  dtmin = 0.01
+  dtmin = 1e-11
   [TimeStepper]
     type = IterationAdaptiveDT
     dt = ${dt}
     cutback_factor = 0.2
     cutback_factor_at_failure = 0.1
     growth_factor = 1.2
-    optimal_iterations = 7
-    iteration_window = 2
+    optimal_iterations = 8
+    iteration_window = 3
     linear_iteration_ratio = 100000
   []
   [Predictor]
@@ -412,6 +632,7 @@ i = '${fparse sigma_coil*V/2/pi/R_coil/n_coil}'
   nl_abs_tol = 1e-8
   nl_rel_tol = 1e-6
   nl_max_its = 12
+  l_max_its = 150
 []
 
 [Outputs]

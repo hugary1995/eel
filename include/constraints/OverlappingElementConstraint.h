@@ -17,5 +17,5 @@ public:
 
 protected:
   const SubdomainID _primary;
-  const SubdomainID _secondary;
+  std::vector<SubdomainID> _secondary;
 };

@@ -5,16 +5,20 @@
 #include "ThermalEnergyDensity.h"
 #include "RankTwoTensorForward.h"
 
-class FourierPotential : public ThermalEnergyDensity
+template <typename T>
+class FourierPotentialTempl : public ThermalEnergyDensity
 {
 public:
   static InputParameters validParams();
 
-  FourierPotential(const InputParameters & parameters);
+  FourierPotentialTempl(const InputParameters & parameters);
 
 protected:
   void computeQpProperties() override;
 
   /// The thermal conductivity
-  const ADMaterialProperty<Real> & _kappa;
+  const ADMaterialProperty<T> & _kappa;
 };
+
+typedef FourierPotentialTempl<Real> FourierPotential;
+typedef FourierPotentialTempl<RankTwoTensor> AnisotropicFourierPotential;
