@@ -1,6 +1,6 @@
 # units are in meter kelvin second (m,kg,s)
 
-kappa_medium = 18.8 # W/m-K
+kappa_medium = 2 # W/m-K
 kappa_steel_T = '298.15 373.15 473.15 573.15 673.15 773.15 873.15 973.15 1023.15'
 kappa_steel = '14.1 15.4 16.8 18.3 19.7 21.2 22.4 23.9 24.6' # W/m-K
 kappa_insul = 0.4 # W/m-K
@@ -15,12 +15,12 @@ cp_steel = 550 # kg/m^3
 cp_insul = 1130 # kg/m^3
 
 # electrical conducitivity
-sigma_medium = 23810 # S/m
+sigma_medium = 200 # S/m
 sigma_steel_T = '255.2222222 366.3333333 477.4444444 588.5555556 671.8888889 699.6666667 727.4444444 810.7777778 921.8888889 1033 1144.111111 1255.222222'
 sigma_steel = '1351351.351 1219512.195 1111111.111 1030927.835 980392.1569 970873.7864 961538.4615 925925.9259 892857.1429 869565.2174 854700.8547 833333.3333' # S/m
 sigma_insul = 1e-12 # S/m
 
-T_m = '${fparse 151+273.15}' # K, Melting point
+T_m = '${fparse 1000+273.15}' # K, Melting point
 dT_pc = 8
 L = 2.17e5 # J/kg, Latent heat
 
@@ -34,7 +34,8 @@ F = 0.6
 end_time = '${fparse 8*3600}' # 8 hrs
 dt = 0.1
 tramp = 10
-V = 0.025
+I = '${fparse 3000/120}'
+A = 0.001847582
 
 [GlobalParams]
   energy_densities = 'E H'
@@ -75,6 +76,14 @@ V = 0.025
       execute_on = 'INITIAL TIMESTEP_END'
     []
   []
+  [Tc]
+    [AuxKernel]
+      type = ParsedAux
+      expression = 'T-273.15'
+      coupled_variables = 'T'
+      execute_on = 'INITIAL TIMESTEP_END'
+    []
+  []
 []
 
 [Kernels]
@@ -111,10 +120,10 @@ V = 0.025
 []
 
 [Functions]
-  [V]
+  [i]
     type = PiecewiseLinear
     x = '0 ${tramp}'
-    y = '0 ${V}'
+    y = '0 ${fparse I/A}'
   []
 []
 
@@ -122,26 +131,26 @@ V = 0.025
   [ground]
     type = DirichletBC
     variable = Phi
-    boundary = 'pipe_inner'
+    boundary = 'medium_bottom'
     value = 0
   []
   [charge]
-    type = FunctionDirichletBC
+    type = FunctionNeumannBC
     variable = Phi
-    boundary = 'medium_outer'
-    function = 'V'
+    boundary = 'medium_top'
+    function = 'i'
   []
   [convection]
     type = ADMatNeumannBC
     variable = T
-    boundary = 'insulation_outer pipe_outer pipe_inner'
+    boundary = 'insulation_outer'
     value = -1
     boundary_material = qconv
   []
   [radiation]
     type = ADMatNeumannBC
     variable = T
-    boundary = 'insulation_outer pipe_outer'
+    boundary = 'insulation_outer'
     value = -1
     boundary_material = qrad
   []
@@ -152,7 +161,7 @@ V = 0.025
     type = ADGenericConstantMaterial
     prop_names = 'rho cp'
     prop_values = '${rho_steel} ${cp_steel}'
-    block = 'pipe container'
+    block = 'container'
   []
   [steel_kappa]
     type = ADPiecewiseLinearInterpolationMaterial
@@ -160,7 +169,7 @@ V = 0.025
     variable = 'T'
     x = ${kappa_steel_T}
     y = ${kappa_steel}
-    block = 'pipe container'
+    block = 'container'
   []
   [steel_sigma]
     type = ADPiecewiseLinearInterpolationMaterial
@@ -168,11 +177,11 @@ V = 0.025
     variable = 'T'
     x = ${sigma_steel_T}
     y = ${sigma_steel}
-    block = 'pipe container'
+    block = 'container'
   []
   [medium]
     type = ADGenericConstantMaterial
-    prop_names = 'rho cp0 kappa0 sigma'
+    prop_names = 'rho cp kappa0 sigma'
     prop_values = '${rho_medium} ${cp_medium} ${kappa_medium} ${sigma_medium}'
     block = 'medium'
   []
@@ -240,7 +249,7 @@ V = 0.025
     coupled_variables = 'T'
     constant_names = 'htc T_inf'
     constant_expressions = '${htc} ${T_inf}'
-    boundary = 'insulation_outer pipe_outer pipe_inner'
+    boundary = 'insulation_outer'
   []
   [qrad]
     type = ADParsedMaterial
@@ -249,7 +258,7 @@ V = 0.025
     coupled_variables = 'T'
     constant_names = 'T_inf kB F'
     constant_expressions = '${T_inf} ${kB} ${F}'
-    boundary = 'insulation_outer pipe_outer'
+    boundary = 'insulation_outer'
   []
 []
 
@@ -297,32 +306,17 @@ V = 0.025
 []
 
 [Postprocessors]
-  [current]
-    type = NodalSum
-    variable = ir
-    boundary = 'pipe_inner'
-    execute_on = 'INITIAL TIMESTEP_END'
-  []
-  [voltage]
-    type = FunctionValuePostprocessor
-    function = V
-    execute_on = 'INITIAL TIMESTEP_END'
-  []
-  [power]
-    type = ParsedPostprocessor
-    function = '-current * voltage'
-    pp_names = 'current voltage'
-    execute_on = 'INITIAL TIMESTEP_END'
-  []
   [medium_volume]
     type = VolumePostprocessor
     block = 'medium'
+    outputs = 'none'
     execute_on = 'INITIAL'
   []
   [medium_molten]
     type = ADElementIntegralMaterialProperty
     mat_prop = phi
     block = 'medium'
+    outputs = 'none'
     execute_on = 'INITIAL TIMESTEP_END'
   []
   [medium_molten_fraction]
@@ -333,37 +327,9 @@ V = 0.025
   []
   [medium_Tmax]
     type = NodalExtremeValue
-    variable = T
+    variable = Tc
     block = 'medium'
     value_type = max
-    execute_on = 'INITIAL TIMESTEP_END'
-  []
-  [medium_S_rate]
-    type = EnthalpyRate
-    density = rho
-    specific_heat = cp
-    temperature = T
-    block = 'medium'
-    execute_on = 'INITIAL TIMESTEP_END'
-    outputs = none
-  []
-  [medium_S]
-    type = TimeIntegratedPostprocessor
-    value = medium_S_rate
-    execute_on = 'INITIAL TIMESTEP_END'
-  []
-  [medium_L_rate]
-    type = EnthalpyRate
-    density = rho
-    specific_heat = cpL
-    temperature = T
-    block = 'medium'
-    execute_on = 'INITIAL TIMESTEP_END'
-    outputs = none
-  []
-  [medium_L]
-    type = TimeIntegratedPostprocessor
-    value = medium_L_rate
     execute_on = 'INITIAL TIMESTEP_END'
   []
 []
@@ -371,8 +337,8 @@ V = 0.025
 [UserObjects]
   [kill]
     type = Terminator
-    expression = 'medium_molten_fraction>0.999'
-    message = '99.9% of PCM has molten.'
+    expression = 'medium_Tmax>700'
+    message = 'Reached 700 C.'
     execute_on = 'TIMESTEP_END'
   []
 []

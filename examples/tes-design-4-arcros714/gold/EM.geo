@@ -13,7 +13,7 @@ container_H = 6*25.4; // height
 container_t = 0.34*25.4; // thickness
 
 // Insulation
-insul_t = 0.5*25.4; // thickness
+insul_t = 1.5*25.4; // thickness
 
 // Total radius
 R = medium_R + container_t + insul_t;

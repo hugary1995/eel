@@ -15,7 +15,7 @@ mu_insul = '${fparse 1*mu_air}'
 # electrical conducitivity
 sigma_air = 1e-12 # 1e-13~1e-9 S/m
 sigma_medium = 23810 # S/m
-sigma_coil = 2.75e6 # S/m, Note copper conductivity is around 6e7, but induction coil is hollow with water coolant running through
+sigma_coil = 1.75e6 # S/m, Note copper conductivity is around 6e7, but induction coil is hollow with water coolant running through
 sigma_steel_T = '255.2222222 366.3333333 477.4444444 588.5555556 671.8888889 699.6666667 727.4444444 810.7777778 921.8888889 1033 1144.111111 1255.222222'
 sigma_steel = '1351351.351 1219512.195 1111111.111 1030927.835 980392.1569 970873.7864 961538.4615 925925.9259 892857.1429 869565.2174 854700.8547 833333.3333' # S/m
 sigma_insul = 1e-12 # S/m
@@ -338,7 +338,7 @@ non_coil = 'air insulation container medium'
   l_max_its = 300
   l_tol = 1e-06
 
-  dt = 100
+  dt = 10
 []
 
 [Postprocessors]
