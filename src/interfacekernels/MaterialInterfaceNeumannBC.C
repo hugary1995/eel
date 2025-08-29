@@ -13,7 +13,7 @@ MaterialInterfaceNeumannBC::validParams()
   params.addRequiredParam<MaterialPropertyName>(
       "prop", "Name of the material property to provide the multiplier");
   params.addParam<Real>("factor", 1, "The factor to be multiplied");
-  params.addParam<Real>("factor_neighbor", -1, "The factor to be multiplied on the neighbor side");
+  params.addParam<Real>("factor_neighbor", 1, "The factor to be multiplied on the neighbor side");
   return params;
 }
 
@@ -34,7 +34,7 @@ MaterialInterfaceNeumannBC::computeQpResidual(Moose::DGResidualType type)
       return -_test[_i][_qp] * _mat_prop[_qp] * _factor;
 
     case Moose::Neighbor:
-      return -_test[_i][_qp] * _mat_prop[_qp] * _factor_neighbor;
+      return _test[_i][_qp] * _mat_prop[_qp] * _factor_neighbor;
   }
 
   return 0;

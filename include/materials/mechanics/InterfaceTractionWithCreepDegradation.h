@@ -25,17 +25,6 @@ protected:
   const MaterialProperty<Real> & _D_old;
   ADMaterialProperty<Real> & _g;
 
-  ADMaterialProperty<Real> & _juc;
-  const MaterialProperty<Real> & _juc_old;
-
-  const ADMaterialProperty<Real> & _Gc;
-  ADMaterialProperty<Real> & _psi;
-  const MaterialProperty<Real> & _psi_old;
-
-  const ADMaterialProperty<Real> & _A;
-  const Real _Q;
-  const Real _R;
-  const ADVariableValue & _T;
   const ADMaterialProperty<Real> & _Tn0;
   const Real _n;
 

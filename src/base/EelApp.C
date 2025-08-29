@@ -18,7 +18,7 @@ EelApp::validParams()
   return params;
 }
 
-EelApp::EelApp(InputParameters parameters) : MooseApp(parameters)
+EelApp::EelApp(const InputParameters & parameters) : MooseApp(parameters)
 {
   EelApp::registerAll(_factory, _action_factory, _syntax);
 }
@@ -28,7 +28,7 @@ EelApp::~EelApp() {}
 void
 EelApp::registerAll(Factory & f, ActionFactory & af, Syntax & syntax)
 {
-  ModulesApp::registerAll(f, af, syntax);
+  ModulesApp::registerAllObjects<EelApp>(f, af, syntax);
   Registry::registerObjectsTo(f, {"EelApp"});
   Registry::registerActionsTo(af, {"EelApp"});
 

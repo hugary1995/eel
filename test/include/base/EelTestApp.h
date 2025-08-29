@@ -10,7 +10,7 @@ class EelTestApp : public MooseApp
 public:
   static InputParameters validParams();
 
-  EelTestApp(InputParameters parameters);
+  EelTestApp(const InputParameters & parameters);
   virtual ~EelTestApp();
 
   static void registerApps();

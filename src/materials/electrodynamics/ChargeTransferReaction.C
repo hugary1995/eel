@@ -76,7 +76,7 @@ ChargeTransferReaction::computeQpProperties()
   // Current density
   ADReal T = (_T[_qp] + _T_neighbor[_qp]) / 2;
   ADReal coef = _alpha * _F / _R / T;
-  _i[_qp] = _i0 * (std::exp(coef * eta) - std::exp(-coef * eta));
+  _i[_qp] = -2 * _i0 * std::sinh(coef * eta);
 
   // Mass flux
   _j[_qp] = _i[_qp] / _F;

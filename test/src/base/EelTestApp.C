@@ -14,7 +14,7 @@ EelTestApp::validParams()
   return params;
 }
 
-EelTestApp::EelTestApp(InputParameters parameters) : MooseApp(parameters)
+EelTestApp::EelTestApp(const InputParameters & parameters) : MooseApp(parameters)
 {
   EelTestApp::registerAll(_factory, _action_factory, _syntax, getParam<bool>("allow_test_objects"));
 }
