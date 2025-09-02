@@ -3,6 +3,7 @@ import numpy as np
 from matplotlib import pyplot as plt
 from matplotlib import cm, colors
 from scipy.signal import savgol_filter
+from scipy.interpolate import interp1d
 
 SMALL_SIZE = 12
 MEDIUM_SIZE = 14
@@ -27,8 +28,11 @@ for trial in [1, 2]:
     DOD = df["DChg. Spec. Cap.(mAh/g)"]
     ax.plot(cycles, DOD, "--", label="Experiment trial {}".format(trial))
 
-dfs = pd.read_csv("{}/DOD-{}-sim.csv".format(wt, Crate))
-ax.plot(dfs["cycle"], dfs["DOD"], "k.-", label="Simulation")
+dfs = pd.read_csv("{}/dod-sim.csv".format(wt, Crate))
+c = np.arange(20)
+d = interp1d(dfs["cycle"], dfs["DOD"], kind="linear", fill_value="extrapolate")(c)
+ax.plot(c, d, "k.-", label="Simulation")
+
 ax.set_xlabel("Cycle index")
 ax.set_ylabel("Discharge specific capacity (mAh/g)")
 ax.legend()

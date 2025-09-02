@@ -1,44 +1,28 @@
-// #include "Tortuosity.h"
+#include "Tortuosity.h"
 
-// registerMooseObject("EelApp", Tortuosity);
+registerMooseObject("EelApp", Tortuosity);
 
-// InputParameters
-// Tortuosity::validParams()
-// {
-//   InputParameters params = Material::validParams();
-//   params.addRequiredParam<MaterialPropertyName>("phase", "The name of the phase variable");
-//   params.addRequiredParam<std::vector<Real>>("radii", "Radii of the cylindrical layers");
-//   params.addRequiredParam<Real>("width", "Width of the phase");
-//   params.addParam<RealVectorValue>(
-//       "origin", RealVectorValue(0, 0, 0), "Origin of the cylindrical layers centerline");
-//   params.addParam<RealVectorValue>(
-//       "axis", RealVectorValue(0, 0, 1), "Axis direction of the cylindrical layers centerline");
-//   return params;
-// }
+InputParameters
+Tortuosity::validParams()
+{
+  InputParameters params = Material::validParams();
+  params.addRequiredParam<MaterialPropertyName>("tortuosity", "The tortuosity");
+  params.addRequiredCoupledVar("variable",
+                               "The variable whose gradient is used to compute the tortuosity");
+  params.addRequiredParam<MaterialPropertyName>("flux_ref", "The reference flux");
+  return params;
+}
 
-// Tortuosity::Tortuosity(const InputParameters & parameters)
-//   : Material(parameters),
-//     _phi(declareADProperty<Real>("phase")),
-//     _radii(getParam<std::vector<Real>>("radii")),
-//     _w(getParam<Real>("width")),
-//     _p(getParam<RealVectorValue>("origin")),
-//     _v(getParam<RealVectorValue>("axis").unit())
-// {
-// }
+Tortuosity::Tortuosity(const InputParameters & parameters)
+  : Material(parameters),
+    _tau(declareADProperty<Real>("tortuosity")),
+    _grad_u(adCoupledGradient("variable")),
+    _flux_ref(getADMaterialProperty<RealVectorValue>("flux_ref"))
+{
+}
 
-// void
-// Tortuosity::computeQpProperties()
-// {
-//   const auto d = _q_point[_qp] - _p;
-//   const auto r = (d - (d * _v) * _v).norm();
-
-//   auto dist = std::numeric_limits<Real>::max();
-//   for (const auto & radius : _radii)
-//   {
-//     const auto dist_to_layer = std::abs(r - radius);
-//     if (dist_to_layer < dist)
-//       dist = dist_to_layer;
-//   }
-
-//   _phi[_qp] = dist < 0.5 * _w ? (1 - dist / _w * 2) : 0.0;
-// }
+void
+Tortuosity::computeQpProperties()
+{
+  _tau[_qp] = 1 - _grad_u[_qp].unit() * _flux_ref[_qp].unit();
+}

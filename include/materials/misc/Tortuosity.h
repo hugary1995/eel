@@ -1,19 +1,19 @@
-// #pragma once
+#pragma once
 
-// #include "Material.h"
+#include "Material.h"
 
-// class Tortuosity : public Material
-// {
-// public:
-//   static InputParameters validParams();
+class Tortuosity : public Material
+{
+public:
+  static InputParameters validParams();
 
-//   Tortuosity(const InputParameters & parameters);
+  Tortuosity(const InputParameters & parameters);
 
-// protected:
-//   void computeQpProperties() override;
+protected:
+  void computeQpProperties() override;
 
-//   ADMaterialProperty<Real> & _tau;
+  ADMaterialProperty<Real> & _tau;
 
-//   const ADMaterialProperty<RealVectorValue> & _flux;
-//   const ADMaterialProperty<RealVectorValue> & _flux_ref;
-// };
+  const ADVariableGradient & _grad_u;
+  const ADMaterialProperty<RealVectorValue> & _flux_ref;
+};
