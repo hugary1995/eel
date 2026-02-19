@@ -34,7 +34,8 @@ ThermalDeformationGradient::ThermalDeformationGradient(const InputParameters & p
 void
 ThermalDeformationGradient::computeQpProperties()
 {
+  using std::cbrt;
   ADReal Jt = 1 + _alpha_t[_qp] * (_T[_qp] - _T_ref[_qp]);
-  _Ft[_qp] = std::cbrt(Jt) * ADRankTwoTensor::Identity();
+  _Ft[_qp] = cbrt(Jt) * ADRankTwoTensor::Identity();
   _d_Jt_d_T[_qp] = _alpha_t[_qp];
 }

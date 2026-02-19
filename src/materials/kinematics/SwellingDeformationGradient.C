@@ -37,7 +37,8 @@ SwellingDeformationGradient::SwellingDeformationGradient(const InputParameters &
 void
 SwellingDeformationGradient::computeQpProperties()
 {
+  using std::cbrt;
   ADReal Js = 1 + _alpha_s[_qp] * _Omega * (_c[_qp] - _c_ref[_qp]);
-  _Fs[_qp] = std::cbrt(Js) * ADRankTwoTensor::Identity();
+  _Fs[_qp] = cbrt(Js) * ADRankTwoTensor::Identity();
   _d_Js_d_c[_qp] = _alpha_s[_qp] * _Omega;
 }

@@ -65,6 +65,8 @@ ChargeTransferReaction::initQpStatefulProperties()
 void
 ChargeTransferReaction::computeQpProperties()
 {
+  using std::sinh;
+
   // Interface degradation (e.g., debonding)
   ADReal g = _g ? (*_g)[_qp] : 1.0;
 
@@ -76,7 +78,7 @@ ChargeTransferReaction::computeQpProperties()
   // Current density
   ADReal T = (_T[_qp] + _T_neighbor[_qp]) / 2;
   ADReal coef = _alpha * _F / _R / T;
-  _i[_qp] = -2 * _i0 * std::sinh(coef * eta);
+  _i[_qp] = -2 * _i0 * sinh(coef * eta);
 
   // Mass flux
   _j[_qp] = _i[_qp] / _F;

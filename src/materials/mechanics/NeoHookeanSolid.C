@@ -37,7 +37,8 @@ NeoHookeanSolid::computeQpProperties()
   const auto Jm = Fm.det();
 
   // The mechanical stress
-  const ADRankTwoTensor d_psi_d_Fm = lambda * std::log(Jm) * Fm_inv_t + G * (Fm - Fm_inv_t);
+  using std::log;
+  const ADRankTwoTensor d_psi_d_Fm = lambda * log(Jm) * Fm_inv_t + G * (Fm - Fm_inv_t);
 
   // The PK1 stress
   const ADRankTwoTensor P = d_psi_d_Fm * _Fg[_qp].inverse();

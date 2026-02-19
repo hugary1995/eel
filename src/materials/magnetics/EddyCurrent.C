@@ -39,7 +39,8 @@ EddyCurrent::EddyCurrent(const InputParameters & parameters)
 void
 EddyCurrent::computeQpProperties()
 {
+  using std::sqrt;
   auto Are = ADRealVectorValue((*_Are[0])[_qp], (*_Are[1])[_qp], (*_Are[2])[_qp]);
   auto Aim = ADRealVectorValue((*_Aim[0])[_qp], (*_Aim[1])[_qp], (*_Aim[2])[_qp]);
-  _ie[_qp] = _sigma[_qp] * _omega[_qp] * std::sqrt(Are * Are + Aim * Aim);
+  _ie[_qp] = _sigma[_qp] * _omega[_qp] * sqrt(Are * Are + Aim * Aim);
 }

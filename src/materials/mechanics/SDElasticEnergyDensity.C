@@ -115,6 +115,8 @@ SDElasticEnergyDensity::computeQpStress()
 void
 SDElasticEnergyDensity::computeQpFlowDirection()
 {
+  using std::sqrt;
+
   // Assuming an elastic step
   _Ee[_qp] = _Em[_qp] - _Ep_old[_qp];
   computeQpStress();
@@ -124,7 +126,7 @@ SDElasticEnergyDensity::computeQpFlowDirection()
   auto stress_dev_norm = stress_dev.doubleContraction(stress_dev);
   if (MooseUtils::absoluteFuzzyEqual(stress_dev_norm, 0))
     stress_dev_norm.value() = libMesh::TOLERANCE;
-  stress_dev_norm = std::sqrt(1.5 * stress_dev_norm);
+  stress_dev_norm = sqrt(1.5 * stress_dev_norm);
   _Np = 1.5 * stress_dev / stress_dev_norm;
 }
 
@@ -159,9 +161,10 @@ SDElasticEnergyDensity::computeResidual(const ADReal &, const ADReal & delta_ep)
   _Ee[_qp] = _Em[_qp] - _Ep[_qp];
   computeQpStress();
 
+  using std::pow;
   const auto stress = _d_psi_dot_d_E_dot[_qp];
   const auto effective_stress = stress.doubleContraction(_Np);
-  const auto creep_rate = _A * std::pow(effective_stress / _sigma_y[_qp], _n);
+  const auto creep_rate = _A * pow(effective_stress / _sigma_y[_qp], _n);
 
   return creep_rate * _dt - delta_ep;
 }
@@ -176,10 +179,11 @@ SDElasticEnergyDensity::computeDerivative(const ADReal &, const ADReal & delta_e
   _Ee[_qp] = _Em[_qp] - _Ep[_qp];
   computeQpStress();
 
+  using std::pow;
   const auto stress = _d_psi_dot_d_E_dot[_qp];
   const auto effective_stress = stress.doubleContraction(_Np);
   const auto d_effective_stress_d_delta_ep = -3 * _G[_qp];
-  const auto creep_rate = _A * std::pow(effective_stress / _sigma_y[_qp], _n);
+  const auto creep_rate = _A * pow(effective_stress / _sigma_y[_qp], _n);
 
   return _n / effective_stress * creep_rate * _dt * d_effective_stress_d_delta_ep - 1;
 }

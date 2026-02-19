@@ -57,7 +57,8 @@ InterfaceTractionWithCreepDegradation::computeInterfaceTraction()
   _interface_traction[_qp](2) = _G[_qp] * _interface_displacement_jump[_qp](2);
 
   // Update degradation
-  _g[_qp] = std::pow(1 - _D[_qp], 2.0) * (1 - _eps) + _eps;
+  using std::pow;
+  _g[_qp] = pow(1 - _D[_qp], 2.0) * (1 - _eps) + _eps;
 }
 
 ADReal
@@ -69,34 +70,40 @@ InterfaceTractionWithCreepDegradation::initialGuess(const ADReal &)
 Real
 InterfaceTractionWithCreepDegradation::computeReferenceResidual(const ADReal &, const ADReal &)
 {
-  const auto g = std::pow(1 - _D_old[_qp], 2.0) * (1 - _eps) + _eps;
+  using std::abs;
+  using std::pow;
+  const auto g = pow(1 - _D_old[_qp], 2.0) * (1 - _eps) + _eps;
   const auto Tn = g * _E[_qp] * _interface_displacement_jump[_qp](0);
   const auto HTn = Tn > 0 ? 1 : 0;
-  const auto Tnm = std::abs(Tn);
-  const auto D_rate = std::pow(Tnm / _Tn0[_qp], _n) * HTn;
+  const auto Tnm = abs(Tn);
+  const auto D_rate = pow(Tnm / _Tn0[_qp], _n) * HTn;
   return raw_value(D_rate * _dt);
 }
 
 ADReal
 InterfaceTractionWithCreepDegradation::computeResidual(const ADReal &, const ADReal & D)
 {
-  const auto g = std::pow(1 - D, 2.0) * (1 - _eps) + _eps;
+  using std::abs;
+  using std::pow;
+  const auto g = pow(1 - D, 2.0) * (1 - _eps) + _eps;
   const auto Tn = g * _E[_qp] * _interface_displacement_jump[_qp](0);
   const auto HTn = Tn > 0 ? 1 : 0;
-  const auto Tnm = std::abs(Tn);
-  const auto D_rate = std::pow(Tnm / _Tn0[_qp], _n) * HTn;
+  const auto Tnm = abs(Tn);
+  const auto D_rate = pow(Tnm / _Tn0[_qp], _n) * HTn;
   return D - _D_old[_qp] - D_rate * _dt;
 }
 
 ADReal
 InterfaceTractionWithCreepDegradation::computeDerivative(const ADReal &, const ADReal & D)
 {
-  const auto g = std::pow(1 - D, 2.0) * (1 - _eps) + _eps;
+  using std::abs;
+  using std::pow;
+  const auto g = pow(1 - D, 2.0) * (1 - _eps) + _eps;
   const auto Tn = g * _E[_qp] * _interface_displacement_jump[_qp](0);
   const auto HTn = Tn > 0 ? 1 : 0;
-  const auto Tnm = std::abs(Tn);
+  const auto Tnm = abs(Tn);
   const auto d_g_d_D = -2 * (1 - D) * (1 - _eps);
   const auto d_Tn_d_g = _E[_qp] * _interface_displacement_jump[_qp](0);
-  const auto d_D_rate_d_Tn = _n * std::pow(Tnm / _Tn0[_qp], _n - 1) * HTn;
+  const auto d_D_rate_d_Tn = _n * pow(Tnm / _Tn0[_qp], _n - 1) * HTn;
   return 1 - d_D_rate_d_Tn * d_Tn_d_g * d_g_d_D * _dt;
 }

@@ -59,27 +59,30 @@ SEIGrowth::computeQpProperties()
 Real
 SEIGrowth::computeReferenceResidual(const ADReal &, const ADReal &)
 {
+  using std::abs;
+  using std::exp;
   ADReal h = _h_old[_qp];
-  ADReal h_rate =
-      _A[_qp] * std::abs(_j[_qp]) * _Omega * std::exp(-_Q / _R / _T[_qp]) * std::exp(-h / _hc);
+  ADReal h_rate = _A[_qp] * abs(_j[_qp]) * _Omega * exp(-_Q / _R / _T[_qp]) * exp(-h / _hc);
   return raw_value(h_rate);
 }
 
 ADReal
 SEIGrowth::computeResidual(const ADReal &, const ADReal & delta_h)
 {
+  using std::abs;
+  using std::exp;
   ADReal h = _h_old[_qp] + delta_h;
-  ADReal h_rate =
-      _A[_qp] * std::abs(_j[_qp]) * _Omega * std::exp(-_Q / _R / _T[_qp]) * std::exp(-h / _hc);
+  ADReal h_rate = _A[_qp] * abs(_j[_qp]) * _Omega * exp(-_Q / _R / _T[_qp]) * exp(-h / _hc);
   return delta_h - h_rate * _dt;
 }
 
 ADReal
 SEIGrowth::computeDerivative(const ADReal &, const ADReal & delta_h)
 {
+  using std::abs;
+  using std::exp;
   ADReal h = _h_old[_qp] + delta_h;
-  ADReal h_rate =
-      _A[_qp] * std::abs(_j[_qp]) * _Omega * std::exp(-_Q / _R / _T[_qp]) * std::exp(-h / _hc);
+  ADReal h_rate = _A[_qp] * abs(_j[_qp]) * _Omega * exp(-_Q / _R / _T[_qp]) * exp(-h / _hc);
   ADReal d_h_rate_d_delta_h = h_rate * (-1 / _hc);
   return 1 - d_h_rate_d_delta_h * _dt;
 }

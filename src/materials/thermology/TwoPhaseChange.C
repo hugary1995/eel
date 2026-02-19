@@ -85,13 +85,17 @@ TwoPhaseChange::computeQpState()
 void
 TwoPhaseChange::computeQpLatentSpecificHeat()
 {
+  using std::abs;
+  using std::exp;
+  using std::sqrt;
+
   // Calculate the Gaussian function
   // std is chosen such that 95% latent heat is absorbed/released over the specified interval
   auto mu = (_Ts[_qp] + _Te[_qp]) / 2;
-  auto dT = std::abs(_Te[_qp] - _Ts[_qp]);
+  auto dT = abs(_Te[_qp] - _Ts[_qp]);
   auto sigma = dT / 1.96 / 2;
   auto z = (_T[_qp] - mu) / sigma;
-  auto G = 1 / sigma / std::sqrt(2 * M_PI) * std::exp(-z * z / 2);
+  auto G = 1 / sigma / sqrt(2 * M_PI) * exp(-z * z / 2);
 
   // The Gaussian function is effectively the "density" of latent heat
   // over the course of phase change.

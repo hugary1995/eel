@@ -26,15 +26,15 @@ for trial in [1, 2]:
     df = pd.read_excel("{}/{}-{}.xlsx".format(wt, Crate, trial), sheet_name="cycle")
     cycles = df["Cycle Index"]
     DOD = df["DChg. Spec. Cap.(mAh/g)"]
-    ax.plot(cycles, DOD, "--", label="Experiment trial {}".format(trial))
+    ax.plot(cycles, DOD, ".-", label="Experiment trial {}".format(trial))
 
 dfs = pd.read_csv("{}/dod-sim.csv".format(wt, Crate))
 c = np.arange(20)
 d = interp1d(dfs["cycle"], dfs["DOD"], kind="linear", fill_value="extrapolate")(c)
-ax.plot(c, d, "k.-", label="Simulation")
+ax.plot(c, d, "k--", label="Simulation")
 
 ax.set_xlabel("Cycle index")
 ax.set_ylabel("Discharge specific capacity (mAh/g)")
 ax.legend()
 fig.tight_layout()
-fig.savefig("{}/DOD-{}.png".format(wt, Crate))
+fig.savefig("{}/DOD-{}.pdf".format(wt, Crate), dpi=300)

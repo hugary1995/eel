@@ -30,6 +30,7 @@ EntropicChemicalEnergyDensity::EntropicChemicalEnergyDensity(const InputParamete
 void
 EntropicChemicalEnergyDensity::computeQpProperties()
 {
-  _d_psi_dot_d_c_dot[_qp] = _mu0[_qp] + _R * _T[_qp] * std::log(_c[_qp] / _c0[_qp]);
+  using std::log;
+  _d_psi_dot_d_c_dot[_qp] = _mu0[_qp] + _R * _T[_qp] * log(_c[_qp] / _c0[_qp]);
   _psi_dot[_qp] = _d_psi_dot_d_c_dot[_qp] * _c_dot[_qp];
 }

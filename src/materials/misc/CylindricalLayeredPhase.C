@@ -29,13 +29,14 @@ CylindricalLayeredPhase::CylindricalLayeredPhase(const InputParameters & paramet
 void
 CylindricalLayeredPhase::computeQpProperties()
 {
+  using std::abs;
   const auto d = _q_point[_qp] - _p;
   const auto r = (d - (d * _v) * _v).norm();
 
   auto dist = std::numeric_limits<Real>::max();
   for (const auto & radius : _radii)
   {
-    const auto dist_to_layer = std::abs(r - radius);
+    const auto dist_to_layer = abs(r - radius);
     if (dist_to_layer < dist)
       dist = dist_to_layer;
   }
